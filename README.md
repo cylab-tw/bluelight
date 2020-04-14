@@ -18,7 +18,7 @@
 * Rotation, Flip, Invert
 * Windowing
 * Cine
-* viewports:  1×1, 1×2, 2×2 and 4×4
+* viewports:  1×1, 1×2,2×1 and 2×2
 * Cross-Studies synchronization
 * Magnifier, etc
 * Line and angle measurement
