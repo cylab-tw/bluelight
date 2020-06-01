@@ -5,7 +5,7 @@
 * BlueLight是少數能在網頁上顯示3D VR及MPR的開源DICOM瀏覽系統，它擁有平易近人的操作介面並支援RWD及Web零足跡瀏覽，可在任意大小的裝置上執行。
 * 標記顯示方面支援RTSS、Overlay、Graphic Annotation、AIM等標記，亦可於3D系統中專換成3D標記。
 * 此專案亦支援LabelImg格式的標記繪製。
-* 3D VR顯示模式支援染色、降噪、打光、挖洞，MPR模式則支援內插、染色以及3D切面的顯示。
+* 3D VR顯示模式支援染色、窗度、透明、壓縮、貼皮、內插、降噪、打光、挖洞，針對骨骼及肺氣管有專門的顯示模式，MPR模式則支援內插、貼皮、染色以及3D切面的顯示。
 
 ## Key Features
 ### Network support
@@ -19,7 +19,7 @@
 * Rotation, Flip, Invert
 * Windowing
 * Cine
-* viewports:  1×1, 1×2,2×1 and 2×2
+* viewports:  4×4
 * Cross-Studies synchronization
 * Magnifier, etc
 * Line and angle measurement
