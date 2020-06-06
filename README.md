@@ -38,6 +38,7 @@
 
 ## Supported library
 * BuleLight Viewer uses several oepn source libraries as folowing:
+  - <a href="https://github.com/taye/interact.js">interact</a> for drag and drop objects.
   - <a href="https://github.com/cornerstonejs">cornerstone</a> for reading, parsing DICOM-formatted data.
   - <a href="https://github.com/cornerstonejs/dicomParser">dicomParser</a> for parsing DICOM tags.
   - <a href="https://github.com/cornerstonejs/cornerstoneTools">cornerstoneTools</a> for performing windowing operation.
