@@ -1,0 +1,48 @@
+{
+    "DICOMWebServersConfig": {
+        "QIDO": {
+            "YMOrthanc": {
+                "enableHTTPS": true,
+                "hostname": "orthanc.dicom.org.tw",
+                "PORT": 443,
+                "contentType": "application/json",
+                "timeout": 80000,
+                "charset": "UTF=8",
+                "service": "dicom-web"
+            },
+            "ldcmPACS": {
+                "enableHTTPS": true,
+                "hostname": "orthanc.dicom.org.tw",
+                "PORT": 443,
+                "contentType": "application/json",
+                "timeout": 80000,
+                "charset": "UTF=8",
+                "service": "dicom-web"
+            }
+        },
+        "WADO": {
+            "YMOrthanc": {
+                "service": "wado",
+                "enableHTTPS": true,
+                "hostname": "orthanc.dicom.org.tw",
+                "PORT": 443,
+                "contentType": "application/json",
+                "timeout": 0
+            }
+        },
+        "STOW": {
+            "YMOrthanc": {
+                "service": "stow",
+                "enableHTTPS": true,
+                "hostname": "orthanc.dicom.org.tw",
+                "PORT": 443,
+                "contentType": "application/json",
+                "timeout": 0
+            }
+        }
+    },
+    "//_thumnail_witdth": "縮圖寬度",
+    "thumnail_witdth": 70,
+    "//_study_comparison": "進片模式",
+    "study_comparison": false
+}

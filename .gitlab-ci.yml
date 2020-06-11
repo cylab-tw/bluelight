@@ -1,0 +1,15 @@
+image: alpine:latest
+
+stages:
+  - build
+
+build_job:
+  stage: build
+  tags:
+    - share
+  only:
+    - master
+  script:
+    - mkdir -p /nginx/www/main/bluelight
+    - rm -rf  /nginx/www/main/bluelight/*
+    - cp -R * /nginx/www/main/bluelight

@@ -1,0 +1,59 @@
+﻿<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>DICOM Viewer</title>
+  <meta charset="UTF-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta content="no-cache" http-equiv="cache-control">
+  <meta content="no-cache" http-equiv="pragma">
+  <meta content="0" http-equiv="expires">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+  <script src="../scripts/toolfunction.js"></script>
+  <script src="../scripts/readsome.js"></script>
+  <script src="../scripts/onload.js"></script>
+
+  <link rel="stylesheet" href="../css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<style>
+  .PatientRow:hover {
+    background-color: #DFE7F2 !important;
+    color: #000000
+  }
+</style>
+<script>
+  function kerypressT(e) {
+    if (e.keyCode == 13) {
+      getByid('searchButton').onclick()
+    }
+  }
+
+</script>
+
+<body style="background-color:#000000;color:#FFFFFF" onkeypress="kerypressT(event);">
+  <br>
+  　PatientID：<input type="text" name="lname" id="PatientIDText" class="btn btn-dark text-left">
+  PatientName：<input type="text" name="lname" id="PatientNameText" class="btn btn-dark text-left">
+  StudyDate：<input type="text" name="lname" id="StudyDateText" class="btn btn-dark text-left"><br><br>
+  　Modality：<input type="text" name="lname" id="ModalitiesInStudyText" class="btn btn-dark text-left">
+  　 &nbsp;StudyUID：<input type="text" name="lname" id="StudyInstanceUIDText" class="btn btn-dark text-left">
+  &nbsp;&nbsp;Password：<input type="password" name="lname" value="123" id="PasswordText" class="btn btn-dark text-left">
+  　
+  <button type="button" id="searchButton" class="btn btn-dark" onclick="
+  if(!PasswordCheck())return;
+  Patient.patientName = '';
+  Patient.StudyAmount = 0;
+  Patient.Study = [];
+  LoacationSercher='?PatientID='+ encodeURI(encodeURI(''+getByid('PatientIDText').value));readAllJson();
+  LoacationSercher='?StudyDate='+ encodeURI(encodeURI(''+getByid('StudyDateText').value));readAllJson();
+  LoacationSercher='?PatientName='+ encodeURI(encodeURI(''+getByid('PatientNameText').value));readAllJson();
+  LoacationSercher='?ModalitiesInStudy='+ encodeURI(encodeURI(''+getByid('ModalitiesInStudyText').value));readAllJson();
+  LoacationSercher='?StudyInstanceUID='+ encodeURI(encodeURI(''+getByid('StudyInstanceUIDText').value));readAllJson();
+  ">search</button><br><br>
+  <div id="body"></div>
+  <header class="page-header" style="display:none">
+  </header>
+</body>
+</html>
