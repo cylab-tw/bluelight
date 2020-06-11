@@ -106,7 +106,7 @@ function createTable() {
       str += "&PatientName=" + Null2Empty(encodeURI(list3[i - 1]));
       str += "&ModalitiesInStudy=" + Null2Empty(encodeURI(list5[i - 1]));
 
-      row.alt = 'https://cylab.dicom.org.tw/ldcmview/html/start.html?' + str;
+      row.alt = 'https://cylab-tw.github.io/bluelight/bluelight/html/start.html?' + str;
       row.onclick = function () {
         window.open(this.alt, '_blank');
       };
