@@ -284,7 +284,7 @@ function rotate3dVR(VrDistance) {
             canvas1.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
             // div1.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
             div1.style.transformStyle = "preserve-3d";
-            div1.style.zIndex = ll + o3DListLength;
+            div1.style.zIndex = -ll + o3DListLength;
             div1.style.transform = "translate3d(0,0,0) rotateY(" + degerrX + "deg) rotateX(" + degerrY + "deg)  translateZ(" + (parseFloat(parseFloat(1) * (parseFloat(canvas1.style.height) / parseFloat(GetViewport().imageHeight))) * (div1.thickness - Thickness) - (VrDistance / 2)) + "px)";
         }
     } else {
@@ -294,7 +294,7 @@ function rotate3dVR(VrDistance) {
             canvas1.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
             // div1.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
             div1.style.transformStyle = "preserve-3d";
-            div1.style.zIndex = -ll + o3DListLength;
+            div1.style.zIndex = ll + o3DListLength;
             div1.style.transform = "translate3d(0,0,0) rotateY(" + degerrX + "deg) rotateX(" + degerrY + "deg)  translateZ(" + (parseFloat(parseFloat(1) * (parseFloat(canvas1.style.height) / parseFloat(GetViewport().imageHeight))) * (div1.thickness - Thickness) - (VrDistance / 2)) + "px)";
         }
     }
