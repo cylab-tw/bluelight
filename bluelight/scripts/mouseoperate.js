@@ -171,7 +171,7 @@ function Mousemove(e) {
                         GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
                         GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
                         GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
-                    } catch (ex) { }
+                    } catch (ex) {}
                 }
             }
             if (GetmouseY(e) < windowMouseY - 2) {
@@ -298,8 +298,7 @@ function Mousemove(e) {
                     nextFrame(viewportNumber, -1);
                     if (l - 1 < 0) nextInstanceNumber = list.length - 1;
                     else nextInstanceNumber = l - 1;
-                }
-                else if (currX > GetViewport().originalPointX + 3) {
+                } else if (currX > GetViewport().originalPointX + 3) {
                     nextFrame(viewportNumber, 1);
                     if (list[l].InstanceNumber == Onum) {
                         if (l + 1 >= list.length) nextInstanceNumber = 0;
@@ -311,8 +310,7 @@ function Mousemove(e) {
                     nextFrame(viewportNumber, -1);
                     if (l - 1 < 0) nextInstanceNumber = list.length - 1;
                     else nextInstanceNumber = l - 1;
-                }
-                else if (currY > GetViewport().originalPointY + 3) {
+                } else if (currY > GetViewport().originalPointY + 3) {
                     nextFrame(viewportNumber, 1);
                     if (l + 1 >= list.length) nextInstanceNumber = 0;
                     else nextInstanceNumber = l + 1;
@@ -369,12 +367,14 @@ function Mousemove(e) {
 
             if (openLink == true) {
                 for (var i = 0; i < Viewport_Total; i++) {
-                    GetViewportMark((i)).style.width = GetViewport(i).canvas().style.width = GetViewport().canvas().style.width;
-                    GetViewportMark((i)).style.height = GetViewport(i).canvas().style.height = GetViewport().canvas().style.height;
-                    GetViewportMark((i)).style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-                    GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-                    GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-                    GetViewport(i).newMousePointX = GetViewport().newMousePointX;
+                    try {
+                        GetViewportMark((i)).style.width = GetViewport(i).canvas().style.width = GetViewport().canvas().style.width;
+                        GetViewportMark((i)).style.height = GetViewport(i).canvas().style.height = GetViewport().canvas().style.height;
+                        GetViewportMark((i)).style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
+                        GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
+                        GetViewport(i).newMousePointX = GetViewport().newMousePointX;
+                        GetViewport(i).newMousePointX = GetViewport().newMousePointX;
+                    } catch (ex) {}
                 }
             }
             putLabel();
