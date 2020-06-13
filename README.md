@@ -8,6 +8,8 @@
 * 3D VR顯示模式支援染色、窗度、透明、壓縮、貼皮、內插、降噪、打光、挖洞及最大密度投影，針對骨骼及肺氣管有專門的顯示模式，MPR模式則支援內插、貼皮、染色以及3D切面的顯示。
 
 ### <a href="https://cylab-tw.github.io/bluelight/bluelight/html/start.html">DEMO</a> 
+
+###  <a href="https://youtu.be/_d_rk0Xrr90">Video - Basic operation</a> 
 ## Key Features
 ### Network support
 * load local files
