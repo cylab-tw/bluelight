@@ -25,7 +25,7 @@ function Anatomical_Section2(nextInstanceNumber) {
     try {
         GetViewport(1).canvas().style.display = "none";
         GetViewportMark(1).style.display = "none";
-    } catch (ex) {};
+    } catch (ex) { };
 
     var o3Dcanvas = getByid("3DDiv" + 0).canvas();
     NewCanvas.height = o3DListLength;
@@ -116,7 +116,7 @@ function Anatomical_Section(nextInstanceNumber) {
     try {
         GetViewport(0).canvas().style.display = "none";
         GetViewportMark(0).style.display = "none";
-    } catch (ex) {};
+    } catch (ex) { };
 
     var o3Dcanvas = getByid("3DDiv" + 0).canvas();
     //NewCanvas.style.imageRendering = "-moz-crisp-edges";
@@ -192,7 +192,7 @@ function initMPR() {
                 delete elem.canvas();
                 elem.parentElement.removeChild(elem);
                 delete elem;
-            } catch (ex) {}
+            } catch (ex) { }
         }
         for (var ll = 0; ll < o3d_3degree; ll++) {
             try {
@@ -206,7 +206,7 @@ function initMPR() {
                 elem.canvas().height = 2;
                 elem.getElementsByClassName("cornerstone-canvas")[0] = null;
                 delete elem;
-            } catch (ex) {}
+            } catch (ex) { }
         }
         GetViewport(3).removeEventListener("mousemove", mousemove3D, false);
         GetViewport(3).removeEventListener("mousedown", mousedown3D, false);
@@ -223,7 +223,7 @@ function initMPR() {
         try {
             getByid("MprCanvas1").style.display = "none";
             getByid("MprCanvas2").style.display = "none";
-        } catch (ex) {}
+        } catch (ex) { }
         if (getByid("OutSide3dDiv")) {
             delete getByid("OutSide3dDiv");
             getByid("OutSide3dDiv").parentElement.removeChild(getByid("OutSide3dDiv"));
@@ -316,7 +316,7 @@ function initMPR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) {}
+                } catch (ex) { }
             }
         }
         if (o3d_3degree >= 0) {
@@ -329,7 +329,7 @@ function initMPR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) {}
+                } catch (ex) { }
             }
             for (var ll = 0; ll < o3d_3degree; ll++) {
                 try {
@@ -340,7 +340,7 @@ function initMPR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) {}
+                } catch (ex) { }
             }
         }
 
@@ -441,7 +441,11 @@ function initMPR() {
         }
         GetViewport(3).appendChild(OutSide3dDiv);
         getByid("OutSide3dDiv").parentNode.replaceChild(OutSide3dDiv, getByid("OutSide3dDiv"));
-        getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
+        if (getByid("3dStrengthen").checked == true) {
+            if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
+        } else {
+            if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "";
+        }
 
         Thickness = -Thickness + big;
         return;
@@ -502,7 +506,7 @@ function o3dWindowLevel() {
             var elem = getByid("3DDiv" + ll);
             elem.canvas().width = 2;
             elem.canvas().height = 2;
-        } catch (ex) {}
+        } catch (ex) { }
     }
     if (o3d_3degree >= 0) {
         for (var ll = 0; ll < o3d_3degree; ll++) {

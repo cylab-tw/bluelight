@@ -253,7 +253,11 @@ function initVR() {
 
         GetViewport(0).appendChild(OutSide3dDiv);
         getByid("OutSide3dDiv").parentNode.replaceChild(OutSide3dDiv, getByid("OutSide3dDiv"));
-        getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
+        if (getByid("3dStrengthen").checked == true) {
+            if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
+        } else {
+            if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "";
+        }
 
         Thickness = -Thickness + big;
         return;
