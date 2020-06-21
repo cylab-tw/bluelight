@@ -3,7 +3,7 @@
         "QIDO": {
             "YMOrthanc": {
                 "enableHTTPS": true,
-                "hostname": "orthanc.dicom.org.tw",
+                "hostname": "orthanc.dicom.tw",
                 "PORT": 443,
                 "contentType": "application/json",
                 "timeout": 80000,
@@ -12,7 +12,7 @@
             },
             "ldcmPACS": {
                 "enableHTTPS": true,
-                "hostname": "orthanc.dicom.org.tw",
+                "hostname": "orthanc.dicom.tw",
                 "PORT": 443,
                 "contentType": "application/json",
                 "timeout": 80000,
@@ -24,7 +24,7 @@
             "YMOrthanc": {
                 "service": "wado",
                 "enableHTTPS": true,
-                "hostname": "orthanc.dicom.org.tw",
+                "hostname": "orthanc.dicom.tw",
                 "PORT": 443,
                 "contentType": "application/json",
                 "timeout": 0
@@ -34,7 +34,7 @@
             "YMOrthanc": {
                 "service": "stow",
                 "enableHTTPS": true,
-                "hostname": "orthanc.dicom.org.tw",
+                "hostname": "orthanc.dicom.tw",
                 "PORT": 443,
                 "contentType": "application/json",
                 "timeout": 0
