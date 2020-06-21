@@ -1,5 +1,5 @@
 <h1>BlueLight Web-based DICOM Viewer (BlueLight Viewer)</h1>
-<p><strong>Blue Light</strong> is a browser-based medical image viewer is primarily maintained by the <a href="https://cylab.dicom.org.tw/">Imaging Informatics Labs</a>. It is a pure single-page application (SPA), lightweight, and using only JavaScript and HTML5 technologies so as to deploy it on any HTTP server easily (just put it in HTTP server). It supports not only opening local data, but also connecting to medical image archives which support <a href="https://www.dicomstandard.org/dicomweb/">DICOMweb</a>. It can display the various image markups and annotations such as Annotation and Image Markup (AIM), DICOM-RT structure set (RTSS), DICOM Overlay, and DICOM Presentation State. It provides tools for medical image interpretation and 3D image reconstruction, e.g., Multiplanar Rreformation or Reconstruction (MPR) and Volume Rendering (VR).</p>
+<p><strong>Blue Light</strong> is a browser-based medical image viewer is primarily maintained by the <a href="https://cylab.dicom.tw/">Imaging Informatics Labs</a>. It is a pure single-page application (SPA), lightweight, and using only JavaScript and HTML5 technologies so as to deploy it on any HTTP server easily (just put it in HTTP server). It supports not only opening local data, but also connecting to medical image archives which support <a href="https://www.dicomstandard.org/dicomweb/">DICOMweb</a>. It can display the various image markups and annotations such as Annotation and Image Markup (AIM), DICOM-RT structure set (RTSS), DICOM Overlay, and DICOM Presentation State. It provides tools for medical image interpretation and 3D image reconstruction, e.g., Multiplanar Rreformation or Reconstruction (MPR) and Volume Rendering (VR).</p>
 
 ### <a href="https://cylab-tw.github.io/bluelight/bluelight/html/start.html">Online Viewer</a> 
 ###  <a href="https://youtu.be/UkZt_Qbw1Rk">Video - Basic operation</a> 
@@ -8,9 +8,14 @@
 * Put all files into any directory in the static directory on any HTTP server.
 
 ## DICOMWeb Configuration
-### Orthanc/dcm4chee
 * go to `./bluelight/data/config.json` and change the configuration of DICOM server.
  - **Reminder** the DICOMWeb Plugin of the DICOM server shall be installed first. 
+## Orthanc
+```
+
+```
+
+* Orhtanc
 * [Demo for the integration of DICOMWeb](https://cylab-tw.github.io/bluelight/search/html/start.html) 
 
 ## About
