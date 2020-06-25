@@ -283,45 +283,33 @@ function readConfigJson(url, callBack, callBack2) {
     var DicomResponse = request.response;
     config.QIDO = {};
 
-    config.QIDO.YMOrthanc = {};
-    var tempDicomResponse = DicomResponse["DICOMWebServersConfig"]["QIDO"]["YMOrthanc"];
-    var tempConfig = config.QIDO.YMOrthanc;
+    tempDicomResponse = DicomResponse["DICOMWebServersConfig"][0];
+    tempConfig = config.QIDO
     tempConfig.hostname = tempDicomResponse["hostname"];
     tempConfig.https = tempDicomResponse["enableHTTPS"] == true ? "https" : "http";
     tempConfig.PORT = tempDicomResponse["PORT"];
-    tempConfig.service = tempDicomResponse["service"];
-    tempConfig.contentType = tempDicomResponse["contentType"];
-    tempConfig.timeout = tempDicomResponse["timeout"];
-    tempConfig.charset = tempDicomResponse["charset"];
-
-    config.QIDO.ldcmPACS = {};
-    tempDicomResponse = DicomResponse["DICOMWebServersConfig"]["QIDO"]["ldcmPACS"];
-    tempConfig = config.QIDO.ldcmPACS
-    tempConfig.hostname = tempDicomResponse["hostname"];
-    tempConfig.https = tempDicomResponse["enableHTTPS"] == true ? "https" : "http";
-    tempConfig.PORT = tempDicomResponse["PORT"];
-    tempConfig.service = tempDicomResponse["service"];
+    tempConfig.service = tempDicomResponse["QIDO"];
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
     tempConfig.charset = tempDicomResponse["charset"];
 
     config.WADO = {};
     tempConfig = config.WADO;
-    tempDicomResponse = DicomResponse["DICOMWebServersConfig"]["WADO"]["YMOrthanc"];
+    tempDicomResponse = DicomResponse["DICOMWebServersConfig"][0];
     tempConfig.hostname = tempDicomResponse["hostname"];
     tempConfig.https = tempDicomResponse["enableHTTPS"] == true ? "https" : "http";
     tempConfig.PORT = tempDicomResponse["PORT"];
-    tempConfig.service = tempDicomResponse["service"];
+    tempConfig.service = tempDicomResponse["WADO"];
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
 
     config.STOW = {};
     tempConfig = config.STOW;
-    tempDicomResponse = DicomResponse["DICOMWebServersConfig"]["STOW"]["YMOrthanc"];
+    tempDicomResponse = DicomResponse["DICOMWebServersConfig"][0];
     tempConfig.hostname = tempDicomResponse["hostname"];
     tempConfig.https = tempDicomResponse["enableHTTPS"] == true ? "https" : "http";
     tempConfig.PORT = tempDicomResponse["PORT"];
-    tempConfig.service = tempDicomResponse["service"];
+    tempConfig.service = tempDicomResponse["STOW"];
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
 

@@ -93,50 +93,37 @@ function readConfigJson(url) {
     var DicomResponse = request.response;
     config.QIDO = {};
 
-    config.QIDO.YMOrthanc = {};
-    var tempDicomResponse = DicomResponse["DICOMWebServersConfig"]["QIDO"]["YMOrthanc"];
-    var tempConfig = config.QIDO.YMOrthanc;
+    tempDicomResponse = DicomResponse["DICOMWebServersConfig"][0];
+    tempConfig = config.QIDO
     tempConfig.hostname = tempDicomResponse["hostname"];
     tempConfig.https = tempDicomResponse["enableHTTPS"] == true ? "https" : "http";
     tempConfig.PORT = tempDicomResponse["PORT"];
-    tempConfig.service = tempDicomResponse["service"];
-    tempConfig.contentType = tempDicomResponse["contentType"];
-    tempConfig.timeout = tempDicomResponse["timeout"];
-    tempConfig.charset = tempDicomResponse["charset"];
-
-    config.QIDO.ldcmPACS = {};
-    tempDicomResponse = DicomResponse["DICOMWebServersConfig"]["QIDO"]["ldcmPACS"];
-    tempConfig = config.QIDO.ldcmPACS
-    tempConfig.hostname = tempDicomResponse["hostname"];
-    tempConfig.https = tempDicomResponse["enableHTTPS"] == true ? "https" : "http";
-    tempConfig.PORT = tempDicomResponse["PORT"];
-    tempConfig.service = tempDicomResponse["service"];
+    tempConfig.service = tempDicomResponse["QIDO"];
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
     tempConfig.charset = tempDicomResponse["charset"];
 
     config.WADO = {};
     tempConfig = config.WADO;
-    tempDicomResponse = DicomResponse["DICOMWebServersConfig"]["WADO"]["YMOrthanc"];
+    tempDicomResponse = DicomResponse["DICOMWebServersConfig"][0];
     tempConfig.hostname = tempDicomResponse["hostname"];
     tempConfig.https = tempDicomResponse["enableHTTPS"] == true ? "https" : "http";
     tempConfig.PORT = tempDicomResponse["PORT"];
-    tempConfig.service = tempDicomResponse["service"];
+    tempConfig.service = tempDicomResponse["WADO"];
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
 
     config.STOW = {};
     tempConfig = config.STOW;
-    tempDicomResponse = DicomResponse["DICOMWebServersConfig"]["STOW"]["YMOrthanc"];
+    tempDicomResponse = DicomResponse["DICOMWebServersConfig"][0];
     tempConfig.hostname = tempDicomResponse["hostname"];
     tempConfig.https = tempDicomResponse["enableHTTPS"] == true ? "https" : "http";
     tempConfig.PORT = tempDicomResponse["PORT"];
-    tempConfig.service = tempDicomResponse["service"];
+    tempConfig.service = tempDicomResponse["STOW"];
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
 
     ConfigLog = config;
-    console.log(ConfigLog);
     configOnload = true;
 
     readAllJson();
@@ -157,11 +144,9 @@ function readJson(url) {
 
   request.onload = function () {
     var DicomResponse = request.response;
-    console.log(request.response);
     var min = 1000000000;
     for (var i = 0; i < DicomResponse.length; i++) {
       try {
-        console.log(DicomResponse[i]["00200013"].Value[0]);
         if (DicomResponse[i]["00200013"].Value[0] < min) min = DicomResponse[i]["00200013"].Value[0];
       }
       catch (ex) { };
@@ -274,7 +259,6 @@ function loadUID(study, series, sop, instance, imageId, PatientID, StudyDate, Mo
         Patient.Study[isStudy].Series[isSeries].SopAmount += 1;
       }
       else {
-        console.log("重複載入");
         ifSeries = -1;
       }
     }

@@ -1,6 +1,7 @@
 window.onload = function () {
   setInterval(function () { createTable() }, 1000);
   loadLdcmview();
+  getByid("searchButton").onclick();
 }
 function PasswordCheck() {
   try {
@@ -81,7 +82,7 @@ function createTable() {
   var cells2 = row0.insertCell(3);
   cells2.innerHTML = "Modality";
   var cells3 = row0.insertCell(4);
-  cells3.innerHTML = "SopAmount";
+  cells3.innerHTML = "# of related Instances";
 
   for (var i = 1; i <= rows; i++) {
     var row = Table.insertRow(i);
