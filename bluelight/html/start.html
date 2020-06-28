@@ -57,7 +57,7 @@
     <img class="img" alt="播放" id="playvideo" src="../image/icon/black/b_CinePlay.png" width="50" height="50">
     <img class="img VR MPR" alt="標記" id="MarkButton" src="../image/icon/black/fist0.png" width="50" height="50">
     <img class="img" alt="標籤" id="annotation" src="../image/icon/black/b_Annotation.png" width="50" height="50">
-    <img class="img VR MPR" alt="AIM" id="AimImg" src="../image/icon/black/b_ShowReport.png" width="50" height="50">
+    <img class="img VR MPR" alt="AIM" id="MarkupImg" src="../image/icon/black/b_ShowReport.png" width="50" height="50">
 
     <img class="img MPR" alt="3d" id="ImgMPR" src="../image/icon/black/b_AdvancedMode_off.png" width="50" height="50">
     <img class="img VR" alt="3d" id="ImgVR" src="../image/icon/black/b_3D_off.png" width="50" height="50">
@@ -79,6 +79,12 @@
       <label style="color: #ffffff;" id="markAlphaLabel">Alpha<input type="text" id="markAlphaText" value="35"/></label>
       <label style="color: #ffffff;" id="markSizeLabel">Size<input type="text" id="markSizeText" value="1.2"/></label>
       <label style="color: #ffffff;" id="markFillLabel">Fill<input type="checkbox" checked="true" name="markFillLabel" id="markFillCheck"></label>
+      <label style="color: #ffffff;" id="TableLabel">Table：</label>
+      <select id="TableSelect">
+        <option id="TableSelectNone" selected="selected">None</option>
+        <option id="DICOMTagsSelect">DICOMTags</option>
+        <option id="AIMSelect">AIM</option>
+      </select>
     </div>
 
     <div id="SplitViewportDiv" style="background-color:#4D000044;">

@@ -121,21 +121,28 @@ function html_onload() {
     displayAnnotation();
   }
 
-  getByid("AimImg").onclick = function () {
+  getByid("MarkupImg").onclick = function () {
     if (imgInvalid(this)) return;
-    GetViewport().openDisplayAim = !GetViewport().openDisplayAim;
-    if (openLink == true) {
-      for (var i = 0; i < Viewport_Total; i++) {
-        GetViewport(i).openDisplayAim = GetViewport().openDisplayAim;
-        displayAIM(i);
+    openDisplayMarkup = !openDisplayMarkup;
+    var TableSelectOnChange = function () {
+      GetViewport().style.overflowY = "hidden";
+      GetViewport().style.overflowX = "hidden";
+      if (getByid("DICOMTagsSelect").selected == true)
+        displayDicomTagsList();
+      else if (getByid("AIMSelect").selected == true)
+        displayAIM();
+      else {
+        for (var i = 0; i < Viewport_Total; i++)
+          dropTable(i);
       }
-    } else displayAIM();
-    //if(openPenDraw==true)return;openAnnotation=openAnnotation==true?false:true;displayAnnotation();
+    }
     if (getByid('MarkStyleDiv').style.display == 'none') {
       getByid('MarkStyleDiv').style.display = '';
     } else {
       getByid('MarkStyleDiv').style.display = 'none';
     }
+    getByid("TableSelect").onchange = TableSelectOnChange;
+    TableSelectOnChange();
   }
 
   getByid("ImgMPR").onclick = function () {
@@ -383,10 +390,11 @@ function imgInvalid(element) {
   } else if (openWriteXML) {
     if (element.classList.contains("XML")) return false;
     else return true;
-  } /*else if (openPenDraw) {//暫時移除的功能
-    if (element.classList.contains("PEN")) return false;
-    else return true;
-  }*/
+  }
+  /*else if (openPenDraw) {//暫時移除的功能
+     if (element.classList.contains("PEN")) return false;
+     else return true;
+   }*/
 }
 
 function img2darkByClass(classname, dark) {

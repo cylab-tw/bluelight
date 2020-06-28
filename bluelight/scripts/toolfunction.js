@@ -365,3 +365,14 @@ function get3dDistance() {
     VrDistance *= (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight));
     return VrDistance;
 }
+
+function dropTable(num){
+    if (getByid("DicomTagsTable" + (num + 1))) {
+        var elem = getByid("DicomTagsTable" + (num + 1));
+        elem.parentElement.removeChild(elem);
+    }
+    if (getByid("AimTable" + (num + 1))) {
+        var elem = getByid("AimTable" + (num + 1));
+        elem.parentElement.removeChild(elem);
+    }
+}

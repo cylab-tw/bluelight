@@ -66,6 +66,7 @@ function Touchstart(e, e2) {
 }
 
 function Touchmove(e, e2) {
+  if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
   if (openVR == true) return;
   if (openMPR == true && openWindow != true && openChangeFile == false) {
     if (TouchDownCheck == true) {

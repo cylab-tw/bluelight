@@ -90,7 +90,9 @@ function loadLdcmview() {
     NewDiv.openVerticalFlip = false;
     NewDiv.openMark = true;
     NewDiv.openPlay = false;
-    NewDiv.openDisplayAim = false;
+    //NewDiv.openDisplayMarkup = false;
+    NewDiv.DicomTagsList=[];
+
     //只要取得canvas()就能快速取得該Viewport的影像
     NewDiv.canvas = function () {
       if (this.getElementsByClassName("cornerstone-canvas")[0])

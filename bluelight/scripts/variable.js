@@ -104,6 +104,7 @@ var viewportNumber = 0;
 //播放動畫用的計時器
 var PlayTimer1 = [];
 
+var openDisplayMarkup=false;
 //數著這個Series有幾張影像
 var SeriesCount = 0;
 

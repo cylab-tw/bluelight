@@ -1,4 +1,5 @@
 function Wheel(e) {
+    if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
     //if (openPenDraw == true) return;
     var nextInstanceNumber = 0;
     getByid("MeasureLabel").style.display = "none";
@@ -134,7 +135,7 @@ function Mousedown(e) {
 }
 
 function Mousemove(e) {
-    // if (openPenDraw == true) return;
+    if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
     if (openMPR == true && openWindow != true && openChangeFile == false) {
         if (MouseDownCheck == true) {
             viewportNumber = 2;

@@ -24,16 +24,66 @@ function cancelTools() {
     PlayTimer();
 }
 
+function displayDicomTagsList(viewportNum0) {
+    var viewportNum;
+    if (viewportNum0 >= 0) viewportNum = viewportNum0;
+    else viewportNum = viewportNumber
+    dropTable(viewportNum);
+    GetViewport(viewportNum).style.overflowY = "hidden";
+    GetViewport(viewportNum).style.overflowX = "hidden";
+    if (getByid("DICOMTagsSelect").selected == false) return;
+    if (openDisplayMarkup == false) return;
+    var Table = document.createElement("table");
+    Table.id = "DicomTagsTable" + (viewportNum + 1);
+    Table.className = "table table-dark table-striped";
+    Table.setAttribute("border", 2);
+    Table.style = "border-collapse:collapse";
+    Table.style.color = "#ffffff";
+    Table.style.position = "absolute";
+    Table.style.backgroundColor = "black";
+    //Table.style.right = "0px";
+    Css(Table, 'zIndex', "20");
+
+    var row0 = Table.insertRow(0);
+    row0.setAttribute("border", 2);
+    row0.style.backgroundColor = "#555555";
+    var cells0 = row0.insertCell(0);
+    cells0.innerHTML = "Tag";
+    var cells0 = row0.insertCell(1);
+    cells0.innerHTML = "Value";
+
+    var rowCount=1;
+    for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
+        var row = Table.insertRow(rowCount);
+        row.setAttribute("border", 2);
+        row.style.backgroundColor = "#151515";
+        var cells = row.insertCell(0);
+        var dicomtag = GetViewport().DicomTagsList[i][0].replace("x", "");
+        dicomtag = dicomtag.slice(0, 4) + "," + dicomtag.slice(4);
+        cells.innerHTML = "" + dicomtag;
+
+        cells = row.insertCell(1);
+        if (GetViewport().DicomTagsList[i][1] && GetViewport().DicomTagsList[i][1].length > 100)
+            cells.innerHTML = "";
+        else
+            cells.innerHTML = "" + GetViewport().DicomTagsList[i][1];
+        rowCount++;
+    }
+    GetViewport(viewportNum).appendChild(Table);
+    GetViewport(viewportNum).style.overflowY = "scroll";
+    GetViewport(viewportNum).style.overflowX = "scroll";
+}
+
 function displayAIM(viewportNum0) {
     var viewportNum;
     if (viewportNum0 >= 0) viewportNum = viewportNum0;
     else viewportNum = viewportNumber
     var break1 = false;
-    if (getByid("AimTable" + (viewportNum + 1))) {
-        var elem = getByid("AimTable" + (viewportNum + 1));
-        elem.parentElement.removeChild(elem);
-    }
-    if (GetViewport(viewportNum).openDisplayAim == false) return;
+    dropTable(viewportNum);
+    GetViewport(viewportNum).style.overflowY = "hidden";
+    GetViewport(viewportNum).style.overflowX = "hidden"
+    if (getByid("AIMSelect").selected == false) return;
+    if (openDisplayMarkup == false) return;
     var Table = document.createElement("table");
     Table.id = "AimTable" + (viewportNum + 1);
     Table.className = "table table-dark table-striped";
@@ -42,7 +92,7 @@ function displayAIM(viewportNum0) {
     Table.style.color = "#ffffff";
     Table.style.position = "absolute";
     Table.style.backgroundColor = "black";
-    Table.style.right = "0px";
+    //Table.style.right = "0px";
     Css(Table, 'zIndex', "20");
     //SearchUid2Index
     var alt = GetViewport(viewportNum).alt;
@@ -101,6 +151,8 @@ function displayAIM(viewportNum0) {
         }
     }
     GetViewport(viewportNum).appendChild(Table);
+    GetViewport(viewportNum).style.overflowY = "scroll";
+    GetViewport(viewportNum).style.overflowX = "scroll";
 }
 
 function displayRular(viewportNum0) {
