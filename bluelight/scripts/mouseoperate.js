@@ -417,6 +417,7 @@ function Mousemove(e) {
                 } else if (xml_now_choose.value == "right") {
                     xml_now_choose.mark.markX[1] = currX;
                 }
+                setXml_context();
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
             }

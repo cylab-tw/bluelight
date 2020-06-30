@@ -160,3 +160,56 @@ function xml_pounch(currX, currY) {
   xml_now_choose = null;
   return false;
 }
+
+function importXml(url) {
+  var oReq = new XMLHttpRequest();
+  try {
+    oReq.open("get", url, false);
+  } catch (err) {}
+  oReq.responseType = "xml";
+  oReq.onreadystatechange = function (oEvent) {
+    try {
+      var parser = new DOMParser();
+      var xmlDoc = parser.parseFromString(oReq.response, "text/xml");
+      var objlist = xmlDoc.getElementsByTagName("annotation")[0].getElementsByTagName("object");
+
+      let Uid = SearchNowUid();
+
+      for (var i = 0; i < objlist.length; i++) {
+        var dcm = {};
+        dcm.study = Uid.studyuid;
+        dcm.series = Uid.sreiesuid;
+        dcm.color = "#0000FF";
+        dcm.mark = [];
+        dcm.showName = "" + objlist[i].getElementsByTagName("name")[0].childNodes[0].data;
+        dcm.mark.push({});
+        dcm.sop = Uid.sopuid;
+        var DcmMarkLength = dcm.mark.length - 1;
+        dcm.mark[DcmMarkLength].type = "XML_mark";
+        dcm.mark[DcmMarkLength].markX = [];
+        dcm.mark[DcmMarkLength].markY = [];
+        dcm.mark[DcmMarkLength].markX.push(objlist[i].getElementsByTagName("bndbox")[0].getElementsByTagName("xmin")[0].childNodes[0].data);
+        dcm.mark[DcmMarkLength].markY.push(objlist[i].getElementsByTagName("bndbox")[0].getElementsByTagName("ymin")[0].childNodes[0].data);
+        dcm.mark[DcmMarkLength].markX.push(objlist[i].getElementsByTagName("bndbox")[0].getElementsByTagName("xmax")[0].childNodes[0].data);
+        dcm.mark[DcmMarkLength].markY.push(objlist[i].getElementsByTagName("bndbox")[0].getElementsByTagName("ymax")[0].childNodes[0].data);
+        PatientMark.push(dcm);
+      }
+
+      var index = SearchUid2Index(dcm.sop);
+      if (!index) return;
+      var i3 = index[0],
+        j3 = index[1],
+        k3 = index[2];
+      var checkNum;
+      for (var dCount = 0; dCount < dicomImageCount; dCount++) {
+        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).alt == Patient.Study[i3].Series[j3].SeriesUID) {
+          checkNum = dCount;
+        }
+      }
+      SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
+      for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(NowResize, null, null, null, i9);
+      setXml_context();
+    } catch (ex) {}
+  }
+  oReq.send();
+}
