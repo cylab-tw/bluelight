@@ -130,6 +130,7 @@ function virtualLoadImage(imageId, left) {
         }, function (err) { });
     } catch (err) { }
 }
+
 //imageId:影像編碼資料，currX,currY:放大鏡座標，viewportNum0傳入的Viewport是第幾個
 function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
     //if (openPenDraw == true) return;
@@ -166,9 +167,17 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
             }
             //取得DICOM Tags放入清單
             element.DicomTagsList = [];
-            for (i in image.data.elements) {
-                element.DicomTagsList.push([getTag(i).tag, getTag(i).name, image.data.string(i)]);
+
+            for (el in image.data.elements) {
+                try {
+                    var el1 = getTag(el);
+                    el1.tag = "" + el;
+                    element.DicomTagsList.push([getTag(el).tag, getTag(el).name,
+                    dicomParser.explicitElementToString(image.data, el1)
+                    ]);
+                } catch (ex) { }
             }
+
             //載入image Position
             if (image.data.string('x00200032')) {
                 element.imagePositionX = parseFloat(image.data.string('x00200032').split("\\")[0]);
