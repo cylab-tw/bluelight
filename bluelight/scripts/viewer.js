@@ -156,10 +156,18 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
 
             loadUID(image.data.string('x0020000d'), image.data.string('x0020000e'), image.data.string('x00080018'),
                 image.data.string('x00200013'), imageId, image.data.string('x00100020'));
-            //取得DICOM Tags放入清單
-            for (i in image.data.elements)
-                element.DicomTagsList.push([i, image.data.string(i)])
 
+            function getTag(tag) {
+                var group = tag.substring(1, 5);
+                var element = tag.substring(5, 9);
+                var tagIndex = ("(" + group + "," + element + ")").toUpperCase();
+                var attr = TAG_DICT[tagIndex];
+                return attr;
+            }
+            //取得DICOM Tags放入清單
+            for (i in image.data.elements) {
+                element.DicomTagsList.push([getTag(i).tag,getTag(i).name,image.data.string(i)]);
+            }
             //載入image Position
             if (image.data.string('x00200032')) {
                 element.imagePositionX = parseFloat(image.data.string('x00200032').split("\\")[0]);

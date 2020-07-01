@@ -50,15 +50,25 @@ function displayDicomTagsList(viewportNum0) {
     var cells0 = row0.insertCell(0);
     cells0.innerHTML = "Tag";
     var cells0 = row0.insertCell(1);
+    cells0.innerHTML = "Name";
+    var cells0 = row0.insertCell(2);
     cells0.innerHTML = "Value";
 
-    var rowCount=1;
+    var rowCount = 1;
     for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
         var row = Table.insertRow(rowCount);
         row.setAttribute("border", 2);
         row.style.backgroundColor = "#151515";
         var cells = row.insertCell(0);
-        var dicomtag = GetViewport().DicomTagsList[i][0].replace("x", "");
+        cells.innerHTML = "" + GetViewport().DicomTagsList[i][0];
+        cells = row.insertCell(1);
+        cells.innerHTML = "" + GetViewport().DicomTagsList[i][1];
+        cells = row.insertCell(2);
+        if (GetViewport().DicomTagsList[i][2] && GetViewport().DicomTagsList[i][2].length > 100)
+            cells.innerHTML = ("" + GetViewport().DicomTagsList[i][2]).substring(0, 99) + "...";
+        else
+            cells.innerHTML = "" + GetViewport().DicomTagsList[i][2];
+        /*var dicomtag = GetViewport().DicomTagsList[i][0].replace("x", "");
         dicomtag = dicomtag.slice(0, 4) + "," + dicomtag.slice(4);
         cells.innerHTML = "" + dicomtag;
 
@@ -66,7 +76,7 @@ function displayDicomTagsList(viewportNum0) {
         if (GetViewport().DicomTagsList[i][1] && GetViewport().DicomTagsList[i][1].length > 100)
             cells.innerHTML = "";
         else
-            cells.innerHTML = "" + GetViewport().DicomTagsList[i][1];
+            cells.innerHTML = "" + GetViewport().DicomTagsList[i][1];*/
         rowCount++;
     }
     GetViewport(viewportNum).appendChild(Table);
@@ -183,7 +193,7 @@ function displayRular(viewportNum0) {
             x1 += (10 * GetViewport(viewportNum).PixelSpacingX) * (parseFloat(canvas.style.width) / GetViewport(viewportNum).imageWidth);
         }
         tempctx.closePath();
-    } catch (ex) {}
+    } catch (ex) { }
     displayRular2(viewportNum0);
 }
 
@@ -216,14 +226,14 @@ function displayRular2(viewportNum0) {
             y1 += (10 * GetViewport(viewportNum).PixelSpacingY) * (parseFloat(canvas.style.height) / GetViewport(viewportNum).imageHeight);
         }
         tempctx.closePath();
-    } catch (ex) {}
+    } catch (ex) { }
 }
 
 function displayAngelRular() {
     if (!openAngel) return;
     if (parseInt(Math.sqrt(
-            Math.pow(AngelXY1[0] / GetViewport().PixelSpacingX - AngelXY0[0] / GetViewport().PixelSpacingX, 2) +
-            Math.pow(AngelXY1[1] / GetViewport().PixelSpacingY - AngelXY0[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
+        Math.pow(AngelXY1[0] / GetViewport().PixelSpacingX - AngelXY0[0] / GetViewport().PixelSpacingX, 2) +
+        Math.pow(AngelXY1[1] / GetViewport().PixelSpacingY - AngelXY0[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
 
     var MarkCanvas = GetViewportMark();
     var tempctx = MarkCanvas.getContext("2d");
@@ -270,8 +280,8 @@ function displayAngelRular() {
 function displayMeasureRular() {
     if (!openMeasure) return;
     if (parseInt(Math.sqrt(
-            Math.pow(MeasureXY2[0] / GetViewport().PixelSpacingX - MeasureXY[0] / GetViewport().PixelSpacingX, 2) +
-            Math.pow(MeasureXY2[1] / GetViewport().PixelSpacingY - MeasureXY[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
+        Math.pow(MeasureXY2[0] / GetViewport().PixelSpacingX - MeasureXY[0] / GetViewport().PixelSpacingX, 2) +
+        Math.pow(MeasureXY2[1] / GetViewport().PixelSpacingY - MeasureXY[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
 
     var MarkCanvas = GetViewportMark();
     var tempctx = MarkCanvas.getContext("2d");
@@ -385,8 +395,8 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
         if (GetViewport(viewportNum).imageOrientationX && GetViewport(viewportNum).imageOrientationY && GetViewport(viewportNum).imageOrientationZ) {
             tempctx.setTransform(new DOMMatrix(
                 [GetViewport(viewportNum).imageOrientationX, -GetViewport(viewportNum).imageOrientationX2, 0, GetViewport(viewportNum).imagePositionX * GetViewport(viewportNum).PixelSpacingX,
-                    -GetViewport(viewportNum).imageOrientationY, GetViewport(viewportNum).imageOrientationY2, 0, GetViewport(viewportNum).imagePositionY * GetViewport(viewportNum).PixelSpacingY,
-                    GetViewport(viewportNum).imageOrientationZ, GetViewport(viewportNum).imageOrientationZ2, 0, GetViewport(viewportNum).imagePositionZ,
+                -GetViewport(viewportNum).imageOrientationY, GetViewport(viewportNum).imageOrientationY2, 0, GetViewport(viewportNum).imagePositionY * GetViewport(viewportNum).PixelSpacingY,
+                GetViewport(viewportNum).imageOrientationZ, GetViewport(viewportNum).imageOrientationZ2, 0, GetViewport(viewportNum).imagePositionZ,
                     0, 0, 0, 1
                 ]));
             checkTransform = true;
@@ -687,11 +697,11 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         for (var o = 0; o < PatientMark[n].mark[m].markX.length; o++) {
                             var tempMark = PatientMark[n].mark[m];
                             tempctx.beginPath();
-                            x1 = tempMark.markX[o] - currX /* * GetViewport(viewportNum).PixelSpacingX*/ ;
-                            y1 = tempMark.markY[o] - currY /** GetViewport(viewportNum).PixelSpacingY*/ ;
+                            x1 = tempMark.markX[o] - currX /* * GetViewport(viewportNum).PixelSpacingX*/;
+                            y1 = tempMark.markY[o] - currY /** GetViewport(viewportNum).PixelSpacingY*/;
                             o2 = o == tempMark.markX.length - 1 ? 0 : o + 1;
-                            x2 = tempMark.markX[o2] - currX /* * GetViewport(viewportNum).PixelSpacingX*/ ;
-                            y2 = tempMark.markY[o2] - currY /* * GetViewport(viewportNum).PixelSpacingY*/ ;
+                            x2 = tempMark.markX[o2] - currX /* * GetViewport(viewportNum).PixelSpacingX*/;
+                            y2 = tempMark.markY[o2] - currY /* * GetViewport(viewportNum).PixelSpacingY*/;
                             if (magnifier && magnifier == true) {
                                 if (GetViewport(viewportNum).openHorizontalFlip == true) {
                                     x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) + currX;
@@ -832,11 +842,11 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         for (var o = 0; o < PatientMark[n].mark[m].markX.length; o++) {
                             var tempMark = PatientMark[n].mark[m];
                             tempctx.beginPath();
-                            var x1 = tempMark.markX[o] - currX /* * GetViewport(viewportNum).PixelSpacingX*/ ;
-                            var y1 = tempMark.markY[o] - currY /* * GetViewport(viewportNum).PixelSpacingY*/ ;
+                            var x1 = tempMark.markX[o] - currX /* * GetViewport(viewportNum).PixelSpacingX*/;
+                            var y1 = tempMark.markY[o] - currY /* * GetViewport(viewportNum).PixelSpacingY*/;
                             var o2 = o == tempMark.markX.length - 1 ? 0 : o + 1;
-                            var x2 = tempMark.markX[o2] - currX /* * GetViewport(viewportNum).PixelSpacingX*/ ;
-                            var y2 = tempMark.markY[o2] - currY /* * GetViewport(viewportNum).PixelSpacingY*/ ;
+                            var x2 = tempMark.markX[o2] - currX /* * GetViewport(viewportNum).PixelSpacingX*/;
+                            var y2 = tempMark.markY[o2] - currY /* * GetViewport(viewportNum).PixelSpacingY*/;
                             if (magnifier && magnifier == true) {
                                 if (GetViewport(viewportNum).openHorizontalFlip == true) {
                                     x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) + currX;
