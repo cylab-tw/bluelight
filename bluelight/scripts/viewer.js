@@ -13,7 +13,7 @@ window.onresize = function () {
             NowResize = true;
             GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
             loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId, null, null, i);
-        } catch (ex) {}
+        } catch (ex) { }
     }
 
     for (var tempSizeNum = 0; tempSizeNum < Viewport_Total; tempSizeNum++) {
@@ -56,7 +56,7 @@ window.onresize = function () {
             Css(MarkCanvasT, 'transform', "translate(" + ToPx(GetViewport(tempSizeNum).newMousePointX) + "," + ToPx(GetViewport(tempSizeNum).newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)");
             MarkCanvasT.width = MainCanvasT.width;
             MarkCanvasT.height = MainCanvasT.height;
-        } catch (ex) {}
+        } catch (ex) { }
     }
     //暫時移除的功能
     /*if (openPenDraw == true) {
@@ -68,8 +68,8 @@ window.onresize = function () {
         while (height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2) && height >= 10) height -= 5;
         getByid("cornerstonePenCanvas").getElementsByClassName("CornerstoneViewport")[0]
             .getElementsByClassName("viewport-element")[0].getElementsByClassName("cornerstone-canvas")[0].
-        style.height = "" + height + "px";
-    } catch (ex) {}
+            style.height = "" + height + "px";
+    } catch (ex) { }
     EnterRWD();
 }
 
@@ -127,8 +127,8 @@ function virtualLoadImage(imageId, left) {
                 loadAndViewImage(imageId);
             }
             return image.data.string('x0020000e');
-        }, function (err) {});
-    } catch (err) {}
+        }, function (err) { });
+    } catch (err) { }
 }
 //imageId:影像編碼資料，currX,currY:放大鏡座標，viewportNum0傳入的Viewport是第幾個
 function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
@@ -165,8 +165,9 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
                 return attr;
             }
             //取得DICOM Tags放入清單
+            DicomTagsList = [];
             for (i in image.data.elements) {
-                element.DicomTagsList.push([getTag(i).tag,getTag(i).name,image.data.string(i)]);
+                element.DicomTagsList.push([getTag(i).tag, getTag(i).name, image.data.string(i)]);
             }
             //載入image Position
             if (image.data.string('x00200032')) {
@@ -334,27 +335,27 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
             if (openVR == true || openMPR == true) {
                 try {
                     GetViewport(0).canvas().style.display = "none";
-                } catch (ex) {};
+                } catch (ex) { };
                 try {
                     GetViewport(1).canvas().style.display = "none";
-                } catch (ex) {};
+                } catch (ex) { };
                 try {
                     var alt3 = GetViewport(3).alt;
                     var uid3 = SearchUid2Json(alt3);
                     if (uid3) GetViewport(3).canvas().style.display = "none";
-                } catch (ex) {};
+                } catch (ex) { };
                 try {
                     GetViewportMark(0).style.display = "none";
-                } catch (ex) {};
+                } catch (ex) { };
                 try {
                     GetViewportMark(1).style.display = "none";
-                } catch (ex) {};
+                } catch (ex) { };
                 try {
                     GetViewportMark(3).style.display = "none";
-                } catch (ex) {};
+                } catch (ex) { };
             }
-        }, function (err) {});
-    } catch (err) {}
+        }, function (err) { });
+    } catch (err) { }
 }
 
 function initNewCanvas(newCanvas) {
@@ -573,8 +574,8 @@ function DivDraw(e) {
     }
     if (openMeasure) {
         getByid("MeasureLabel").innerText = parseInt(Math.sqrt(
-                Math.pow(MeasureXY2[0] / GetViewport().PixelSpacingX - MeasureXY[0] / GetViewport().PixelSpacingX, 2) +
-                Math.pow(MeasureXY2[1] / GetViewport().PixelSpacingY - MeasureXY[1] / GetViewport().PixelSpacingY, 2), 2)) +
+            Math.pow(MeasureXY2[0] / GetViewport().PixelSpacingX - MeasureXY[0] / GetViewport().PixelSpacingX, 2) +
+            Math.pow(MeasureXY2[1] / GetViewport().PixelSpacingY - MeasureXY[1] / GetViewport().PixelSpacingY, 2), 2)) +
             "mm";
     } else if (openAngel == 2) {
         var getAngle = ({
@@ -630,12 +631,12 @@ function SetTable(row0, col0) {
                 GetViewport(r * col + c).style.height = (WandH[1] - (bordersize * 2)) + "px";
             }
         }
-    } catch (ex) {}
+    } catch (ex) { }
     //重置各個Viewport的長寬大小(不顯示時)
     for (var i = row * col; i < Viewport_Total; i++) {
         try {
             GetViewport(i).style = "position:relative;float: right;;width:0px;" + "height:" + 0 + "px;overflow:hidden;border:" + 0 + "px #D3D9FF groove;margin:0px";
-        } catch (ex) {}
+        } catch (ex) { }
     }
     // window.onresize();
 }
