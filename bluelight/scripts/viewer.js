@@ -167,14 +167,19 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
             }
             //取得DICOM Tags放入清單
             element.DicomTagsList = [];
-
             for (el in image.data.elements) {
                 try {
+                    var tag = ("(" + el.substring(1, 5) + "," + el.substring(5, 9) + ")").toUpperCase();
                     var el1 = getTag(el);
                     el1.tag = "" + el;
-                    element.DicomTagsList.push([getTag(el).tag, getTag(el).name,
-                    dicomParser.explicitElementToString(image.data, el1)
-                    ]);
+                    var content = dicomParser.explicitElementToString(image.data, el1);
+                    if (content) {
+                        element.DicomTagsList.push([tag, el1.name, content]);
+                    }
+                    else {
+                        var name = ("" + el1.name).toLowerCase();
+                        element.DicomTagsList.push([tag, el1.name, image[name]]);
+                    }
                 } catch (ex) { }
             }
 
