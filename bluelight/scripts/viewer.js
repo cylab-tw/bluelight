@@ -165,7 +165,7 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
                 return attr;
             }
             //取得DICOM Tags放入清單
-            DicomTagsList = [];
+            element.DicomTagsList = [];
             for (i in image.data.elements) {
                 element.DicomTagsList.push([getTag(i).tag, getTag(i).name, image.data.string(i)]);
             }
