@@ -167,6 +167,23 @@ function SearchNowUid() {
     }
 }
 
+function GetNowUid() {
+    let alt = GetViewport().alt;
+    for (var i = 0; i < Patient.StudyAmount; i++) {
+        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
+            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
+                if (Patient.Study[i].Series[j].Sop[l].SopUID == alt) {
+                    return {
+                        study: Patient.Study[i].StudyUID,
+                        sreies: Patient.Study[i].Series[j].SeriesUID,
+                        sop: Patient.Study[i].Series[j].Sop[l].SopUID
+                    }
+                }
+            }
+        }
+    }
+}
+
 function sortInstance(alt) {
     let index = SearchUid2Index(alt);
     let i = index[0],
