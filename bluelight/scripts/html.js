@@ -286,7 +286,7 @@ function html_onload() {
   }
 
   getByid("3dStrengthen").onchange = function () {
-    if (this.checked == true) {
+    if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected) {
       if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
       // document.body.style.transformStyle = "preserve-3d";
     } else {

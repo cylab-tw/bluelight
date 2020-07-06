@@ -12,7 +12,7 @@ function initVR() {
                 delete elem.canvas();
                 elem.parentElement.removeChild(elem);
                 delete elem;
-            } catch (ex) { }
+            } catch (ex) {}
         }
         for (var ll = 0; ll < o3d_3degree; ll++) {
             try {
@@ -24,7 +24,7 @@ function initVR() {
                 elem.canvas().width = 2;
                 elem.canvas().height = 2;
                 elem.getElementsByClassName("cornerstone-canvas")[0] = null;
-            } catch (ex) { }
+            } catch (ex) {}
         }
         // o3DListLength = 0;
         GetViewport(0).removeEventListener("mousemove", mousemove3D, false);
@@ -62,7 +62,7 @@ function initVR() {
         try {
             getByid("MprCanvas1").style.display = "none";
             getByid("MprCanvas2").style.display = "none";
-        } catch (ex) { }
+        } catch (ex) {}
         viewportNumber = 0;
         window.onresize();
         //SetTable();
@@ -126,7 +126,7 @@ function initVR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) { }
+                } catch (ex) {}
             }
         }
         if (o3d_3degree >= 0) {
@@ -139,7 +139,7 @@ function initVR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) { }
+                } catch (ex) {}
             }
             for (var ll = 0; ll < o3d_3degree; ll++) {
                 try {
@@ -150,7 +150,7 @@ function initVR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) { }
+                } catch (ex) {}
             }
         }
 
@@ -219,12 +219,14 @@ function initVR() {
                     NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetViewport().PixelSpacingX;
                     if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
                     if (NewDiv.thickness < big) big = NewDiv.thickness;
-                    NewDiv.style = "position:absolute;width:" + image.width + "px;height:" + image.height + "px;"; ///z-index:" + l2 + ";";
                     o3Dcount = list.length;
                     OutSide3dDiv.appendChild(NewDiv);
                     getByid("3DDiv" + l2).parentNode.replaceChild(NewDiv, getByid("3DDiv" + l2));
                     showTheImage(NewDiv, image, '3d', null, null);
-                    NewDiv.style = "transform:rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px);;position:absolute;width:" + WandH[0] + "px;height:" + WandH[1] + "px;"; //z-index:" + l2 + ";";
+                    NewDiv.style.transform = "rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px)";
+                    NewDiv.style.width = WandH[0] + "px";
+                    NewDiv.style.height = WandH[1] + "px";
+
                     NewDiv.canvas = function () {
                         if (this.getElementsByClassName("cornerstone-canvas")[0])
                             return this.getElementsByClassName("cornerstone-canvas")[0];
@@ -253,7 +255,7 @@ function initVR() {
 
         GetViewport(0).appendChild(OutSide3dDiv);
         getByid("OutSide3dDiv").parentNode.replaceChild(OutSide3dDiv, getByid("OutSide3dDiv"));
-        if (getByid("3dStrengthen").checked == true) {
+        if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected) {
             if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
         } else {
             if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "";
@@ -264,7 +266,7 @@ function initVR() {
     }
 }
 
-var Unit8Canvas = [];
+var Uint8Canvas = [];
 
 function Alpha3D() {
     if (!openVR && !openMPR) return;
@@ -435,11 +437,11 @@ function Alpha3D() {
             canvas1.style.width = canvas.style.width;
             canvas1.style.height = canvas.style.height;
         }
-        canvas1.style = "position: absolute;top: 50%;left:50%; margin: -" + (parseInt(canvas1.style.height) / 2) +
-            "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px;width:" + canvas1.style.width + ";height:" + canvas1.style.height + ";";
+        canvas1.style.margin = "-" + (parseInt(canvas1.style.height) / 2) +
+            "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px";
     }
     // if (openMPR == false) return;
-    Unit8Canvas = [];
+    Uint8Canvas = [];
     var o3Dcanvas = getByid("3DDiv" + 0).canvas();
     for (var l = 0; l < o3DListLength; l++) {
         canvasCtx0 = getByid("3DDiv" + l).canvas().getContext("2d");
@@ -449,7 +451,7 @@ function Alpha3D() {
         for (var i = 0; i < binary.length; i++) {
             binary[i] = canvasCtx.data[i];
         }
-        Unit8Canvas.push(binary);
+        Uint8Canvas.push(binary);
     }
     //////////////////////
     o3d_3degree = parseInt(getByid("3DskinText").value);
@@ -471,7 +473,6 @@ function Alpha3D() {
         NewDiv.height = o3DListLength;
         NewDiv.style.width = getByid("3DDiv" + 0).style.width;
         NewDiv.style.height = getByid("3DDiv" + 0).style.height;
-        NewDiv.style.position = "absolute";
         NewDiv.rotatePosition = ll * (canvas.height / o3DListLength);
         NewDiv.zPosition = ((canvas.height / o3d_3degree) * (o3d_3degree - ll)) - (canvas.height - VrDistance) / 2; //( (canvas.height / 2)-(canvas.height / o3d_3degree) * 0));
 
@@ -480,7 +481,7 @@ function Alpha3D() {
         NewCanvas.width = o3Dcanvas.width;
         NewCanvas.height = o3DListLength;
         NewCanvas.style.width = o3Dcanvas.width + "px";
-        NewCanvas.style.height = ( /*o3DListLength * */ /*(parseInt(canvas.style.height) / parseFloat(GetViewport().imageHeight)) **/ VrDistance) + "px"; //(NewCanvas.height * (parseInt(canvas.style.height) / parseFloat(GetViewport().imageHeight)) * o3d_3degree) + "px";
+        NewCanvas.style.height = (VrDistance) + "px"; //(NewCanvas.height * (parseInt(canvas.style.height) / parseFloat(GetViewport().imageHeight)) * o3d_3degree) + "px";
         NewCanvas.originWidth = parseFloat(NewCanvas.style.width);
         NewCanvas.originHeight = parseFloat(NewCanvas.style.height);
         NewCanvas.rotatePosition = ll * (canvas.height / o3DListLength);
@@ -489,10 +490,10 @@ function Alpha3D() {
             for (var l = 0; l < o3DListLength; l++) {
                 for (var dataH = l; dataH == l; dataH += 1) {
                     for (var dataW = 0; dataW < NewCanvas.width * 4; dataW += 4) {
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW] = Unit8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + (dataW) + 0];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 1] = Unit8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 1];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 2] = Unit8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 2];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 3] = Unit8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 3];
+                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW] = Uint8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + (dataW) + 0];
+                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 1] = Uint8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 1];
+                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 2] = Uint8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 2];
+                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 3] = Uint8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 3];
                     }
                 }
             }
@@ -500,10 +501,10 @@ function Alpha3D() {
             for (var l = 0; l < o3DListLength; l++) {
                 for (var dataH = l; dataH == l; dataH += 1) {
                     for (var dataW = 0; dataW < NewCanvas.width * 4; dataW += 4) {
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW] = Unit8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + (dataW) + 0];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 1] = Unit8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 1];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 2] = Unit8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 2];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 3] = Unit8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 3];
+                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW] = Uint8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + (dataW) + 0];
+                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 1] = Uint8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 1];
+                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 2] = Uint8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 2];
+                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 3] = Uint8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 3];
                     }
                 }
             }
@@ -538,7 +539,6 @@ function Alpha3D() {
         NewDiv.height = o3Dcanvas.height;
         NewDiv.style.width = getByid("3DDiv" + 0).style.width;
         NewDiv.style.height = getByid("3DDiv" + 0).style.height;
-        NewDiv.style.position = "absolute";
         NewDiv.rotatePosition = ll * (canvas.height / o3DListLength);
         NewDiv.zPosition = ((canvas.width / o3d_3degree) * (o3d_3degree - ll)) - (canvas.width - VrDistance) / 2;
 
@@ -558,10 +558,10 @@ function Alpha3D() {
             for (var l = 0; l < o3DListLength; l++) {
                 for (var dataH = 0; dataH < NewCanvas.height; dataH += 1) {
                     for (var dataW = l * 4; dataW == l * 4; dataW += 4) {
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW] = Unit8Canvas[l][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = Unit8Canvas[l][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 1];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = Unit8Canvas[l][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 2];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = Unit8Canvas[l][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width - */ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 3];
+                        imgData2.data[dataH * NewCanvas.width * 4 + dataW] = Uint8Canvas[l][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4];
+                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = Uint8Canvas[l][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 1];
+                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = Uint8Canvas[l][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 2];
+                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = Uint8Canvas[l][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width - */ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 3];
                     }
                 }
             }
@@ -569,10 +569,10 @@ function Alpha3D() {
             for (var l = 0; l < o3DListLength; l++) {
                 for (var dataH = 0; dataH < NewCanvas.height; dataH += 1) {
                     for (var dataW = l * 4; dataW == l * 4; dataW += 4) {
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW] = Unit8Canvas[o3DListLength - l - 1][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = Unit8Canvas[o3DListLength - l - 1][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 1];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = Unit8Canvas[o3DListLength - l - 1][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 2];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = Unit8Canvas[o3DListLength - l - 1][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width - */ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 3];
+                        imgData2.data[dataH * NewCanvas.width * 4 + dataW] = Uint8Canvas[o3DListLength - l - 1][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4];
+                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = Uint8Canvas[o3DListLength - l - 1][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 1];
+                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = Uint8Canvas[o3DListLength - l - 1][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 2];
+                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = Uint8Canvas[o3DListLength - l - 1][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width - */ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 3];
                     }
                 }
             }
@@ -598,6 +598,7 @@ function Alpha3D() {
     for (var ll = 0; ll < o3DListLength; ll++) {
         var canvas1 = getByid("3DDiv" + ll).canvas();
         var div1 = getByid("3DDiv" + ll);
+        canvas1.className = "cornerstone-canvas canvas_3d";
         if (getByid("3dZipCheckbox").checked == true && parseInt(getByid("3dZipText").value) < o3DListLength) {
             //if (ll > parseInt(getByid("3dZipText").value) / 2 && ll < o3DListLength - parseInt(getByid("3dZipText").value) / 2)
             if (ll % parseInt(o3DListLength / parseFloat(getByid("3dZipText").value)) != 0)
@@ -610,7 +611,8 @@ function Alpha3D() {
     //做定位到正確位置的動作
     for (var ll = 0; ll < o3d_3degree; ll++) {
         var canvas2 = getByid("3DDiv2_" + ll).canvas();
-        canvas2.style = "position: absolute;top: 50%;left:50%;" +
+        canvas2.className = "cornerstone-canvas canvas_3d";
+        canvas2.style = "" +
             "margin:" + "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
             "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px;" +
             "width:" + canvas2.style.width + ";height:" +
@@ -618,7 +620,8 @@ function Alpha3D() {
     }
     for (var ll = 0; ll < o3d_3degree; ll++) {
         var canvas3 = getByid("3DDiv3_" + ll).canvas();
-        canvas3.style = "position: absolute;top: 50%;left:50%;" +
+        canvas3.className = "cornerstone-canvas canvas_3d";
+        canvas3.style = "" +
             "margin:" + "-" + (parseInt(canvas3.style.height) / 2) +
             "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px;" +
             "height:" + canvas3.style.height + ";width:" +
@@ -629,7 +632,6 @@ function Alpha3D() {
     for (var ll = 0; ll < o3d_3degree; ll++) {
         var canvas2 = getByid("3DDiv2_" + ll).canvas();
         var div2 = getByid("3DDiv2_" + ll);
-        canvas2.style.transformStyle = "preserve-3d";
         canvas2.style.transform = "rotateY(" + (0 + 0) + "deg) rotateX(" + (-90) + "deg)";
         if (getByid("o3DMip").selected == true && openVR) {
             div2.style.mixBlendMode = "lighten";
@@ -638,7 +640,6 @@ function Alpha3D() {
     for (var ll = 0; ll < o3d_3degree; ll++) {
         var canvas3 = getByid("3DDiv3_" + ll).canvas();
         var div3 = getByid("3DDiv3_" + ll);
-        canvas3.style.transformStyle = "preserve-3d";
         canvas3.style.transform = "rotateY(" + (90 + 0) + "deg) rotateX(" + (0 + 0) + "deg)";
         if (getByid("o3DMip").selected == true && openVR) {
             div3.style.mixBlendMode = "lighten";

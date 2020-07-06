@@ -1,0 +1,15 @@
+.o3DDiv{
+    position: absolute;
+    transform-style:preserve-3d;
+
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
+  }
+  .canvas_3d{
+    position: absolute;
+    top: 50%;
+    left:50%;
+    transform-style:preserve-3d;
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
+  }

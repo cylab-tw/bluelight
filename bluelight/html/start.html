@@ -9,6 +9,9 @@
   <meta content="no-cache" http-equiv="pragma">
   <meta content="0" http-equiv="expires">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  
+  <link rel="stylesheet" type="text/css" href="../css/vr.css">
+
   <script src="../scripts/external/other/interact.js"></script>
 
   <script src="../scripts/external/cornerstone/cornerstone.js"></script>
@@ -113,9 +116,15 @@
       <label style="color: #ffffff;" id="smoothLabel">Smooth<input type="checkbox" name="3dSmooth" id="3dSmooth"></label>
       <label style="color: #ffffff;" id="yellowColorLabel">Color<input type="checkbox" name="3dYellow" id="3dYellow"></label>
       <label style="color: #ffffff;" id="3dLightLabel">Light<input type="checkbox" name="3dLight" id="3dLight"></label>
-      <label style="color: #ffffff;" id="3dInsertLabel">Insert：<input type="text" id="3dInsertText" size="1" value="0" /></label>
+      <label style="color: #ffffff;display:none" id="3dInsertLabel">Insert(hide)：<input type="text" id="3dInsertText" size="1" value="0" /></label>
       <label style="color: #ffffff;" id="3Dskin">Skin：<input type="text" id="3DskinText" size="3" value="20" /></label>
-      <label style="color: #ffffff;" id="3dStrengthenLabel">3D Strengthen<input type="checkbox" id="3dStrengthen"></label>
+      <label style="color: #ffffff;" id="3dStrengthenLabel">3D Strengthen：
+        <select id="3dStrengthen">
+          <option selected="selected" id="3dStrengthenAuto">Auto</option>
+          <option id="3dStrengthenAlways">Always</option>
+          <option id="3dStrengthenNone">None</option>
+        </select>
+      </label>
       <label style="color: #ffffff;" id="3dZipLabel">3D Zip：<input type="checkbox" checked="true" id="3dZipCheckbox"><input type="text" id="3dZipText" size="3" value="50" /></label>
       <label style="color: #ffffff;display:none" id="3dPerspectiveLabel">perspective：<input type="text" id="3dPerspective" value="10000" /></label>
     </div>

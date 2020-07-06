@@ -44,12 +44,12 @@ function Null2Empty(str) {
 }
 
 function getViewprtStretchSize(width, height, element) {
-   // if (width > parseFloat(element.style.width) - (bordersize * 2) || height > parseFloat(element.style.height) - (bordersize * 2)) {
-        while (width > parseFloat(element.clientWidth) - (bordersize * 2) || height > parseFloat(element.clientHeight) - (bordersize * 2)) {
-            width *= 0.999;
-            height *= 0.999;
-            if (width < 10 || height < 10) break;
-        }
+    // if (width > parseFloat(element.style.width) - (bordersize * 2) || height > parseFloat(element.style.height) - (bordersize * 2)) {
+    while (width > parseFloat(element.clientWidth) - (bordersize * 2) || height > parseFloat(element.clientHeight) - (bordersize * 2)) {
+        width *= 0.999;
+        height *= 0.999;
+        if (width < 10 || height < 10) break;
+    }
     /*} else {
         var he = (parseFloat(element.style.height) - (bordersize * 2)) / parseFloat(height);
         height *= he;
@@ -298,9 +298,6 @@ function rotate3dVR(VrDistance) {
         for (var ll = 0; ll < o3DListLength; ll++) {
             var canvas1 = getByid("3DDiv" + ll).getElementsByClassName("cornerstone-canvas")[0];
             var div1 = getByid("3DDiv" + ll);
-            canvas1.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-            // div1.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
-            div1.style.transformStyle = "preserve-3d";
             div1.style.zIndex = -ll + o3DListLength;
             div1.style.transform = "translate3d(0,0,0) rotateY(" + degerrX + "deg) rotateX(" + degerrY + "deg)  translateZ(" + (parseFloat(parseFloat(1) * (parseFloat(canvas1.style.height) / parseFloat(GetViewport().imageHeight))) * (div1.thickness - Thickness) - (VrDistance / 2)) + "px)";
         }
@@ -308,9 +305,6 @@ function rotate3dVR(VrDistance) {
         for (var ll = 0; ll < o3DListLength; ll++) {
             var canvas1 = getByid("3DDiv" + ll).getElementsByClassName("cornerstone-canvas")[0];
             var div1 = getByid("3DDiv" + ll);
-            canvas1.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-            // div1.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
-            div1.style.transformStyle = "preserve-3d";
             div1.style.zIndex = ll + o3DListLength;
             div1.style.transform = "translate3d(0,0,0) rotateY(" + degerrX + "deg) rotateX(" + degerrY + "deg)  translateZ(" + (parseFloat(parseFloat(1) * (parseFloat(canvas1.style.height) / parseFloat(GetViewport().imageHeight))) * (div1.thickness - Thickness) - (VrDistance / 2)) + "px)";
         }
@@ -319,10 +313,6 @@ function rotate3dVR(VrDistance) {
         (degerrY >= 0 && degerrY <= 180) && !(degerrX >= 90 && degerrX <= 270)) {
         for (var ll = 0; ll < o3d_3degree; ll++) {
             var div2 = getByid("3DDiv2_" + ll);
-            var canvas2 = getByid("3DDiv2_" + ll).getElementsByClassName("cornerstone-canvas")[0];
-            div2.style.transformStyle = "preserve-3d";
-            canvas2.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-            // div2.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
             if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25)
                 div2.style.zIndex = ll + o3DListLength + o3DListLength;
             else
@@ -332,10 +322,6 @@ function rotate3dVR(VrDistance) {
     } else {
         for (var ll = 0; ll < o3d_3degree; ll++) {
             var div2 = getByid("3DDiv2_" + ll);
-            var canvas2 = getByid("3DDiv2_" + ll).getElementsByClassName("cornerstone-canvas")[0];
-            div2.style.transformStyle = "preserve-3d";
-            canvas2.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-            //div2.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
             if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25)
                 div2.style.zIndex = -ll + o3DListLength + o3DListLength;
             else
@@ -347,11 +333,6 @@ function rotate3dVR(VrDistance) {
         (degerrY >= 90 && degerrY <= 270) && !(degerrX >= 0 && degerrX <= 180)) {
         for (var ll = 0; ll < o3d_3degree; ll++) {
             var div3 = getByid("3DDiv3_" + ll);
-            var canvas3 = getByid("3DDiv3_" + ll).getElementsByClassName("cornerstone-canvas")[0];
-            canvas3.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-            // div3.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
-
-            div3.style.transformStyle = "preserve-3d";
             if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25)
                 div3.style.zIndex = -ll + o3DListLength + o3DListLength;
             else
@@ -361,11 +342,6 @@ function rotate3dVR(VrDistance) {
     } else {
         for (var ll = 0; ll < o3d_3degree; ll++) {
             var div3 = getByid("3DDiv3_" + ll);
-            var canvas3 = getByid("3DDiv3_" + ll).getElementsByClassName("cornerstone-canvas")[0];
-            div3.style.transformStyle = "preserve-3d";
-            canvas3.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-            // div3.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
-
             if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25)
                 div3.style.zIndex = ll + o3DListLength + o3DListLength;
             else
@@ -383,7 +359,7 @@ function get3dDistance() {
     return VrDistance;
 }
 
-function dropTable(num){
+function dropTable(num) {
     if (getByid("DicomTagsTable" + (num + 1))) {
         var elem = getByid("DicomTagsTable" + (num + 1));
         elem.parentElement.removeChild(elem);

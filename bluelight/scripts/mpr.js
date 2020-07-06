@@ -25,7 +25,7 @@ function Anatomical_Section2(nextInstanceNumber) {
     try {
         GetViewport(1).canvas().style.display = "none";
         GetViewportMark(1).style.display = "none";
-    } catch (ex) { };
+    } catch (ex) {};
 
     var o3Dcanvas = getByid("3DDiv" + 0).canvas();
     NewCanvas.height = o3DListLength;
@@ -50,10 +50,10 @@ function Anatomical_Section2(nextInstanceNumber) {
 
             for (var dataH = l; dataH == l; dataH += 1) {
                 for (var dataW = 0; dataW < NewCanvas.width * 4; dataW += 4) {
-                    ctxData0.data[dataW] = Unit8Canvas[l][(buffer_mpr_Y_t) * o3Dcanvas.width * 4 + dataW + 0];
-                    ctxData0.data[dataW + 1] = Unit8Canvas[l][(buffer_mpr_Y_t) * o3Dcanvas.width * 4 + dataW + 1];
-                    ctxData0.data[dataW + 2] = Unit8Canvas[l][(buffer_mpr_Y_t) * o3Dcanvas.width * 4 + dataW + 2];
-                    ctxData0.data[dataW + 3] = Unit8Canvas[l][(buffer_mpr_Y_t) * o3Dcanvas.width * 4 + dataW + 3];
+                    ctxData0.data[dataW] = Uint8Canvas[l][(buffer_mpr_Y_t) * o3Dcanvas.width * 4 + dataW + 0];
+                    ctxData0.data[dataW + 1] = Uint8Canvas[l][(buffer_mpr_Y_t) * o3Dcanvas.width * 4 + dataW + 1];
+                    ctxData0.data[dataW + 2] = Uint8Canvas[l][(buffer_mpr_Y_t) * o3Dcanvas.width * 4 + dataW + 2];
+                    ctxData0.data[dataW + 3] = Uint8Canvas[l][(buffer_mpr_Y_t) * o3Dcanvas.width * 4 + dataW + 3];
                     ctxData.data[dataW] = 221;
                     ctxData.data[dataW + 1] = 53;
                     ctxData.data[dataW + 2] = 119;
@@ -80,9 +80,9 @@ function Anatomical_Section2(nextInstanceNumber) {
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = 0;
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = 255;
                 } else {
-                    imgData2.data[dataH * NewCanvas.width * 4 + dataW] = Unit8Canvas[l][(PointY) * o3Dcanvas.width * 4 + dataW + 0];
-                    imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = Unit8Canvas[l][(PointY) * o3Dcanvas.width * 4 + dataW + 1];
-                    imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = Unit8Canvas[l][(PointY) * o3Dcanvas.width * 4 + dataW + 2];
+                    imgData2.data[dataH * NewCanvas.width * 4 + dataW] = Uint8Canvas[l][(PointY) * o3Dcanvas.width * 4 + dataW + 0];
+                    imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = Uint8Canvas[l][(PointY) * o3Dcanvas.width * 4 + dataW + 1];
+                    imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = Uint8Canvas[l][(PointY) * o3Dcanvas.width * 4 + dataW + 2];
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = 255;
                 }
             }
@@ -116,7 +116,7 @@ function Anatomical_Section(nextInstanceNumber) {
     try {
         GetViewport(0).canvas().style.display = "none";
         GetViewportMark(0).style.display = "none";
-    } catch (ex) { };
+    } catch (ex) {};
 
     var o3Dcanvas = getByid("3DDiv" + 0).canvas();
     //NewCanvas.style.imageRendering = "-moz-crisp-edges";
@@ -141,10 +141,10 @@ function Anatomical_Section(nextInstanceNumber) {
             var ctxData = canvas1.getContext("2d").createImageData(1, NewCanvas.height);
             for (var dataH = 0; dataH < NewCanvas.height; dataH += 1) {
                 for (var dataW = l * 4; dataW == l * 4; dataW += 4) {
-                    ctxData0.data[dataH * 4] = Unit8Canvas[l][dataH * o3Dcanvas.width * 4 + (buffer_mpr_X_t) * 4];
-                    ctxData0.data[dataH * 4 + 1] = Unit8Canvas[l][dataH * o3Dcanvas.width * 4 + (buffer_mpr_X_t) * 4 + 1];
-                    ctxData0.data[dataH * 4 + 2] = Unit8Canvas[l][dataH * o3Dcanvas.width * 4 + (buffer_mpr_X_t) * 4 + 2];
-                    ctxData0.data[dataH * 4 + 3] = Unit8Canvas[l][dataH * o3Dcanvas.width * 4 + (buffer_mpr_X_t) * 4 + 3];
+                    ctxData0.data[dataH * 4] = Uint8Canvas[l][dataH * o3Dcanvas.width * 4 + (buffer_mpr_X_t) * 4];
+                    ctxData0.data[dataH * 4 + 1] = Uint8Canvas[l][dataH * o3Dcanvas.width * 4 + (buffer_mpr_X_t) * 4 + 1];
+                    ctxData0.data[dataH * 4 + 2] = Uint8Canvas[l][dataH * o3Dcanvas.width * 4 + (buffer_mpr_X_t) * 4 + 2];
+                    ctxData0.data[dataH * 4 + 3] = Uint8Canvas[l][dataH * o3Dcanvas.width * 4 + (buffer_mpr_X_t) * 4 + 3];
                     ctxData.data[dataH * 4] = 38;
                     ctxData.data[dataH * 4 + 1] = 140;
                     ctxData.data[dataH * 4 + 2] = 191;
@@ -170,9 +170,9 @@ function Anatomical_Section(nextInstanceNumber) {
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = 0;
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = 255;
                 } else {
-                    imgData2.data[dataH * NewCanvas.width * 4 + dataW] = Unit8Canvas[l][dataH * o3Dcanvas.width * 4 + (PointX) * 4];
-                    imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = Unit8Canvas[l][dataH * o3Dcanvas.width * 4 + (PointX) * 4 + 1];
-                    imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = Unit8Canvas[l][dataH * o3Dcanvas.width * 4 + (PointX) * 4 + 2];
+                    imgData2.data[dataH * NewCanvas.width * 4 + dataW] = Uint8Canvas[l][dataH * o3Dcanvas.width * 4 + (PointX) * 4];
+                    imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = Uint8Canvas[l][dataH * o3Dcanvas.width * 4 + (PointX) * 4 + 1];
+                    imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = Uint8Canvas[l][dataH * o3Dcanvas.width * 4 + (PointX) * 4 + 2];
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = 255;
                 }
             }
@@ -192,7 +192,7 @@ function initMPR() {
                 delete elem.canvas();
                 elem.parentElement.removeChild(elem);
                 delete elem;
-            } catch (ex) { }
+            } catch (ex) {}
         }
         for (var ll = 0; ll < o3d_3degree; ll++) {
             try {
@@ -206,7 +206,7 @@ function initMPR() {
                 elem.canvas().height = 2;
                 elem.getElementsByClassName("cornerstone-canvas")[0] = null;
                 delete elem;
-            } catch (ex) { }
+            } catch (ex) {}
         }
         GetViewport(3).removeEventListener("mousemove", mousemove3D, false);
         GetViewport(3).removeEventListener("mousedown", mousedown3D, false);
@@ -223,7 +223,7 @@ function initMPR() {
         try {
             getByid("MprCanvas1").style.display = "none";
             getByid("MprCanvas2").style.display = "none";
-        } catch (ex) { }
+        } catch (ex) {}
         if (getByid("OutSide3dDiv")) {
             delete getByid("OutSide3dDiv");
             getByid("OutSide3dDiv").parentElement.removeChild(getByid("OutSide3dDiv"));
@@ -316,7 +316,7 @@ function initMPR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) { }
+                } catch (ex) {}
             }
         }
         if (o3d_3degree >= 0) {
@@ -329,7 +329,7 @@ function initMPR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) { }
+                } catch (ex) {}
             }
             for (var ll = 0; ll < o3d_3degree; ll++) {
                 try {
@@ -340,7 +340,7 @@ function initMPR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) { }
+                } catch (ex) {}
             }
         }
 
@@ -409,12 +409,16 @@ function initMPR() {
                     NewDiv.style.width = image.width + "px";
                     NewDiv.style.height = image.height + "px";
                     NewDiv.alt = image.data.string('x00080018');
-                    NewDiv.style = "position:absolute;width:" + image.width + "px;height:" + image.height + "px;z-index:" + l2 + ";";
+                    NewDiv.style.zIndex = l2;
+                    // NewDiv.style = "position:absolute;width:" + image.width + "px;height:" + image.height + "px;z-index:" + l2 + ";";
                     o3Dcount = list.length;
                     OutSide3dDiv.appendChild(NewDiv);
                     getByid("3DDiv" + l2).parentNode.replaceChild(NewDiv, getByid("3DDiv" + l2));
                     showTheImage(NewDiv, image, '3d', null, null);
-                    NewDiv.style = "transform:rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px);;position:absolute;width:" + WandH[0] + "px;height:" + WandH[1] + "px;"; //z-index:" + l2 + ";";
+                    NewDiv.style.transform = "rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px)";
+                    NewDiv.style.width = WandH[0] + "px";
+                    NewDiv.style.height = WandH[1] + "px";
+                    //NewDiv.style = "transform:rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px);;position:absolute;width:" + WandH[0] + "px;height:" + WandH[1] + "px;"; //z-index:" + l2 + ";";
                     NewDiv.canvas = function () {
                         if (this.getElementsByClassName("cornerstone-canvas")[0])
                             return this.getElementsByClassName("cornerstone-canvas")[0];
@@ -441,7 +445,7 @@ function initMPR() {
         }
         GetViewport(3).appendChild(OutSide3dDiv);
         getByid("OutSide3dDiv").parentNode.replaceChild(OutSide3dDiv, getByid("OutSide3dDiv"));
-        if (getByid("3dStrengthen").checked == true) {
+        if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected) {
             if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
         } else {
             if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "";
@@ -506,7 +510,7 @@ function o3dWindowLevel() {
             var elem = getByid("3DDiv" + ll);
             elem.canvas().width = 2;
             elem.canvas().height = 2;
-        } catch (ex) { }
+        } catch (ex) {}
     }
     if (o3d_3degree >= 0) {
         for (var ll = 0; ll < o3d_3degree; ll++) {
@@ -589,13 +593,17 @@ function o3dWindowLevel() {
             NewDiv.height = image.height;
             NewDiv.style.width = image.width + "px";
             NewDiv.style.height = image.height + "px";
-            NewDiv.style = "position:absolute;width:" + image.width + "px;height:" + image.height + "px;z-index:" + l2 + ";";
+            NewDiv.style.zIndex = l2;
+            //NewDiv.style = "position:absolute;width:" + image.width + "px;height:" + image.height + "px;z-index:" + l2 + ";";
             o3Dcount = list.length;
             if (openVR == true) GetViewport(0).appendChild(NewDiv);
             else if (openMPR == true) GetViewport(3).appendChild(NewDiv);
             getByid("3DDiv" + l2).parentNode.replaceChild(NewDiv, getByid("3DDiv" + l2));
             showTheImage(NewDiv, image, '3d', null, null);
-            NewDiv.style = "transform:rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px);;position:absolute;width:" + WandH[0] + "px;height:" + WandH[1] + "px;"; //z-index:" + l2 + ";";
+            NewDiv.style.transform = "rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px)";
+            NewDiv.style.width = WandH[0] + "px";
+            NewDiv.style.height = WandH[1] + "px";
+            //NewDiv.style = "transform:rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px);;position:absolute;width:" + WandH[0] + "px;height:" + WandH[1] + "px;"; //z-index:" + l2 + ";";
 
             NewDiv.canvas = function () {
                 if (this.getElementsByClassName("cornerstone-canvas")[0])

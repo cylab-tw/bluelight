@@ -57,13 +57,13 @@ var thisF = function () {
             NowResize = true;
             //NowCanvasSizeWidth = NowCanvasSizeHeight = null;
             if (uid)
-                loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/);
+                loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/ );
             else {
                 alt = GetViewport(viewportNum).alt;
                 uid = SearchUid2Json(alt);
                 try {
-                    loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/);
-                } catch (ex) { }
+                    loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/ );
+                } catch (ex) {}
             }
             break;
         }
@@ -127,62 +127,25 @@ var mousemove3D = function (e) {
                     canvas1.style.width = canvas.style.width;
                     canvas1.style.height = canvas.style.height;
                 }
-                canvas1.style = "position: absolute;top: 50%;left:50%; margin: -" + (parseInt(canvas1.style.height) / 2) +
-                    "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px;width:" + canvas1.style.width + ";height:" + canvas1.style.height + ";";
+                canvas1.style.margin = "-" + (parseInt(canvas1.style.height) / 2) +
+                    "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px";
             }
             for (var ll = 0; ll < o3d_3degree; ll++) {
                 var canvas2 = getByid("3DDiv2_" + ll).canvas();
-                canvas2.style = "position: absolute;top: 50%;left:50%;" +
-                    "margin:" + "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
-                    "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px;" +
-                    "width:" + canvas2.style.width + ";height:" +
-                    canvas2.style.height + ";";
+                canvas2.style.margin = "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
+                    "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px";
             }
             for (var ll = 0; ll < o3d_3degree; ll++) {
                 var canvas3 = getByid("3DDiv3_" + ll).canvas();
-                canvas3.style = "position: absolute;top: 50%;left:50%;" +
-                    "margin:" + "-" + (parseInt(canvas3.style.height) / 2) +
-                    "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px;" +
-                    "height:" + canvas3.style.height + ";width:" +
-                    canvas3.style.width +
-                    ";";
+                canvas3.style.margin = "" + "-" + (parseInt(canvas3.style.height) / 2) +
+                    "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px";
             }
-
-            for (var ll = 0; ll < o3d_3degree; ll++) {
-                var canvas2 = getByid("3DDiv2_" + ll).canvas();
-                var div2 = getByid("3DDiv2_" + ll);
-                canvas2.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                div2.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
-                div2.style.cssText += '-webkit-transform-origin: ' + 'center' + ' ' + 'center' + ' ' + 'center' + 'px;';
-                canvas2.style.cssText += '-webkit-transform-origin: ' + 'center' + ' ' + 'center' + ' ' + 'center' + ';';
-            }
-
-            for (var ll = 0; ll < o3d_3degree; ll++) {
-                var canvas3 = getByid("3DDiv3_" + ll).canvas();
-                var div3 = getByid("3DDiv3_" + ll);
-                canvas3.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                div3.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
-                div3.style.cssText += '-webkit-transform-origin: ' + 'center' + ' ' + 'center' + ' ' + 'center' + 'px;';
-                canvas3.style.cssText += '-webkit-transform-origin: ' + 'center' + ' ' + 'center' + ' ' + 'center' + ';';
-            }
-            for (var ll = 0; ll < o3DListLength; ll++) {
-                var VrDistance = get3dDistance();
-
-                var canvas1 = getByid("3DDiv" + ll).canvas();
-                var div1 = getByid("3DDiv" + ll);
-                canvas1.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                div1.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
-                div1.style.cssText += '-webkit-transform-origin: center center ' + 'center' + 'px;';
-                canvas1.style.cssText += '-webkit-transform-origin: ' + 'center' + ' ' + 'center' + ' ' + 'center' + ';';
-            }
+            var VrDistance = get3dDistance();
         }
         if (MouseDownCheck || rightMouseDown) {
             var currX = get3dCurrPoint(e)[0];
             var currY = get3dCurrPoint(e)[1];
         }
-        VrDistance2 = (parseFloat(parseFloat(1) * (parseFloat(getByid("3DDiv" + parseInt(o3DListLength / 2)).canvas().style.height) /
-            parseFloat(GetViewport().imageHeight))) * (getByid("3DDiv" + parseInt(o3DListLength / 2)).thickness));
-
         if (MouseDownCheck == true) {
             if (currX < GetViewport().originalPointX - rotateStep) {
                 degerrX += (GetViewport().originalPointX - currX) > rotateSpeed ? rotateSpeed * -1 : (GetViewport().originalPointX - currX) * -1;
@@ -234,27 +197,22 @@ var mousemove3D = function (e) {
                     }
                     canvas1.style.width = (parseFloat(canvas1.width) * zoomRatio3D) + "px";
                     canvas1.style.height = (parseFloat(canvas1.height) * zoomRatio3D) + "px";
-                    canvas1.style = "position: absolute;top: 50%;left:50%; margin: -" + (parseInt(canvas1.style.height) / 2) +
-                        "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px;width:" + canvas1.style.width + ";height:" + canvas1.style.height + ";";
+                    canvas1.style.margin = "-" + (parseInt(canvas1.style.height) / 2) +
+                        "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px";
                 }
                 for (var ll = 0; ll < o3d_3degree; ll++) {
                     var canvas2 = getByid("3DDiv2_" + ll).canvas();
                     canvas2.style.width = (parseFloat(canvas2.originWidth) * zoomRatio3D) + "px";
                     canvas2.style.height = (parseFloat(canvas2.originHeight) * zoomRatio3D) + "px";
-                    canvas2.style = "position: absolute;top: 50%;left:50%;" +
-                        "margin:" + "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
-                        "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px;" +
-                        "width:" + canvas2.style.width + ";height:" + canvas2.style.height + ";";
+                    canvas2.style.margin = "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
+                        "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px";
                 }
                 for (var ll = 0; ll < o3d_3degree; ll++) {
                     var canvas3 = getByid("3DDiv3_" + ll).canvas();
                     canvas3.style.width = (parseFloat(canvas3.originWidth) * zoomRatio3D) + "px";
                     canvas3.style.height = (parseFloat(canvas3.originHeight) * zoomRatio3D) + "px";
-                    canvas3.style = "position: absolute;top: 50%;left:50%;" +
-                        "margin:" + "-" + (parseInt(canvas3.style.height) / 2) +
-                        "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px;" +
-                        "height:" + canvas3.style.height + ";width:" + canvas3.style.width +
-                        ";";
+                    canvas3.style.margin = "" + "-" + (parseInt(canvas3.style.height) / 2) +
+                        "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px";
                 }
 
             } else if (currY < GetViewport().originalPointY - 3) {
@@ -267,30 +225,23 @@ var mousemove3D = function (e) {
                     }
                     canvas1.style.width = (parseFloat(canvas1.width) * zoomRatio3D) + "px";
                     canvas1.style.height = (parseFloat(canvas1.height) * zoomRatio3D) + "px";
-                    ////console.log(canvas1.style.height);
-
-                    canvas1.style = "position: absolute;top: 50%;left:50%; margin: -" + (parseInt(canvas1.style.height) / 2) +
-                        "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px;width:" + canvas1.style.width + ";height:" + canvas1.style.height + ";";
+                    canvas1.style.margin = "-" + (parseInt(canvas1.style.height) / 2) +
+                        "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px";
                 }
                 for (var ll = 0; ll < o3d_3degree; ll++) {
                     var canvas2 = getByid("3DDiv2_" + ll).canvas();
                     canvas2.style.width = (parseFloat(canvas2.originWidth) * zoomRatio3D) + "px";
                     canvas2.style.height = (parseFloat(canvas2.originHeight) * zoomRatio3D) + "px";
-                    canvas2.style = "position: absolute;top: 50%;left:50%;" +
-                        "margin:" + "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
-                        "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px;" +
-                        "width:" + canvas2.style.width + ";height:" + canvas2.style.height + ";";
+                    canvas2.style.margin = "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
+                        "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px";
                 }
                 for (var ll = 0; ll < o3d_3degree; ll++) {
                     var canvas3 = getByid("3DDiv3_" + ll).canvas();
                     canvas3.style.width = (parseFloat(canvas3.originWidth) * zoomRatio3D) + "px";
                     canvas3.style.height = (parseFloat(canvas3.originHeight) * zoomRatio3D) + "px";
-                    canvas3.style = "position: absolute;top: 50%;left:50%;" +
-                        "margin:" + "-" + (parseInt(canvas3.style.height) / 2) +
-                        "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px;" +
-                        "height:" + canvas3.style.height + ";width:" + canvas3.style.width + ";";
+                    canvas3.style.margin = "" + "-" + (parseInt(canvas3.style.height) / 2) +
+                        "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px";
                 }
-
             }
             var canvas1 = getByid("3DDiv" + 0).canvas();
             var VrDistance = get3dDistance();
@@ -308,31 +259,23 @@ var mousemove3D = function (e) {
                     if (ll % parseInt(o3DListLength / parseFloat(getByid("3dZipText").value)) != 0)
                         canvas1.style.display = "none";
                 }
-                // canvas1.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                // div1.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
             }
 
             for (var ll = 0; ll < o3d_3degree; ll++) {
                 var canvas2 = getByid("3DDiv2_" + ll).canvas();
                 var div2 = getByid("3DDiv2_" + ll);
-                canvas2.style.transformStyle = "preserve-3d";
-                canvas2.style.transform = "translate3d(0,0,0) rotateX(" + (-90) + "deg)";
+                canvas2.style.transform = "translate3d(0,0,0)  rotateX(" + (-90) + "deg)";
                 if (getByid("o3DMip").selected == true && openVR) {
                     div2.style.mixBlendMode = "lighten";
                 }
-                //canvas2.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                //div2.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
             }
             for (var ll = 0; ll < o3d_3degree; ll++) {
                 var canvas3 = getByid("3DDiv3_" + ll).canvas();
                 var div3 = getByid("3DDiv3_" + ll);
-                canvas3.style.transformStyle = "preserve-3d";
-                canvas3.style.transform = "translate3d(0,0,0) rotateY(" + (90 + 0) + "deg)";
+                canvas3.style.transform = "translate3d(0,0,0)  rotateY(" + (90 + 0) + "deg)";
                 if (getByid("o3DMip").selected == true && openVR) {
                     div3.style.mixBlendMode = "lighten";
                 }
-                //canvas3.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                //div3.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
             }
             GetViewport().originalPointX = currX;
             GetViewport().originalPointY = currY;
@@ -341,6 +284,11 @@ var mousemove3D = function (e) {
 };
 
 var mousedown3D = function (e) {
+    if (getByid("3dStrengthenAuto").selected == true) {
+        if (getByid("OutSide3dDiv")) {
+            getByid("OutSide3dDiv").style.transformStyle = "";
+        }
+    }
     if (openCave == true) return;
     MouseDown3D(e);
 };
@@ -381,14 +329,18 @@ var mouseup3D = function (e) {
             canvas1.style.background = "linear-gradient(rgba(0,0,0,.02), rgba(0,0,0,.02))";
         }
     }
-    /* for (var ll = 0; ll < o3DListLength; ll++) {
-         var canvasC = getByid("3DDiv" + ll).canvas();
-         var canvas1 = getByid("3DDiv" + ll);
-         canvasC.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-         canvas1.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
-     }*/
+    if (getByid("3dStrengthenAuto").selected == true) {
+        if (getByid("OutSide3dDiv")) {
+            getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
+        }
+    }
 };
 var touchstart3D = function (e) {
+    if (getByid("3dStrengthenAuto").selected == true) {
+        if (getByid("OutSide3dDiv")) {
+            getByid("OutSide3dDiv").style.transformStyle = "";
+        }
+    }
     if (e.touches[1]) Touchstart3D(e.touches[0], e.touches[1]);
     else Touchstart3D(e.touches[0]);
 }
@@ -421,6 +373,11 @@ var touchend3D = function (e, e2) {
             canvas1.style.background = "linear-gradient(rgba(0,0,0,.02), rgba(0,0,0,.02))";
         }
     }
+    if (getByid("3dStrengthenAuto").selected == true) {
+        if (getByid("OutSide3dDiv")) {
+            getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
+        }
+    }
 };
 
 var Touchmove3D = function (e, e2) {
@@ -432,13 +389,24 @@ var Touchmove3D = function (e, e2) {
                 canvas1.style.width = canvas.style.width;
                 canvas1.style.height = canvas.style.height;
             }
-            canvas1.style = "position: absolute;top: 50%;left:50%; margin: -" + (parseInt(canvas1.style.height) / 2) +
-                "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px;width:" + canvas1.style.width + ";height:" + canvas1.style.height + ";";
+            canvas1.style.margin = "-" + (parseInt(canvas1.style.height) / 2) +
+                "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px";
         }
+        for (var ll = 0; ll < o3d_3degree; ll++) {
+            var canvas2 = getByid("3DDiv2_" + ll).canvas();
+            canvas2.style.margin = "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
+                "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px";
+        }
+        for (var ll = 0; ll < o3d_3degree; ll++) {
+            var canvas3 = getByid("3DDiv3_" + ll).canvas();
+            canvas3.style.margin = "" + "-" + (parseInt(canvas3.style.height) / 2) +
+                "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px";
+        }
+        var VrDistance = get3dDistance();
 
         var currX = getCurrPoint(e)[0];
         var currY = getCurrPoint(e)[1];
-        if (TouchDownCheck == true &&!rightTouchDown) {
+        if (TouchDownCheck == true && !rightTouchDown) {
             for (var ll = 0; ll < o3DListLength; ll++) {
                 var canvas1 = getByid("3DDiv" + ll).canvas();
                 if (!parseInt(canvas1.style.width) >= 1) {
@@ -465,41 +433,12 @@ var Touchmove3D = function (e, e2) {
                     canvas3.style.width +
                     ";";
             }
-
-            for (var ll = 0; ll < o3d_3degree; ll++) {
-                var canvas2 = getByid("3DDiv2_" + ll).canvas();
-                var div2 = getByid("3DDiv2_" + ll);
-                canvas2.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                div2.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
-                div2.style.cssText += '-webkit-transform-origin: ' + 'center' + ' ' + 'center' + ' ' + 'center' + 'px;';
-                canvas2.style.cssText += '-webkit-transform-origin: ' + 'center' + ' ' + 'center' + ' ' + 'center' + ';';
-            }
-
-            for (var ll = 0; ll < o3d_3degree; ll++) {
-                var canvas3 = getByid("3DDiv3_" + ll).canvas();
-                var div3 = getByid("3DDiv3_" + ll);
-                canvas3.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                div3.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
-                div3.style.cssText += '-webkit-transform-origin: ' + 'center' + ' ' + 'center' + ' ' + 'center' + 'px;';
-                canvas3.style.cssText += '-webkit-transform-origin: ' + 'center' + ' ' + 'center' + ' ' + 'center' + ';';
-            }
-            for (var ll = 0; ll < o3DListLength; ll++) {
-                var canvas1 = getByid("3DDiv" + ll).canvas();
-                var div1 = getByid("3DDiv" + ll);
-                canvas1.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                div1.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
-                div1.style.cssText += '-webkit-transform-origin: center center ' + 'center' + 'px;';
-                canvas1.style.cssText += '-webkit-transform-origin: ' + 'center' + ' ' + 'center' + ' ' + 'center' + ';';
-            }
         }
         var currX = get3dCurrPoint(e)[0];
         var currY = get3dCurrPoint(e)[1];
         var VrDistance = get3dDistance();
 
-        VrDistance2 = (parseFloat(parseFloat(1) * (parseFloat(getByid("3DDiv" + parseInt(o3DListLength / 2)).canvas().style.height) /
-            parseFloat(GetViewport().imageHeight))) * (getByid("3DDiv" + parseInt(o3DListLength / 2)).thickness /*+ Thickness * 2*/));
-
-        if (TouchDownCheck == true &&!rightTouchDown) {
+        if (TouchDownCheck == true && !rightTouchDown) {
             if (currX < GetViewport().originalPointX - rotateStep) {
                 degerrX += (GetViewport().originalPointX - currX) > rotateSpeed ? rotateSpeed * -1 : (GetViewport().originalPointX - currX) * -1;
                 if (degerrX < 0) degerrX += 360;
@@ -550,27 +489,22 @@ var Touchmove3D = function (e, e2) {
                     }
                     canvas1.style.width = (parseFloat(canvas1.width) * zoomRatio3D) + "px";
                     canvas1.style.height = (parseFloat(canvas1.height) * zoomRatio3D) + "px";
-                    canvas1.style = "position: absolute;top: 50%;left:50%; margin: -" + (parseInt(canvas1.style.height) / 2) +
-                        "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px;width:" + canvas1.style.width + ";height:" + canvas1.style.height + ";";
+                    canvas1.style.margin = "-" + (parseInt(canvas1.style.height) / 2) +
+                        "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px";
                 }
                 for (var ll = 0; ll < o3d_3degree; ll++) {
                     var canvas2 = getByid("3DDiv2_" + ll).canvas();
                     canvas2.style.width = (parseFloat(canvas2.originWidth) * zoomRatio3D) + "px";
                     canvas2.style.height = (parseFloat(canvas2.originHeight) * zoomRatio3D) + "px";
-                    canvas2.style = "position: absolute;top: 50%;left:50%;" +
-                        "margin:" + "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
-                        "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px;" +
-                        "width:" + canvas2.style.width + ";height:" + canvas2.style.height + ";";
+                    canvas2.style.margin = "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
+                        "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px";
                 }
                 for (var ll = 0; ll < o3d_3degree; ll++) {
                     var canvas3 = getByid("3DDiv3_" + ll).canvas();
                     canvas3.style.width = (parseFloat(canvas3.originWidth) * zoomRatio3D) + "px";
                     canvas3.style.height = (parseFloat(canvas3.originHeight) * zoomRatio3D) + "px";
-                    canvas3.style = "position: absolute;top: 50%;left:50%;" +
-                        "margin:" + "-" + (parseInt(canvas3.style.height) / 2) +
-                        "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px;" +
-                        "height:" + canvas3.style.height + ";width:" + canvas3.style.width +
-                        ";";
+                    canvas3.style.margin = "" + "-" + (parseInt(canvas3.style.height) / 2) +
+                        "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px";
                 }
 
             } else if (currY < GetViewport().originalPointY - 3) {
@@ -583,28 +517,23 @@ var Touchmove3D = function (e, e2) {
                     }
                     canvas1.style.width = (parseFloat(canvas1.width) * zoomRatio3D) + "px";
                     canvas1.style.height = (parseFloat(canvas1.height) * zoomRatio3D) + "px";
-                    canvas1.style = "position: absolute;top: 50%;left:50%; margin: -" + (parseInt(canvas1.style.height) / 2) +
-                        "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px;width:" + canvas1.style.width + ";height:" + canvas1.style.height + ";";
+                    canvas1.style.margin = "-" + (parseInt(canvas1.style.height) / 2) +
+                        "px 0 0 -" + (parseInt(canvas1.style.width) / 2) + "px";
                 }
                 for (var ll = 0; ll < o3d_3degree; ll++) {
                     var canvas2 = getByid("3DDiv2_" + ll).canvas();
                     canvas2.style.width = (parseFloat(canvas2.originWidth) * zoomRatio3D) + "px";
                     canvas2.style.height = (parseFloat(canvas2.originHeight) * zoomRatio3D) + "px";
-                    canvas2.style = "position: absolute;top: 50%;left:50%;" +
-                        "margin:" + "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
-                        "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px;" +
-                        "width:" + canvas2.style.width + ";height:" + canvas2.style.height + ";";
+                    canvas2.style.margin = "" + ((getByid("3DDiv2_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) +
+                        "px 0 0 -" + (parseInt(canvas2.style.width) / 2) + "px";
                 }
                 for (var ll = 0; ll < o3d_3degree; ll++) {
                     var canvas3 = getByid("3DDiv3_" + ll).canvas();
                     canvas3.style.width = (parseFloat(canvas3.originWidth) * zoomRatio3D) + "px";
                     canvas3.style.height = (parseFloat(canvas3.originHeight) * zoomRatio3D) + "px";
-                    canvas3.style = "position: absolute;top: 50%;left:50%;" +
-                        "margin:" + "-" + (parseInt(canvas3.style.height) / 2) +
-                        "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px;" +
-                        "height:" + canvas3.style.height + ";width:" + canvas3.style.width + ";";
+                    canvas3.style.margin = "" + "-" + (parseInt(canvas3.style.height) / 2) +
+                        "px 0 0 " + ((getByid("3DDiv3_" + ll).zPosition * -1 * (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight)))) + "px";
                 }
-
             }
             var canvas1 = getByid("3DDiv" + 0).canvas();
             var VrDistance = get3dDistance();
@@ -622,31 +551,23 @@ var Touchmove3D = function (e, e2) {
                     if (ll % parseInt(o3DListLength / parseFloat(getByid("3dZipText").value)) != 0)
                         canvas1.style.display = "none";
                 }
-                // canvas1.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                // div1.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
             }
 
             for (var ll = 0; ll < o3d_3degree; ll++) {
                 var canvas2 = getByid("3DDiv2_" + ll).canvas();
                 var div2 = getByid("3DDiv2_" + ll);
-                canvas2.style.transformStyle = "preserve-3d";
                 canvas2.style.transform = "rotateX(" + (-90) + "deg)";
                 if (getByid("o3DMip").selected == true && openVR) {
                     div2.style.mixBlendMode = "lighten";
                 }
-                //canvas2.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                //div2.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
             }
             for (var ll = 0; ll < o3d_3degree; ll++) {
                 var canvas3 = getByid("3DDiv3_" + ll).canvas();
                 var div3 = getByid("3DDiv3_" + ll);
-                canvas3.style.transformStyle = "preserve-3d";
                 canvas3.style.transform = "rotateY(" + (90 + 0) + "deg)";
                 if (getByid("o3DMip").selected == true && openVR) {
                     div3.style.mixBlendMode = "lighten";
                 }
-                //canvas3.style.cssText += '-webkit-transform: translate3d(' + 0 + ', ' + 0 + ', 0);';
-                //div3.style.cssText += '-webkit-transform: translate3d(' + 1 + ', ' + 1 + ', 0);';
             }
             GetViewport().originalPointX = currX;
             GetViewport().originalPointY = currY;
@@ -654,16 +575,16 @@ var Touchmove3D = function (e, e2) {
     }
 }
 
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     var isWindowTop = false;
     var lastTouchY = 0;
-    var touchStartHandler = function(e) {
+    var touchStartHandler = function (e) {
         if (e.touches.length !== 1) return;
         lastTouchY = e.touches[0].clientY;
         isWindowTop = (window.pageYOffset === 0);
     };
 
-    var touchMoveHandler = function(e) {
+    var touchMoveHandler = function (e) {
         var touchY = e.touches[0].clientY;
         var touchYmove = touchY - lastTouchY;
         lastTouchY = touchY;
