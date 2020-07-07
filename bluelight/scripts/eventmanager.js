@@ -57,13 +57,13 @@ var thisF = function () {
             NowResize = true;
             //NowCanvasSizeWidth = NowCanvasSizeHeight = null;
             if (uid)
-                loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/ );
+                loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/);
             else {
                 alt = GetViewport(viewportNum).alt;
                 uid = SearchUid2Json(alt);
                 try {
-                    loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/ );
-                } catch (ex) {}
+                    loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/);
+                } catch (ex) { }
             }
             break;
         }
@@ -289,6 +289,18 @@ var mousedown3D = function (e) {
             getByid("OutSide3dDiv").style.transformStyle = "";
         }
     }
+    for (var ll = 0; ll < o3DListLength; ll++) {
+        var canvas1 = getByid("3DDiv" + ll).canvas();
+        canvas1.style.background = "";
+    }
+    for (var ll = 0; ll < o3d_3degree; ll++) {
+        var canvas1 = getByid("3DDiv2_" + ll).canvas();
+        canvas1.style.background = "";
+    }
+    for (var ll = 0; ll < o3d_3degree; ll++) {
+        var canvas1 = getByid("3DDiv3_" + ll).canvas();
+        canvas1.style.background = "";
+    }
     if (openCave == true) return;
     MouseDown3D(e);
 };
@@ -340,6 +352,18 @@ var touchstart3D = function (e) {
         if (getByid("OutSide3dDiv")) {
             getByid("OutSide3dDiv").style.transformStyle = "";
         }
+    }
+    for (var ll = 0; ll < o3DListLength; ll++) {
+        var canvas1 = getByid("3DDiv" + ll).canvas();
+        canvas1.style.background = "";
+    }
+    for (var ll = 0; ll < o3d_3degree; ll++) {
+        var canvas1 = getByid("3DDiv2_" + ll).canvas();
+        canvas1.style.background = "";
+    }
+    for (var ll = 0; ll < o3d_3degree; ll++) {
+        var canvas1 = getByid("3DDiv3_" + ll).canvas();
+        canvas1.style.background = "";
     }
     if (e.touches[1]) Touchstart3D(e.touches[0], e.touches[1]);
     else Touchstart3D(e.touches[0]);

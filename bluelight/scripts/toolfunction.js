@@ -333,19 +333,76 @@ function rotate3dVR(VrDistance) {
         (degerrY >= 90 && degerrY <= 270) && !(degerrX >= 0 && degerrX <= 180)) {
         for (var ll = 0; ll < o3d_3degree; ll++) {
             var div3 = getByid("3DDiv3_" + ll);
-            if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25)
-                div3.style.zIndex = -ll + o3DListLength + o3DListLength;
-            else
-                div3.style.zIndex = -ll - o3DListLength + o3DListLength;
+            if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25) {
+                if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
+                    if (degerrX >= 0 && degerrX <= 180) {
+                        div3.style.zIndex = -ll + o3DListLength + o3DListLength;
+                    }
+                    else {
+                        div3.style.zIndex = ll + o3DListLength + o3DListLength;
+                    }
+                }
+                else {
+                    if (degerrX >= 0 && degerrX <= 180) {
+                        div3.style.zIndex = -ll - o3DListLength + o3DListLength;
+                    }
+                    else {
+                        div3.style.zIndex = ll - o3DListLength + o3DListLength;
+                    }
+                }
+            }
+            else {
+                if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
+                    if (degerrX >= 0 && degerrX <= 180) {
+                        div3.style.zIndex = -ll + o3DListLength + o3DListLength;
+                    }
+                    else {
+                        div3.style.zIndex = ll + o3DListLength + o3DListLength;
+                    }
+                } else {
+                    if (degerrX >= 0 && degerrX <= 180) {
+                        div3.style.zIndex = -ll - o3DListLength + o3DListLength;
+                    }
+                    else {
+                        div3.style.zIndex = ll - o3DListLength + o3DListLength;
+                    }
+                }
+            }
             div3.style.transform = "translate3d(0,0,0) rotateY(" + (degerrX + 0) + "deg) rotateX(" + (degerrY + 0) + "deg)  translateZ(" + (0) + "px)";
         }
     } else {
         for (var ll = 0; ll < o3d_3degree; ll++) {
             var div3 = getByid("3DDiv3_" + ll);
-            if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25)
-                div3.style.zIndex = ll + o3DListLength + o3DListLength;
-            else
-                div3.style.zIndex = ll - o3DListLength + o3DListLength;
+            if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25) {
+                if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
+                    if (degerrX >= 0 && degerrX <= 180) {
+                        div3.style.zIndex = -ll + o3DListLength + o3DListLength;
+                    } else {
+                        div3.style.zIndex = ll + o3DListLength + o3DListLength;
+                    }
+                } else {
+                    if (degerrX >= 0 && degerrX <= 180) {
+                        div3.style.zIndex = -ll - o3DListLength + o3DListLength;
+                    } else {
+                        div3.style.zIndex = ll - o3DListLength + o3DListLength;
+                    }
+                }
+            }
+            else {
+                if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
+                    if (degerrX >= 0 && degerrX <= 180) {
+                        div3.style.zIndex = -ll + o3DListLength + o3DListLength;
+                    } else {
+                        div3.style.zIndex = ll + o3DListLength + o3DListLength;
+                    }
+                } else {
+                    if (degerrX >= 0 && degerrX <= 180) {
+                        div3.style.zIndex = -ll - o3DListLength + o3DListLength;
+                    } else {
+                        div3.style.zIndex = ll - o3DListLength + o3DListLength;
+                    }
+                }
+            }
             div3.style.transform = "translate3d(0,0,0) rotateY(" + (degerrX + 0) + "deg) rotateX(" + (degerrY + 0) + "deg)  translateZ(" + (0) + "px)";
         }
     }

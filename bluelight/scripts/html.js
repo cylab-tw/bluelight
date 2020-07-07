@@ -202,6 +202,24 @@ function html_onload() {
     EnterRWD();
   }
 
+  getByid("3dZipText").onchange = getByid("3dZipCheckbox").onclick = function () {
+    if (getByid("3dZipCheckbox").checked == false) {
+      for (var ll = 0; ll < o3DListLength; ll++) {
+        var canvas1 = getByid("3DDiv" + ll).canvas();
+        canvas1.style.display = "";
+      }
+    } else {
+      for (var ll = 0; ll < o3DListLength; ll++) {
+        var canvas1 = getByid("3DDiv" + ll).canvas();
+        canvas1.style.display = "";
+        if (getByid("3dZipCheckbox").checked == true && parseInt(getByid("3dZipText").value) < o3DListLength) {
+          if (ll % parseInt(o3DListLength / parseFloat(getByid("3dZipText").value)) != 0)
+            canvas1.style.display = "none";
+        }
+      }
+    }
+  }
+
   getByid("markFillCheck").onclick = function () {
     for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
   }
