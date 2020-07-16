@@ -39,6 +39,12 @@
   <script src="../scripts/mtss.js"></script>
   <script src="../scripts/play_video.js"></script>
   <script src="../scripts/html.js"></script>
+
+  <script type="module" >
+    import {decodeImageFrame1} from "../scripts/external/cornerstone/decode/decodeImageFrame.js";
+    decodeImageFrame=decodeImageFrame1;
+  </script>
+  
 </head>
 
 <body style="background-color:#000000;" onmousewheel="/*return false;*/">

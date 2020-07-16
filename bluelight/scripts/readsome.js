@@ -2,14 +2,14 @@ function readXML(url) {
   var oReq = new XMLHttpRequest();
   try {
     oReq.open("get", url, true);
-  } catch (err) {}
+  } catch (err) { }
   oReq.responseType = "xml";
   oReq.onreadystatechange = function (oEvent) {
     try {
       var parser = new DOMParser();
       var xmlDoc = parser.parseFromString(oReq.response, "text/xml");
       var studyTemp = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-      getElementsByTagName("imageReferenceEntityCollection")[0].getElementsByTagName("ImageReferenceEntity")[0]
+        getElementsByTagName("imageReferenceEntityCollection")[0].getElementsByTagName("ImageReferenceEntity")[0]
         .getElementsByTagName("imageStudy")[0];
 
       var study = (studyTemp.getElementsByTagName("instanceUid")[0].getAttribute("root"));
@@ -18,7 +18,7 @@ function readXML(url) {
         .getElementsByTagName("Image")[0].getElementsByTagName("sopInstanceUid")[0].getAttribute("root"));
 
       var temp = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-      getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("markupEntityCollection")[0]
+        getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("markupEntityCollection")[0]
         .getElementsByTagName("MarkupEntity");
       var dcm = {};
       dcm.study = study;
@@ -28,14 +28,14 @@ function readXML(url) {
       dcm.showName = "AIM";
       try {
         var tempText = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-        getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("imagingObservationEntityCollection")[0]
+          getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("imagingObservationEntityCollection")[0]
           .getElementsByTagName("ImagingObservationEntity");
         for (var i = 0; i < tempText.length; i++) {
           dcm.mark.push({});
           var DcmMarkLength = dcm.mark.length - 1;
           dcm.mark[DcmMarkLength].type = "Characteristic";
           var temp2 = tempText[i].getElementsByTagName("imagingObservationCharacteristicCollection")[0].
-          getElementsByTagName("ImagingObservationCharacteristic");
+            getElementsByTagName("ImagingObservationCharacteristic");
           dcm.mark[DcmMarkLength].markTitle = "";
           dcm.mark[DcmMarkLength].markTitle = "" + tempText[i].getElementsByTagName("label")[0].getAttribute("value") +
             ":" + tempText[i].getElementsByTagName("typeCode")[0].getElementsByTagName("iso:displayName")[0].getAttribute("value");;
@@ -102,20 +102,8 @@ function readXML(url) {
       }
 
       PatientMark.push(dcm);
-      var index = SearchUid2Index(dcm.sop);
-      if (!index) return;
-      var i3 = index[0],
-        j3 = index[1],
-        k3 = index[2];
-      var checkNum;
-      for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).alt == Patient.Study[i3].Series[j3].SeriesUID) {
-          checkNum = dCount;
-        }
-      }
-      SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
-      for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(NowResize, null, null, null, i9);
-    } catch (ex) {}
+      refreshMark(dcm);
+    } catch (ex) { }
   }
   oReq.send();
 }
@@ -124,7 +112,7 @@ function readDicom(url, patientmark, openfile) {
   var oReq = new XMLHttpRequest();
   try {
     oReq.open("get", url, true);
-  } catch (err) {}
+  } catch (err) { }
   oReq.responseType = "arraybuffer";
   oReq.onreadystatechange = function (oEvent) {
     if (oReq.readyState == 4) {
@@ -175,7 +163,7 @@ function readDicom(url, patientmark, openfile) {
           dcm.mark[DcmMarkLength].type = "Overlay";
           dcm.mark[DcmMarkLength].pixelData = tempPixeldata.slice(0);;
           patientmark.push(dcm);
-        } catch (ex) {}
+        } catch (ex) { }
         ////暫時取消的功能
         /*
         if (openfile && openfile == true) {
@@ -231,7 +219,7 @@ function readDicom(url, patientmark, openfile) {
                   var output3 = xTemp16[k2 + 2].charCodeAt(0).toString(2) + "";
                   var output4 = xTemp16[k2 + 3].charCodeAt(0).toString(2) + "";
                   var data = [parseInt(output1, 2), parseInt(output2, 2), parseInt(output3, 2), parseInt(output4, 2)];
-                  var buf = new ArrayBuffer(4 /* * 4*/ );
+                  var buf = new ArrayBuffer(4 /* * 4*/);
                   var view = new DataView(buf);
                   data.forEach(function (b, i) {
                     view.setUint8(i, b, true);
@@ -265,7 +253,7 @@ function readDicom(url, patientmark, openfile) {
                   var output3 = xTemp16[k2 + 2].charCodeAt(0).toString(2) + "";
                   var output4 = xTemp16[k2 + 3].charCodeAt(0).toString(2) + "";
                   var data = [parseInt(output1, 2), parseInt(output2, 2), parseInt(output3, 2), parseInt(output4, 2)];
-                  var buf = new ArrayBuffer(4 /* * 4*/ );
+                  var buf = new ArrayBuffer(4 /* * 4*/);
                   var view = new DataView(buf);
                   data.forEach(function (b, i) {
                     view.setUint8(i, b, true);
@@ -313,19 +301,7 @@ function readDicom(url, patientmark, openfile) {
                 }
                 patientmark.push(dcm);
 
-                var index = SearchUid2Index(dcm.sop);
-                if (!index) continue;
-                var i3 = index[0],
-                  j3 = index[1],
-                  k3 = index[2];
-                var checkNum;
-                for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-                  if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).alt == Patient.Study[i3].Series[j3].SeriesUID) {
-                    checkNum = dCount;
-                  }
-                }
-                SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
-                for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(NowResize, null, null, null, i9);
+                refreshMark(dcm);
               }
             }
           }
@@ -334,6 +310,52 @@ function readDicom(url, patientmark, openfile) {
     }
   };
   oReq.send();
+}
+
+function loadDicomSeg(image, imageId) {
+  var dataSet = image.data;
+  var ImageFrame = cornerstoneWADOImageLoader.getImageFrame(imageId);
+  var rect = (image.rows * image.columns);
+  if (dataSet.elements.x7fe00010.fragments) {
+    for (var i = 0; i < dataSet.elements.x7fe00010.fragments.length; i++) {
+      var pixeldata = new Uint8Array(dataSet.byteArray.buffer,
+        dataSet.elements.x7fe00010.fragments[i].position,
+        dataSet.elements.x7fe00010.fragments[i].length)
+      var NewpixelData = decodeImageFrame(ImageFrame, dataSet.string("x00020010"), pixeldata, {usePDFJS: false}).pixelData;
+      var tvList = ['SEG'];
+      var dcm = {};
+      dcm.study = image.data.string('x0020000d');
+      dcm.series = image.data.string('x0020000e');
+      dcm.sop = image.data.elements.x52009230.items[i].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string("x00081155");
+      dcm.mark = [];
+      dcm.showName = tvList[0];
+      dcm.mark.push({});
+      var DcmMarkLength = dcm.mark.length - 1;
+      dcm.mark[DcmMarkLength].type = "SEG";
+      dcm.mark[DcmMarkLength].pixelData = new Uint8Array(rect);
+      for (var pix = 0; pix < rect; pix++)
+        dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix];
+      PatientMark.push(dcm);
+      refreshMark(dcm);
+    }
+  } else {
+    var NewpixelData = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length);
+    var tvList = ['SEG'];
+    var dcm = {};
+    dcm.study = image.data.string('x0020000d');
+    dcm.series = image.data.string('x0020000e');
+    dcm.sop = image.data.elements.x52009230.items[0].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string("x00081155");
+    dcm.mark = [];
+    dcm.showName = tvList[0];
+    dcm.mark.push({});
+    var DcmMarkLength = dcm.mark.length - 1;
+    dcm.mark[DcmMarkLength].type = "SEG";
+    dcm.mark[DcmMarkLength].pixelData = new Uint8Array(rect);
+    for (var pix = 0; pix < rect; pix++)
+      dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix];
+    PatientMark.push(dcm);
+    refreshMark(dcm);
+  }
 }
 
 function loadUID(study, series, sop, instance, imageId, patientId) {

@@ -195,19 +195,7 @@ function importXml(url) {
         PatientMark.push(dcm);
       }
 
-      var index = SearchUid2Index(dcm.sop);
-      if (!index) return;
-      var i3 = index[0],
-        j3 = index[1],
-        k3 = index[2];
-      var checkNum;
-      for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).alt == Patient.Study[i3].Series[j3].SeriesUID) {
-          checkNum = dCount;
-        }
-      }
-      SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
-      for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(NowResize, null, null, null, i9);
+      refreshMark(dcm);
       setXml_context();
     } catch (ex) {}
   }

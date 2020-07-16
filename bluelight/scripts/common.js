@@ -429,7 +429,69 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
         for (var n = 0; n < PatientMark.length; n++) {
             if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
                 for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                    if (PatientMark[n].mark[m].type == "Overlay") {
+                    if (PatientMark[n].mark[m].type == "SEG") {
+                        let checkRtss = 0;
+                        checkRtss = checkMark(i, j, n);
+                        if (checkRtss == 0) continue;
+                        Css(MarkCanvas, 'zIndex', "8");
+                        var imgData2 = tempctx.getImageData(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
+                        var select_b = 255;
+                        var select_g = 0;
+                        var select_r = 0;
+                        var select_a = parseInt(255 * alpha);
+                        if (getByid("BlueSelect").selected == true) {
+                            select_g = select_r = 0;
+                            select_b = 255;
+                        } else if (getByid("RedSelect").selected == true) {
+                            select_g = select_b = 0;
+                            select_r = 255;
+                        } else if (getByid("WhiteSelect").selected == true) {
+                            select_r = select_g = select_b = 255;
+                        }
+                        if (GetViewport(viewportNum).openHorizontalFlip == true && GetViewport(viewportNum).openVerticalFlip == true) {
+                            for (var data = 0; data < imgData2.data.length; data += 4) {
+                                if (PatientMark[n].mark[m].pixelData[(PatientMark[n].mark[m].pixelData.length - 1) - data / 4] == 1) {
+                                    imgData2.data[data] = select_r;
+                                    imgData2.data[data + 1] = select_g;
+                                    imgData2.data[data + 2] = select_b;
+                                    imgData2.data[data + 3] = select_a;
+                                }
+                            }
+                        } else if (GetViewport(viewportNum).openVerticalFlip == true) {
+                            for (var dataH = 0; dataH < GetViewport(viewportNum).imageHeight; dataH += 1) {
+                                for (var dataW = 0; dataW < GetViewport(viewportNum).imageWidth * 4; dataW += 4) {
+                                    if (PatientMark[n].mark[m].pixelData[((GetViewport(viewportNum).imageHeight - dataH - 1) * GetViewport(viewportNum).imageWidth * 4 + dataW) / 4] == 1) {
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] = select_r;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] = select_g;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] = select_b;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] = select_a;
+                                    }
+                                }
+                            }
+                        } else if (GetViewport(viewportNum).openHorizontalFlip == true) {
+                            for (var dataH = 0; dataH < GetViewport(viewportNum).imageHeight; dataH += 1) {
+                                for (var dataW = 0; dataW < GetViewport(viewportNum).imageWidth * 4; dataW += 4) {
+                                    if (PatientMark[n].mark[m].pixelData[(dataH * GetViewport(viewportNum).imageWidth * 4 + (GetViewport(viewportNum).imageWidth * 4 - dataW - 4)) / 4] == 1) {
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] = select_r;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] = select_g;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] = select_b;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] = select_a;
+                                    }
+                                }
+                            }
+                        } else {
+                            for (var data = 0; data < imgData2.data.length; data += 4) {
+                                if (PatientMark[n].mark[m].pixelData[data / 4] != 0) {
+                                    imgData2.data[data] = select_r;
+                                    imgData2.data[data + 1] = select_g;
+                                    imgData2.data[data + 2] = select_b;
+                                    imgData2.data[data + 3] = select_a;
+                                } 
+                            }
+                        }
+                        tempctx.putImageData(imgData2, 0, 0);
+                    }
+                    else if (PatientMark[n].mark[m].type == "Overlay") {
                         let checkRtss = 0;
                         checkRtss = checkMark(i, j, n);
                         if (checkRtss == 0) continue;

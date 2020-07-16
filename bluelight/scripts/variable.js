@@ -143,3 +143,5 @@ var DicomTags = {};
 var ConfigLog = {};
 //代表config檔已經載入完畢 --*
 var configOnload = false;
+//decode function
+let decodeImageFrame;
