@@ -44,17 +44,17 @@ function Null2Empty(str) {
 }
 
 function getViewprtStretchSize(width, height, element) {
-    // if (width > parseFloat(element.style.width) - (bordersize * 2) || height > parseFloat(element.style.height) - (bordersize * 2)) {
-    while (width > parseFloat(element.clientWidth) - (bordersize * 2) || height > parseFloat(element.clientHeight) - (bordersize * 2)) {
-        width *= 0.999;
-        height *= 0.999;
-        if (width < 10 || height < 10) break;
-    }
-    /*} else {
+    if (width > parseFloat(element.style.width) - (bordersize * 2) || height > parseFloat(element.style.height) - (bordersize * 2)) {
+        while (width > parseFloat(element.clientWidth) - (bordersize * 2) || height > parseFloat(element.clientHeight) - (bordersize * 2)) {
+            width *= 0.999;
+            height *= 0.999;
+            if (width < 10 || height < 10) break;
+        }
+    } else {
         var he = (parseFloat(element.style.height) - (bordersize * 2)) / parseFloat(height);
         height *= he;
         width *= he;
-    }*/
+    }
     return [width, height];
 }
 
@@ -292,17 +292,17 @@ function checkMark(i, j, n) {
     return checkRtss;
 }
 
-function refreshMark(dcm){
+function refreshMark(dcm) {
     var index = SearchUid2Index(dcm.sop);
     if (!index) return;
     var i3 = index[0],
-      j3 = index[1],
-      k3 = index[2];
+        j3 = index[1],
+        k3 = index[2];
     var checkNum;
     for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-      if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).alt == Patient.Study[i3].Series[j3].SeriesUID) {
-        checkNum = dCount;
-      }
+        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).alt == Patient.Study[i3].Series[j3].SeriesUID) {
+            checkNum = dCount;
+        }
     }
     SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
     for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(NowResize, null, null, null, i9);
