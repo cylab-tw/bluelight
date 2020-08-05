@@ -44,17 +44,11 @@ function Null2Empty(str) {
 }
 
 function getViewprtStretchSize(width, height, element) {
-    if (width > parseFloat(element.style.width) - (bordersize * 2) || height > parseFloat(element.style.height) - (bordersize * 2)) {
-        while (width > parseFloat(element.clientWidth) - (bordersize * 2) || height > parseFloat(element.clientHeight) - (bordersize * 2)) {
-            width *= 0.999;
-            height *= 0.999;
-            if (width < 10 || height < 10) break;
-        }
-    } else {
-        var he = (parseFloat(element.style.height) - (bordersize * 2)) / parseFloat(height);
-        height *= he;
-        width *= he;
-    }
+    var wi = (parseFloat(element.clientWidth) - (bordersize * 2)) / parseFloat(width);
+    var he = (parseFloat(element.clientHeight) - (bordersize * 2)) / parseFloat(height);
+    var small = he < wi ? he : wi;
+    height *= small;
+    width *= small;
     return [width, height];
 }
 
