@@ -36,18 +36,22 @@
 * Line and angle measurement
 * hide/display markups and annotations
 
-### supported markups and annotations
-* DICOM Graphic Annotation
+### supported the display of the kinds of markups and annotations
+* GSPS: DICOM Graphic Annotation
 * DICOM Overlay
 * DICOM-RT structure set (RTSS)
 * Annotation and Image Markup (AIM)
-* DICOM SEG (on going)
-* [LabelImg](https://github.com/tzutalin/labelImg)  
+* DICOM SEG (Segementation)
+* [LabelImg](https://github.com/tzutalin/labelImg)
 
 ### 3D Post-Processing
 * MPR (Multiplanar Reconstruction)
 * 3D Volume Rendering 
 * MIP (maximum intensity projection)
+
+### Labeling tool interfaces
+* [LabelImg](https://github.com/tzutalin/labelImg)
+* GSPS: DICOM Graphic Annotation (on going)
 
 ## Supported library
 * BlueLight Viewer uses several oepn source libraries as folowing:
