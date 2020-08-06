@@ -163,6 +163,7 @@ function readDicom(url, patientmark, openfile) {
           dcm.mark[DcmMarkLength].type = "Overlay";
           dcm.mark[DcmMarkLength].pixelData = tempPixeldata.slice(0);;
           patientmark.push(dcm);
+          refreshMark(dcm);
         } catch (ex) { }
         ////暫時取消的功能
         /*
@@ -232,6 +233,7 @@ function readDicom(url, patientmark, openfile) {
                   ablecheck = !ablecheck;
                 }
                 patientmark.push(dcm);
+                refreshMark(dcm);
               }
               if (tempDataSet[j].dataSet.string('x00700023') == 'ELLIPSE') {
                 var dcm = {};
@@ -267,7 +269,8 @@ function readDicom(url, patientmark, openfile) {
                   ablecheck = !ablecheck;
                 }
                 patientmark.push(dcm);
-                console.log(PatientMark);
+                //console.log(PatientMark);
+                refreshMark(dcm);
               }
             }
 
