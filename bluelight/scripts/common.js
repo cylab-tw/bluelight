@@ -486,7 +486,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                     imgData2.data[data + 1] = select_g;
                                     imgData2.data[data + 2] = select_b;
                                     imgData2.data[data + 3] = select_a;
-                                } 
+                                }
                             }
                         }
                         tempctx.putImageData(imgData2, 0, 0);
@@ -1152,14 +1152,15 @@ function SetToLeft(alt, checki, patientid) {
             "color:" + colorList[o] + ";";
         var li1 = document.createElement('input');
         li1.type = "checkbox";
-        li1.id = "dicomDivList" + checki + o;
+        li1.id = "dicomDivListLabel" + dicomImageCount + o;
+        if (checki >= 0) li1.id = "dicomDivListLabel" + checki + o;
         li1.checked = true;
         li1.name = "" + rtssList[o];
         li1.alt = 'true';
-        if (getByid("dicomDivList" + checki + o)) {
-            li1.checked = getByid("dicomDivList" + checki + o).checked;
-            li1.alt = getByid("dicomDivList" + checki + o).alt;
-            var elem = getByid("dicomDivList" + checki + o);
+        if (getByid("dicomDivListLabel" + checki + o)) {
+            li1.checked = getByid("dicomDivListLabel" + checki + o).checked;
+            li1.alt = getByid("dicomDivListLabel" + checki + o).alt;
+            var elem = getByid("dicomDivListLabel" + checki + o);
             elem.parentElement.removeChild(elem);
         }
 

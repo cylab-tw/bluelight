@@ -212,20 +212,35 @@ function readDicom(url, patientmark, openfile) {
                 dcm.mark[DcmMarkLength].type = "POLYLINE";
                 dcm.mark[DcmMarkLength].markX = [];
                 dcm.mark[DcmMarkLength].markY = [];
+
                 var xTemp16 = tempDataSet[j].dataSet.string('x00700022');
+                function getTag(tag) {
+                  var group = tag.substring(1, 5);
+                  var element = tag.substring(5, 9);
+                  var tagIndex = ("(" + group + "," + element + ")").toUpperCase();
+                  var attr = TAG_DICT[tagIndex];
+                  return attr;
+                }
+                var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
                 var ablecheck = false;
-                for (var k2 = 0; k2 < xTemp16.length; k2 += 4) {
-                  var output1 = xTemp16[k2].charCodeAt(0).toString(2) + "";
-                  var output2 = xTemp16[k2 + 1].charCodeAt(0).toString(2) + "";
-                  var output3 = xTemp16[k2 + 2].charCodeAt(0).toString(2) + "";
-                  var output4 = xTemp16[k2 + 3].charCodeAt(0).toString(2) + "";
-                  var data = [parseInt(output1, 2), parseInt(output2, 2), parseInt(output3, 2), parseInt(output4, 2)];
-                  var buf = new ArrayBuffer(4 /* * 4*/);
-                  var view = new DataView(buf);
-                  data.forEach(function (b, i) {
-                    view.setUint8(i, b, true);
-                  });
-                  var num = view.getFloat32(0, true);
+                for (var r = 0; r < rect; r++) {
+                  var GraphicData = getTag("x00700022");
+                  var num = 0;
+                  if (GraphicData.vr == 'US') {
+                    num = tempDataSet[j].dataSet.uint16("x00700022", r);
+                  } else if (GraphicData.vr === 'SS') {
+                    num = tempDataSet[j].dataSet.int16("x00700022", r);
+                  } else if (GraphicData.vr === 'UL') {
+                    num = tempDataSet[j].dataSet.uint32("x00700022", r);
+                  } else if (GraphicData.vr === 'SL') {
+                    num = tempDataSet[j].dataSet.int32("x00700022", r);
+                  } else if (GraphicData.vr === 'FD') {
+                    num = tempDataSet[j].dataSet.double("x00700022", r);
+                  } else if (GraphicData.vr === 'FL') {
+                    num = tempDataSet[j].dataSet.float("x00700022", r);
+                  } else {
+                    num = tempDataSet[j].dataSet.float("x00700022", r);
+                  }
                   if (ablecheck == false)
                     dcm.mark[DcmMarkLength].markX.push(num);
                   else
@@ -324,7 +339,7 @@ function loadDicomSeg(image, imageId) {
       var pixeldata = new Uint8Array(dataSet.byteArray.buffer,
         dataSet.elements.x7fe00010.fragments[i].position,
         dataSet.elements.x7fe00010.fragments[i].length)
-      var NewpixelData = decodeImageFrame(ImageFrame, dataSet.string("x00020010"), pixeldata, {usePDFJS: false}).pixelData;
+      var NewpixelData = decodeImageFrame(ImageFrame, dataSet.string("x00020010"), pixeldata, { usePDFJS: false }).pixelData;
       var tvList = ['SEG'];
       var dcm = {};
       dcm.study = image.data.string('x0020000d');
