@@ -51,6 +51,8 @@ var o3DAlphaValue = 100;
 var openCave = false;
 //代表XML標記模式為開啟狀態
 var openWriteXML = false;
+//代表Graphic Annotation標記模式為開啟狀態
+var openWriteGraphic = false;
 
 //紀錄滑鼠座標
 var windowMouseX = 0,

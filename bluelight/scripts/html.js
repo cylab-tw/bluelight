@@ -168,7 +168,33 @@ function html_onload() {
     if (openCave == true) this.src = '../image/icon/black/b_Cross-hair_ON.png';
     else this.src = '../image/icon/black/b_Cross-hair_OFF.png';
   }
+  /*
+    getByid("writeGraphic").onclick = function () {
+      if (imgInvalid(this)) return;
+      cancelTools();
+      openWriteGraphic = !openWriteGraphic;
+      img2darkByClass("XML", !openWriteGraphic);
+      //this.src = openWriteGraphic == true ? '../image/icon/black/xml_on.png' : '../image/icon/black/xml_off.png';
+     // if (openWriteGraphic == true) getByid('xmlMarkName').style.display = '';
+      //else getByid('xmlMarkName').style.display = 'none';
+      if (openWriteGraphic == true) return;
 
+
+      function download(text, name, type) {
+        let a = document.createElement('a');
+        let file = new Blob([text], {
+          type: type
+        });
+        a.href = window.URL.createObjectURL(file);
+        //a.style.display = '';
+        a.download = name;
+        a.click();
+      }
+      set_Graphic_context();
+      download(String(get_Graphic_context()), 'filename_Graphic.xml', 'text/plain');
+      getByid('MouseOperation').click();
+    }
+  */
   getByid("writeXML").onclick = function () {
     if (imgInvalid(this)) return;
     cancelTools();
@@ -328,7 +354,7 @@ function html_onload() {
       reader.onloadend = function () {
         readXML(reader.result);
         readDicom(reader.result, PatientMark, true);
-        virtualLoadImage('wadouri:' + reader.result, -1);
+        //virtualLoadImage('wadouri:' + reader.result, -1);
         loadAndViewImage('wadouri:' + reader.result);
       }
     }

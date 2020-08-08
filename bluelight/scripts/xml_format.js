@@ -102,7 +102,7 @@ function getXml_context() {
 }
 
 function xml_pounch(currX, currY) {
-  let block_size = 5;
+  let block_size = getMarkSize(GetViewportMark(),false);
   let index = SearchUid2Index(GetViewport((viewportNumber)).alt);
   let i = index[0],
     j = index[1],

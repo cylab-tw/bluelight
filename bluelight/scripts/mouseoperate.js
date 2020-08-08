@@ -132,6 +132,26 @@ function Mousedown(e) {
         }
         xml_pounch(currXml_X2, currXml_Y2);
     }
+    if (openWriteGraphic == true) {
+        var currX = getCurrPoint(e)[0];
+        var currY = getCurrPoint(e)[1];
+
+        var currXml_X1 = currX;
+        var currXml_Y1 = currY;
+        var currXml_X2 = currXml_X1;
+        var currXml_Y2 = currXml_Y1;
+
+        if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
+            currXml_X2 = (currXml_X1 * GetViewport().imageOrientationX + currXml_Y1 * -GetViewport().imageOrientationY + 0);
+            currXml_Y2 = (currXml_X1 * -GetViewport().imageOrientationX2 + currXml_Y1 * GetViewport().imageOrientationY2 + 0);
+            if ((GetViewport().openHorizontalFlip != GetViewport().openVerticalFlip)) {
+                currXml_X2 = currXml_X2 - (currXml_X2 - currXml_X1) * 2;
+                currXml_Y2 = currXml_Y2 - (currXml_Y2 - currXml_Y1) * 2;
+            }
+        }
+        // xml_pounch(currXml_X2, currXml_Y2);
+    }
+
 }
 
 function Mousemove(e) {
@@ -356,7 +376,7 @@ function Mousemove(e) {
             let angel2point = rotateCalculation(e);
             magnifierIng(angel2point[0], angel2point[1]);
         }
-        if ((openMouseTool == true || openRotate == true) && openChangeFile == false && openWriteXML == false) {
+        if ((openMouseTool == true || openRotate == true) && openChangeFile == false && openWriteXML == false && openWriteGraphic == false) {
             var MouseX = GetmouseX(e);
             var MouseY = GetmouseY(e);
             GetViewport().newMousePointX += MouseX - windowMouseX;
@@ -422,6 +442,52 @@ function Mousemove(e) {
                     displayMark(NowResize, null, null, null, i);
             }
         }
+        if (openWriteGraphic == true) {
+            if (!Graphic_now_choose) {
+                let Uid = SearchNowUid();
+                var dcm = {};
+                dcm.study = Uid.studyuid;
+                dcm.series = Uid.sreiesuid;
+                dcm.color = "#0000FF";
+                dcm.mark = [];
+                dcm.showName = "POLYLINE"; //"" + getByid("xmlMarkNameText").value;
+                dcm.mark.push({});
+                dcm.sop = Uid.sopuid;
+                var DcmMarkLength = dcm.mark.length - 1;
+                dcm.mark[DcmMarkLength].type = "POLYLINE";
+                dcm.mark[DcmMarkLength].markX = [];
+                dcm.mark[DcmMarkLength].markY = [];
+                dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+                dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+                dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+                dcm.mark[DcmMarkLength].markY.push(currY);
+                dcm.mark[DcmMarkLength].markX.push(currX);
+                dcm.mark[DcmMarkLength].markY.push(currY);
+                dcm.mark[DcmMarkLength].markX.push(currX);
+                dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+                dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+                dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+                PatientMark.push(dcm);
+                refreshMark(dcm);
+                for (var i = 0; i < Viewport_Total; i++)
+                    displayMark(NowResize, null, null, null, i);
+                displayAngelRular();
+                PatientMark.splice(PatientMark.indexOf(dcm), 1);
+            } else {
+                if (xml_now_choose.value == "up") {
+                    xml_now_choose.mark.markY[0] = currY;
+                } else if (xml_now_choose.value == "down") {
+                    xml_now_choose.mark.markY[1] = currY;
+                } else if (xml_now_choose.value == "left") {
+                    xml_now_choose.mark.markX[0] = currX;
+                } else if (xml_now_choose.value == "right") {
+                    xml_now_choose.mark.markX[1] = currX;
+                }
+                set_Graphic_context();
+                /* for (var i = 0; i < Viewport_Total; i++)
+                     displayMark(NowResize, null, null, null, i);*/
+            }
+        }
     }
 }
 
@@ -433,6 +499,8 @@ function Mouseup(e) {
         if (openAngel == 1) openAngel = 2;
         else if (openAngel == 2) openAngel = 3;
     }
+    if (openMouseTool == true && rightMouseDown == true)
+        displayMark(NowResize, null, null, null, viewportNumber);
     MouseDownCheck = false;
     rightMouseDown = false;
     if (openVR == true) return;
@@ -455,10 +523,42 @@ function Mouseup(e) {
         dcm.mark[DcmMarkLength].markX.push(currX);
         dcm.mark[DcmMarkLength].markY.push(currY);
         PatientMark.push(dcm);
+        refreshMark(dcm);
         for (var i = 0; i < Viewport_Total; i++)
             displayMark(NowResize, null, null, null, i);
         displayAngelRular();
         setXml_context();
+    }
+    if (openWriteGraphic == true && !Graphic_now_choose) {
+        let Uid = SearchNowUid();
+        var dcm = {};
+        dcm.study = Uid.studyuid;
+        dcm.series = Uid.sreiesuid;
+        dcm.color = "#0000FF";
+        dcm.mark = [];
+        dcm.showName = "graphic" //"" + getByid("xmlMarkNameText").value;
+        dcm.mark.push({});
+        dcm.sop = Uid.sopuid;
+        var DcmMarkLength = dcm.mark.length - 1;
+        dcm.mark[DcmMarkLength].type = "POLYLINE";
+        dcm.mark[DcmMarkLength].markX = [];
+        dcm.mark[DcmMarkLength].markY = [];
+        dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+        dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+        dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+        dcm.mark[DcmMarkLength].markY.push(currY);
+        dcm.mark[DcmMarkLength].markX.push(currX);
+        dcm.mark[DcmMarkLength].markY.push(currY);
+        dcm.mark[DcmMarkLength].markX.push(currX);
+        dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+        dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+        dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+        PatientMark.push(dcm);
+        for (var i = 0; i < Viewport_Total; i++)
+            displayMark(NowResize, null, null, null, i);
+        displayAngelRular();
+        set_Graphic_context();
+        refreshMark(dcm);
     }
 
     magnifierDiv.style.display = "none";

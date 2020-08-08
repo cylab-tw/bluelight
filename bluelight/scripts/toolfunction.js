@@ -347,33 +347,27 @@ function rotate3dVR(VrDistance) {
                 if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
                     if (degerrX >= 0 && degerrX <= 180) {
                         div3.style.zIndex = -ll + o3DListLength + o3DListLength;
-                    }
-                    else {
-                        div3.style.zIndex = ll + o3DListLength + o3DListLength;
-                    }
-                }
-                else {
-                    if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll - o3DListLength + o3DListLength;
-                    }
-                    else {
-                        div3.style.zIndex = ll - o3DListLength + o3DListLength;
-                    }
-                }
-            }
-            else {
-                if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
-                    if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3DListLength + o3DListLength;
-                    }
-                    else {
+                    } else {
                         div3.style.zIndex = ll + o3DListLength + o3DListLength;
                     }
                 } else {
                     if (degerrX >= 0 && degerrX <= 180) {
                         div3.style.zIndex = -ll - o3DListLength + o3DListLength;
+                    } else {
+                        div3.style.zIndex = ll - o3DListLength + o3DListLength;
                     }
-                    else {
+                }
+            } else {
+                if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
+                    if (degerrX >= 0 && degerrX <= 180) {
+                        div3.style.zIndex = -ll + o3DListLength + o3DListLength;
+                    } else {
+                        div3.style.zIndex = ll + o3DListLength + o3DListLength;
+                    }
+                } else {
+                    if (degerrX >= 0 && degerrX <= 180) {
+                        div3.style.zIndex = -ll - o3DListLength + o3DListLength;
+                    } else {
                         div3.style.zIndex = ll - o3DListLength + o3DListLength;
                     }
                 }
@@ -397,8 +391,7 @@ function rotate3dVR(VrDistance) {
                         div3.style.zIndex = ll - o3DListLength + o3DListLength;
                     }
                 }
-            }
-            else {
+            } else {
                 if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
                     if (degerrX >= 0 && degerrX <= 180) {
                         div3.style.zIndex = -ll + o3DListLength + o3DListLength;
@@ -435,4 +428,20 @@ function dropTable(num) {
         var elem = getByid("AimTable" + (num + 1));
         elem.parentElement.removeChild(elem);
     }
+}
+
+function getMarkSize(MarkCanvas,sizeCheck) {
+    var lineSize = parseFloat(getByid('markSizeText').value);
+    var lineWid = parseFloat(MarkCanvas.width) / parseFloat(Css(MarkCanvas, 'width'));
+    if (sizeCheck == true && lineWid <= 0) {
+        lineWid = parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width);
+        if (lineWid <= 1.5) lineWid = 1.5;
+        lineWid *= Math.abs(parseFloat(MarkCanvas.width) / parseFloat(Css(MarkCanvas, 'width')));
+    } else if (sizeCheck == true) {
+        lineWid *= Math.abs(parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width));
+    } else if (lineWid <= 0) {
+        lineWid = parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width);
+    }
+    if (lineWid <= 1.5) lineWid = 1.5;
+    return ((Math.abs(lineWid)) * 2 * lineSize);
 }
