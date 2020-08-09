@@ -246,6 +246,21 @@ function rotateCalculation(e) {
     return [currX11, currY11];
 }
 
+function rotatePoint(point, RotationAngle, RotationPoint) {
+    let cx = RotationPoint[0];
+    let cy = RotationPoint[1];
+    currX = point[0];
+    currY = point[1];
+    let radians = RotationAngle * (Math.PI / 180),
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (currX - cx)) + (sin * (currY - cy)) + cx,
+        ny = (cos * (currY - cy)) - (sin * (currX - cx)) + cy;
+    currX = nx;
+    currY = ny;
+    return [currX, currY];
+}
+
 function GetViewport(num) {
     if (!num) {
         if (num === 0) {
@@ -430,7 +445,7 @@ function dropTable(num) {
     }
 }
 
-function getMarkSize(MarkCanvas,sizeCheck) {
+function getMarkSize(MarkCanvas, sizeCheck) {
     var lineSize = parseFloat(getByid('markSizeText').value);
     var lineWid = parseFloat(MarkCanvas.width) / parseFloat(Css(MarkCanvas, 'width'));
     if (sizeCheck == true && lineWid <= 0) {
@@ -445,3 +460,101 @@ function getMarkSize(MarkCanvas,sizeCheck) {
     if (lineWid <= 1.5) lineWid = 1.5;
     return ((Math.abs(lineWid)) * 2 * lineSize);
 }
+
+function getRotationPoint(mark, middle) {
+    var Max_X = -999999,
+        Max_Y = -999999,
+        Min_X = 999999,
+        Min_Y = 999999;
+    for (var o = 0; o < mark.markX.length; o += 1) {
+        if (parseInt(mark.markX[o]) >= Max_X) Max_X = parseInt(mark.markX[o]);
+        if (parseInt(mark.markX[o]) <= Min_X) Min_X = parseInt(mark.markX[o]);
+    }
+    for (var o = 0; o < mark.markY.length; o += 1) {
+        if (parseInt(mark.markY[o]) >= Max_Y) Max_Y = parseInt(mark.markY[o]);
+        if (parseInt(mark.markY[o]) <= Min_Y) Min_Y = parseInt(mark.markY[o]);
+    }
+    if (middle == true) return [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2];
+    return [Max_X, Min_X, Max_Y, Min_Y];
+}
+
+function GetGraphicColor() {
+    //if (getByid("Graphicselected").selected) return "#0000FF";
+    if (getByid("GraphicBlackSelect").selected) return "#000000";
+    else if (getByid("GraphicBlueSelect").selected) return "#0000FF";
+    else if (getByid("GraphicBrownSelect").selected) return "#A52A2A";
+    else if (getByid("GraphicCyanSelect").selected) return "#00FFFF";
+    else if (getByid("GraphicGreenSelect").selected) return "#00FF00";
+    else if (getByid("GraphicMagentaSelect").selected) return "#FF00FF";
+    else if (getByid("GraphicOrangeSelect").selected) return "#FFA500";
+    else if (getByid("GraphicPurpleSelect").selected) return "#663399";
+    else if (getByid("GraphicRedSelect").selected) return "#FF0000";
+    else if (getByid("GraphicYellowSelect").selected) return "#FFFF00";
+    else if (getByid("GraphicWhiteSelect").selected) return "#FFFFFF";
+    else return "#0000FF";
+}
+
+function GetGraphicName() {
+    //if (getByid("Graphicselected").selected) return "T8";
+    if (getByid("GraphicBlackSelect").selected) return "T7";
+    else if (getByid("GraphicBlueSelect").selected) return "T8";
+    else if (getByid("GraphicBrownSelect").selected) return "T9";
+    else if (getByid("GraphicCyanSelect").selected) return "T10";
+    else if (getByid("GraphicGreenSelect").selected) return "T11";
+    else if (getByid("GraphicMagentaSelect").selected) return "T12";
+    else if (getByid("GraphicOrangeSelect").selected) return "T1";
+    else if (getByid("GraphicPurpleSelect").selected) return "T2";
+    else if (getByid("GraphicRedSelect").selected) return "T3";
+    else if (getByid("GraphicYellowSelect").selected) return "T4";
+    else if (getByid("GraphicWhiteSelect").selected) return "T5";
+    else return "T8";
+}
+
+function ConvertGraphicColor(r, g, b) {
+    var str = "" + r + "\\" + g + "\\" + b;
+    if (str == "0\\32896\\32896") return ["#000000", "T7"];
+    else if (str == "0\\32896\\33153") return ["#0000FF", "T8"];
+    else if (str == "393\\32998\\32947") return ["#A52A2A", "T9"];
+    else if (str == "0\\33153\\33153") return ["#00FFFF", "T10"];
+    else if (str == "0\\33153\\32896") return ["#00FF00", "T11"];
+    else if (str == "655\\32896\\33153") return ["#FF00FF", "T12"];
+    else if (str == "655\\33025\\32896") return ["#FFA500", "T1"];
+    else if (str == "328\\32896\\33025") return ["#663399", "T2"];
+    else if (str == "655\\32896\\32896") return ["#FF0000", "T3"];
+    else if (str == "655\\33025\\32896") return ["#FFFF00", "T4"];
+    else if (str == "655\\33153\\33153") return ["#FFFFFF", "T5"];
+    else return undefined;
+}
+
+function SetGraphicColor(str) {
+    if (str == "#000000") return "0\\32896\\32896";
+    else if (str == "#0000FF") return "0\\32896\\33153";
+    else if (str == "#A52A2A") return "393\\32998\\32947";
+    else if (str == "#00FFFF") return "0\\33153\\33153";
+    else if (str == "#00FF00") return "0\\33153\\32896";
+    else if (str == "#FF00FF") return "655\\32896\\33153";
+    else if (str == "#FFA500") return "655\\33025\\32896";
+    else if (str == "#663399") return "328\\32896\\33025";
+    else if (str == "#FF0000") return "655\\32896\\32896";
+    else if (str == "#FFFF00") return "655\\33025\\32896";
+    else if (str == "#FFFFFF") return "655\\33153\\33153";
+    else return "0\\32896\\33153";
+}
+
+/*
+function getColorFrom16(r, g, b) {
+    r = parseInt(r / 256);
+    g = parseInt(g / 256);
+    b = parseInt(b / 256);
+
+    function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    function rgbToHex(r, g, b) {
+        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    }
+    console.log(r + "," + g + "," + b);
+    return rgbToHex(r, g, b);
+}*/

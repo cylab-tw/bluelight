@@ -27,6 +27,7 @@ function loadLdcmview() {
   getByid("3dCave").style.display = "none";
   getByid("mprLightLabel").style.display = "none";
   getByid("xmlMarkName").style.display = "none";
+  getByid("GraphicStyleDiv").style.display = "none";
   labelPadding = 5;
 
   //設定放大鏡長寬
@@ -82,6 +83,8 @@ function loadLdcmview() {
     NewDiv.newMousePointX = 0;
     NewDiv.newMousePointY = 0;
     NewDiv.rotateValue = 0;
+    NewDiv.StudyDate = 0;
+    NewDiv.StudyTime = 0;
     NewDiv.openInvert = false;
 
     NewDiv.NowCanvasSizeWidth = null;
@@ -91,7 +94,7 @@ function loadLdcmview() {
     NewDiv.openMark = true;
     NewDiv.openPlay = false;
     //NewDiv.openDisplayMarkup = false;
-    NewDiv.DicomTagsList=[];
+    NewDiv.DicomTagsList = [];
 
     //只要取得canvas()就能快速取得該Viewport的影像
     NewDiv.canvas = function () {
@@ -399,7 +402,7 @@ function readJson(url) {
                 "&contentType=" + "application/dicom";
               try {
                 url = "wadouri:" + url;
-                 //載入DICOM的階層資料至物件清單
+                //載入DICOM的階層資料至物件清單
                 var Hierarchy = loadUID(DicomResponse[i]["0020000D"].Value[0], DicomResponse[i]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url, DicomResponse[i]["00100020"].Value[0]);
                 //預載入DICOM至Viewport
                 if (Hierarchy == 0)
@@ -408,7 +411,7 @@ function readJson(url) {
                   virtualLoadImage(url, 0);
               } catch (ex) {}
             }
-            
+
           }
         }
       }

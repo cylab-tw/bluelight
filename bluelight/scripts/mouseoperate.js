@@ -122,17 +122,17 @@ function Mousedown(e) {
         var currXml_X2 = currXml_X1;
         var currXml_Y2 = currXml_Y1;
 
-        if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
+        /*if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
             currXml_X2 = (currXml_X1 * GetViewport().imageOrientationX + currXml_Y1 * -GetViewport().imageOrientationY + 0);
             currXml_Y2 = (currXml_X1 * -GetViewport().imageOrientationX2 + currXml_Y1 * GetViewport().imageOrientationY2 + 0);
             if ((GetViewport().openHorizontalFlip != GetViewport().openVerticalFlip)) {
                 currXml_X2 = currXml_X2 - (currXml_X2 - currXml_X1) * 2;
                 currXml_Y2 = currXml_Y2 - (currXml_Y2 - currXml_Y1) * 2;
             }
-        }
+        }*/
         xml_pounch(currXml_X2, currXml_Y2);
     }
-    if (openWriteGraphic == true) {
+    if (openWriteGraphic == true && !rightMouseDown) {
         var currX = getCurrPoint(e)[0];
         var currY = getCurrPoint(e)[1];
 
@@ -141,15 +141,16 @@ function Mousedown(e) {
         var currXml_X2 = currXml_X1;
         var currXml_Y2 = currXml_Y1;
 
-        if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
-            currXml_X2 = (currXml_X1 * GetViewport().imageOrientationX + currXml_Y1 * -GetViewport().imageOrientationY + 0);
-            currXml_Y2 = (currXml_X1 * -GetViewport().imageOrientationX2 + currXml_Y1 * GetViewport().imageOrientationY2 + 0);
-            if ((GetViewport().openHorizontalFlip != GetViewport().openVerticalFlip)) {
-                currXml_X2 = currXml_X2 - (currXml_X2 - currXml_X1) * 2;
-                currXml_Y2 = currXml_Y2 - (currXml_Y2 - currXml_Y1) * 2;
-            }
-        }
-        // xml_pounch(currXml_X2, currXml_Y2);
+        /* if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
+             currXml_X2 = (currXml_X1 * GetViewport().imageOrientationX + currXml_Y1 * -GetViewport().imageOrientationY + 0);
+             currXml_Y2 = (currXml_X1 * -GetViewport().imageOrientationX2 + currXml_Y1 * GetViewport().imageOrientationY2 + 0);
+             if ((GetViewport().openHorizontalFlip != GetViewport().openVerticalFlip)) {
+                 currXml_X2 = currXml_X2 - (currXml_X2 - currXml_X1) * 2;
+                 currXml_Y2 = currXml_Y2 - (currXml_Y2 - currXml_Y1) * 2;
+             }
+         }*/
+        Graphic_pounch(currXml_X2, currXml_Y2);
+        //console.log(Graphic_now_choose);
     }
 
 }
@@ -277,6 +278,83 @@ function Mousemove(e) {
             displayMark(NowResize, null, null, null, i);
         displayAngelRular();
         return;
+    }
+    if (openWriteGraphic == true && (MouseDownCheck == true || rightMouseDown == true)) {
+        if (!Graphic_now_choose && MouseDownCheck == true) {
+            let Uid = SearchNowUid();
+            var dcm = {};
+            dcm.study = Uid.studyuid;
+            dcm.series = Uid.sreiesuid;
+            dcm.color = GetGraphicColor();
+            dcm.mark = [];
+            dcm.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
+            dcm.mark.push({});
+            dcm.sop = Uid.sopuid;
+            var DcmMarkLength = dcm.mark.length - 1;
+            dcm.mark[DcmMarkLength].type = "POLYLINE";
+            dcm.mark[DcmMarkLength].markX = [];
+            dcm.mark[DcmMarkLength].markY = [];
+            dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+            dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+            dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+            dcm.mark[DcmMarkLength].markY.push(currY);
+            dcm.mark[DcmMarkLength].markX.push(currX);
+            dcm.mark[DcmMarkLength].markY.push(currY);
+            dcm.mark[DcmMarkLength].markX.push(currX);
+            dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+            dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+            dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+            PatientMark.push(dcm);
+            refreshMark(dcm);
+            for (var i = 0; i < Viewport_Total; i++)
+                displayMark(NowResize, null, null, null, i);
+            displayAngelRular();
+            PatientMark.splice(PatientMark.indexOf(dcm), 1);
+        } else {
+            if (rightMouseDown == true) {
+                if (Math.abs(currY - GetViewport().originalPointY) > Math.abs(currX - GetViewport().originalPointX)) {
+                    if (!Graphic_now_choose.mark.RotationAngle) Graphic_now_choose.mark.RotationAngle = 0;
+                    if (currY < GetViewport().originalPointY - 1)
+                        Graphic_now_choose.mark.RotationAngle += parseInt((GetViewport().originalPointY - currY) / 3);
+                    else if (currY > GetViewport().originalPointY + 1)
+                        Graphic_now_choose.mark.RotationAngle -= parseInt((currY - GetViewport().originalPointY) / 3);
+
+                } else if (Math.abs(currX - GetViewport().originalPointX) > Math.abs(currY - GetViewport().originalPointY)) {
+                    if (!Graphic_now_choose.mark.RotationAngle) Graphic_now_choose.mark.RotationAngle = 0;
+                    if (currX < GetViewport().originalPointX - 1)
+                        Graphic_now_choose.mark.RotationAngle += parseInt((GetViewport().originalPointX - currX) / 3);
+                    else if (currX > GetViewport().originalPointX + 1)
+                        Graphic_now_choose.mark.RotationAngle -= parseInt((currX - GetViewport().originalPointX) / 3);
+                }
+                if (Graphic_now_choose.mark.RotationAngle > 360) Graphic_now_choose.mark.RotationAngle -= 360;
+                if (Graphic_now_choose.mark.RotationAngle < 0) Graphic_now_choose.mark.RotationAngle += 360;
+                GetViewport().originalPointX = currX;
+                GetViewport().originalPointY = currY;
+            } else if (MouseDownCheck == true) {
+                var Graphic_point = Graphic_now_choose.point;
+                if (Graphic_now_choose.value == "up") {
+                    for (var p = 0; p < Graphic_point.length; p++) {
+                        Graphic_now_choose.mark.markY[Graphic_point[p]] = currY;
+                    }
+                } else if (Graphic_now_choose.value == "down") {
+                    for (var p = 0; p < Graphic_point.length; p++) {
+                        Graphic_now_choose.mark.markY[Graphic_point[p]] = currY;
+                    }
+                } else if (Graphic_now_choose.value == "left") {
+                    for (var p = 0; p < Graphic_point.length; p++) {
+                        Graphic_now_choose.mark.markX[Graphic_point[p]] = currX;
+                    }
+                } else if (Graphic_now_choose.value == "right") {
+                    for (var p = 0; p < Graphic_point.length; p++) {
+                        Graphic_now_choose.mark.markX[Graphic_point[p]] = currX;
+                    }
+                }
+            }
+            if (Graphic_now_choose.mark.RotationAngle >= 0)
+                Graphic_now_choose.mark.RotationPoint = getRotationPoint(Graphic_now_choose.mark, true);
+            //Graphic_now_choose.mark.RotationPoint = [Graphic_now_choose.middle[0], Graphic_now_choose.middle[1]];
+            displayMark(NowResize, null, null, null, viewportNumber);
+        }
     }
     if (MouseDownCheck == true) {
         if (openMeasure == true) {
@@ -437,55 +515,9 @@ function Mousemove(e) {
                 } else if (xml_now_choose.value == "right") {
                     xml_now_choose.mark.markX[1] = currX;
                 }
-                setXml_context();
+                //setXml_context();
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
-            }
-        }
-        if (openWriteGraphic == true) {
-            if (!Graphic_now_choose) {
-                let Uid = SearchNowUid();
-                var dcm = {};
-                dcm.study = Uid.studyuid;
-                dcm.series = Uid.sreiesuid;
-                dcm.color = "#0000FF";
-                dcm.mark = [];
-                dcm.showName = "POLYLINE"; //"" + getByid("xmlMarkNameText").value;
-                dcm.mark.push({});
-                dcm.sop = Uid.sopuid;
-                var DcmMarkLength = dcm.mark.length - 1;
-                dcm.mark[DcmMarkLength].type = "POLYLINE";
-                dcm.mark[DcmMarkLength].markX = [];
-                dcm.mark[DcmMarkLength].markY = [];
-                dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
-                dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
-                dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
-                dcm.mark[DcmMarkLength].markY.push(currY);
-                dcm.mark[DcmMarkLength].markX.push(currX);
-                dcm.mark[DcmMarkLength].markY.push(currY);
-                dcm.mark[DcmMarkLength].markX.push(currX);
-                dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
-                dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
-                dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
-                PatientMark.push(dcm);
-                refreshMark(dcm);
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
-                displayAngelRular();
-                PatientMark.splice(PatientMark.indexOf(dcm), 1);
-            } else {
-                if (xml_now_choose.value == "up") {
-                    xml_now_choose.mark.markY[0] = currY;
-                } else if (xml_now_choose.value == "down") {
-                    xml_now_choose.mark.markY[1] = currY;
-                } else if (xml_now_choose.value == "left") {
-                    xml_now_choose.mark.markX[0] = currX;
-                } else if (xml_now_choose.value == "right") {
-                    xml_now_choose.mark.markX[1] = currX;
-                }
-                set_Graphic_context();
-                /* for (var i = 0; i < Viewport_Total; i++)
-                     displayMark(NowResize, null, null, null, i);*/
             }
         }
     }
@@ -527,16 +559,16 @@ function Mouseup(e) {
         for (var i = 0; i < Viewport_Total; i++)
             displayMark(NowResize, null, null, null, i);
         displayAngelRular();
-        setXml_context();
+        //setXml_context();
     }
     if (openWriteGraphic == true && !Graphic_now_choose) {
         let Uid = SearchNowUid();
         var dcm = {};
         dcm.study = Uid.studyuid;
         dcm.series = Uid.sreiesuid;
-        dcm.color = "#0000FF";
+        dcm.color = GetGraphicColor();
         dcm.mark = [];
-        dcm.showName = "graphic" //"" + getByid("xmlMarkNameText").value;
+        dcm.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
         dcm.mark.push({});
         dcm.sop = Uid.sopuid;
         var DcmMarkLength = dcm.mark.length - 1;
@@ -557,7 +589,7 @@ function Mouseup(e) {
         for (var i = 0; i < Viewport_Total; i++)
             displayMark(NowResize, null, null, null, i);
         displayAngelRular();
-        set_Graphic_context();
+        //set_Graphic_context();
         refreshMark(dcm);
     }
 

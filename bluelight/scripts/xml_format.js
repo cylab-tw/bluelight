@@ -74,18 +74,20 @@ function setXml_context() {
     temp = "" + xml_format_object;
     if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
       for (var m = 0; m < PatientMark[n].mark.length; m++) {
-        var tempMark = PatientMark[n].mark[m];
-        for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 2) {
-          var x1 = parseInt(tempMark.markX[o]);
-          var y1 = parseInt(tempMark.markY[o]);
-          var x2 = parseInt(tempMark.markX[o + 1]);
-          var y2 = parseInt(tempMark.markY[o + 1]);
-          temp = temp.replace("_xmin_", x1 < x2 ? x1 : x2);
-          temp = temp.replace("_ymin_", y1 < y2 ? y1 : y2);
-          temp = temp.replace("_xmax_", x1 > x2 ? x1 : x2);
-          temp = temp.replace("_ymax_", y1 > y2 ? y1 : y2);
-          temp = temp.replace("_name_", PatientMark[n].showName);
-          xml_format_object_list.push(temp);
+        if (PatientMark[n].mark[m].type == "XML_mark") {
+          var tempMark = PatientMark[n].mark[m];
+          for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 2) {
+            var x1 = parseInt(tempMark.markX[o]);
+            var y1 = parseInt(tempMark.markY[o]);
+            var x2 = parseInt(tempMark.markX[o + 1]);
+            var y2 = parseInt(tempMark.markY[o + 1]);
+            temp = temp.replace("_xmin_", x1 < x2 ? x1 : x2);
+            temp = temp.replace("_ymin_", y1 < y2 ? y1 : y2);
+            temp = temp.replace("_xmax_", x1 > x2 ? x1 : x2);
+            temp = temp.replace("_ymax_", y1 > y2 ? y1 : y2);
+            temp = temp.replace("_name_", PatientMark[n].showName);
+            xml_format_object_list.push(temp);
+          }
         }
       }
     }
@@ -102,7 +104,7 @@ function getXml_context() {
 }
 
 function xml_pounch(currX, currY) {
-  let block_size = getMarkSize(GetViewportMark(),false);
+  let block_size = getMarkSize(GetViewportMark(), false) * 2;
   let index = SearchUid2Index(GetViewport((viewportNumber)).alt);
   let i = index[0],
     j = index[1],

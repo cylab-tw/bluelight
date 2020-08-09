@@ -2,14 +2,14 @@ function readXML(url) {
   var oReq = new XMLHttpRequest();
   try {
     oReq.open("get", url, true);
-  } catch (err) { }
+  } catch (err) {}
   oReq.responseType = "xml";
   oReq.onreadystatechange = function (oEvent) {
     try {
       var parser = new DOMParser();
       var xmlDoc = parser.parseFromString(oReq.response, "text/xml");
       var studyTemp = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-        getElementsByTagName("imageReferenceEntityCollection")[0].getElementsByTagName("ImageReferenceEntity")[0]
+      getElementsByTagName("imageReferenceEntityCollection")[0].getElementsByTagName("ImageReferenceEntity")[0]
         .getElementsByTagName("imageStudy")[0];
 
       var study = (studyTemp.getElementsByTagName("instanceUid")[0].getAttribute("root"));
@@ -18,7 +18,7 @@ function readXML(url) {
         .getElementsByTagName("Image")[0].getElementsByTagName("sopInstanceUid")[0].getAttribute("root"));
 
       var temp = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-        getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("markupEntityCollection")[0]
+      getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("markupEntityCollection")[0]
         .getElementsByTagName("MarkupEntity");
       var dcm = {};
       dcm.study = study;
@@ -28,14 +28,14 @@ function readXML(url) {
       dcm.showName = "AIM";
       try {
         var tempText = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-          getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("imagingObservationEntityCollection")[0]
+        getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("imagingObservationEntityCollection")[0]
           .getElementsByTagName("ImagingObservationEntity");
         for (var i = 0; i < tempText.length; i++) {
           dcm.mark.push({});
           var DcmMarkLength = dcm.mark.length - 1;
           dcm.mark[DcmMarkLength].type = "Characteristic";
           var temp2 = tempText[i].getElementsByTagName("imagingObservationCharacteristicCollection")[0].
-            getElementsByTagName("ImagingObservationCharacteristic");
+          getElementsByTagName("ImagingObservationCharacteristic");
           dcm.mark[DcmMarkLength].markTitle = "";
           dcm.mark[DcmMarkLength].markTitle = "" + tempText[i].getElementsByTagName("label")[0].getAttribute("value") +
             ":" + tempText[i].getElementsByTagName("typeCode")[0].getElementsByTagName("iso:displayName")[0].getAttribute("value");;
@@ -103,7 +103,7 @@ function readXML(url) {
 
       PatientMark.push(dcm);
       refreshMark(dcm);
-    } catch (ex) { }
+    } catch (ex) {}
   }
   oReq.send();
 }
@@ -112,7 +112,7 @@ function readDicom(url, patientmark, openfile) {
   var oReq = new XMLHttpRequest();
   try {
     oReq.open("get", url, true);
-  } catch (err) { }
+  } catch (err) {}
   oReq.responseType = "arraybuffer";
   oReq.onreadystatechange = function (oEvent) {
     if (oReq.readyState == 4) {
@@ -164,7 +164,7 @@ function readDicom(url, patientmark, openfile) {
           dcm.mark[DcmMarkLength].pixelData = tempPixeldata.slice(0);;
           patientmark.push(dcm);
           refreshMark(dcm);
-        } catch (ex) { }
+        } catch (ex) {}
         ////暫時取消的功能
         /*
         if (openfile && openfile == true) {
@@ -206,14 +206,25 @@ function readDicom(url, patientmark, openfile) {
                 dcm.sop = sop1;
                 dcm.mark = [];
                 dcm.mark.push({});
+
                 var tvList = ['POLYLINE'];
+                var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
+                var color = ConvertGraphicColor(ColorSequence.uint16('x00700251', 0), ColorSequence.uint16('x00700251', 1), ColorSequence.uint16('x00700251', 2));
+                if (color) {
+                  dcm.color = color[0];
+                  tvList = [color[1]];
+                }
+
                 dcm.showName = tvList[0];
                 var DcmMarkLength = dcm.mark.length - 1;
                 dcm.mark[DcmMarkLength].type = "POLYLINE";
                 dcm.mark[DcmMarkLength].markX = [];
                 dcm.mark[DcmMarkLength].markY = [];
+                dcm.mark[DcmMarkLength].RotationAngle = tempDataSet[j].dataSet.double('x00700230');
+                dcm.mark[DcmMarkLength].RotationPoint = [tempDataSet[j].dataSet.float('x00700273', 0), tempDataSet[j].dataSet.float('x00700273', 1)];
 
                 var xTemp16 = tempDataSet[j].dataSet.string('x00700022');
+
                 function getTag(tag) {
                   var group = tag.substring(1, 5);
                   var element = tag.substring(5, 9);
@@ -270,7 +281,7 @@ function readDicom(url, patientmark, openfile) {
                   var output3 = xTemp16[k2 + 2].charCodeAt(0).toString(2) + "";
                   var output4 = xTemp16[k2 + 3].charCodeAt(0).toString(2) + "";
                   var data = [parseInt(output1, 2), parseInt(output2, 2), parseInt(output3, 2), parseInt(output4, 2)];
-                  var buf = new ArrayBuffer(4 /* * 4*/);
+                  var buf = new ArrayBuffer(4 /* * 4*/ );
                   var view = new DataView(buf);
                   data.forEach(function (b, i) {
                     view.setUint8(i, b, true);
@@ -339,7 +350,9 @@ function loadDicomSeg(image, imageId) {
       var pixeldata = new Uint8Array(dataSet.byteArray.buffer,
         dataSet.elements.x7fe00010.fragments[i].position,
         dataSet.elements.x7fe00010.fragments[i].length)
-      var NewpixelData = decodeImageFrame(ImageFrame, dataSet.string("x00020010"), pixeldata, { usePDFJS: false }).pixelData;
+      var NewpixelData = decodeImageFrame(ImageFrame, dataSet.string("x00020010"), pixeldata, {
+        usePDFJS: false
+      }).pixelData;
       var tvList = ['SEG'];
       var dcm = {};
       dcm.study = image.data.string('x0020000d');

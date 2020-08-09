@@ -1,5 +1,5 @@
-var Graphic_Annotation_format = 
-`<?xml version="1.0" encoding="UTF-8"?>
+var Graphic_Annotation_format =
+    `<?xml version="1.0" encoding="UTF-8"?>
 <file-format>
     <meta-header xfer="1.2.840.10008.1.2.1" name="Little Endian Explicit">
         <element tag="0002,0000" vr="UL" vm="1" len="4" name="FileMetaInformationGroupLength">200</element>
@@ -15,9 +15,9 @@ var Graphic_Annotation_format =
         <element tag="0008,0016" vr="UI" vm="1" len="28" name="SOPClassUID">1.2.840.10008.5.1.4.1.1.11.1</element>
         <element tag="0008,0018" vr="UI" vm="1" len="56" name="SOPInstanceUID">___SOPInstanceUID___</element>
         <element tag="0008,0020" vr="DA" vm="1" len="8" name="StudyDate">___StudyDate___</element>
-        <element tag="0008,0023" vr="DA" vm="1" len="8" name="ContentDate">20200201</element>
+        <element tag="0008,0023" vr="DA" vm="1" len="8" name="ContentDate">___StudyDate___</element>
         <element tag="0008,0030" vr="TM" vm="1" len="6" name="StudyTime">___StudyTime___</element>
-        <element tag="0008,0033" vr="TM" vm="1" len="10" name="ContentTime">093348.775</element>
+        <element tag="0008,0033" vr="TM" vm="1" len="10" name="ContentTime">___StudyTime___</element>
         <element tag="0008,0050" vr="SH" vm="0" len="0" name="AccessionNumber"></element>
         <element tag="0008,0060" vr="CS" vm="1" len="2" name="Modality">PR</element>
         <element tag="0008,1030" vr="LO" vm="1" len="28" name="StudyDescription">L- SPINE AP LAT (FOR ORTHO)</element>
@@ -73,20 +73,7 @@ var Graphic_Annotation_format =
                 <sequence tag="0070,0008" vr="SQ" card="0" len="0" name="TextObjectSequence">
                 </sequence>
                 <sequence tag="0070,0009" vr="SQ" card="1" len="158" name="GraphicObjectSequence">
-                    <item card="7" len="150">
-                        <element tag="0070,0005" vr="CS" vm="1" len="6" name="GraphicAnnotationUnits">PIXEL</element>
-                        <element tag="0070,0020" vr="US" vm="1" len="2" name="GraphicDimensions">2</element>
-                        <element tag="0070,0021" vr="US" vm="1" len="2" name="NumberOfGraphicPoints">5</element>
-                        <element tag="0070,0022" vr="FL" vm="___vm___" len="___len___" name="GraphicData">___GraphicData___</element>
-                        <element tag="0070,0023" vr="CS" vm="1" len="8" name="GraphicType">___GraphicType___</element>
-                        <element tag="0070,0024" vr="CS" vm="1" len="2" name="GraphicFilled">N</element>
-                        <sequence tag="0070,0232" vr="SQ" card="1" len="34" name="LineStyleSequence">
-                            <item card="2" len="26">
-                                <element tag="0070,0251" vr="US" vm="3" len="6" name="PatternOnColorCIELabValue">655\\32896\\33153</element>
-                                <element tag="0070,0253" vr="FL" vm="1" len="4" name="LineThickness">1</element>
-                            </item>
-                        </sequence>
-                    </item>
+___item___
                 </sequence>
             </item>
         </sequence>
@@ -105,44 +92,164 @@ var Graphic_Annotation_format =
         <element tag="0070,0084" vr="PN" vm="1" len="10" name="ContentCreatorName">Bobby Chou</element>
     </data-set>
 </file-format>`;
-//514.86487\\251.83784\\801.35138\\251.83784\\801.35138\\446.43243\\514.86487\\446.43243\\514.86487\\251.83784
+
 var Graphic_format_object_list = [];
 var Graphic_format_tail = `
-</annotation>
-`;
+                    <item card="7" len="150">
+                        <element tag="0070,0005" vr="CS" vm="1" len="6" name="GraphicAnnotationUnits">PIXEL</element>
+                        <element tag="0070,0020" vr="US" vm="1" len="2" name="GraphicDimensions">2</element>
+                        <element tag="0070,0021" vr="US" vm="1" len="2" name="NumberOfGraphicPoints">5</element>
+                        <element tag="0070,0022" vr="FL" vm="___vm___" len="___len___" name="GraphicData">___GraphicData___</element>
+                        <element tag="0070,0023" vr="CS" vm="1" len="8" name="GraphicType">___GraphicType___</element>___rotation___
+                        <element tag="0070,0024" vr="CS" vm="1" len="2" name="GraphicFilled">N</element>
+                        <sequence tag="0070,0232" vr="SQ" card="1" len="34" name="LineStyleSequence">
+                            <item card="2" len="26">
+                                <element tag="0070,0251" vr="US" vm="3" len="6" name="PatternOnColorCIELabValue">___PatternOnColorCIELabValue___</element>
+                                <element tag="0070,0253" vr="FL" vm="1" len="4" name="LineThickness">1</element>
+                            </item>
+                        </sequence>
+                    </item>`;
+var Graphic_format_rotation = `
+
+                        <element tag="0070,0230" vr="FD" vm="1" len="8" name="RotationAngle">___RotationAngle___</element>
+                        <element tag="0070,0273" vr="FL" vm="2" len="8" name="RotationPoint">___RotationPoint___</element>`
 var Graphic_now_choose = null;
 var temp_xml_format = "";
+
+
+function Graphic_pounch(currX, currY) {
+    let block_size = getMarkSize(GetViewportMark(), false) * 2;
+    let index = SearchUid2Index(GetViewport((viewportNumber)).alt);
+    let i = index[0],
+        j = index[1],
+        k = index[2];
+    for (var n = 0; n < PatientMark.length; n++) {
+        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
+            for (var m = 0; m < PatientMark[n].mark.length; m++) {
+                if (PatientMark[n].mark[m].type == "POLYLINE") {
+                    var tempMark = PatientMark[n].mark[m];
+                    var Max_X = -999999,
+                        Max_Y = -999999,
+                        Min_X = 999999,
+                        Min_Y = 999999;
+                    var Max_X_list = [],
+                        Max_Y_list = [],
+                        Min_X_list = [],
+                        Min_Y_list = [];
+                    for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 1) {
+                        if (parseInt(tempMark.markX[o]) >= Max_X) Max_X = parseInt(tempMark.markX[o]);
+                        if (parseInt(tempMark.markX[o]) <= Min_X) Min_X = parseInt(tempMark.markX[o]);
+                    }
+                    for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 1) {
+                        if (Max_X == parseInt(tempMark.markX[o])) Max_X_list.push(o);
+                        if (Min_X == parseInt(tempMark.markX[o])) Min_X_list.push(o);
+                    }
+                    for (var o = 0; o < PatientMark[n].mark[m].markY.length; o += 1) {
+                        if (parseInt(tempMark.markY[o]) >= Max_Y) Max_Y = parseInt(tempMark.markY[o]);
+                        if (parseInt(tempMark.markY[o]) <= Min_Y) Min_Y = parseInt(tempMark.markY[o]);
+                    }
+                    for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 1) {
+                        if (Max_Y == parseInt(tempMark.markY[o])) Max_Y_list.push(o);
+                        if (Min_Y == parseInt(tempMark.markY[o])) Min_Y_list.push(o);
+                    }
+                    for (var o = 0; o < PatientMark[n].mark[m].markX.length - 1; o += 1) {
+                        var x_middle = (parseInt(tempMark.markX[o]) + parseInt(tempMark.markX[o + 1])) / 2;
+                        var y_middle = (parseInt(tempMark.markY[o]) + parseInt(tempMark.markY[o + 1])) / 2;
+                        if (currY + block_size >= y_middle && currX + block_size >= x_middle && currY < y_middle + block_size && currX < x_middle + block_size) {
+                            if (y_middle == Max_Y) {
+                                Graphic_now_choose = {
+                                    reference: PatientMark[n],
+                                    point: Max_Y_list,
+                                    mark: tempMark,
+                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                                    value: 'up'
+                                };
+                                return true;
+                            } else if (y_middle == Min_Y) {
+                                Graphic_now_choose = {
+                                    reference: PatientMark[n],
+                                    point: Min_Y_list,
+                                    mark: tempMark,
+                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                                    value: 'down'
+                                };
+                                return true;
+                            } else if (x_middle == Min_X) {
+                                Graphic_now_choose = {
+                                    reference: PatientMark[n],
+                                    point: Min_X_list,
+                                    mark: tempMark,
+                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                                    value: 'left'
+                                };
+                                return true;
+                            } else if (x_middle == Max_X) {
+                                Graphic_now_choose = {
+                                    reference: PatientMark[n],
+                                    point: Max_X_list,
+                                    mark: tempMark,
+                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                                    value: 'right'
+                                };
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Graphic_now_choose = null;
+    return false;
+}
 
 function set_Graphic_context() {
     Graphic_format_object_list = []
     let temp = ""
-    // x1 = parseInt(x1); x2 = parseInt(x2); y1 = parseInt(y1); y2 = parseInt(y2);
+    let tail_list = "";
     let index = SearchUid2Index(GetViewport().alt);
     let i = index[0],
         j = index[1],
         k = index[2];
-
+    temp = "" + Graphic_Annotation_format;
     for (var n = 0; n < PatientMark.length; n++) {
-        temp = "" + Graphic_Annotation_format;
         if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
+            let tail = "" + Graphic_format_tail;
             for (var m = 0; m < PatientMark[n].mark.length; m++) {
                 var tempMark = PatientMark[n].mark[m];
                 var mark_xy = "";
                 for (var o = 0; o < tempMark.markX.length; o += 1) {
-                    var x1 = parseInt(tempMark.markX[o])+".0123";
-                    var y1 = parseInt(tempMark.markY[o])+".0123";
+                    var x1 = parseInt(tempMark.markX[o]) + ".0123";
+                    var y1 = parseInt(tempMark.markY[o]) + ".0123";
                     if (o != 0) mark_xy += "\\";
                     mark_xy += x1 + "\\" + y1;
+                }  
+                tail = tail.replace("___GraphicData___", mark_xy);
+                tail = tail.replace("___vm___", "4");
+                tail = tail.replace("___len___", tempMark.markX.length + tempMark.markY.length);
+                tail = tail.replace("___PatternOnColorCIELabValue___", "" + SetGraphicColor(PatientMark[n].color));
+                tail = tail.replace("___GraphicType___", "POLYLINE");
+                if (tempMark.RotationAngle && tempMark.RotationPoint) {
+                    var rotation = ("" + Graphic_format_rotation).replace("___RotationAngle___", tempMark.RotationAngle);
+                    rotation = rotation.replace("___RotationPoint___", "" + tempMark.RotationPoint[0] + "\\" + tempMark.RotationPoint[1]);
+                    tail = tail.replace("___rotation___", rotation);
+                } else {
+                    tail = tail.replace("___rotation___", "");
                 }
-                temp = temp.replace("___GraphicData___", mark_xy);
-                temp = temp.replace("___ReferencedSOPInstanceUID___", PatientMark[n].sop);
-                temp = temp.replace("___vm___", "4");
-                temp = temp.replace("___len___", tempMark.markX.length + tempMark.markY.length);
-                temp = temp.replace("___GraphicType___", "POLYLINE");
             }
-            Graphic_format_object_list.push(temp);
+            tail_list += tail;
+            for (var c = 0; c < 2; c++) {
+                temp = temp.replace("___StudyDate___", GetViewport().StudyDate);
+                temp = temp.replace("___StudyTime___", GetViewport().StudyTime);
+                temp = temp.replace("___StudyInstanceUID___", Patient.Study[i].StudyUID);
+                temp = temp.replace("___SeriesInstanceUID___", Patient.Study[i].Series[j].SeriesUID);
+                temp = temp.replace("___SOPInstanceUID___", Patient.Study[i].Series[j].Sop[k].SopUID);
+                temp = temp.replace("___ReferencedSOPInstanceUID___", PatientMark[n].sop);
+            }
         }
     }
+    temp = temp.replace("___item___", tail_list);
+    Graphic_format_object_list.push(temp);
 }
 
 function get_Graphic_context() {
@@ -152,12 +259,3 @@ function get_Graphic_context() {
     }
     return temp_str;
 }
-/*
-function get_Graphic_context() {
-    var temp_str = "";
-    for (var i = 0; i < xml_format_object_list.length; i++) {
-        temp_str += xml_format_object_list[i];
-    }
-    return xml_format_title.replace("_width_", GetViewport().imageWidth).replace("_height_", GetViewport().imageHeight) +
-        temp_str + xml_format_tail;
-}*/
