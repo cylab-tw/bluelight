@@ -193,7 +193,7 @@ function displayRular(viewportNum0) {
             x1 += (10 * GetViewport(viewportNum).PixelSpacingX) * (parseFloat(canvas.style.width) / GetViewport(viewportNum).imageWidth);
         }
         tempctx.closePath();
-    } catch (ex) {}
+    } catch (ex) { }
     displayRular2(viewportNum0);
 }
 
@@ -226,14 +226,14 @@ function displayRular2(viewportNum0) {
             y1 += (10 * GetViewport(viewportNum).PixelSpacingY) * (parseFloat(canvas.style.height) / GetViewport(viewportNum).imageHeight);
         }
         tempctx.closePath();
-    } catch (ex) {}
+    } catch (ex) { }
 }
 
 function displayAngelRular() {
     if (!openAngel) return;
     if (parseInt(Math.sqrt(
-            Math.pow(AngelXY1[0] / GetViewport().PixelSpacingX - AngelXY0[0] / GetViewport().PixelSpacingX, 2) +
-            Math.pow(AngelXY1[1] / GetViewport().PixelSpacingY - AngelXY0[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
+        Math.pow(AngelXY1[0] / GetViewport().PixelSpacingX - AngelXY0[0] / GetViewport().PixelSpacingX, 2) +
+        Math.pow(AngelXY1[1] / GetViewport().PixelSpacingY - AngelXY0[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
 
     var MarkCanvas = GetViewportMark();
     var tempctx = MarkCanvas.getContext("2d");
@@ -280,8 +280,8 @@ function displayAngelRular() {
 function displayMeasureRular() {
     if (!openMeasure) return;
     if (parseInt(Math.sqrt(
-            Math.pow(MeasureXY2[0] / GetViewport().PixelSpacingX - MeasureXY[0] / GetViewport().PixelSpacingX, 2) +
-            Math.pow(MeasureXY2[1] / GetViewport().PixelSpacingY - MeasureXY[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
+        Math.pow(MeasureXY2[0] / GetViewport().PixelSpacingX - MeasureXY[0] / GetViewport().PixelSpacingX, 2) +
+        Math.pow(MeasureXY2[1] / GetViewport().PixelSpacingY - MeasureXY[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
 
     var MarkCanvas = GetViewportMark();
     var tempctx = MarkCanvas.getContext("2d");
@@ -384,8 +384,8 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
         if (GetViewport(viewportNum).imageOrientationX && GetViewport(viewportNum).imageOrientationY && GetViewport(viewportNum).imageOrientationZ) {
             tempctx.setTransform(new DOMMatrix(
                 [GetViewport(viewportNum).imageOrientationX, -GetViewport(viewportNum).imageOrientationX2, 0, GetViewport(viewportNum).imagePositionX * GetViewport(viewportNum).PixelSpacingX,
-                    -GetViewport(viewportNum).imageOrientationY, GetViewport(viewportNum).imageOrientationY2, 0, GetViewport(viewportNum).imagePositionY * GetViewport(viewportNum).PixelSpacingY,
-                    GetViewport(viewportNum).imageOrientationZ, GetViewport(viewportNum).imageOrientationZ2, 0, GetViewport(viewportNum).imagePositionZ,
+                -GetViewport(viewportNum).imageOrientationY, GetViewport(viewportNum).imageOrientationY2, 0, GetViewport(viewportNum).imagePositionY * GetViewport(viewportNum).PixelSpacingY,
+                GetViewport(viewportNum).imageOrientationZ, GetViewport(viewportNum).imageOrientationZ2, 0, GetViewport(viewportNum).imagePositionZ,
                     0, 0, 0, 1
                 ]));
             checkTransform = true;
@@ -545,11 +545,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                     if (PatientMark[n].mark[m].type == "XML_mark") {
                         tempctx.save();
                         tempctx.setTransform(1, 0, 0, 1, 0, 0);
-                        console.log(tempctx.lineWidth);
                         tempctx.font = "" + (parseInt(tempctx.lineWidth) * 5) + "px Arial";
-                        //console.log(tempctx.font);
-                       // tempctx.font="15px Arial";
-                        console.log(tempctx.font);
                         tempctx.fillStyle = "red";
                         if (openWriteXML == true) {
                             var tempMark = PatientMark[n].mark[m];
@@ -679,7 +675,6 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
 
                             var x1 = tempMark.markX[o] * 1 - currX;
                             var y1 = tempMark.markY[o] * 1 - currY;
-                            var o2 = o == tempMark.markX.length - 1 ? 0 : o + 1;
                             var x2 = tempMark.markX[o + 1] * 1 - currX;
                             var y2 = tempMark.markY[o + 1] * 1 - currY;
 
@@ -714,13 +709,23 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                     [x2, y2] = rotatePoint([x2, y2], -tempMark.RotationAngle, tempMark.RotationPoint);
                                 }
                                 tempctx.lineWidth = "" + parseInt(tempctx.lineWidth) * 2;
+                                var fillstyle = tempctx.fillStyle;
+
+                                //tempctx.fillStyle = "#FF0000";
+
+                                if (Graphic_now_choose && Graphic_now_choose.mark == tempMark) tempctx.strokeStyle = getRGBFrom0xFF(tempctx.strokeStyle, false, true);
                                 tempctx.beginPath();
-                                tempctx.fillStyle = "#FF0000";
-                                if (Graphic_now_choose && Graphic_now_choose.mark == tempMark) tempctx.fillStyle = "#FF00FF";
-                                if (Graphic_now_choose) {}
                                 tempctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(tempctx.lineWidth), 0, 2 * Math.PI);
-                                tempctx.fill();
+                                tempctx.stroke();
                                 tempctx.closePath();
+
+                                for (var fil = 0; fil < 2; fil++) {
+                                    tempctx.fillStyle = fillstyle;
+                                    tempctx.beginPath();
+                                    tempctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(parseInt(tempctx.lineWidth)), 0, 2 * Math.PI);
+                                    tempctx.fill();
+                                    tempctx.closePath();
+                                }
                                 tempctx.lineWidth = "" + parseInt(tempctx.lineWidth) / 2;
                             }
                         }
@@ -786,11 +791,11 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         for (var o = 0; o < PatientMark[n].mark[m].markX.length; o++) {
                             var tempMark = PatientMark[n].mark[m];
                             tempctx.beginPath();
-                            x1 = tempMark.markX[o] - currX /* * GetViewport(viewportNum).PixelSpacingX*/ ;
-                            y1 = tempMark.markY[o] - currY /** GetViewport(viewportNum).PixelSpacingY*/ ;
+                            x1 = tempMark.markX[o] - currX /* * GetViewport(viewportNum).PixelSpacingX*/;
+                            y1 = tempMark.markY[o] - currY /** GetViewport(viewportNum).PixelSpacingY*/;
                             o2 = o == tempMark.markX.length - 1 ? 0 : o + 1;
-                            x2 = tempMark.markX[o2] - currX /* * GetViewport(viewportNum).PixelSpacingX*/ ;
-                            y2 = tempMark.markY[o2] - currY /* * GetViewport(viewportNum).PixelSpacingY*/ ;
+                            x2 = tempMark.markX[o2] - currX /* * GetViewport(viewportNum).PixelSpacingX*/;
+                            y2 = tempMark.markY[o2] - currY /* * GetViewport(viewportNum).PixelSpacingY*/;
                             if (magnifier && magnifier == true) {
                                 if (GetViewport(viewportNum).openHorizontalFlip == true) {
                                     x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) + currX;
@@ -931,11 +936,11 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         for (var o = 0; o < PatientMark[n].mark[m].markX.length; o++) {
                             var tempMark = PatientMark[n].mark[m];
                             tempctx.beginPath();
-                            var x1 = tempMark.markX[o] - currX /* * GetViewport(viewportNum).PixelSpacingX*/ ;
-                            var y1 = tempMark.markY[o] - currY /* * GetViewport(viewportNum).PixelSpacingY*/ ;
+                            var x1 = tempMark.markX[o] - currX /* * GetViewport(viewportNum).PixelSpacingX*/;
+                            var y1 = tempMark.markY[o] - currY /* * GetViewport(viewportNum).PixelSpacingY*/;
                             var o2 = o == tempMark.markX.length - 1 ? 0 : o + 1;
-                            var x2 = tempMark.markX[o2] - currX /* * GetViewport(viewportNum).PixelSpacingX*/ ;
-                            var y2 = tempMark.markY[o2] - currY /* * GetViewport(viewportNum).PixelSpacingY*/ ;
+                            var x2 = tempMark.markX[o2] - currX /* * GetViewport(viewportNum).PixelSpacingX*/;
+                            var y2 = tempMark.markY[o2] - currY /* * GetViewport(viewportNum).PixelSpacingY*/;
                             if (magnifier && magnifier == true) {
                                 if (GetViewport(viewportNum).openHorizontalFlip == true) {
                                     x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) + currX;

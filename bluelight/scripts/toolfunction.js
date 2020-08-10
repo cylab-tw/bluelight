@@ -541,12 +541,19 @@ function SetGraphicColor(str) {
     else return "0\\32896\\33153";
 }
 
-/*
-function getColorFrom16(r, g, b) {
-    r = parseInt(r / 256);
-    g = parseInt(g / 256);
-    b = parseInt(b / 256);
+function equal_TOL(a, b, tolerance) {
+    if (tolerance === undefined) tolerance = 1;
+    if (Math.abs(a - b) <= tolerance) return true;
+    return false;
+}
 
+
+function getColorFrom16(r, g, b, bit) {
+    if (bit == 16) {
+        r = parseInt(r / 256);
+        g = parseInt(g / 256);
+        b = parseInt(b / 256);
+    }
     function componentToHex(c) {
         var hex = c.toString(16);
         return hex.length == 1 ? "0" + hex : hex;
@@ -555,6 +562,26 @@ function getColorFrom16(r, g, b) {
     function rgbToHex(r, g, b) {
         return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
     }
-    console.log(r + "," + g + "," + b);
     return rgbToHex(r, g, b);
-}*/
+}
+function getRGBFrom0xFF(color, RGB, invert) {
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
+    var R = hexToRgb(color).r;
+    var G = hexToRgb(color).g;
+    var B = hexToRgb(color).b;
+    if (invert == true) {
+        R = 255 - R;
+        G = 255 - G;
+        B = 255 - B;
+    }
+    if (RGB == true) return ([R, G, B]);
+    else return (getColorFrom16(R, G, B,8));
+}

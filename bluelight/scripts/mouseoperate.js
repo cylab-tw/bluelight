@@ -193,7 +193,7 @@ function Mousemove(e) {
                         GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
                         GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
                         GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
-                    } catch (ex) {}
+                    } catch (ex) { }
                 }
             }
             if (GetmouseY(e) < windowMouseY - 2) {
@@ -313,14 +313,14 @@ function Mousemove(e) {
         } else {
             if (rightMouseDown == true) {
                 if (Math.abs(currY - GetViewport().originalPointY) > Math.abs(currX - GetViewport().originalPointX)) {
-                    if (!Graphic_now_choose.mark.RotationAngle) Graphic_now_choose.mark.RotationAngle = 0;
+                    if (!Graphic_now_choose.mark || !Graphic_now_choose.mark.RotationAngle) Graphic_now_choose.mark.RotationAngle = 0;
                     if (currY < GetViewport().originalPointY - 1)
                         Graphic_now_choose.mark.RotationAngle += parseInt((GetViewport().originalPointY - currY) / 3);
                     else if (currY > GetViewport().originalPointY + 1)
                         Graphic_now_choose.mark.RotationAngle -= parseInt((currY - GetViewport().originalPointY) / 3);
 
                 } else if (Math.abs(currX - GetViewport().originalPointX) > Math.abs(currY - GetViewport().originalPointY)) {
-                    if (!Graphic_now_choose.mark.RotationAngle) Graphic_now_choose.mark.RotationAngle = 0;
+                    if (!Graphic_now_choose.mark || !Graphic_now_choose.mark.RotationAngle) Graphic_now_choose.mark.RotationAngle = 0;
                     if (currX < GetViewport().originalPointX - 1)
                         Graphic_now_choose.mark.RotationAngle += parseInt((GetViewport().originalPointX - currX) / 3);
                     else if (currX > GetViewport().originalPointX + 1)
@@ -473,7 +473,7 @@ function Mousemove(e) {
                         GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
                         GetViewport(i).newMousePointX = GetViewport().newMousePointX;
                         GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-                    } catch (ex) {}
+                    } catch (ex) { }
                 }
             }
             putLabel();

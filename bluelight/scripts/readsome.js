@@ -222,8 +222,8 @@ function readDicom(url, patientmark, openfile) {
                 dcm.mark[DcmMarkLength].type = "POLYLINE";
                 dcm.mark[DcmMarkLength].markX = [];
                 dcm.mark[DcmMarkLength].markY = [];
-                dcm.mark[DcmMarkLength].RotationAngle = tempDataSet[j].dataSet.double('x00700230');
-                dcm.mark[DcmMarkLength].RotationPoint = [tempDataSet[j].dataSet.float('x00700273', 0), tempDataSet[j].dataSet.float('x00700273', 1)];
+                dcm.mark[DcmMarkLength].RotationAngle = tempDataSet[j].dataSet.double('x00710230');
+                dcm.mark[DcmMarkLength].RotationPoint = [tempDataSet[j].dataSet.float('x00710273', 0), tempDataSet[j].dataSet.float('x00710273', 1)];
 
                 var xTemp16 = tempDataSet[j].dataSet.string('x00700022');
 
@@ -235,30 +235,36 @@ function readDicom(url, patientmark, openfile) {
                   return attr;
                 }
                 var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
-                var ablecheck = false;
-                for (var r = 0; r < rect; r++) {
+                for (var r = 0; r < rect; r+=2) {
                   var GraphicData = getTag("x00700022");
-                  var num = 0;
+                  var numX= 0,numY=0;
                   if (GraphicData.vr == 'US') {
-                    num = tempDataSet[j].dataSet.uint16("x00700022", r);
+                    numX = tempDataSet[j].dataSet.uint16("x00700022", r);
+                    numY = tempDataSet[j].dataSet.uint16("x00700022", r+1);
                   } else if (GraphicData.vr === 'SS') {
-                    num = tempDataSet[j].dataSet.int16("x00700022", r);
+                    numX = tempDataSet[j].dataSet.int16("x00700022", r);
+                    numY = tempDataSet[j].dataSet.int16("x00700022", r+1);
                   } else if (GraphicData.vr === 'UL') {
-                    num = tempDataSet[j].dataSet.uint32("x00700022", r);
+                    numX = tempDataSet[j].dataSet.uint32("x00700022", r);
+                    numY = tempDataSet[j].dataSet.uint32("x00700022", r+1);
                   } else if (GraphicData.vr === 'SL') {
-                    num = tempDataSet[j].dataSet.int32("x00700022", r);
+                    numX = tempDataSet[j].dataSet.int32("x00700022", r);
+                    numY = tempDataSet[j].dataSet.int32("x00700022", r+1);
                   } else if (GraphicData.vr === 'FD') {
-                    num = tempDataSet[j].dataSet.double("x00700022", r);
+                    numX = tempDataSet[j].dataSet.double("x00700022", r);
+                    numY = tempDataSet[j].dataSet.double("x00700022", r+1);
                   } else if (GraphicData.vr === 'FL') {
-                    num = tempDataSet[j].dataSet.float("x00700022", r);
+                    numX = tempDataSet[j].dataSet.float("x00700022", r);
+                    numY = tempDataSet[j].dataSet.float("x00700022", r+1);
                   } else {
-                    num = tempDataSet[j].dataSet.float("x00700022", r);
+                    numX = tempDataSet[j].dataSet.float("x00700022", r);
+                    numY = tempDataSet[j].dataSet.float("x00700022", r+1);
                   }
-                  if (ablecheck == false)
-                    dcm.mark[DcmMarkLength].markX.push(num);
-                  else
-                    dcm.mark[DcmMarkLength].markY.push(num);
-                  ablecheck = !ablecheck;
+                  if(dcm.mark[DcmMarkLength].RotationAngle&&dcm.mark[DcmMarkLength].RotationPoint){
+                    [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
+                  }
+                    dcm.mark[DcmMarkLength].markX.push(parseFloat(numX));
+                    dcm.mark[DcmMarkLength].markY.push(parseFloat(numY));
                 }
                 patientmark.push(dcm);
                 refreshMark(dcm);
