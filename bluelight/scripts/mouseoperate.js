@@ -192,7 +192,7 @@ function Mousemove(e) {
                         GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
                         GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
                         GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
-                    } catch (ex) { }
+                    } catch (ex) {}
                 }
             }
             if (GetmouseY(e) < windowMouseY - 2) {
@@ -375,7 +375,7 @@ function Mousemove(e) {
             return;
         }
 
-        if (openChangeFile == true) {
+        if (openChangeFile == true && !openWriteGraphic && !openWriteXML) {
             var nextInstanceNumber = -1;
             var alt = GetViewport().alt;
             let index = SearchUid2Index(alt);
@@ -472,7 +472,7 @@ function Mousemove(e) {
                         GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
                         GetViewport(i).newMousePointX = GetViewport().newMousePointX;
                         GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-                    } catch (ex) { }
+                    } catch (ex) {}
                 }
             }
             putLabel();
