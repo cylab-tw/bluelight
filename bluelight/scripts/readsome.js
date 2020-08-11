@@ -2,14 +2,14 @@ function readXML(url) {
   var oReq = new XMLHttpRequest();
   try {
     oReq.open("get", url, true);
-  } catch (err) {}
+  } catch (err) { }
   oReq.responseType = "xml";
   oReq.onreadystatechange = function (oEvent) {
     try {
       var parser = new DOMParser();
       var xmlDoc = parser.parseFromString(oReq.response, "text/xml");
       var studyTemp = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-      getElementsByTagName("imageReferenceEntityCollection")[0].getElementsByTagName("ImageReferenceEntity")[0]
+        getElementsByTagName("imageReferenceEntityCollection")[0].getElementsByTagName("ImageReferenceEntity")[0]
         .getElementsByTagName("imageStudy")[0];
 
       var study = (studyTemp.getElementsByTagName("instanceUid")[0].getAttribute("root"));
@@ -18,7 +18,7 @@ function readXML(url) {
         .getElementsByTagName("Image")[0].getElementsByTagName("sopInstanceUid")[0].getAttribute("root"));
 
       var temp = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-      getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("markupEntityCollection")[0]
+        getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("markupEntityCollection")[0]
         .getElementsByTagName("MarkupEntity");
       var dcm = {};
       dcm.study = study;
@@ -28,14 +28,14 @@ function readXML(url) {
       dcm.showName = "AIM";
       try {
         var tempText = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-        getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("imagingObservationEntityCollection")[0]
+          getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("imagingObservationEntityCollection")[0]
           .getElementsByTagName("ImagingObservationEntity");
         for (var i = 0; i < tempText.length; i++) {
           dcm.mark.push({});
           var DcmMarkLength = dcm.mark.length - 1;
           dcm.mark[DcmMarkLength].type = "Characteristic";
           var temp2 = tempText[i].getElementsByTagName("imagingObservationCharacteristicCollection")[0].
-          getElementsByTagName("ImagingObservationCharacteristic");
+            getElementsByTagName("ImagingObservationCharacteristic");
           dcm.mark[DcmMarkLength].markTitle = "";
           dcm.mark[DcmMarkLength].markTitle = "" + tempText[i].getElementsByTagName("label")[0].getAttribute("value") +
             ":" + tempText[i].getElementsByTagName("typeCode")[0].getElementsByTagName("iso:displayName")[0].getAttribute("value");;
@@ -103,7 +103,7 @@ function readXML(url) {
 
       PatientMark.push(dcm);
       refreshMark(dcm);
-    } catch (ex) {}
+    } catch (ex) { }
   }
   oReq.send();
 }
@@ -112,7 +112,7 @@ function readDicom(url, patientmark, openfile) {
   var oReq = new XMLHttpRequest();
   try {
     oReq.open("get", url, true);
-  } catch (err) {}
+  } catch (err) { }
   oReq.responseType = "arraybuffer";
   oReq.onreadystatechange = function (oEvent) {
     if (oReq.readyState == 4) {
@@ -164,7 +164,7 @@ function readDicom(url, patientmark, openfile) {
           dcm.mark[DcmMarkLength].pixelData = tempPixeldata.slice(0);;
           patientmark.push(dcm);
           refreshMark(dcm);
-        } catch (ex) {}
+        } catch (ex) { }
         ////暫時取消的功能
         /*
         if (openfile && openfile == true) {
@@ -235,36 +235,65 @@ function readDicom(url, patientmark, openfile) {
                   return attr;
                 }
                 var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
-                for (var r = 0; r < rect; r+=2) {
+                for (var r = 0; r < rect; r += 2) {
                   var GraphicData = getTag("x00700022");
-                  var numX= 0,numY=0;
+                  var numX = 0, numY = 0;
                   if (GraphicData.vr == 'US') {
                     numX = tempDataSet[j].dataSet.uint16("x00700022", r);
-                    numY = tempDataSet[j].dataSet.uint16("x00700022", r+1);
+                    numY = tempDataSet[j].dataSet.uint16("x00700022", r + 1);
                   } else if (GraphicData.vr === 'SS') {
                     numX = tempDataSet[j].dataSet.int16("x00700022", r);
-                    numY = tempDataSet[j].dataSet.int16("x00700022", r+1);
+                    numY = tempDataSet[j].dataSet.int16("x00700022", r + 1);
                   } else if (GraphicData.vr === 'UL') {
                     numX = tempDataSet[j].dataSet.uint32("x00700022", r);
-                    numY = tempDataSet[j].dataSet.uint32("x00700022", r+1);
+                    numY = tempDataSet[j].dataSet.uint32("x00700022", r + 1);
                   } else if (GraphicData.vr === 'SL') {
                     numX = tempDataSet[j].dataSet.int32("x00700022", r);
-                    numY = tempDataSet[j].dataSet.int32("x00700022", r+1);
+                    numY = tempDataSet[j].dataSet.int32("x00700022", r + 1);
                   } else if (GraphicData.vr === 'FD') {
                     numX = tempDataSet[j].dataSet.double("x00700022", r);
-                    numY = tempDataSet[j].dataSet.double("x00700022", r+1);
+                    numY = tempDataSet[j].dataSet.double("x00700022", r + 1);
                   } else if (GraphicData.vr === 'FL') {
                     numX = tempDataSet[j].dataSet.float("x00700022", r);
-                    numY = tempDataSet[j].dataSet.float("x00700022", r+1);
+                    numY = tempDataSet[j].dataSet.float("x00700022", r + 1);
                   } else {
                     numX = tempDataSet[j].dataSet.float("x00700022", r);
-                    numY = tempDataSet[j].dataSet.float("x00700022", r+1);
+                    numY = tempDataSet[j].dataSet.float("x00700022", r + 1);
                   }
-                  if(dcm.mark[DcmMarkLength].RotationAngle&&dcm.mark[DcmMarkLength].RotationPoint){
+                  if (dcm.mark[DcmMarkLength].RotationAngle && dcm.mark[DcmMarkLength].RotationPoint) {
                     [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
                   }
-                    dcm.mark[DcmMarkLength].markX.push(parseFloat(numX));
-                    dcm.mark[DcmMarkLength].markY.push(parseFloat(numY));
+                  dcm.mark[DcmMarkLength].markX.push(parseFloat(numX));
+                  dcm.mark[DcmMarkLength].markY.push(parseFloat(numY));
+                }
+                patientmark.push(dcm);
+                refreshMark(dcm);
+              } if (tempDataSet[j].dataSet.string('x00700023') == 'CIRCLE') {
+                var dcm = {};
+                dcm.sop = sop1;
+                dcm.mark = [];
+                dcm.mark.push({});
+                var tvList = ['CIRCLE'];
+                dcm.showName = tvList[0];
+                var DcmMarkLength = dcm.mark.length - 1;
+                dcm.mark[DcmMarkLength].type = "CIRCLE";
+                dcm.mark[DcmMarkLength].markX = [];
+                dcm.mark[DcmMarkLength].markY = [];
+                var xTemp16 = tempDataSet[j].dataSet.string('x00700022');;
+                var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
+                for (var r = 0; r < rect; r += 4) {
+                  var numX = 0, numY = 0, numX2 = 0, numY2 = 0;
+                  numX = tempDataSet[j].dataSet.float("x00700022", r);
+                  numY = tempDataSet[j].dataSet.float("x00700022", r + 1);
+                  numX2 = tempDataSet[j].dataSet.float("x00700022", r + 2);
+                  numY2 = tempDataSet[j].dataSet.float("x00700022", r + 3);
+                  /*if (dcm.mark[DcmMarkLength].RotationAngle && dcm.mark[DcmMarkLength].RotationPoint) {
+                    [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
+                  }*/
+                  dcm.mark[DcmMarkLength].markX.push(parseFloat(numX));
+                  dcm.mark[DcmMarkLength].markY.push(parseFloat(numY));
+                  dcm.mark[DcmMarkLength].markX.push(parseFloat(numX2));
+                  dcm.mark[DcmMarkLength].markY.push(parseFloat(numY2));
                 }
                 patientmark.push(dcm);
                 refreshMark(dcm);
@@ -289,7 +318,7 @@ function readDicom(url, patientmark, openfile) {
                   var output3 = xTemp16[k2 + 2].charCodeAt(0).toString(2) + "";
                   var output4 = xTemp16[k2 + 3].charCodeAt(0).toString(2) + "";
                   var data = [parseInt(output1, 2), parseInt(output2, 2), parseInt(output3, 2), parseInt(output4, 2)];
-                  var buf = new ArrayBuffer(4 /* * 4*/ );
+                  var buf = new ArrayBuffer(4 /* * 4*/);
                   var view = new DataView(buf);
                   data.forEach(function (b, i) {
                     view.setUint8(i, b, true);

@@ -732,6 +732,8 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         tempctx.restore();
                     }
                     if (PatientMark[n].mark[m].type == "ELLIPSE") {
+                        tempctx.save();
+                        tempctx.setTransform(1, 0, 0, 1, 0, 0);
                         for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 1) {
                             let checkRtss = 0;
                             checkRtss = checkMark(i, j, n);
@@ -769,6 +771,52 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             if (fill == true) tempctx.fill();
                             tempctx.closePath();
                         }
+                        tempctx.restore();
+                    }
+                    if (PatientMark[n].mark[m].type == "CIRCLE") {
+                        tempctx.save();
+                        tempctx.setTransform(1, 0, 0, 1, 0, 0);
+                        for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 2) {
+                            let checkRtss = 0;
+                            checkRtss = checkMark(i, j, n);
+                            if (checkRtss == 0) continue;
+
+                            if (getByid("WhiteSelect").selected == true) {
+                                tempctx.strokeStyle = "#FFFFFF";
+                                tempctx.fillStyle = "#FFFFFF";
+                            } else if (getByid("BlueSelect").selected == true) {
+                                tempctx.strokeStyle = "#0000FF";
+                                tempctx.fillStyle = "#0000FF";
+                            } else if (getByid("RedSelect").selected == true) {
+                                tempctx.strokeStyle = "#FF0000";
+                                tempctx.fillStyle = "#FF0000";
+                            }
+                            var tempMark = PatientMark[n].mark[m];
+
+
+                            var x1 = tempMark.markX[o] * 1 - currX;
+                            var y1 = tempMark.markY[o] * 1 - currY;
+                            var x2 = tempMark.markX[o + 1] * 1 - currX;
+                            var y2 = tempMark.markY[o + 1] * 1 - currY;
+                            if (magnifier && magnifier == true) {
+                                if (GetViewport(viewportNum).openHorizontalFlip == true) {
+                                    x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) + currX;
+                                    x2 = (tempMark.markX[o + 1] - GetViewport(viewportNum).imagePositionX) + currX;
+                                }
+                                if (GetViewport(viewportNum).openVerticalFlip == true) {
+                                    y1 = (tempMark.markY[o] - GetViewport(viewportNum).imagePositionY) + currY;
+                                    y2 = (tempMark.markY[o + 1] - GetViewport(viewportNum).imagePositionY) + currY;
+                                }
+                            }
+                            tempctx.beginPath();
+                            var temp_distance = Math.abs(x1 - x2) > Math.abs(y1 - y2) ? Math.abs(x1 - x2) : Math.abs(y1 - y2);
+                            tempctx.arc(x1, y1, temp_distance, 0, 2 * Math.PI);
+                            tempctx.stroke();
+                            if (fill == true) tempctx.fill();
+                            tempctx.closePath();
+
+                        }
+                        tempctx.restore();
                     }
                     if (PatientMark[n].mark[m].type == "TwoDimensionPolyline") {
                         let checkRtss = 0;
