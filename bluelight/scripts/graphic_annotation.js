@@ -117,13 +117,14 @@ var Graphic_now_choose = null;
 var temp_xml_format = "";
 
 
-function Graphic_pounch(currX, currY) {
+function Graphic_pounch(currX, currY, dcm) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
     let index = SearchUid2Index(GetViewport((viewportNumber)).alt);
     let i = index[0],
         j = index[1],
         k = index[2];
     for (var n = 0; n < PatientMark.length; n++) {
+        if (dcm && PatientMark[n] != dcm) continue;
         if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
             for (var m = 0; m < PatientMark[n].mark.length; m++) {
                 if (PatientMark[n].mark[m].type == "POLYLINE") {
@@ -141,22 +142,22 @@ function Graphic_pounch(currX, currY) {
                         if (parseInt(tempMark.markX[o]) <= Min_X) Min_X = parseInt(tempMark.markX[o]);
                     }
                     for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 1) {
-                        if (equal_TOL(Max_X, parseInt(tempMark.markX[o]))) Max_X_list.push(o);
-                        if (equal_TOL(Min_X, parseInt(tempMark.markX[o]))) Min_X_list.push(o);
+                        if (equal_TOL(Max_X, parseInt(tempMark.markX[o]), block_size)) Max_X_list.push(o);
+                        if (equal_TOL(Min_X, parseInt(tempMark.markX[o]), block_size)) Min_X_list.push(o);
                     }
                     for (var o = 0; o < PatientMark[n].mark[m].markY.length; o += 1) {
                         if (parseInt(tempMark.markY[o]) >= Max_Y) Max_Y = parseInt(tempMark.markY[o]);
                         if (parseInt(tempMark.markY[o]) <= Min_Y) Min_Y = parseInt(tempMark.markY[o]);
                     }
                     for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 1) {
-                        if (equal_TOL(Max_Y, parseInt(tempMark.markY[o]))) Max_Y_list.push(o);
-                        if (equal_TOL(Min_Y, parseInt(tempMark.markY[o]))) Min_Y_list.push(o);
+                        if (equal_TOL(Max_Y, parseInt(tempMark.markY[o]), block_size)) Max_Y_list.push(o);
+                        if (equal_TOL(Min_Y, parseInt(tempMark.markY[o]), block_size)) Min_Y_list.push(o);
                     }
                     for (var o = 0; o < PatientMark[n].mark[m].markX.length - 1; o += 1) {
                         var x_middle = (parseInt(tempMark.markX[o]) + parseInt(tempMark.markX[o + 1])) / 2;
                         var y_middle = (parseInt(tempMark.markY[o]) + parseInt(tempMark.markY[o + 1])) / 2;
                         if (currY + block_size >= y_middle && currX + block_size >= x_middle && currY < y_middle + block_size && currX < x_middle + block_size) {
-                            if (equal_TOL(y_middle, Max_Y)) {
+                            if (equal_TOL(y_middle, Max_Y, block_size)) {
                                 Graphic_now_choose = {
                                     reference: PatientMark[n],
                                     point: Max_Y_list,
@@ -165,7 +166,7 @@ function Graphic_pounch(currX, currY) {
                                     value: 'up'
                                 };
                                 return true;
-                            } else if (equal_TOL(y_middle, Min_Y)) {
+                            } else if (equal_TOL(y_middle, Min_Y, block_size)) {
                                 Graphic_now_choose = {
                                     reference: PatientMark[n],
                                     point: Min_Y_list,
@@ -174,7 +175,7 @@ function Graphic_pounch(currX, currY) {
                                     value: 'down'
                                 };
                                 return true;
-                            } else if (equal_TOL(x_middle, Min_X)) {
+                            } else if (equal_TOL(x_middle, Min_X, block_size)) {
                                 Graphic_now_choose = {
                                     reference: PatientMark[n],
                                     point: Min_X_list,
@@ -183,7 +184,7 @@ function Graphic_pounch(currX, currY) {
                                     value: 'left'
                                 };
                                 return true;
-                            } else if (equal_TOL(x_middle, Max_X)) {
+                            } else if (equal_TOL(x_middle, Max_X, block_size)) {
                                 Graphic_now_choose = {
                                     reference: PatientMark[n],
                                     point: Max_X_list,

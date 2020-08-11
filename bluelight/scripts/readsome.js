@@ -199,7 +199,9 @@ function readDicom(url, patientmark, openfile) {
           }
 
           for (var i in dataSet.elements.x00700001.items) {
-            var tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
+            try {
+              var tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
+            } catch (ex) { continue; }
             for (var j in tempDataSet) {
               if (tempDataSet[j].dataSet.string('x00700023') == 'POLYLINE') {
                 var dcm = {};

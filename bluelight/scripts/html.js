@@ -7,6 +7,41 @@ function html_onload() {
     getByid('myfile').click();
   }
 
+  window.addEventListener("keydown", KeyDown, true);
+
+  function KeyDown(KeyboardKeys) {
+    var key = KeyboardKeys.which
+    if (Graphic_now_choose && (key === 46 || key === 110)) {
+      PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
+      displayMark(NowResize, null, null, null, viewportNumber);
+      Graphic_now_choose=null;
+    }
+    else if (xml_now_choose && (key === 46 || key === 110)) {
+      PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
+      displayMark(NowResize, null, null, null, viewportNumber);
+      xml_now_choose=null;
+    }
+  }
+
+  document.getElementsByTagName("BODY")[0].ondragover = function (e) {
+    e.preventDefault();
+  }
+
+  document.getElementsByTagName("BODY")[0].ondrop = function (e) {
+    e.preventDefault();
+    var files = e.dataTransfer.files;
+    for (var k = 0; k < files.length; k++) {
+      let reader = new FileReader();
+      reader.readAsDataURL(files[k]);
+      reader.onloadend = function () {
+        readXML(reader.result);
+        readDicom(reader.result, PatientMark, true);
+        //virtualLoadImage('wadouri:' + reader.result, -1);
+        loadAndViewImage('wadouri:' + reader.result);
+      }
+    }
+  }
+
   getByid("MouseOperation").onclick = function () {
     if (imgInvalid(this)) return;
     cancelTools();

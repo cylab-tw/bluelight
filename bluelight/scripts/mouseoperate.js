@@ -150,7 +150,6 @@ function Mousedown(e) {
              }
          }*/
         Graphic_pounch(currXml_X2, currXml_Y2);
-        //console.log(Graphic_now_choose);
     }
 
 }
@@ -586,6 +585,7 @@ function Mouseup(e) {
         dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
         dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
         PatientMark.push(dcm);
+        Graphic_pounch(currX, (currY + GetViewport().originalPointY) / 2, dcm);
         for (var i = 0; i < Viewport_Total; i++)
             displayMark(NowResize, null, null, null, i);
         displayAngelRular();

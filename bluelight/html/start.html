@@ -9,7 +9,7 @@
   <meta content="no-cache" http-equiv="pragma">
   <meta content="0" http-equiv="expires">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-  
+
   <link rel="stylesheet" type="text/css" href="../css/vr.css">
 
   <script src="../scripts/external/other/interact.js"></script>
@@ -25,10 +25,10 @@
   <script src="../scripts/touchoperate.js"></script>
   <script src="../scripts/mouseoperate.js"></script>
   <script src="../scripts/eventmanager.js"></script>
- 
+
   <script src="../scripts/mpr.js"></script>
   <script src="../scripts/vr.js"></script>
-  
+
   <script src="../scripts/xml_format.js"></script>
   <script src="../scripts/graphic_annotation.js"></script>
   <script src="../scripts/viewer.js"></script>
@@ -41,28 +41,35 @@
   <script src="../scripts/play_video.js"></script>
   <script src="../scripts/html.js"></script>
 
-  <script type="module" >
-    import {decodeImageFrame1} from "../scripts/external/cornerstone/decode/decodeImageFrame.js";
-    decodeImageFrame=decodeImageFrame1;
+  <script type="module">
+    import { decodeImageFrame1 } from "../scripts/external/cornerstone/decode/decodeImageFrame.js";
+    decodeImageFrame = decodeImageFrame1;
   </script>
-  
+
 </head>
 
 <body style="background-color:#000000;" onmousewheel="/*return false;*/">
   <header class="page-header">
     <img class="img" type="file" alt="開檔" id="openFile" src="../image/icon/black/openfile.png" width="50" height="50">
-    <img class="img VR MPR" alt="平移與縮放" id="MouseOperation" src="../image/icon/black/b_Pan.png"  width="50" height="50">
+    <img class="img VR MPR" alt="平移與縮放" id="MouseOperation" src="../image/icon/black/b_Pan.png" width="50" height="50">
     <img class="img MPR" alt="b_Scroll" id="b_Scroll" src="../image/icon/black/b_Scroll.png" width="50" height="50">
 
-    <img class="img" alt="分隔" id="annotation1" src="../image/icon/black/b_LayoutWithinViewport.png" width="50" height="50">
-    <img class="img MPR" alt="旋轉" id="MouseRotate" src="../image/icon/black/b_Rotate 90 degrees clockwise.png" width="50" height="50">
-    <img class="img VR MPR" alt="Window Level" id="WindowRevision" src="../image/icon/black/b_Window.png" width="50" height="50">
+    <img class="img" alt="分隔" id="annotation1" src="../image/icon/black/b_LayoutWithinViewport.png" width="50"
+      height="50">
+    <img class="img MPR" alt="旋轉" id="MouseRotate" src="../image/icon/black/b_Rotate 90 degrees clockwise.png"
+      width="50" height="50">
+    <img class="img VR MPR" alt="Window Level" id="WindowRevision" src="../image/icon/black/b_Window.png" width="50"
+      height="50">
     <img class="img" alt="放大鏡" id="zoom" src="../image/icon/black/b_Zoom.png" width="50" height="50">
-    <img class="img" alt="水平翻轉" id="horizontal_flip" src="../image/icon/black/b_FlipHorizontally.png" width="50" height="50">
+    <img class="img" alt="水平翻轉" id="horizontal_flip" src="../image/icon/black/b_FlipHorizontally.png" width="50"
+      height="50">
     <img class="img" alt="垂直翻轉" id="vertical_flip" src="../image/icon/black/b_垂直翻轉.png" width="50" height="50">
-    <img class="img" alt="色彩反轉" id="color_invert" src="../image/icon/black/b_InvertGrayscale.png" width="50" height="50">
-    <img class="img" alt="連接" id="unlink" src="../image/icon/black/b_unlink translation synchronization.png" width="50" height="50">
-    <img class="img" alt="測量" id="MeasureRular" src="../image/icon/black/b_DistanceMeasurement.png" width="50" height="50">
+    <img class="img" alt="色彩反轉" id="color_invert" src="../image/icon/black/b_InvertGrayscale.png" width="50"
+      height="50">
+    <img class="img" alt="連接" id="unlink" src="../image/icon/black/b_unlink translation synchronization.png" width="50"
+      height="50">
+    <img class="img" alt="測量" id="MeasureRular" src="../image/icon/black/b_DistanceMeasurement.png" width="50"
+      height="50">
     <img class="img" alt="角度" id="AngelRular" src="../image/icon/black/b_AngleMeasurement.png" width="50" height="50">
 
     <img class="img" alt="播放" id="playvideo" src="../image/icon/black/b_CinePlay.png" width="50" height="50">
@@ -73,31 +80,36 @@
     <img class="img MPR" alt="3d" id="ImgMPR" src="../image/icon/black/b_AdvancedMode_off.png" width="50" height="50">
     <img class="img VR" alt="3d" id="ImgVR" src="../image/icon/black/b_3D_off.png" width="50" height="50">
 
-    <img class="img VR MPR" alt="3dDisplay" id="3dDisplay" src="../image/icon/black/b_DisplayReset.png" style="display:none;"  width="50" height="50">
-    <img class="img VR" alt="3dCave" id="3dCave" src="../image/icon/black/b_Cross-hair_OFF.png" style="display:none;" width="50" height="50">
+    <img class="img VR MPR" alt="3dDisplay" id="3dDisplay" src="../image/icon/black/b_DisplayReset.png"
+      style="display:none;" width="50" height="50">
+    <img class="img VR" alt="3dCave" id="3dCave" src="../image/icon/black/b_Cross-hair_OFF.png" style="display:none;"
+      width="50" height="50">
     <img class="img XML" alt="writeXML" id="writeXML" src="../image/icon/black/xml_off.png" width="50" height="50">
-    <img class="img GRA" alt="writeGraphic" id="writeGraphic" src="../image/icon/black/GraphicDraw_OFF.png" width="50" height="50">
-    
-    <img class="img PEN" alt="輸出標記" id="openPenfile" src="../image/icon/black/openPenfile.png" style="display:none;" width="50" height="50">
-    <img class="img VR MPR XML PEN" alt="RWD" id="rwdImgTag" src="../image/icon/black/b_CineTools.png" style="display:none;" width="50" height="50">
-    <div id="GraphicStyleDiv"  style="background-color:#30306044;">
+    <img class="img GRA" alt="writeGraphic" id="writeGraphic" src="../image/icon/black/GraphicDraw_OFF.png" width="50"
+      height="50">
+
+    <img class="img PEN" alt="輸出標記" id="openPenfile" src="../image/icon/black/openPenfile.png" style="display:none;"
+      width="50" height="50">
+    <img class="img VR MPR XML PEN" alt="RWD" id="rwdImgTag" src="../image/icon/black/b_CineTools.png"
+      style="display:none;" width="50" height="50">
+    <div id="GraphicStyleDiv" style="background-color:#30306044;">
       <label style="color: #ffffff;" id="GraphicColorLabel">Color：</label>
-      <select id="GraphiccolorSelect">
+      <select id="GraphiccolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
         <!--<option id="Graphicselected" selected="selected">Auto</option>-->
-        <option id="GraphicBlackSelect">Black</option>
-        <option id="GraphicBlueSelect" selected="selected">Blue</option>
-        <option id="GraphicBrownSelect">Brown</option>
-        <option id="GraphicCyanSelect">Cyan</option>
-        <option id="GraphicGreenSelect">Green</option>
-        <option id="GraphicMagentaSelect">Magenta</option>
-        <option id="GraphicOrangeSelect">Orange</option>
-        <option id="GraphicPurpleSelect">Purple</option>
-        <option id="GraphicRedSelect">Red</option>
-        <option id="GraphicYellowSelect">Yellow</option>
-        <option id="GraphicWhiteSelect">White</option>
+        <option id="GraphicBlackSelect" style="color: #000000;font-weight:bold;">Black(T7)</option>
+        <option id="GraphicBlueSelect" style="color: #0000FF;font-weight:bold;" selected="selected">Blue(T8)</option>
+        <option id="GraphicBrownSelect" style="color: #A52A2A;font-weight:bold;">Brown(T9)</option>
+        <option id="GraphicCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan(T10)</option>
+        <option id="GraphicGreenSelect" style="color: #00FF00;font-weight:bold;">Green(T11)</option>
+        <option id="GraphicMagentaSelect" style="color: #FF00FF;font-weight:bold;">Magenta(T12)</option>
+        <option id="GraphicOrangeSelect" style="color: #FFA500;font-weight:bold;">Orange(T1)</option>
+        <option id="GraphicPurpleSelect" style="color: #663399;font-weight:bold;">Purple(T2)</option>
+        <option id="GraphicRedSelect" style="color: #FF0000;font-weight:bold;">Red(T3)</option>
+        <option id="GraphicYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow(T4)</option>
+        <option id="GraphicWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White(T5)</option>
       </select>
     </div>
-    <div id="MarkStyleDiv"  style="background-color:#00306044;">
+    <div id="MarkStyleDiv" style="background-color:#00306044;">
       <label style="color: #ffffff;" id="markColorLabel">Color：</label>
       <select id="MarkcolorSelect">
         <option selected="selected">Auto</option>
@@ -105,9 +117,11 @@
         <option id="RedSelect">Red</option>
         <option id="BlueSelect">Blue</option>
       </select>
-      <label style="color: #ffffff;" id="markAlphaLabel">Alpha<input type="text" id="markAlphaText" value="35"/></label>
-      <label style="color: #ffffff;" id="markSizeLabel">Size<input type="text" id="markSizeText" value="1.2"/></label>
-      <label style="color: #ffffff;" id="markFillLabel">Fill<input type="checkbox" checked="true" name="markFillLabel" id="markFillCheck"></label>
+      <label style="color: #ffffff;" id="markAlphaLabel">Alpha<input type="text" id="markAlphaText"
+          value="35" /></label>
+      <label style="color: #ffffff;" id="markSizeLabel">Size<input type="text" id="markSizeText" value="1.2" /></label>
+      <label style="color: #ffffff;" id="markFillLabel">Fill<input type="checkbox" checked="true" name="markFillLabel"
+          id="markFillCheck"></label>
       <label style="color: #ffffff;" id="TableLabel">Table：</label>
       <select id="TableSelect">
         <option id="TableSelectNone" selected="selected">None</option>
@@ -117,16 +131,17 @@
     </div>
 
     <div id="SplitViewportDiv" style="background-color:#4D000044;">
-      <font color="white" >1x1:<input type="radio" class="split_radio" name="split_radio" id="radio_1x1" checked="true"/>　</font>
-      <font color="white" >1x2:<input type="radio" class="split_radio" name="split_radio" id="radio_1x2"/>　</font>
-      <font color="white" >2x1:<input type="radio" class="split_radio" name="split_radio" id="radio_2x1"/>　</font>
-      <font color="white" >2x2:<input type="radio" class="split_radio" name="split_radio" id="radio_2x2"/>　</font>
-      <font color="white" >3x3:<input type="radio" class="split_radio" name="split_radio" id="radio_3x3"/>　</font>
-      <font color="white" >4x4:<input type="radio" class="split_radio" name="split_radio" id="radio_4x4"/>　</font>
+      <font color="white">1x1:<input type="radio" class="split_radio" name="split_radio" id="radio_1x1"
+          checked="true" />　</font>
+      <font color="white">1x2:<input type="radio" class="split_radio" name="split_radio" id="radio_1x2" />　</font>
+      <font color="white">2x1:<input type="radio" class="split_radio" name="split_radio" id="radio_2x1" />　</font>
+      <font color="white">2x2:<input type="radio" class="split_radio" name="split_radio" id="radio_2x2" />　</font>
+      <font color="white">3x3:<input type="radio" class="split_radio" name="split_radio" id="radio_3x3" />　</font>
+      <font color="white">4x4:<input type="radio" class="split_radio" name="split_radio" id="radio_4x4" />　</font>
     </div>
 
     <div id="WindowLevelDiv" style="background-color:#33666644;">
-      <font color="white" id="myWC">WC：</font><input type="text" id="textWC" value="520"/>
+      <font color="white" id="myWC">WC：</font><input type="text" id="textWC" value="520" />
       <font color="white" id="myWW">WW：</font><input type="text" id="textWW" value="50" />
     </div>
     <div id="VR_setup" style="background-color:#84420044;">
@@ -137,11 +152,15 @@
         <option id="o3DAirways">Airways</option>
         <option id="o3DMip">MIP</option>
       </select>
-      <font color="white" id="o3dAlphaValueLabel">Alpha：</font><input type="text" id="o3dAlphaValueText" size="3" value="100"/>
-      <label style="color: #ffffff;" id="smoothLabel">Smooth<input type="checkbox" name="3dSmooth" id="3dSmooth"></label>
-      <label style="color: #ffffff;" id="yellowColorLabel">Color<input type="checkbox" name="3dYellow" id="3dYellow"></label>
+      <font color="white" id="o3dAlphaValueLabel">Alpha：</font><input type="text" id="o3dAlphaValueText" size="3"
+        value="100" />
+      <label style="color: #ffffff;" id="smoothLabel">Smooth<input type="checkbox" name="3dSmooth"
+          id="3dSmooth"></label>
+      <label style="color: #ffffff;" id="yellowColorLabel">Color<input type="checkbox" name="3dYellow"
+          id="3dYellow"></label>
       <label style="color: #ffffff;" id="3dLightLabel">Light<input type="checkbox" name="3dLight" id="3dLight"></label>
-      <label style="color: #ffffff;display:none" id="3dInsertLabel">Insert(hide)：<input type="text" id="3dInsertText" size="1" value="0" /></label>
+      <label style="color: #ffffff;display:none" id="3dInsertLabel">Insert(hide)：<input type="text" id="3dInsertText"
+          size="1" value="0" /></label>
       <label style="color: #ffffff;" id="3Dskin">Skin：<input type="text" id="3DskinText" size="3" value="25" /></label>
       <label style="color: #ffffff;" id="3dStrengthenLabel">3D Strengthen：
         <select id="3dStrengthen">
@@ -150,14 +169,18 @@
           <option id="3dStrengthenNone">None</option>
         </select>
       </label>
-      <label style="color: #ffffff;" id="3dZipLabel">3D Zip：<input type="checkbox" checked="true" id="3dZipCheckbox"><input type="text" id="3dZipText" size="3" value="50" /></label>
-      <label style="color: #ffffff;display:none" id="3dPerspectiveLabel">perspective：<input type="text" id="3dPerspective" value="10000" /></label>
+      <label style="color: #ffffff;" id="3dZipLabel">3D Zip：<input type="checkbox" checked="true"
+          id="3dZipCheckbox"><input type="text" id="3dZipText" size="3" value="50" /></label>
+      <label style="color: #ffffff;display:none" id="3dPerspectiveLabel">perspective：<input type="text"
+          id="3dPerspective" value="10000" /></label>
     </div>
-    <font color="white" id="labelZoom">Zoom：</font><input type="text" id="textZoom" value="200"/>
+    <font color="white" id="labelZoom">Zoom：</font><input type="text" id="textZoom" value="200" />
     <font color="white" id="labelPlay">fps：</font><input type="text" id="textPlay" value="10" />
-    <label style="color: #ffffff;" id="xmlMarkName">name<input type="text" id="xmlMarkNameText" value="noName" /></label>
-    <label style="color: #ffffff;" id="mprLightLabel">position<input type="checkbox" checked="true" name="mprLight" id="mprLight"></label>
-    <input type="file" id="myfile" multiple="multiple" style='display:none' >
+    <label style="color: #ffffff;" id="xmlMarkName">name<input type="text" id="xmlMarkNameText"
+        value="noName" /></label>
+    <label style="color: #ffffff;" id="mprLightLabel">position<input type="checkbox" checked="true" name="mprLight"
+        id="mprLight"></label>
+    <input type="file" id="myfile" multiple="multiple" style='display:none'>
   </header>
   <div class="form-group">
     <label class="control-label col-sm-1" for="wadoURL">URL</label>

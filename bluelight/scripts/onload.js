@@ -361,7 +361,7 @@ function readJson(url) {
             for (var i = 0; i < DicomResponse.length; i++) {
               try {
                 if (DicomResponse[i]["00200013"].Value[0] < min) min = DicomResponse[i]["00200013"].Value[0];
-              } catch (ex) {};
+              } catch (ex) { };
             }
             //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
             //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
@@ -388,7 +388,7 @@ function readJson(url) {
                   //預載入DICOM至Viewport
                   virtualLoadImage(url, 1);
                 }
-              } catch (ex) {}
+              } catch (ex) { }
             }
             //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
             //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
@@ -409,7 +409,7 @@ function readJson(url) {
                   virtualLoadImage(url, 1);
                 else
                   virtualLoadImage(url, 0);
-              } catch (ex) {}
+              } catch (ex) { }
             }
 
           }
