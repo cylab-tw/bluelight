@@ -502,11 +502,11 @@ function GetGraphicName() {
     else if (getByid("GraphicCyanSelect").selected) return "T10";
     else if (getByid("GraphicGreenSelect").selected) return "T11";
     else if (getByid("GraphicMagentaSelect").selected) return "T12";
-    else if (getByid("GraphicOrangeSelect").selected) return "T1";
-    else if (getByid("GraphicPurpleSelect").selected) return "T2";
-    else if (getByid("GraphicRedSelect").selected) return "T3";
-    else if (getByid("GraphicYellowSelect").selected) return "T4";
-    else if (getByid("GraphicWhiteSelect").selected) return "T5";
+    else if (getByid("GraphicOrangeSelect").selected) return "L1";
+    else if (getByid("GraphicPurpleSelect").selected) return "L2";
+    else if (getByid("GraphicRedSelect").selected) return "L3";
+    else if (getByid("GraphicYellowSelect").selected) return "L4";
+    else if (getByid("GraphicWhiteSelect").selected) return "L5";
     else return "T8";
 }
 
@@ -518,11 +518,11 @@ function ConvertGraphicColor(r, g, b) {
     else if (str == "0\\33153\\33153") return ["#00FFFF", "T10"];
     else if (str == "0\\33153\\32896") return ["#00FF00", "T11"];
     else if (str == "655\\32896\\33153") return ["#FF00FF", "T12"];
-    else if (str == "655\\33025\\32896") return ["#FFA500", "T1"];
-    else if (str == "328\\32896\\33025") return ["#663399", "T2"];
-    else if (str == "655\\32896\\32896") return ["#FF0000", "T3"];
-    else if (str == "655\\33025\\32896") return ["#FFFF00", "T4"];
-    else if (str == "655\\33153\\33153") return ["#FFFFFF", "T5"];
+    else if (str == "655\\33025\\32896") return ["#FFA500", "L1"];
+    else if (str == "328\\32896\\33025") return ["#663399", "L2"];
+    else if (str == "655\\32896\\32896") return ["#FF0000", "L3"];
+    else if (str == "655\\33153\\32896") return ["#FFFF00", "L4"];
+    else if (str == "655\\33153\\33153") return ["#FFFFFF", "L5"];
     else return undefined;
 }
 
@@ -536,7 +536,7 @@ function SetGraphicColor(str) {
     else if (str == "#FFA500") return "655\\33025\\32896";
     else if (str == "#663399") return "328\\32896\\33025";
     else if (str == "#FF0000") return "655\\32896\\32896";
-    else if (str == "#FFFF00") return "655\\33025\\32896";
+    else if (str == "#FFFF00") return "655\\33153\\32896";
     else if (str == "#FFFFFF") return "655\\33153\\33153";
     else return "0\\32896\\33153";
 }
