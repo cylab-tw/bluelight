@@ -549,7 +549,11 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         tempctx.fillStyle = "red";
                         if (openWriteXML == true) {
                             var tempMark = PatientMark[n].mark[m];
-                            for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 2) {
+                            for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 2) { 
+                                let checkRtss = 0;
+                                checkRtss = checkMark(i, j, n);
+                                if (checkRtss == 0) continue;
+
                                 tempctx.strokeStyle = "" + PatientMark[n].color;
                                 tempctx.beginPath();
                                 var x1 = tempMark.markX[o] * 1 - currX;
@@ -568,11 +572,25 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                 if (openWriteXML == true) {
                                     tempctx.lineWidth = "" + parseInt(tempctx.lineWidth) * 2;
                                     tempctx.beginPath();
+                                    if (xml_now_choose && xml_now_choose.mark == tempMark) {
+                                        tempctx.strokeStyle = "#00FFFF";
+                                        tempctx.arc(x1 / 2 + x2 / 2, y1, parseInt(tempctx.lineWidth), 0, 2 * Math.PI);
+                                        tempctx.stroke();
+                                        tempctx.closePath();
+                                    };
+                                    tempctx.beginPath();
                                     tempctx.fillStyle = "#FF0000";
                                     tempctx.arc(x1 / 2 + x2 / 2, y1, parseInt(tempctx.lineWidth), 0, 2 * Math.PI);
                                     tempctx.fill();
                                     tempctx.closePath();
 
+                                    if (xml_now_choose && xml_now_choose.mark == tempMark) {
+                                        tempctx.beginPath();
+                                        tempctx.strokeStyle = "#00FFFF";
+                                        tempctx.arc(x1 / 2 + x2 / 2, y2, parseInt(tempctx.lineWidth), 0, 2 * Math.PI);
+                                        tempctx.stroke();
+                                        tempctx.closePath();
+                                    };
                                     tempctx.beginPath();
                                     tempctx.fillStyle = "#FF0000";
                                     tempctx.arc(x1 / 2 + x2 / 2, y2, parseInt(tempctx.lineWidth), 0, 2 * Math.PI);
@@ -580,11 +598,25 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                     tempctx.closePath();
 
                                     tempctx.beginPath();
+                                    if (xml_now_choose && xml_now_choose.mark == tempMark) {
+                                        tempctx.strokeStyle = "#00FFFF";
+                                        tempctx.arc(x1, y1 / 2 + y2 / 2, parseInt(tempctx.lineWidth), 0, 2 * Math.PI);
+                                        tempctx.stroke();
+                                        tempctx.closePath();
+                                    };
+                                    tempctx.beginPath();
                                     tempctx.fillStyle = "#FF0000";
                                     tempctx.arc(x1, y1 / 2 + y2 / 2, parseInt(tempctx.lineWidth), 0, 2 * Math.PI);
                                     tempctx.fill();
                                     tempctx.closePath();
 
+                                    tempctx.beginPath();
+                                    if (xml_now_choose && xml_now_choose.mark == tempMark) {
+                                        tempctx.strokeStyle = "#00FFFF";
+                                        tempctx.arc(x2, y1 / 2 + y2 / 2, parseInt(tempctx.lineWidth), 0, 2 * Math.PI);
+                                        tempctx.stroke();
+                                        tempctx.closePath();
+                                    };
                                     tempctx.beginPath();
                                     tempctx.fillStyle = "#FF0000";
                                     tempctx.arc(x2, y1 / 2 + y2 / 2, parseInt(tempctx.lineWidth), 0, 2 * Math.PI);

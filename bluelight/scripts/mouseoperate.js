@@ -130,7 +130,7 @@ function Mousedown(e) {
                 currXml_Y2 = currXml_Y2 - (currXml_Y2 - currXml_Y1) * 2;
             }
         }*/
-        xml_pounch(currXml_X2, currXml_Y2);
+        if (xml_pounch(currXml_X2, currXml_Y2) == true) displayMark(NowResize, null, null, null, undefined);
     }
     if (openWriteGraphic == true && !rightMouseDown) {
         var currX = getCurrPoint(e)[0];
@@ -149,7 +149,7 @@ function Mousedown(e) {
                  currXml_Y2 = currXml_Y2 - (currXml_Y2 - currXml_Y1) * 2;
              }
          }*/
-        Graphic_pounch(currXml_X2, currXml_Y2);
+        if (Graphic_pounch(currXml_X2, currXml_Y2) == true) displayMark(NowResize, null, null, null, undefined);
     }
 
 }
@@ -192,7 +192,7 @@ function Mousemove(e) {
                         GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
                         GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
                         GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
-                    } catch (ex) {}
+                    } catch (ex) { }
                 }
             }
             if (GetmouseY(e) < windowMouseY - 2) {
@@ -472,7 +472,7 @@ function Mousemove(e) {
                         GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
                         GetViewport(i).newMousePointX = GetViewport().newMousePointX;
                         GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-                    } catch (ex) {}
+                    } catch (ex) { }
                 }
             }
             putLabel();
@@ -500,6 +500,7 @@ function Mousemove(e) {
                 dcm.mark[DcmMarkLength].markX.push(currX);
                 dcm.mark[DcmMarkLength].markY.push(currY);
                 PatientMark.push(dcm);
+                refreshMark(dcm);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
                 displayAngelRular();

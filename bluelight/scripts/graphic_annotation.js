@@ -217,40 +217,42 @@ function set_Graphic_context() {
         if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
             let tail = "" + Graphic_format_tail;
             for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                var tempMark = PatientMark[n].mark[m];
-                var mark_xy = "";
-                for (var o = 0; o < tempMark.markX.length; o += 1) {
-                    var tempX = 0, tempY = 0;
-                    if (tempMark.RotationAngle && tempMark.RotationPoint)
-                        [tempX, tempY] = rotatePoint([tempMark.markX[o], tempMark.markY[o]], tempMark.RotationAngle, tempMark.RotationPoint)
-                    else
-                        [tempX, tempY] = [tempMark.markX[o], tempMark.markY[o]];
-                    tempX = parseInt(tempX) + ".0123";
-                    tempY = parseInt(tempY) + ".0123";
-                    if (o != 0) mark_xy += "\\";
-                    mark_xy += tempX + "\\" + tempY;
+                if (PatientMark[n].mark[m].type == "POLYLINE") {
+                    var tempMark = PatientMark[n].mark[m];
+                    var mark_xy = "";
+                    for (var o = 0; o < tempMark.markX.length; o += 1) {
+                        var tempX = 0, tempY = 0;
+                        if (tempMark.RotationAngle && tempMark.RotationPoint)
+                            [tempX, tempY] = rotatePoint([tempMark.markX[o], tempMark.markY[o]], tempMark.RotationAngle, tempMark.RotationPoint)
+                        else
+                            [tempX, tempY] = [tempMark.markX[o], tempMark.markY[o]];
+                        tempX = parseInt(tempX) + ".0123";
+                        tempY = parseInt(tempY) + ".0123";
+                        if (o != 0) mark_xy += "\\";
+                        mark_xy += tempX + "\\" + tempY;
+                    }
+                    tail = tail.replace("___GraphicData___", mark_xy);
+                    tail = tail.replace("___vm___", "4");
+                    tail = tail.replace("___len___", tempMark.markX.length + tempMark.markY.length);
+                    tail = tail.replace("___PatternOnColorCIELabValue___", "" + SetGraphicColor(PatientMark[n].color));
+                    tail = tail.replace("___GraphicType___", "POLYLINE");
+                    if (tempMark.RotationAngle && tempMark.RotationPoint) {
+                        var rotation = ("" + Graphic_format_rotation).replace("___RotationAngle___", tempMark.RotationAngle);
+                        rotation = rotation.replace("___RotationPoint___", "" + tempMark.RotationPoint[0] + "\\" + tempMark.RotationPoint[1]);
+                        tail = tail.replace("___rotation___", rotation);
+                    } else {
+                        tail = tail.replace("___rotation___", "");
+                    }
                 }
-                tail = tail.replace("___GraphicData___", mark_xy);
-                tail = tail.replace("___vm___", "4");
-                tail = tail.replace("___len___", tempMark.markX.length + tempMark.markY.length);
-                tail = tail.replace("___PatternOnColorCIELabValue___", "" + SetGraphicColor(PatientMark[n].color));
-                tail = tail.replace("___GraphicType___", "POLYLINE");
-                if (tempMark.RotationAngle && tempMark.RotationPoint) {
-                    var rotation = ("" + Graphic_format_rotation).replace("___RotationAngle___", tempMark.RotationAngle);
-                    rotation = rotation.replace("___RotationPoint___", "" + tempMark.RotationPoint[0] + "\\" + tempMark.RotationPoint[1]);
-                    tail = tail.replace("___rotation___", rotation);
-                } else {
-                    tail = tail.replace("___rotation___", "");
+                tail_list += tail;
+                for (var c = 0; c < 2; c++) {
+                    temp = temp.replace("___StudyDate___", GetViewport().StudyDate);
+                    temp = temp.replace("___StudyTime___", GetViewport().StudyTime);
+                    temp = temp.replace("___StudyInstanceUID___", Patient.Study[i].StudyUID);
+                    temp = temp.replace("___SeriesInstanceUID___", Patient.Study[i].Series[j].SeriesUID);
+                    temp = temp.replace("___SOPInstanceUID___", Patient.Study[i].Series[j].Sop[k].SopUID);
+                    temp = temp.replace("___ReferencedSOPInstanceUID___", PatientMark[n].sop);
                 }
-            }
-            tail_list += tail;
-            for (var c = 0; c < 2; c++) {
-                temp = temp.replace("___StudyDate___", GetViewport().StudyDate);
-                temp = temp.replace("___StudyTime___", GetViewport().StudyTime);
-                temp = temp.replace("___StudyInstanceUID___", Patient.Study[i].StudyUID);
-                temp = temp.replace("___SeriesInstanceUID___", Patient.Study[i].Series[j].SeriesUID);
-                temp = temp.replace("___SOPInstanceUID___", Patient.Study[i].Series[j].Sop[k].SopUID);
-                temp = temp.replace("___ReferencedSOPInstanceUID___", PatientMark[n].sop);
             }
         }
     }

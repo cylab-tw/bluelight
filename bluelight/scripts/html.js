@@ -214,6 +214,7 @@ function html_onload() {
     else getByid('GraphicStyleDiv').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
     if (openWriteGraphic == true) return;
+    else Graphic_now_choose=null;
 
     function download(text, name, type) {
       let a = document.createElement('a');
@@ -240,6 +241,7 @@ function html_onload() {
     else getByid('xmlMarkName').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
     if (openWriteXML == true) return;
+    else xml_now_choose=null;
 
     function download(text, name, type) {
       let a = document.createElement('a');
@@ -327,8 +329,9 @@ function html_onload() {
   getByid("xmlMarkNameText").onchange = function () {
     if (xml_now_choose) {
       xml_now_choose.reference.showName = '' + this.value;
+      refreshMark(xml_now_choose.reference);
       xml_now_choose = null;
-      this.value = '';
+      //this.value = '';
       for (var i = 0; i < Viewport_Total; i++)
         displayMark(NowResize, null, null, null, i);
     }

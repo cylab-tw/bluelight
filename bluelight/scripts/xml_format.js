@@ -104,7 +104,7 @@ function getXml_context() {
 }
 
 function xml_pounch(currX, currY) {
-  let block_size = getMarkSize(GetViewportMark(), false) * 2;
+  let block_size = getMarkSize(GetViewportMark(), false) * 4;
   let index = SearchUid2Index(GetViewport((viewportNumber)).alt);
   let i = index[0],
     j = index[1],
@@ -163,11 +163,33 @@ function xml_pounch(currX, currY) {
   return false;
 }
 
+function deleteXml() {
+  let index = SearchUid2Index(GetViewport((viewportNumber)).alt);
+  let i = index[0],
+    j = index[1],
+    k = index[2];
+  var list = [];
+  for (var n = 0; n < PatientMark.length; n++) {
+    if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
+      for (var m = 0; m < PatientMark[n].mark.length; m++) {
+        if (PatientMark[n].mark[m].type == "XML_mark") {
+          list.push(PatientMark[n]);
+        }
+      }
+    }
+  }
+  for (var l = 0; l < list.length; l++) {
+    PatientMark.splice(PatientMark.indexOf(list), 1);
+  }
+  refreshMarkFromSop(Patient.Study[i].Series[j].Sop[k].SopUID);
+  displayMark(NowResize, null, null, null, undefined);
+}
+
 function importXml(url) {
   var oReq = new XMLHttpRequest();
   try {
     oReq.open("get", url, false);
-  } catch (err) {}
+  } catch (err) { }
   oReq.responseType = "xml";
   oReq.onreadystatechange = function (oEvent) {
     try {
@@ -199,7 +221,7 @@ function importXml(url) {
 
       refreshMark(dcm);
       setXml_context();
-    } catch (ex) {}
+    } catch (ex) { }
   }
   oReq.send();
 }
