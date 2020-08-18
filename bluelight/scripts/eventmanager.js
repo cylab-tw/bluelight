@@ -41,6 +41,7 @@ var touchmoveF = function (e) {
 };
 var thisF = function () {
     if (openVR == true || openMPR == true || openWriteXML == true) return;
+    getByid("WindowDefault").selected = true;
     for (var i = 0; i < Viewport_Total; i++) {
         if ("MyDicomDiv" + (i) == "" + this.id) {
             var viewportNum = viewportNumber;
@@ -289,7 +290,7 @@ var mousedown3D = function (e) {
             getByid("OutSide3dDiv").style.transformStyle = "";
         }
     }
-    for (var ll = 0; ll < o3DListLength; ll++) {
+    /*for (var ll = 0; ll < o3DListLength; ll++) {
         var canvas1 = getByid("3DDiv" + ll).canvas();
         canvas1.style.background = "";
     }
@@ -300,7 +301,7 @@ var mousedown3D = function (e) {
     for (var ll = 0; ll < o3d_3degree; ll++) {
         var canvas1 = getByid("3DDiv3_" + ll).canvas();
         canvas1.style.background = "";
-    }
+    }*/
     if (openCave == true) return;
     MouseDown3D(e);
 };
@@ -327,22 +328,9 @@ var mouseup3D = function (e) {
     if (openCave == true) return;
     MouseDownCheck = false;
     rightMouseDown = false;
-    if (getByid("3dLight").checked == true) {
-        for (var ll = 0; ll < o3DListLength; ll++) {
-            var canvas1 = getByid("3DDiv" + ll).canvas();
-            canvas1.style.background = "linear-gradient(rgba(0,0,0,.02), rgba(0,0,0,.02))";
-        }
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var canvas1 = getByid("3DDiv2_" + ll).canvas();
-            canvas1.style.background = "linear-gradient(rgba(0,0,0,.02), rgba(0,0,0,.02))";
-        }
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var canvas1 = getByid("3DDiv3_" + ll).canvas();
-            canvas1.style.background = "linear-gradient(rgba(0,0,0,.02), rgba(0,0,0,.02))";
-        }
-    }
+
     if (getByid("3dStrengthenAuto").selected == true) {
-        if (getByid("OutSide3dDiv")) {
+        if (getByid("OutSide3dDiv") && !openMPR) {
             getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
         }
     }
@@ -353,7 +341,7 @@ var touchstart3D = function (e) {
             getByid("OutSide3dDiv").style.transformStyle = "";
         }
     }
-    for (var ll = 0; ll < o3DListLength; ll++) {
+    /*for (var ll = 0; ll < o3DListLength; ll++) {
         var canvas1 = getByid("3DDiv" + ll).canvas();
         canvas1.style.background = "";
     }
@@ -364,7 +352,7 @@ var touchstart3D = function (e) {
     for (var ll = 0; ll < o3d_3degree; ll++) {
         var canvas1 = getByid("3DDiv3_" + ll).canvas();
         canvas1.style.background = "";
-    }
+    }*/
     if (e.touches[1]) Touchstart3D(e.touches[0], e.touches[1]);
     else Touchstart3D(e.touches[0]);
 }
@@ -383,22 +371,9 @@ var Touchstart3D = function (e, e2) {
 var touchend3D = function (e, e2) {
     TouchDownCheck = false;
     rightTouchDown = false;
-    if (getByid("3dLight").checked == true) {
-        for (var ll = 0; ll < o3DListLength; ll++) {
-            var canvas1 = getByid("3DDiv" + ll).canvas();
-            canvas1.style.background = "linear-gradient(rgba(0,0,0,.02), rgba(0,0,0,.02))";
-        }
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var canvas1 = getByid("3DDiv2_" + ll).canvas();
-            canvas1.style.background = "linear-gradient(rgba(0,0,0,.02), rgba(0,0,0,.02))";
-        }
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var canvas1 = getByid("3DDiv3_" + ll).canvas();
-            canvas1.style.background = "linear-gradient(rgba(0,0,0,.02), rgba(0,0,0,.02))";
-        }
-    }
+
     if (getByid("3dStrengthenAuto").selected == true) {
-        if (getByid("OutSide3dDiv")) {
+        if (getByid("OutSide3dDiv") && !openMPR) {
             getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
         }
     }

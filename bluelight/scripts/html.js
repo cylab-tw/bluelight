@@ -14,12 +14,12 @@ function html_onload() {
     if (Graphic_now_choose && (key === 46 || key === 110)) {
       PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
       displayMark(NowResize, null, null, null, viewportNumber);
-      Graphic_now_choose=null;
+      Graphic_now_choose = null;
     }
     else if (xml_now_choose && (key === 46 || key === 110)) {
       PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
       displayMark(NowResize, null, null, null, viewportNumber);
-      xml_now_choose=null;
+      xml_now_choose = null;
     }
   }
 
@@ -214,7 +214,7 @@ function html_onload() {
     else getByid('GraphicStyleDiv').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
     if (openWriteGraphic == true) return;
-    else Graphic_now_choose=null;
+    else Graphic_now_choose = null;
 
     function download(text, name, type) {
       let a = document.createElement('a');
@@ -241,7 +241,7 @@ function html_onload() {
     else getByid('xmlMarkName').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
     if (openWriteXML == true) return;
-    else xml_now_choose=null;
+    else xml_now_choose = null;
 
     function download(text, name, type) {
       let a = document.createElement('a');
@@ -293,8 +293,30 @@ function html_onload() {
     for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
   }
 
+  getByid("WindowLevelSelect").onchange = function () {
+    if (getByid("WindowDefault").selected == true) {
+      getByid("textWC").value = GetViewport().windowCenterList = GetViewport().windowCenter;
+      getByid("textWW").value = GetViewport().windowWidthList = GetViewport().windowWidth;
+      if (openVR) return;
+      SetWindowWL();
+      WindowOpen = true;
+      return;
+    }
+    for (var i = 0; i < getClass("WindowSelect").length; i++) {
+      if (getClass("WindowSelect")[i].selected == true) {
+        GetViewport().windowCenterList = getByid("textWC").value = parseInt(getClass("WindowSelect")[i].getAttribute('wc'));
+        GetViewport().windowWidthList = getByid("textWW").value = parseInt(getClass("WindowSelect")[i].getAttribute('ww'));
+        if (openVR) return;
+        SetWindowWL();
+        WindowOpen = true;
+        break;
+      }
+    }
+  }
+
   getByid("textWC").onchange = function () {
     GetViewport().windowCenterList = parseInt(textWC.value);
+    getByid("WindowCustom").selected = true;
     if (openVR) return;
     SetWindowWL();
     WindowOpen = true;
@@ -302,6 +324,7 @@ function html_onload() {
 
   getByid("textWW").onchange = function () {
     GetViewport().windowWidthList = parseInt(textWW.value);
+    getByid("WindowCustom").selected = true;
     if (openVR) return;
     SetWindowWL();
     WindowOpen = true;
@@ -367,6 +390,9 @@ function html_onload() {
     else if ((parseInt(getByid('3DskinText').value) < 100));
     else getByid('3DskinText').value = 0;
     // for (var i = 0; i < Viewport_Total; i++)displayMark(NowResize, null, null, null, i);
+  }
+  getByid("3dShadow").onchange = function () {
+    setVrLight();
   }
 
   getByid("3dStrengthen").onchange = function () {

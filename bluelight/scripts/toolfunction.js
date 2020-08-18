@@ -334,19 +334,20 @@ function refreshMarkFromSop(sop) {
 }
 
 function rotate3dVR(VrDistance) {
+    console.log(degerrX, degerrY);
     if ((!(degerrY >= 90 && degerrY <= 270) && (degerrX >= 90 && degerrX <= 270)) ||
         (degerrY >= 90 && degerrY <= 270) && !(degerrX >= 90 && degerrX <= 270)) {
         for (var ll = 0; ll < o3DListLength; ll++) {
             var canvas1 = getByid("3DDiv" + ll).getElementsByClassName("cornerstone-canvas")[0];
             var div1 = getByid("3DDiv" + ll);
-            div1.style.zIndex = -ll + o3DListLength;
+            div1.style.zIndex = -ll + o3DListLength + o3d_3degree;
             div1.style.transform = "translate3d(0,0,0) rotateY(" + degerrX + "deg) rotateX(" + degerrY + "deg)  translateZ(" + (parseFloat(parseFloat(1) * (parseFloat(canvas1.style.height) / parseFloat(GetViewport().imageHeight))) * (div1.thickness - Thickness) - (VrDistance / 2)) + "px)";
         }
     } else {
         for (var ll = 0; ll < o3DListLength; ll++) {
             var canvas1 = getByid("3DDiv" + ll).getElementsByClassName("cornerstone-canvas")[0];
             var div1 = getByid("3DDiv" + ll);
-            div1.style.zIndex = ll + o3DListLength;
+            div1.style.zIndex = ll + o3d_3degree;
             div1.style.transform = "translate3d(0,0,0) rotateY(" + degerrX + "deg) rotateX(" + degerrY + "deg)  translateZ(" + (parseFloat(parseFloat(1) * (parseFloat(canvas1.style.height) / parseFloat(GetViewport().imageHeight))) * (div1.thickness - Thickness) - (VrDistance / 2)) + "px)";
         }
     }
@@ -355,18 +356,18 @@ function rotate3dVR(VrDistance) {
         for (var ll = 0; ll < o3d_3degree; ll++) {
             var div2 = getByid("3DDiv2_" + ll);
             if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25)
-                div2.style.zIndex = ll + o3DListLength + o3DListLength;
+                div2.style.zIndex = ll + o3DListLength + o3d_3degree;
             else
-                div2.style.zIndex = ll - o3DListLength + o3DListLength;
+                div2.style.zIndex = ll;
             div2.style.transform = "translate3d(0,0,0) rotateY(" + (degerrX + 0) + "deg) rotateX(" + (degerrY + 0) + "deg)  translateZ(" + (0) + "px)";
         }
     } else {
         for (var ll = 0; ll < o3d_3degree; ll++) {
             var div2 = getByid("3DDiv2_" + ll);
             if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25)
-                div2.style.zIndex = -ll + o3DListLength + o3DListLength;
+                div2.style.zIndex = -ll + o3DListLength + o3d_3degree + o3d_3degree;
             else
-                div2.style.zIndex = -ll - o3DListLength + o3DListLength;
+                div2.style.zIndex = -ll + o3d_3degree;
             div2.style.transform = "translate3d(0,0,0) rotateY(" + (degerrX + 0) + "deg) rotateX(" + (degerrY + 0) + "deg)  translateZ(" + (0) + "px)";
         }
     }
@@ -377,29 +378,29 @@ function rotate3dVR(VrDistance) {
             if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25) {
                 if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
                     if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3DListLength + o3DListLength;
+                        div3.style.zIndex = -ll + o3DListLength + o3d_3degree + o3d_3degree;
                     } else {
-                        div3.style.zIndex = ll + o3DListLength + o3DListLength;
+                        div3.style.zIndex = ll + o3DListLength + o3d_3degree;
                     }
                 } else {
                     if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll - o3DListLength + o3DListLength;
+                        div3.style.zIndex = -ll + o3d_3degree;
                     } else {
-                        div3.style.zIndex = ll - o3DListLength + o3DListLength;
+                        div3.style.zIndex = ll;
                     }
                 }
             } else {
                 if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
                     if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3DListLength + o3DListLength;
+                        div3.style.zIndex = -ll + o3d_3degree + o3DListLength + o3d_3degree;
                     } else {
-                        div3.style.zIndex = ll + o3DListLength + o3DListLength;
+                        div3.style.zIndex = ll + o3DListLength + o3d_3degree;
                     }
                 } else {
                     if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll - o3DListLength + o3DListLength;
+                        div3.style.zIndex = -ll + o3d_3degree;
                     } else {
-                        div3.style.zIndex = ll - o3DListLength + o3DListLength;
+                        div3.style.zIndex = ll;
                     }
                 }
             }
@@ -411,33 +412,76 @@ function rotate3dVR(VrDistance) {
             if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25) {
                 if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
                     if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3DListLength + o3DListLength;
+                        div3.style.zIndex = -ll + o3d_3degree + o3DListLength + o3d_3degree;
                     } else {
-                        div3.style.zIndex = ll + o3DListLength + o3DListLength;
+                        div3.style.zIndex = ll + o3DListLength + o3d_3degree;
                     }
                 } else {
                     if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll - o3DListLength + o3DListLength;
+                        div3.style.zIndex = -ll + o3d_3degree;
                     } else {
-                        div3.style.zIndex = ll - o3DListLength + o3DListLength;
+                        div3.style.zIndex = ll;
                     }
                 }
             } else {
                 if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
                     if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3DListLength + o3DListLength;
+                        div3.style.zIndex = -ll + o3d_3degree + o3DListLength + o3d_3degree;
                     } else {
-                        div3.style.zIndex = ll + o3DListLength + o3DListLength;
+                        div3.style.zIndex = ll + o3DListLength + o3d_3degree;
                     }
                 } else {
                     if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll - o3DListLength + o3DListLength;
+                        div3.style.zIndex = -ll + o3d_3degree;
                     } else {
-                        div3.style.zIndex = ll - o3DListLength + o3DListLength;
+                        div3.style.zIndex = ll;
                     }
                 }
             }
             div3.style.transform = "translate3d(0,0,0) rotateY(" + (degerrX + 0) + "deg) rotateX(" + (degerrY + 0) + "deg)  translateZ(" + (0) + "px)";
+        }
+    }
+}
+
+function setVrLight() {
+    var num = 0;
+    if (getByid("3dShadow_0").selected == true) num = 0;
+    else if (getByid("3dShadow_05").selected == true) num = 0.005;
+    else if (getByid("3dShadow_1").selected == true) num = 0.01;
+    else if (getByid("3dShadow_2").selected == true) num = 0.02;
+    else if (getByid("3dShadow_3").selected == true) num = 0.03;
+    else if (getByid("3dShadow_4").selected == true) num = 0.04;
+    else if (getByid("3dShadow_5").selected == true) num = 0.05;
+    else if (getByid("3dShadow_6").selected == true) num = 0.06;
+    else if (getByid("3dShadow_7").selected == true) num = 0.07;
+    else if (getByid("3dShadow_8").selected == true) num = 0.08;
+    else if (getByid("3dShadow_12").selected == true) num = 0.12;
+    if (num == 0) {
+        for (var ll = 0; ll < o3DListLength; ll++) {
+            var canvas1 = getByid("3DDiv" + ll).canvas();
+            canvas1.style.backgroundColor = "";
+        }
+        for (var ll = 0; ll < o3d_3degree; ll++) {
+            var canvas1 = getByid("3DDiv2_" + ll).canvas();
+            canvas1.style.backgroundColor = "";
+        }
+        for (var ll = 0; ll < o3d_3degree; ll++) {
+            var canvas1 = getByid("3DDiv3_" + ll).canvas();
+            canvas1.style.backgroundColor = "";
+        }
+    }
+    else {
+        for (var ll = 0; ll < o3DListLength; ll++) {
+            var canvas1 = getByid("3DDiv" + ll).canvas();
+            canvas1.style.backgroundColor = "rgba(0,0,0," + num + ")";
+        }
+        for (var ll = 0; ll < o3d_3degree; ll++) {
+            var canvas1 = getByid("3DDiv2_" + ll).canvas();
+            canvas1.style.backgroundColor = "rgba(0,0,0," + num + ")";
+        }
+        for (var ll = 0; ll < o3d_3degree; ll++) {
+            var canvas1 = getByid("3DDiv3_" + ll).canvas();
+            canvas1.style.backgroundColor = "rgba(0,0,0," + num + ")";
         }
     }
 }
@@ -599,5 +643,5 @@ function getRGBFrom0xFF(color, RGB, invert) {
         B = 255 - B;
     }
     if (RGB == true) return ([R, G, B]);
-    else return (getColorFrom16(R, G, B,8));
+    else return (getColorFrom16(R, G, B, 8));
 }

@@ -147,6 +147,16 @@
     <div id="WindowLevelDiv" style="background-color:#33666644;">
       <font color="white" id="myWC">WC：</font><input type="text" id="textWC" value="520" />
       <font color="white" id="myWW">WW：</font><input type="text" id="textWW" value="50" />
+      <select id="WindowLevelSelect">
+        <option id="WindowDefault" selected="selected">Default</option>
+        <option id="WindowCustom">Custom</option>
+        <option class="WindowSelect" id="WindowAbdomen" wc="60" ww="400">Abdomen(60,400)</option>
+        <option class="WindowSelect" id="WindowAngio" wc="300" ww="600">Angio(300,600)</option>
+        <option class="WindowSelect" id="WindowBone" wc="300" ww="1500">Bone(300,1500)</option>
+        <option class="WindowSelect" id="WindowBrain" wc="40" ww="80">Brain(40,80)</option>
+        <option class="WindowSelect" id="WindowChest" wc="40" ww="400">Chest(40,400)</option>
+        <option class="WindowSelect" id="WindowLungs" wc="-400" ww="1500">Lungs(-400,1500)</option>
+      </select>
     </div>
     <div id="VR_setup" style="background-color:#84420044;">
       <label style="color: #ffffff;" id="o3dPresetLabel">Preset：</label>
@@ -162,7 +172,22 @@
           id="3dSmooth"></label>
       <label style="color: #ffffff;" id="yellowColorLabel">Color<input type="checkbox" name="3dYellow"
           id="3dYellow"></label>
-      <label style="color: #ffffff;" id="3dLightLabel">Light<input type="checkbox" name="3dLight" id="3dLight"></label>
+      <label style="color: #ffffff;" id="3dShadowLabel">shadow
+        <!--<input type="checkbox" name="3dShadow" id="3dShadow">-->
+        <select name="3dShadow" id="3dShadow">
+          <option id="3dShadow_0">None</option>
+          <option id="3dShadow_05">0.005</option>
+          <option id="3dShadow_1">0.01</option>
+          <option id="3dShadow_2">0.02</option>
+          <option id="3dShadow_3">0.03</option>
+          <option id="3dShadow_4" selected="selected">0.04</option>
+          <option id="3dShadow_5">0.05</option>
+          <option id="3dShadow_6">0.06</option>
+          <option id="3dShadow_7">0.07</option>
+          <option id="3dShadow_8">0.08</option>
+          <option id="3dShadow_12">0.12</option>
+        </select>
+      </label>
       <label style="color: #ffffff;display:none" id="3dInsertLabel">Insert(hide)：<input type="text" id="3dInsertText"
           size="1" value="0" /></label>
       <label style="color: #ffffff;" id="3Dskin">Skin：<input type="text" id="3DskinText" size="3" value="25" /></label>

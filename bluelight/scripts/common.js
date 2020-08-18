@@ -16,6 +16,7 @@ function cancelTools() {
     getByid("textZoom").style.display = "none";
     getByid("textPlay").style.display = "none";
     getByid('playvideo').src = '../image/icon/black/b_CinePlay.png';
+    getByid("WindowDefault").selected = true;
     displayWindowLevel();
     displayMark();
     for (var i = 0; i < Viewport_Total; i++) {
@@ -549,7 +550,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         tempctx.fillStyle = "red";
                         if (openWriteXML == true) {
                             var tempMark = PatientMark[n].mark[m];
-                            for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 2) { 
+                            for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 2) {
                                 let checkRtss = 0;
                                 checkRtss = checkMark(i, j, n);
                                 if (checkRtss == 0) continue;

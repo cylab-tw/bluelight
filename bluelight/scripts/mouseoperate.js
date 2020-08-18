@@ -423,6 +423,7 @@ function Mousemove(e) {
         }
 
         if (openWindow == true && !openVR) {
+            getByid("WindowCustom").selected = true;
             if (Math.abs(currY - GetViewport().originalPointY) > Math.abs(currX - GetViewport().originalPointX)) {
                 if (currY < GetViewport().originalPointY - 3)
                     GetViewport().windowCenterList = (parseInt(GetViewport().windowCenterList) + Math.abs(GetmouseY(e) - windowMouseY));

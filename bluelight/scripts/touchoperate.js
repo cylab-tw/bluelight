@@ -271,6 +271,7 @@ function Touchmove(e, e2) {
     }
 
     if (openWindow == true && rightTouchDown == false) {
+      getByid("WindowCustom").selected = true;
       if (Math.abs(currY - GetViewport().originalPointY) > Math.abs(currX - GetViewport().originalPointX)) {
         if (currY < GetViewport().originalPointY - 3)
           GetViewport().windowCenterList = (parseInt(GetViewport().windowCenterList) + Math.abs(GetmouseY(e) - windowMouseY));

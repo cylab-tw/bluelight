@@ -12,7 +12,7 @@ function initVR() {
                 delete elem.canvas();
                 elem.parentElement.removeChild(elem);
                 delete elem;
-            } catch (ex) {}
+            } catch (ex) { }
         }
         for (var ll = 0; ll < o3d_3degree; ll++) {
             try {
@@ -24,7 +24,7 @@ function initVR() {
                 elem.canvas().width = 2;
                 elem.canvas().height = 2;
                 elem.getElementsByClassName("cornerstone-canvas")[0] = null;
-            } catch (ex) {}
+            } catch (ex) { }
         }
         // o3DListLength = 0;
         GetViewport(0).removeEventListener("mousemove", mousemove3D, false);
@@ -62,7 +62,7 @@ function initVR() {
         try {
             getByid("MprCanvas1").style.display = "none";
             getByid("MprCanvas2").style.display = "none";
-        } catch (ex) {}
+        } catch (ex) { }
         viewportNumber = 0;
         window.onresize();
         //SetTable();
@@ -126,7 +126,7 @@ function initVR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) {}
+                } catch (ex) { }
             }
         }
         if (o3d_3degree >= 0) {
@@ -139,7 +139,7 @@ function initVR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) {}
+                } catch (ex) { }
             }
             for (var ll = 0; ll < o3d_3degree; ll++) {
                 try {
@@ -150,7 +150,7 @@ function initVR() {
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
-                } catch (ex) {}
+                } catch (ex) { }
             }
         }
 
@@ -645,4 +645,22 @@ function Alpha3D() {
             div3.style.mixBlendMode = "lighten";
         }
     }
+
+    for (var ll = 0; ll < o3DListLength; ll++) {
+        var canvas1 = getByid("3DDiv" + ll).canvas();
+        var div1 = getByid("3DDiv" + ll);
+        div1.onselectstart = canvas1.onselectstart = function () { return false; };
+        div1.ondragstart = canvas1.ondragstart = function () { return false; };
+    }
+    for (var ll = 0; ll < o3d_3degree; ll++) {
+        var canvas3 = getByid("3DDiv3_" + ll).canvas();
+        var div3 = getByid("3DDiv3_" + ll);
+        div3.onselectstart = canvas3.onselectstart = function () { return false; };
+        div3.ondragstart = canvas3.ondragstart = function () { return false; };
+        var canvas2 = getByid("3DDiv2_" + ll).canvas();
+        var div2 = getByid("3DDiv2_" + ll);
+        div2.onselectstart = canvas2.onselectstart = function () { return false; };
+        div2.ondragstart = canvas2.ondragstart = function () { return false; };
+    }
+    setVrLight();
 }
