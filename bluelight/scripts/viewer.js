@@ -237,6 +237,8 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
                 element.imageOrientationY = 0;
             }
             //載入影像的日期與時間
+            element.PatientID = image.data.string('x00100020');
+            element.PatientName = image.data.string('x00100010');
             var date = element.StudyDate = image.data.string('x00080020');
             var time = element.StudyTime = image.data.string('x00080030');
             date = ("" + date).replace(/^(\d{4})(\d\d)(\d\d)$/, '$1/$2/$3');

@@ -85,6 +85,8 @@ function loadLdcmview() {
     NewDiv.rotateValue = 0;
     NewDiv.StudyDate = 0;
     NewDiv.StudyTime = 0;
+    NewDiv.PatientID = "12345";
+    NewDiv.PatientName = "name";
     NewDiv.openInvert = false;
 
     NewDiv.NowCanvasSizeWidth = null;

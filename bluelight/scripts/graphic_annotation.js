@@ -33,10 +33,8 @@ var Graphic_Annotation_format =
                 <element tag="0020,000e" vr="UI" vm="1" len="56" name="SeriesInstanceUID">___SeriesInstanceUID___</element>
             </item>
         </sequence>
-        <element tag="0010,0010" vr="PN" vm="1" len="14" name="PatientName">VF001378_Name</element>
-        <element tag="0010,0020" vr="LO" vm="1" len="8" name="PatientID">VF001378</element>
-        <element tag="0010,0030" vr="DA" vm="1" len="8" name="PatientBirthDate">00000001</element>
-        <element tag="0010,0040" vr="CS" vm="1" len="2" name="PatientSex">M</element>
+        <element tag="0010,0010" vr="PN" vm="1" len="14" name="PatientName">___PatientName___</element>
+        <element tag="0010,0020" vr="LO" vm="1" len="8" name="PatientID">___PatientID___</element>
         <element tag="0012,0062" vr="CS" vm="1" len="4" name="PatientIdentityRemoved">YES</element>
         <element tag="0012,0063" vr="LO" vm="1" len="14" name="DeidentificationMethod">AI99 ldcmdeid</element>
         <sequence tag="0012,0064" vr="SQ" card="4" len="340" name="DeidentificationMethodCodeSequence">
@@ -251,6 +249,8 @@ function set_Graphic_context() {
                     temp = temp.replace("___StudyInstanceUID___", Patient.Study[i].StudyUID);
                     temp = temp.replace("___SeriesInstanceUID___", Patient.Study[i].Series[j].SeriesUID);
                     temp = temp.replace("___SOPInstanceUID___", Patient.Study[i].Series[j].Sop[k].SopUID);
+                    temp = temp.replace("___PatientID___", GetViewport().PatientID);
+                    temp = temp.replace("___PatientName___", GetViewport().PatientName);
                     temp = temp.replace("___ReferencedSOPInstanceUID___", PatientMark[n].sop);
                 }
             }
