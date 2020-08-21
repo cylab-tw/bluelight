@@ -236,8 +236,8 @@ function set_Graphic_context() {
                     if (len == true) temp = temp.replace("___" + replace + "(len)___", length);
                     return temp;
                 }
-                var createSopUid = CreateUid();
-                var createSeriesUid = CreateUid();
+                var createSopUid = CreateUid("sop");
+                var createSeriesUid = CreateUid("series");
                 for (var c = 0; c < 5; c++) {
                     temp = setTag(temp, "StudyDate", GetViewport().StudyDate, true);
                     temp = setTag(temp, "StudyTime", GetViewport().StudyTime, true);
