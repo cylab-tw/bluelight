@@ -1,3 +1,29 @@
+function CreateUid(UidClass) {
+    var Uid = "2.16.886.119.102568.9.";
+    var date = new Date();
+    Uid += date.getFullYear() + "." + (date.getMonth() + 1) + "." + (date.getDate()) + ".";
+    Uid += (date.getHours() + 1) + "." + (date.getMinutes()) + "." +
+        (date.getSeconds()) + "." + (date.getMilliseconds()) + ".";
+    Uid += random(1, 9999999, 1) + ".";
+    Uid += random(1, 99, 1) + ".";
+    Uid += random(1, 9999, 1) + ".";
+    if (UidClass == 0 || UidClass == 'study') Uid += random(1, 2, 1);
+    else if (UidClass == 1 || UidClass == 'series') Uid += random(3, 4, 1);
+    else if (UidClass == 2 || UidClass == 'sop') Uid += random(5, 6, 1);
+    else Uid += random(7, 8, 1);
+    if (Uid.length % 2 != 0) Uid += 0;
+    return Uid;
+}
+
+function random(min, max, step) {
+    if (!step) step = 1;
+    var len = ((max - min) / step) + 1;
+    var number = Math.floor(Math.random() * (len)) * step + min;
+    if (number < min) number = min;
+    if (number > max) number = max;
+    return number;
+}
+
 function getCurrPoint(e) {
     var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().imageWidth / parseFloat(canvas.style.width)));
     var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().imageHeight / parseFloat(canvas.style.height)));
@@ -334,7 +360,6 @@ function refreshMarkFromSop(sop) {
 }
 
 function rotate3dVR(VrDistance) {
-    console.log(degerrX, degerrY);
     if ((!(degerrY >= 90 && degerrY <= 270) && (degerrX >= 90 && degerrX <= 270)) ||
         (degerrY >= 90 && degerrY <= 270) && !(degerrX >= 90 && degerrX <= 270)) {
         for (var ll = 0; ll < o3DListLength; ll++) {
@@ -542,7 +567,7 @@ function GetGraphicColor() {
     //if (getByid("Graphicselected").selected) return "#0000FF";
     if (getByid("GraphicBlackSelect").selected) return "#000000";
     else if (getByid("GraphicBlueSelect").selected) return "#0000FF";
-    else if (getByid("GraphicBrownSelect").selected) return "#A52A2A";
+    else if (getByid("GraphicBrownSelect").selected) return "#844200";
     else if (getByid("GraphicCyanSelect").selected) return "#00FFFF";
     else if (getByid("GraphicGreenSelect").selected) return "#00FF00";
     else if (getByid("GraphicMagentaSelect").selected) return "#FF00FF";
@@ -574,7 +599,7 @@ function ConvertGraphicColor(r, g, b) {
     var str = "" + r + "\\" + g + "\\" + b;
     if (str == "0\\32896\\32896") return ["#000000", "T7"];
     else if (str == "0\\32896\\33153") return ["#0000FF", "T8"];
-    else if (str == "393\\32998\\32947") return ["#A52A2A", "T9"];
+    else if (str == "393\\32998\\32947") return ["#844200", "T9"];
     else if (str == "0\\33153\\33153") return ["#00FFFF", "T10"];
     else if (str == "0\\33153\\32896") return ["#00FF00", "T11"];
     else if (str == "655\\32896\\33153") return ["#FF00FF", "T12"];
@@ -589,7 +614,7 @@ function ConvertGraphicColor(r, g, b) {
 function SetGraphicColor(str) {
     if (str == "#000000") return "0\\32896\\32896";
     else if (str == "#0000FF") return "0\\32896\\33153";
-    else if (str == "#A52A2A") return "393\\32998\\32947";
+    else if (str == "#844200") return "393\\32998\\32947";
     else if (str == "#00FFFF") return "0\\33153\\33153";
     else if (str == "#00FF00") return "0\\33153\\32896";
     else if (str == "#FF00FF") return "655\\32896\\33153";

@@ -88,6 +88,9 @@ function loadLdcmview() {
     NewDiv.PatientID = "12345";
     NewDiv.PatientName = "name";
     NewDiv.openInvert = false;
+    NewDiv.AccessionNumber = "";
+    NewDiv.StudyDescription = "";
+    NewDiv.StudyID = "";
 
     NewDiv.NowCanvasSizeWidth = null;
     NewDiv.NowCanvasSizeHeight = null;

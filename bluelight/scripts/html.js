@@ -226,8 +226,18 @@ function html_onload() {
       a.download = name;
       a.click();
     }
+    
     set_Graphic_context();
     download(String(get_Graphic_context()), 'filename_Graphic.xml', 'text/plain');
+    /*if (getByid("GraphicMarkSelect").selected == true) {
+      set_Graphic_context();
+      download(String(get_Graphic_context()), 'filename_Graphic.xml', 'text/plain');
+    }
+    else if (getByid("RTSSMarkSelect").selected == true) {
+      set_RTSS_context();
+      download(String(get_RTSS_context()), 'filename_Graphic.xml', 'text/plain');
+    }*/
+
     getByid('MouseOperation').click();
   }
 

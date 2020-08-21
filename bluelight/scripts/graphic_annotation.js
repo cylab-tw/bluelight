@@ -5,7 +5,7 @@ var Graphic_Annotation_format =
         <element tag="0002,0000" vr="UL" vm="1" len="4" name="FileMetaInformationGroupLength">200</element>
         <element tag="0002,0001" vr="OB" vm="1" len="2" name="FileMetaInformationVersion" binary="hidden"></element>
         <element tag="0002,0002" vr="UI" vm="1" len="28" name="MediaStorageSOPClassUID">1.2.840.10008.5.1.4.1.1.11.1</element>
-        <element tag="0002,0003" vr="UI" vm="1" len="56" name="MediaStorageSOPInstanceUID">1.2.276.0.7230010.3.1.4.1386188699.53252.1596566123.4640</element>
+        <element tag="0002,0003" vr="UI" vm="1" len="___SOPInstanceUID(len)___" name="MediaStorageSOPInstanceUID">___SOPInstanceUID___</element>
         <element tag="0002,0010" vr="UI" vm="1" len="18" name="TransferSyntaxUID">1.2.840.10008.1.2</element>
         <element tag="0002,0012" vr="UI" vm="1" len="28" name="ImplementationClassUID">1.2.276.0.7230010.3.0.3.6.4</element>
         <element tag="0002,0013" vr="SH" vm="1" len="16" name="ImplementationVersionName">OFFIS_DCMTK_364</element>
@@ -13,57 +13,33 @@ var Graphic_Annotation_format =
     <data-set xfer="1.2.840.10008.1.2" name="Little Endian Implicit">
         <element tag="0008,0005" vr="CS" vm="1" len="10" name="SpecificCharacterSet">ISO_IR 192</element>
         <element tag="0008,0016" vr="UI" vm="1" len="28" name="SOPClassUID">1.2.840.10008.5.1.4.1.1.11.1</element>
-        <element tag="0008,0018" vr="UI" vm="1" len="56" name="SOPInstanceUID">___SOPInstanceUID___</element>
+        <element tag="0008,0018" vr="UI" vm="1" len="___SOPInstanceUID(len)___" name="SOPInstanceUID">___SOPInstanceUID___</element>
         <element tag="0008,0020" vr="DA" vm="1" len="8" name="StudyDate">___StudyDate___</element>
         <element tag="0008,0023" vr="DA" vm="1" len="8" name="ContentDate">___StudyDate___</element>
-        <element tag="0008,0030" vr="TM" vm="1" len="6" name="StudyTime">___StudyTime___</element>
+        <element tag="0008,0030" vr="TM" vm="1" len="10" name="StudyTime">___StudyTime___</element>
         <element tag="0008,0033" vr="TM" vm="1" len="10" name="ContentTime">___StudyTime___</element>
-        <element tag="0008,0050" vr="SH" vm="0" len="0" name="AccessionNumber"></element>
+        <element tag="0008,0050" vr="SH" vm="1" len="___AccessionNumber(len)___" name="AccessionNumber">___AccessionNumber___</element>
         <element tag="0008,0060" vr="CS" vm="1" len="2" name="Modality">PR</element>
-        <element tag="0008,1030" vr="LO" vm="1" len="28" name="StudyDescription">L- SPINE AP LAT (FOR ORTHO)</element>
-        <element tag="0008,103e" vr="LO" vm="1" len="12" name="SeriesDescription">Weasis GSPS</element>
+        <element tag="0008,1030" vr="LO" vm="1" len="___StudyDescription(len)___" name="StudyDescription">___StudyDescription___</element>
+        <element tag="0008,103e" vr="LO" vm="1" len="12" name="SeriesDescription">BlueLight GSPS</element>
         <sequence tag="0008,1115" vr="SQ" card="1" len="188" name="ReferencedSeriesSequence">
             <item card="2" len="180">
                 <sequence tag="0008,1140" vr="SQ" card="1" len="108" name="ReferencedImageSequence">
                     <item card="2" len="100">
                         <element tag="0008,1150" vr="UI" vm="1" len="28" name="ReferencedSOPClassUID">1.2.840.10008.5.1.4.1.1.1.1</element>
-                        <element tag="0008,1155" vr="UI" vm="1" len="56" name="ReferencedSOPInstanceUID">___ReferencedSOPInstanceUID___</element>
+                        <element tag="0008,1155" vr="UI" vm="1" len="___ReferencedSOPInstanceUID(len)___" name="ReferencedSOPInstanceUID">___ReferencedSOPInstanceUID___</element>
                     </item>
                 </sequence>
-                <element tag="0020,000e" vr="UI" vm="1" len="56" name="SeriesInstanceUID">___SeriesInstanceUID___</element>
+                <element tag="0020,000e" vr="UI" vm="1" len="___ReferencedSeriesInstanceUID(len)___" name="SeriesInstanceUID">___ReferencedSeriesInstanceUID___</element>
             </item>
         </sequence>
-        <element tag="0010,0010" vr="PN" vm="1" len="14" name="PatientName">___PatientName___</element>
-        <element tag="0010,0020" vr="LO" vm="1" len="8" name="PatientID">___PatientID___</element>
-        <element tag="0012,0062" vr="CS" vm="1" len="4" name="PatientIdentityRemoved">YES</element>
-        <element tag="0012,0063" vr="LO" vm="1" len="14" name="DeidentificationMethod">AI99 ldcmdeid</element>
-        <sequence tag="0012,0064" vr="SQ" card="4" len="340" name="DeidentificationMethodCodeSequence">
-            <item card="3" len="76">
-                <element tag="0008,0100" vr="SH" vm="1" len="6" name="CodeValue">113100</element>
-                <element tag="0008,0102" vr="SH" vm="1" len="4" name="CodingSchemeDesignator">DCM</element>
-                <element tag="0008,0104" vr="LO" vm="1" len="42" name="CodeMeaning">Basic Application Confidentiality Profile</element>
-            </item>
-            <item card="3" len="96">
-                <element tag="0008,0100" vr="SH" vm="1" len="6" name="CodeValue">113107</element>
-                <element tag="0008,0102" vr="SH" vm="1" len="4" name="CodingSchemeDesignator">DCM</element>
-                <element tag="0008,0104" vr="LO" vm="1" len="62" name="CodeMeaning">Retain Longitudinal Temporal Information Modified Dates Option</element>
-            </item>
-            <item card="3" len="72">
-                <element tag="0008,0100" vr="SH" vm="1" len="6" name="CodeValue">113108</element>
-                <element tag="0008,0102" vr="SH" vm="1" len="4" name="CodingSchemeDesignator">DCM</element>
-                <element tag="0008,0104" vr="LO" vm="1" len="38" name="CodeMeaning">Retain Patient Characteristics Option</element>
-            </item>
-            <item card="3" len="64">
-                <element tag="0008,0100" vr="SH" vm="1" len="6" name="CodeValue">113109</element>
-                <element tag="0008,0102" vr="SH" vm="1" len="4" name="CodingSchemeDesignator">DCM</element>
-                <element tag="0008,0104" vr="LO" vm="1" len="30" name="CodeMeaning">Retain Device Identity Option</element>
-            </item>
-        </sequence>
+        <element tag="0010,0010" vr="PN" vm="1" len="___PatientName(len)___" name="PatientName">___PatientName___</element>
+        <element tag="0010,0020" vr="LO" vm="1" len="___PatientID(len)___" name="PatientID">___PatientID___</element>
         <element tag="0018,0015" vr="CS" vm="0" len="0" name="BodyPartExamined"></element>
         <element tag="0018,1020" vr="LO" vm="1" len="6" name="SoftwareVersions">3.5.4</element>
-        <element tag="0020,000d" vr="UI" vm="1" len="56" name="StudyInstanceUID">___StudyInstanceUID___</element>
-        <element tag="0020,000e" vr="UI" vm="1" len="56" name="SeriesInstanceUID">___SeriesInstanceUID___</element>
-        <element tag="0020,0010" vr="SH" vm="1" len="16" name="StudyID">1553519062411434</element>
+        <element tag="0020,000d" vr="UI" vm="1" len="___StudyInstanceUID(len)___" name="StudyInstanceUID">___StudyInstanceUID___</element>
+        <element tag="0020,000e" vr="UI" vm="1" len="___SeriesInstanceUID(len)___" name="SeriesInstanceUID">___SeriesInstanceUID___</element>
+        <element tag="0020,0010" vr="SH" vm="1" len="___StudyID(len)___" name="StudyID">___StudyID___</element>
         <element tag="0020,0011" vr="IS" vm="1" len="4" name="SeriesNumber">999</element>
         <sequence tag="0070,0001" vr="SQ" card="1" len="194" name="GraphicAnnotationSequence">
             <item card="3" len="186">
@@ -85,9 +61,9 @@ ___item___
         </sequence>
         <element tag="0070,0080" vr="CS" vm="1" len="4" name="ContentLabel">GSPS</element>
         <element tag="0070,0081" vr="LO" vm="1" len="12" name="ContentDescription">Description</element>
-        <element tag="0070,0082" vr="DA" vm="1" len="8" name="PresentationCreationDate">20200210</element>
-        <element tag="0070,0083" vr="TM" vm="1" len="10" name="PresentationCreationTime">093348.775</element>
-        <element tag="0070,0084" vr="PN" vm="1" len="10" name="ContentCreatorName">Bobby Chou</element>
+        <element tag="0070,0082" vr="DA" vm="1" len="8" name="PresentationCreationDate">___PresentationCreationDate___</element>
+        <element tag="0070,0083" vr="TM" vm="1" len="10" name="PresentationCreationTime">___PresentationCreationTime___</element>
+        <element tag="0070,0084" vr="PN" vm="1" len="10" name="ContentCreatorName">BlueLight</element>
     </data-set>
 </file-format>`;
 
@@ -243,8 +219,41 @@ function set_Graphic_context() {
                     }
                 }
                 tail_list += tail;
-                for (var c = 0; c < 2; c++) {
-                    temp = temp.replace("___StudyDate___", GetViewport().StudyDate);
+                var date = new Date();
+                function zero(num, Milliseconds) {
+                    if (Milliseconds) {
+                        if (num < 10) return "" + "00" + num;
+                        else if (num < 100) return "" + "0" + num;
+                        return "" + num;
+                    }
+                    return "" + (num < 10 ? '0' : '') + num;
+                }
+                function setTag(temp, replace, str, len) {
+                    str = Null2Empty(str);
+                    temp = temp.replace("___" + replace + "___", "" + str);
+                    var length = ("" + str).length;
+                    if (length % 2 != 0) length++;
+                    if (len == true) temp = temp.replace("___" + replace + "(len)___", length);
+                    return temp;
+                }
+                var createSopUid = CreateUid();
+                var createSeriesUid = CreateUid();
+                for (var c = 0; c < 5; c++) {
+                    temp = setTag(temp, "StudyDate", GetViewport().StudyDate, true);
+                    temp = setTag(temp, "StudyTime", GetViewport().StudyTime, true);
+                    temp = setTag(temp, "StudyInstanceUID", Patient.Study[i].StudyUID, true);
+                    temp = setTag(temp, "SeriesInstanceUID", createSeriesUid, true);
+                    temp = setTag(temp, "SOPInstanceUID", createSopUid, true);
+                    temp = setTag(temp, "PatientID", GetViewport().PatientID, true);
+                    temp = setTag(temp, "PatientName", GetViewport().PatientName, true);
+                    temp = setTag(temp, "ReferencedSOPInstanceUID", PatientMark[n].sop, true);
+                    temp = setTag(temp, "ReferencedSeriesInstanceUID", Patient.Study[i].Series[j].SeriesUID, true);
+                    temp = setTag(temp, "AccessionNumber", GetViewport().AccessionNumber, true);
+                    temp = setTag(temp, "StudyDescription", GetViewport().StudyDescription, true);
+                    temp = setTag(temp, "StudyID", GetViewport().StudyID, true);
+                    temp = temp.replace("___PresentationCreationDate___", "" + date.getFullYear() + zero(date.getMonth() + 1) + zero(date.getDate()));// 20200210
+                    temp = temp.replace("___PresentationCreationTime___", "" + zero(date.getHours() + 1) + zero(date.getMinutes()) + zero(date.getSeconds()) + "." + zero(date.getMilliseconds(), true));// 093348.775
+                    /*temp = temp.replace("___StudyDate___", GetViewport().StudyDate);
                     temp = temp.replace("___StudyTime___", GetViewport().StudyTime);
                     temp = temp.replace("___StudyInstanceUID___", Patient.Study[i].StudyUID);
                     temp = temp.replace("___SeriesInstanceUID___", Patient.Study[i].Series[j].SeriesUID);
@@ -252,6 +261,13 @@ function set_Graphic_context() {
                     temp = temp.replace("___PatientID___", GetViewport().PatientID);
                     temp = temp.replace("___PatientName___", GetViewport().PatientName);
                     temp = temp.replace("___ReferencedSOPInstanceUID___", PatientMark[n].sop);
+                    temp = temp.replace("___AccessionNumber___", Null2Empty(GetViewport().AccessionNumber));
+                    temp = temp.replace("___AccessionNumber(len)___", "" + (Null2Empty(GetViewport().AccessionNumber).length + 1));
+                    temp = temp.replace("___StudyDescription___", Null2Empty(GetViewport().StudyDescription));
+                    temp = temp.replace("___StudyDescription(len)___", "" + (Null2Empty(GetViewport().StudyDescription).length + 1));
+                    temp = temp.replace("___StudyID___", Null2Empty(GetViewport().StudyID));
+                    temp = temp.replace("___StudyID(len)___", "" + (Null2Empty(GetViewport().StudyID).length + 1));
+                    */
                 }
             }
         }
