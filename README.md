@@ -22,6 +22,8 @@
 ### Network support
 * load local files
 * Integration with any DICOMWeb Image Archive, including Orthanc, and dcm4chee server
+* Integration with IHE Invoke Image Display (IID) Profile, as the Image Display Acotr in Transaction [RAD-106]. (on going)
+  - We are trying to implement it with in the scenario of FHIR ImagingStudy.
 * Integration with XNAT (currently doesn't build as an XNAT plugin)
 
 ### 2D image interpretation
@@ -49,9 +51,13 @@
 * 3D Volume Rendering 
 * MIP (maximum intensity projection)
 
-### Labeling tool interfaces
+### Labeling tool interfaces 
 * [LabelImg](https://github.com/tzutalin/labelImg)
-* GSPS: DICOM Graphic Annotation (on going)
+* GSPS: DICOM Graphic Annotation (Done)
+* DICOM-RT structure set (RTSS) (on going)
+* DICOM SEG (Segementation) (on going)
+* **Note:** *Currently, the format of annotation is the DCMTK DICOM-XML, support the download of the DICOM format should be with [micala Server](https://github.com/cylab-tw/micala), we are trying to release it ASAP*
+* Downloading the DICOM-XML, you can use the DCMTK tool: xml2dcm to convert the xml to DICOM format which BlueLight can display as well.
 
 ## Supported library
 * BlueLight Viewer uses several oepn source libraries as folowing:
