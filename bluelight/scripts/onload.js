@@ -91,6 +91,17 @@ function loadLdcmview() {
     NewDiv.AccessionNumber = "";
     NewDiv.StudyDescription = "";
     NewDiv.StudyID = "";
+    NewDiv.SliceLocation = 1;
+
+    NewDiv.ModalitiesInStudy = "";
+    NewDiv.Manufacturer = "";
+    NewDiv.InstitutionName = "";
+    NewDiv.InstitutionAddress = "";
+    NewDiv.ReferringPhysicianName = "";
+    NewDiv.StationName = "";
+    NewDiv.SeriesDescription = "";
+    NewDiv.SeriesNumber = "";
+    NewDiv.RequestingPhysician = "";
 
     NewDiv.NowCanvasSizeWidth = null;
     NewDiv.NowCanvasSizeHeight = null;

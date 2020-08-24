@@ -9,7 +9,7 @@ function Wheel(e) {
         var break1 = false;
         if (openLink == true)
             viewportNum = z;
-        if (openVR == true || openMPR == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true) {
+        if (openWriteRTSS == true || openVR == true || openMPR == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true) {
             var currX1 = (e.pageX - canvas.getBoundingClientRect().left - GetViewport().newMousePointX - 100) * (GetViewport().imageWidth / parseInt(canvas.style.width));
             var currY1 = (e.pageY - canvas.getBoundingClientRect().top - GetViewport().newMousePointY - 100) * (GetViewport().imageHeight / parseInt(canvas.style.height));
             var alt = GetViewport(viewportNum).alt;
@@ -131,6 +131,51 @@ function Mousedown(e) {
             }
         }*/
         if (xml_pounch(currXml_X2, currXml_Y2) == true) displayMark(NowResize, null, null, null, undefined);
+    }
+    if (openWriteRTSS == true && !rightMouseDown) {
+        var angel2point = rotateCalculation(e)
+        var currX11 = Math.floor(angel2point[0]);
+        var currY11 = Math.floor(angel2point[1]);
+        var currX02 = currX11;
+        var currY02 = currY11;
+
+        if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
+            currX02 = (currX11 * GetViewport().imageOrientationX + currY11 * -GetViewport().imageOrientationY + 0);
+            currY02 = (currX11 * -GetViewport().imageOrientationX2 + currY11 * GetViewport().imageOrientationY2 + 0);
+            if ((GetViewport().openHorizontalFlip != GetViewport().openVerticalFlip)) {
+                currX02 = currX02 - (currX02 - currX11) * 2;
+                currY02 = currY02 - (currY02 - currY11) * 2;
+            }
+        }
+        currX02 = currX02 / GetViewport().PixelSpacingX + GetViewport().imagePositionX;
+        currY02 = currY02 / GetViewport().PixelSpacingY + GetViewport().imagePositionY;
+        let Uid = GetNowUid();
+        var dcm = {};
+        dcm.study = Uid.study;
+        dcm.series = Uid.sreies;
+        dcm.color = "rgb(0,0,128)";
+        for (var co = 0; co < getClass("RTSSColorSelectOption").length; co++) {
+            if (getClass("RTSSColorSelectOption")[co].selected == true) {
+                dcm.color = getClass("RTSSColorSelectOption")[co].style.color;
+            }
+        }
+
+        dcm.SliceLocation = GetViewport().SliceLocation;
+        dcm.mark = [];
+        dcm.showName = "T1"; //"" + getByid("xmlMarkNameText").value;
+        dcm.mark.push({});
+        dcm.sop = Uid.sop;
+        var DcmMarkLength = dcm.mark.length - 1;
+        dcm.mark[DcmMarkLength].type = "RTSS";
+        dcm.mark[DcmMarkLength].markX = [];
+        dcm.mark[DcmMarkLength].markY = [];
+        dcm.mark[DcmMarkLength].markX.push(angel2point[0] - Math.abs(currX02 - angel2point[0]));
+        dcm.mark[DcmMarkLength].markY.push(angel2point[1] - Math.abs(currY02 - angel2point[1]));
+        PatientMark.push(dcm);
+        refreshMark(dcm);
+        RTSSc_now_choose = dcm.mark[DcmMarkLength];
+        for (var i = 0; i < Viewport_Total; i++)
+            displayMark(NowResize, null, null, null, i);
     }
     if (openWriteGraphic == true && !rightMouseDown) {
         var currX = getCurrPoint(e)[0];
@@ -278,6 +323,34 @@ function Mousemove(e) {
         displayAngelRular();
         return;
     }
+
+    if (openWriteRTSS == true && !rightMouseDown && RTSSc_now_choose) {
+        let Uid = GetNowUid();
+        var angel2point = rotateCalculation(e)
+        var currX11 = Math.floor(angel2point[0]);
+        var currY11 = Math.floor(angel2point[1]);
+        var currX02 = currX11;
+        var currY02 = currY11;
+
+        if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
+            currX02 = (currX11 * GetViewport().imageOrientationX + currY11 * -GetViewport().imageOrientationY + 0);
+            currY02 = (currX11 * -GetViewport().imageOrientationX2 + currY11 * GetViewport().imageOrientationY2 + 0);
+            if ((GetViewport().openHorizontalFlip != GetViewport().openVerticalFlip)) {
+                currX02 = currX02 - (currX02 - currX11) * 2;
+                currY02 = currY02 - (currY02 - currY11) * 2;
+            }
+        }
+        currX02 = currX02 / GetViewport().PixelSpacingX + GetViewport().imagePositionX;
+        currY02 = currY02 / GetViewport().PixelSpacingY + GetViewport().imagePositionY;
+        // var DcmMarkLength = RTSSc_now_choose.mark.length - 1;
+        RTSSc_now_choose.markX.push(angel2point[0] - Math.abs(currX02 - angel2point[0]));
+        RTSSc_now_choose.markY.push(angel2point[1] - Math.abs(currY02 - angel2point[1]));
+        //PatientMark.push(RTSSc_now_choose);
+        refreshMark(Uid.sop);
+        for (var i = 0; i < Viewport_Total; i++)
+            displayMark(NowResize, null, null, null, i);
+    }
+
     if (openWriteGraphic == true && (MouseDownCheck == true || rightMouseDown == true)) {
         if (!Graphic_now_choose && MouseDownCheck == true) {
             let Uid = SearchNowUid();
@@ -454,7 +527,7 @@ function Mousemove(e) {
             let angel2point = rotateCalculation(e);
             magnifierIng(angel2point[0], angel2point[1]);
         }
-        if ((openMouseTool == true || openRotate == true) && openChangeFile == false && openWriteXML == false && openWriteGraphic == false) {
+        if ((openMouseTool == true || openRotate == true) && openWriteRTSS == false && openChangeFile == false && openWriteXML == false && openWriteGraphic == false) {
             var MouseX = GetmouseX(e);
             var MouseY = GetmouseY(e);
             GetViewport().newMousePointX += MouseX - windowMouseX;
@@ -537,6 +610,9 @@ function Mouseup(e) {
     MouseDownCheck = false;
     rightMouseDown = false;
     if (openVR == true) return;
+    if (RTSSc_now_choose) {
+        RTSSc_now_choose = null;
+    }
     if (openWriteXML == true && !xml_now_choose) {
         let Uid = SearchNowUid();
         var dcm = {};

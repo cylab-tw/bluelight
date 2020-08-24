@@ -201,7 +201,9 @@ function readDicom(url, patientmark, openfile) {
           for (var i in dataSet.elements.x00700001.items) {
             try {
               var tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
-            } catch (ex) { continue; }
+            } catch (ex) {
+              continue;
+            }
             for (var j in tempDataSet) {
               if (tempDataSet[j].dataSet.string('x00700023') == 'POLYLINE') {
                 var dcm = {};
@@ -239,7 +241,8 @@ function readDicom(url, patientmark, openfile) {
                 var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
                 for (var r = 0; r < rect; r += 2) {
                   var GraphicData = getTag("x00700022");
-                  var numX = 0, numY = 0;
+                  var numX = 0,
+                    numY = 0;
                   if (GraphicData.vr == 'US') {
                     numX = tempDataSet[j].dataSet.uint16("x00700022", r);
                     numY = tempDataSet[j].dataSet.uint16("x00700022", r + 1);
@@ -270,7 +273,8 @@ function readDicom(url, patientmark, openfile) {
                 }
                 patientmark.push(dcm);
                 refreshMark(dcm);
-              } if (tempDataSet[j].dataSet.string('x00700023') == 'CIRCLE') {
+              }
+              if (tempDataSet[j].dataSet.string('x00700023') == 'CIRCLE') {
                 var dcm = {};
                 dcm.sop = sop1;
                 dcm.mark = [];
@@ -284,7 +288,10 @@ function readDicom(url, patientmark, openfile) {
                 var xTemp16 = tempDataSet[j].dataSet.string('x00700022');;
                 var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
                 for (var r = 0; r < rect; r += 4) {
-                  var numX = 0, numY = 0, numX2 = 0, numY2 = 0;
+                  var numX = 0,
+                    numY = 0,
+                    numX2 = 0,
+                    numY2 = 0;
                   numX = tempDataSet[j].dataSet.float("x00700022", r);
                   numY = tempDataSet[j].dataSet.float("x00700022", r + 1);
                   numX2 = tempDataSet[j].dataSet.float("x00700022", r + 2);
@@ -341,6 +348,7 @@ function readDicom(url, patientmark, openfile) {
 
           }
         }
+
         if (dataSet.string('x30060039')) {
           for (var i in dataSet.elements.x30060039.items) {
             var colorStr = ("" + dataSet.elements.x30060039.items[i].dataSet.string('x3006002a')).split("\\");
@@ -351,12 +359,17 @@ function readDicom(url, patientmark, openfile) {
                 var dcm = {};
                 dcm.study = dataSet.string('x0020000d');
                 dcm.series = dataSet.string('x0020000e');
+                try {
+                  dcm.series = dataSet.elements.x30060010.items[0].dataSet.elements.x30060012.items[0].dataSet.elements.x30060014.items[0].dataSet.string('x0020000e');
+                } catch (ex) { }
+
                 dcm.color = color;
                 dcm.mark = [];
                 if (tvList[i]) {
                   dcm.showName = tvList[i];
                 }
                 dcm.mark.push({});
+                //dcm.SliceLocation=dataSet.string('x00201041');
                 dcm.sop = dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.elements.x30060016.items[k].dataSet.string('x00081155');;
                 var DcmMarkLength = dcm.mark.length - 1;
                 dcm.mark[DcmMarkLength].type = "RTSS";
@@ -366,9 +379,9 @@ function readDicom(url, patientmark, openfile) {
                 for (var k2 = 0; k2 < str0.length; k2 += 3) {
                   dcm.mark[DcmMarkLength].markX.push((parseFloat(str0[k2])));
                   dcm.mark[DcmMarkLength].markY.push((parseFloat(str0[k2 + 1])));
+                  dcm.SliceLocation = parseFloat(str0[k2 + 2]);
                 }
                 patientmark.push(dcm);
-
                 refreshMark(dcm);
               }
             }

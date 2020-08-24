@@ -244,6 +244,18 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
             element.StudyDescription = image.data.string('x00081030');
             element.StudyID = image.data.string('x00200010');
 
+            element.SliceLocation = image.data.string('x00201041');
+
+            element.ModalitiesInStudy = image.data.string('x00080061');
+            element.Manufacturer = image.data.string('x00080070');
+            element.InstitutionName = image.data.string('x00080080');
+            element.InstitutionAddress = image.data.string('x00080081');
+            element.ReferringPhysicianName = image.data.string('x00080090');
+            element.StationName = image.data.string('x00081010');
+            element.SeriesDescription = image.data.string('x0008103e');
+            element.SeriesNumber = image.data.string('x00200011');
+            element.RequestingPhysician = image.data.string('x00321032');
+
             var date = element.StudyDate = image.data.string('x00080020');
             var time = element.StudyTime = image.data.string('x00080030');
             date = ("" + date).replace(/^(\d{4})(\d\d)(\d\d)$/, '$1/$2/$3');

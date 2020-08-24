@@ -15,11 +15,12 @@ function html_onload() {
       PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
       displayMark(NowResize, null, null, null, viewportNumber);
       Graphic_now_choose = null;
-    }
-    else if (xml_now_choose && (key === 46 || key === 110)) {
+      refreshMarkFromSop(GetNowUid().sop);
+    } else if (xml_now_choose && (key === 46 || key === 110)) {
       PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
       displayMark(NowResize, null, null, null, viewportNumber);
       xml_now_choose = null;
+      refreshMarkFromSop(GetNowUid().sop);
     }
   }
 
@@ -204,6 +205,33 @@ function html_onload() {
     else this.src = '../image/icon/black/b_Cross-hair_OFF.png';
   }
 
+  getByid("writeRTSS").onclick = function () {
+    if (imgInvalid(this)) return;
+    cancelTools();
+    openWriteRTSS = !openWriteRTSS;
+    img2darkByClass("RTSS", !openWriteRTSS);
+    this.src = openWriteRTSS == true ? '../image/icon/black/rtssdraw_ON.png' : '../image/icon/black/rtssdraw_OFF.png';
+    if (openWriteRTSS == true) getByid('RtssDiv').style.display = '';
+    else getByid('RtssDiv').style.display = 'none';
+    displayMark(NowResize, null, null, null, viewportNumber);
+    if (openWriteRTSS == true) return;
+    // else Graphic_now_choose = null;
+
+    function download(text, name, type) {
+      let a = document.createElement('a');
+      let file = new Blob([text], {
+        type: type
+      });
+      a.href = window.URL.createObjectURL(file);
+      //a.style.display = '';
+      a.download = name;
+      a.click();
+    }
+    set_RTSS_context();
+    download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
+    getByid('MouseOperation').click();
+  }
+
   getByid("writeGraphic").onclick = function () {
     if (imgInvalid(this)) return;
     cancelTools();
@@ -226,14 +254,13 @@ function html_onload() {
       a.download = name;
       a.click();
     }
-    
+
     set_Graphic_context();
     download(String(get_Graphic_context()), 'filename_Graphic.xml', 'text/plain');
     /*if (getByid("GraphicMarkSelect").selected == true) {
       set_Graphic_context();
       download(String(get_Graphic_context()), 'filename_Graphic.xml', 'text/plain');
-    }
-    else if (getByid("RTSSMarkSelect").selected == true) {
+    } else if (getByid("RTSSMarkSelect").selected == true) {
       set_RTSS_context();
       download(String(get_RTSS_context()), 'filename_Graphic.xml', 'text/plain');
     }*/

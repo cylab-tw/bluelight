@@ -229,6 +229,29 @@ function sortInstance(alt) {
     }
 }
 
+function getAllSop(sop) {
+    let alt;
+    if (!sop) alt = GetViewport().alt;
+    else alt = sop;
+
+    function getSopList(i, j, l) {
+        var list = [];
+        for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
+            list.push(Patient.Study[i].Series[j].Sop[l].SopUID);
+        }
+        return list;
+    }
+    for (var i = 0; i < Patient.StudyAmount; i++) {
+        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
+            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
+                if (Patient.Study[i].Series[j].Sop[l].SopUID == alt) {
+                    return getSopList(i, j, l);
+                }
+            }
+        }
+    }
+}
+
 function getNowInstance() {
     var break1 = false;
     var nowInstanceNumber = 0;
@@ -494,8 +517,7 @@ function setVrLight() {
             var canvas1 = getByid("3DDiv3_" + ll).canvas();
             canvas1.style.backgroundColor = "";
         }
-    }
-    else {
+    } else {
         for (var ll = 0; ll < o3DListLength; ll++) {
             var canvas1 = getByid("3DDiv" + ll).canvas();
             canvas1.style.backgroundColor = "rgba(0,0,0," + num + ")";
@@ -632,6 +654,9 @@ function equal_TOL(a, b, tolerance) {
     return false;
 }
 
+function getColorFromRGB(str) {
+    return str.split("(")[1].split(")")[0].split(",");
+}
 
 function getColorFrom16(r, g, b, bit) {
     if (bit == 16) {
@@ -639,6 +664,7 @@ function getColorFrom16(r, g, b, bit) {
         g = parseInt(g / 256);
         b = parseInt(b / 256);
     }
+
     function componentToHex(c) {
         var hex = c.toString(16);
         return hex.length == 1 ? "0" + hex : hex;
@@ -649,6 +675,7 @@ function getColorFrom16(r, g, b, bit) {
     }
     return rgbToHex(r, g, b);
 }
+
 function getRGBFrom0xFF(color, RGB, invert) {
     function hexToRgb(hex) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);

@@ -53,7 +53,8 @@ var openCave = false;
 var openWriteXML = false;
 //代表Graphic Annotation標記模式為開啟狀態
 var openWriteGraphic = false;
-
+//代表RTSS標記模式為開啟狀態
+var openWriteRTSS = false;
 //紀錄滑鼠座標
 var windowMouseX = 0,
   windowMouseY = 0;
@@ -106,7 +107,7 @@ var viewportNumber = 0;
 //播放動畫用的計時器
 var PlayTimer1 = [];
 
-var openDisplayMarkup=false;
+var openDisplayMarkup = false;
 //數著這個Series有幾張影像
 var SeriesCount = 0;
 

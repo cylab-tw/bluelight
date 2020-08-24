@@ -189,9 +189,9 @@ function set_Graphic_context() {
     temp = "" + Graphic_Annotation_format;
     for (var n = 0; n < PatientMark.length; n++) {
         if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
-            let tail = "" + Graphic_format_tail;
             for (var m = 0; m < PatientMark[n].mark.length; m++) {
                 if (PatientMark[n].mark[m].type == "POLYLINE") {
+                    let tail = "" + Graphic_format_tail;
                     var tempMark = PatientMark[n].mark[m];
                     var mark_xy = "";
                     for (var o = 0; o < tempMark.markX.length; o += 1) {
@@ -217,8 +217,8 @@ function set_Graphic_context() {
                     } else {
                         tail = tail.replace("___rotation___", "");
                     }
+                    tail_list += tail;
                 }
-                tail_list += tail;
                 var date = new Date();
                 function zero(num, Milliseconds) {
                     if (Milliseconds) {
@@ -253,21 +253,6 @@ function set_Graphic_context() {
                     temp = setTag(temp, "StudyID", GetViewport().StudyID, true);
                     temp = temp.replace("___PresentationCreationDate___", "" + date.getFullYear() + zero(date.getMonth() + 1) + zero(date.getDate()));// 20200210
                     temp = temp.replace("___PresentationCreationTime___", "" + zero(date.getHours() + 1) + zero(date.getMinutes()) + zero(date.getSeconds()) + "." + zero(date.getMilliseconds(), true));// 093348.775
-                    /*temp = temp.replace("___StudyDate___", GetViewport().StudyDate);
-                    temp = temp.replace("___StudyTime___", GetViewport().StudyTime);
-                    temp = temp.replace("___StudyInstanceUID___", Patient.Study[i].StudyUID);
-                    temp = temp.replace("___SeriesInstanceUID___", Patient.Study[i].Series[j].SeriesUID);
-                    temp = temp.replace("___SOPInstanceUID___", Patient.Study[i].Series[j].Sop[k].SopUID);
-                    temp = temp.replace("___PatientID___", GetViewport().PatientID);
-                    temp = temp.replace("___PatientName___", GetViewport().PatientName);
-                    temp = temp.replace("___ReferencedSOPInstanceUID___", PatientMark[n].sop);
-                    temp = temp.replace("___AccessionNumber___", Null2Empty(GetViewport().AccessionNumber));
-                    temp = temp.replace("___AccessionNumber(len)___", "" + (Null2Empty(GetViewport().AccessionNumber).length + 1));
-                    temp = temp.replace("___StudyDescription___", Null2Empty(GetViewport().StudyDescription));
-                    temp = temp.replace("___StudyDescription(len)___", "" + (Null2Empty(GetViewport().StudyDescription).length + 1));
-                    temp = temp.replace("___StudyID___", Null2Empty(GetViewport().StudyID));
-                    temp = temp.replace("___StudyID(len)___", "" + (Null2Empty(GetViewport().StudyID).length + 1));
-                    */
                 }
             }
         }
