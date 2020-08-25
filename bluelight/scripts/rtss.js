@@ -8,7 +8,7 @@ var RTSS_format =
             <element tag="0002,0003" vr="UI" vm="1" len="___SOPInstanceUID(len)___" name="MediaStorageSOPInstanceUID">___SOPInstanceUID___</element>
             <element tag="0002,0010" vr="UI" vm="1" len="20" name="TransferSyntaxUID">1.2.840.10008.1.2.1</element>
             <element tag="0002,0012" vr="UI" vm="1" len="24" name="ImplementationClassUID">2.16.886.119.102568.9</element>
-            <element tag="0002,0013" vr="SH" vm="1" len="8" name="ImplementationVersionName">BlueLight</element>
+            <element tag="0002,0013" vr="SH" vm="1" len="10" name="ImplementationVersionName">BlueLight</element>
         </meta-header>
         <data-set xfer="1.2.840.10008.1.2.1" name="Little Endian Explicit">
             <element tag="0004,1430" vr="CS" vm="1" len="6" name="DirectoryRecordType">IMAGE</element>

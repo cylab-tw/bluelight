@@ -1261,6 +1261,7 @@ function SetToLeft(alt, checki, patientid) {
         div.style.height = parseInt(div.style.height) + 35 + "px";
         var label = document.createElement('LABEL');
         label.innerText = "" + rtssList[o];
+        label.name = "" + rtssList[o];
         label.style = "text-shadow:0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff;" +
             "color:" + colorList[o] + ";";
         var li1 = document.createElement('input');
@@ -1276,8 +1277,16 @@ function SetToLeft(alt, checki, patientid) {
             var elem = getByid("dicomDivListLabel" + checki + o);
             elem.parentElement.removeChild(elem);
         }
-
-        li1.onclick = function () {
+        label.oncontextmenu = function (e) {
+            e.preventDefault();
+        };
+        //設定滑鼠按鍵事件
+        label.onmousedown = function (e) {
+            if (e.button == 2) {
+                jump2Mark(this.name);
+            } 
+        }
+        li1.onchange = function () {
             getByid("MeasureLabel").style.display = "none";
             getByid("AngelLabel").style.display = "none";
             this.alt = this.alt == 'true' ? 'false' : 'true';

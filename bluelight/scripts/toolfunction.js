@@ -252,6 +252,17 @@ function getAllSop(sop) {
     }
 }
 
+function getImgaeIdFromSop(sop) {
+    for (var i = 0; i < Patient.StudyAmount; i++) {
+        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
+            for (var k = 0; k < Patient.Study[i].Series[j].SopAmount; k++) {
+                if (sop == Patient.Study[i].Series[j].Sop[k].SopUID)
+                    return Patient.Study[i].Series[j].Sop[k].imageId;
+            }
+        }
+    }
+}
+
 function getNowInstance() {
     var break1 = false;
     var nowInstanceNumber = 0;
@@ -328,6 +339,29 @@ function GetViewportMark(num) {
         return getByid("MarkCanvas" + (viewportNumber - 0));
     }
     return getByid("MarkCanvas" + (num - 0));
+}
+
+function jump2Mark(showName) {
+    let index = SearchUid2Index(GetViewport().alt);
+    if (!index) return;
+    let i = index[0],
+        j = index[1],
+        k = index[2];
+    for (var n = 0; n < PatientMark.length; n++) {
+        if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
+            if (PatientMark[n].showName == showName) {
+                for (var m = 0; m < PatientMark[n].mark.length; m++) {
+                    let checkRtss = 0;
+                    checkRtss = checkMark(i, j, n);
+                    if (checkRtss == 0) continue;
+                    else {
+                        loadAndViewImage(getImgaeIdFromSop(PatientMark[n].sop));
+                        return;
+                    }
+                }
+            }
+        }
+    }
 }
 
 function checkMark(i, j, n) {
