@@ -35,10 +35,16 @@ function html_onload() {
       let reader = new FileReader();
       reader.readAsDataURL(files[k]);
       reader.onloadend = function () {
-        readXML(reader.result);
-        readDicom(reader.result, PatientMark, true);
         //virtualLoadImage('wadouri:' + reader.result, -1);
         loadAndViewImage('wadouri:' + reader.result);
+
+        function load(time) {
+          return new Promise((resolve) => setTimeout(resolve, time));
+        }
+        load(100).then(() => {
+          readXML(reader.result);
+          readDicom(reader.result, PatientMark, true);
+        });
       }
     }
   }
@@ -455,10 +461,16 @@ function html_onload() {
       let reader = new FileReader();
       reader.readAsDataURL(this.files[k]);
       reader.onloadend = function () {
-        readXML(reader.result);
-        readDicom(reader.result, PatientMark, true);
         //virtualLoadImage('wadouri:' + reader.result, -1);
         loadAndViewImage('wadouri:' + reader.result);
+
+        function load(time) {
+          return new Promise((resolve) => setTimeout(resolve, time));
+        }
+        load(100).then(() => {
+          readXML(reader.result);
+          readDicom(reader.result, PatientMark, true);
+        });
       }
     }
   }
