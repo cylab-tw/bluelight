@@ -84,32 +84,33 @@
       height="50">
     <img class="img GRA" alt="writeGraphic" id="writeGraphic" src="../image/icon/black/GraphicDraw_OFF.png" width="50" height="50">
     <img class="img XML" alt="writeXML" id="writeXML" src="../image/icon/black/xml_off.png" width="50" height="50">
-
+    <img class="img GSPS" alt="writeGSPS" id="writeGSPS" src="../image/icon/black/GSPS_off.png" width="50" height="50">
     <img class="img RTSS" alt="writeRTSS" id="writeRTSS" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">
 
     <img class="img PEN" alt="輸出標記" id="openPenfile" src="../image/icon/black/openPenfile.png" style="display:none;" width="50" height="50">
     <img class="img VR MPR XML PEN" alt="RWD" id="rwdImgTag" src="../image/icon/black/b_CineTools.png" style="display:none;" width="50"
       height="50">
-    <div id="RtssDiv" style="background-color:#30306044;display:none;">
-      <font color="white">Color：</font>
-      <select id="RTSScolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
-        <option class="RTSSColorSelectOption" id="RTSSBlackSelect" style="color: #000000;font-weight:bold;">Black</option>
-        <option class="RTSSColorSelectOption" id="RTSSBlueSelect" style="color: #0000FF;font-weight:bold;" selected="selected">Blue</option>
-        <option class="RTSSColorSelectOption" id="RTSSCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan</option>
-        <option class="RTSSColorSelectOption" id="RTSSGreenSelect" style="color: #00FF00;font-weight:bold;">Green</option>
-        <option class="RTSSColorSelectOption" id="RTSSMagentaSelect" style="color: #FF00FF;font-weight:bold;">Magenta</option>
-        <option class="RTSSColorSelectOption" id="RTSSRedSelect" style="color: #FF0000;font-weight:bold;">Red</option>
-        <option class="RTSSColorSelectOption" id="RTSSYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow</option>
-        <option class="RTSSColorSelectOption" id="RTSSWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White</option>
+    
+    <div id="GspsStyleDiv" style="background-color:#30306044;">
+      <select id="GSPScolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
+        <option id="GSPSBlackSelect" style="color: #000000;font-weight:bold;">Black</option>
+        <option id="GSPSBlueSelect" style="color: #0000FF;font-weight:bold;" selected="selected">Blue</option>
+        <option id="GSPSBrownSelect" style="color: #A52A2A;font-weight:bold;">Brown</option>
+        <option id="GSPSCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan</option>
+        <option id="GSPSGreenSelect" style="color: #00FF00;font-weight:bold;">Green</option>
+        <option id="GSPSMagentaSelect" style="color: #FF00FF;font-weight:bold;">Magenta</option>
+        <option id="GSPSOrangeSelect" style="color: #FFA500;font-weight:bold;">Orange</option>
+        <option id="GSPSPurpleSelect" style="color: #663399;font-weight:bold;">Purple</option>
+        <option id="GSPSRedSelect" style="color: #FF0000;font-weight:bold;">Red</option>
+        <option id="GSPSYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow</option>
+        <option id="GSPSWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White</option>
       </select>
-      <font color="white">StructureSetLabel：</font><input type="text" id="textStructureSetLabel" value="STRUCTURE SET" size="15" />
-      <font color="white">StructureSetName：</font><input type="text" id="textStructureSetName" value="StructureSetName" size="14" />
-      <font color="white">StructureSetDescription：</font><input type="text" id="textStructureSetDescription" value="RT:" size="8" />
-      <font color="white">ROIName：</font><input type="text" id="textROIName" value="ROIName" size="5" />
-      <br />
-      <font color="white">ObservationNumber：</font><input type="text" id="textObservationNumber" value="1" size="2" />
-      <font color="white">ReferencedROINumber：</font><input type="text" id="textReferencedROINumber" value="1" size="2" />
-      <font color="white">RTROIInterpretedType：</font><input type="text" id="textRTROIInterpretedType" value="ORGAN" size="8" />
+      <font color="white">Name：</font><input type="text" id="GspsName" value="T1" size="8" />
+      <select id="GspsTypeSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
+        <option id="GspsPOLYLINE" selected="selected">Rectangle</option>
+        <option id="GspsCIRCLE">Circle</option>
+        <option id="GspsLINE">Line</option>
+      </select>
     </div>
     <div id="GraphicStyleDiv" style="background-color:#30306044;">
       <label style="color: #ffffff;" id="GraphicColorLabel">Color：</label>
@@ -121,7 +122,7 @@
         <!--<option id="Graphicselected" selected="selected">Auto</option>-->
         <option id="GraphicBlackSelect" style="color: #000000;font-weight:bold;">Black(T7)</option>
         <option id="GraphicBlueSelect" style="color: #0000FF;font-weight:bold;" selected="selected">Blue(T8)</option>
-        <option id="GraphicBrownSelect" style="color: #A52A2A;font-weight:bold;">Brown(T9)</option>
+        <option id="GraphicBrownSelect" style="color: #844200;font-weight:bold;">Brown(T9)</option>
         <option id="GraphicCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan(T10)</option>
         <option id="GraphicGreenSelect" style="color: #00FF00;font-weight:bold;">Green(T11)</option>
         <option id="GraphicMagentaSelect" style="color: #FF00FF;font-weight:bold;">Magenta(T12)</option>
@@ -229,7 +230,32 @@
       <div id="LeftPicture" style="overflow-y: scroll;display: flex;flex-direction: column;position: absolute;z-index: 9;height:100%-50px;"
         width="100">
       </div>
+   
+    <div id="RtssDiv" style="background-color:#30306044;display:none;float:right;display: none;flex-direction: column;position: absolute;right:15px;top:100px;z-index: 20;" width="100">
+      <div style="background-color:#889292;">
+      <font color="white">Color：</font>
+      <select id="RTSScolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
+        <option class="RTSSColorSelectOption" id="RTSSBlackSelect" style="color: #000000;font-weight:bold;">Black</option>
+        <option class="RTSSColorSelectOption" id="RTSSBlueSelect" style="color: #0000FF;font-weight:bold;" selected="selected">Blue</option>
+        <option class="RTSSColorSelectOption" id="RTSSCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan</option>
+        <option class="RTSSColorSelectOption" id="RTSSGreenSelect" style="color: #00FF00;font-weight:bold;">Green</option>
+        <option class="RTSSColorSelectOption" id="RTSSMagentaSelect" style="color: #FF00FF;font-weight:bold;">Magenta</option>
+        <option class="RTSSColorSelectOption" id="RTSSRedSelect" style="color: #FF0000;font-weight:bold;">Red</option>
+        <option class="RTSSColorSelectOption" id="RTSSYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow</option>
+        <option class="RTSSColorSelectOption" id="RTSSWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White</option>
+      </select>
+      <br/>
+      <font color="white" >ROIName：</font><input type="text" id="textROIName" value="ROIName" size="8" />
+      </div>
+      <br/>
+      <font color="white">StructureSetLabel：</font><input type="text" id="textStructureSetLabel" value="STRUCTURE SET" size="15" />
+      <font color="white">StructureSetName：</font><input type="text" id="textStructureSetName" value="StructureSetName" size="14" />
+      <font color="white">StructureSetDescription：</font><input type="text" id="textStructureSetDescription" value="RT:" size="8" />
+      <font color="white">ObservationNumber：</font><input type="text" id="textObservationNumber" value="1" size="2" />
+      <font color="white">ReferencedROINumber：</font><input type="text" id="textReferencedROINumber" value="1" size="2" />
+      <font color="white">RTROIInterpretedType：</font><input type="text" id="textRTROIInterpretedType" value="ORGAN" size="8" />
     </div>
+     </div>
     <label id="MeasureLabel" style="display:none;color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none; ">
       0cm
     </label>

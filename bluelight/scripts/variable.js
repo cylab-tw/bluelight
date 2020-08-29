@@ -55,6 +55,8 @@ var openWriteXML = false;
 var openWriteGraphic = false;
 //代表RTSS標記模式為開啟狀態
 var openWriteRTSS = false;
+//代表GSPS標記模式為開啟狀態
+var openWriteGSPS = false;
 //紀錄滑鼠座標
 var windowMouseX = 0,
   windowMouseY = 0;

@@ -280,6 +280,14 @@ function readDicom(url, patientmark, openfile) {
                 dcm.mark = [];
                 dcm.mark.push({});
                 var tvList = ['CIRCLE'];
+                if (tempDataSet[j].dataSet.elements.x00700232) {
+                  var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
+                  var color = ConvertGraphicColor(ColorSequence.uint16('x00700251', 0), ColorSequence.uint16('x00700251', 1), ColorSequence.uint16('x00700251', 2));
+                  if (color) {
+                    dcm.color = color[0];
+                    tvList = [color[1]];
+                  }
+                }
                 dcm.showName = tvList[0];
                 var DcmMarkLength = dcm.mark.length - 1;
                 dcm.mark[DcmMarkLength].type = "CIRCLE";

@@ -28,6 +28,7 @@ function loadLdcmview() {
   getByid("mprLightLabel").style.display = "none";
   getByid("xmlMarkName").style.display = "none";
   getByid("GraphicStyleDiv").style.display = "none";
+  getByid("GspsStyleDiv").style.display = "none";
   labelPadding = 5;
 
   //設定放大鏡長寬

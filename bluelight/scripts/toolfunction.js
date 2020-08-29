@@ -602,6 +602,10 @@ function getMarkSize(MarkCanvas, sizeCheck) {
     return ((Math.abs(lineWid)) * 2 * lineSize);
 }
 
+function getDistance(x, y) {
+    return Math.sqrt(x * x + y * y);
+}
+
 function getRotationPoint(mark, middle) {
     var Max_X = -999999,
         Max_Y = -999999,
@@ -632,6 +636,22 @@ function GetGraphicColor() {
     else if (getByid("GraphicRedSelect").selected) return "#FF0000";
     else if (getByid("GraphicYellowSelect").selected) return "#FFFF00";
     else if (getByid("GraphicWhiteSelect").selected) return "#FFFFFF";
+    else return "#0000FF";
+}
+
+function GetGSPSColor() {
+    //if (getByid("Graphicselected").selected) return "#0000FF";
+    if (getByid("GSPSBlackSelect").selected) return "#000000";
+    else if (getByid("GSPSBlueSelect").selected) return "#0000FF";
+    else if (getByid("GSPSBrownSelect").selected) return "#844200";
+    else if (getByid("GSPSCyanSelect").selected) return "#00FFFF";
+    else if (getByid("GSPSGreenSelect").selected) return "#00FF00";
+    else if (getByid("GSPSMagentaSelect").selected) return "#FF00FF";
+    else if (getByid("GSPSOrangeSelect").selected) return "#FFA500";
+    else if (getByid("GSPSPurpleSelect").selected) return "#663399";
+    else if (getByid("GSPSRedSelect").selected) return "#FF0000";
+    else if (getByid("GSPSYellowSelect").selected) return "#FFFF00";
+    else if (getByid("GSPSWhiteSelect").selected) return "#FFFFFF";
     else return "#0000FF";
 }
 

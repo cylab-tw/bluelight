@@ -11,13 +11,25 @@ function html_onload() {
 
   function KeyDown(KeyboardKeys) {
     var key = KeyboardKeys.which
-    if (Graphic_now_choose && (key === 46 || key === 110)) {
+    if ((openWriteGSPS || openWriteGraphic) && Graphic_now_choose && (key === 46 || key === 110)) {
       PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
       displayMark(NowResize, null, null, null, viewportNumber);
       Graphic_now_choose = null;
       refreshMarkFromSop(GetNowUid().sop);
-    } else if (xml_now_choose && (key === 46 || key === 110)) {
+    } else if ((openWriteXML) && xml_now_choose && (key === 46 || key === 110)) {
       PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
+      displayMark(NowResize, null, null, null, viewportNumber);
+      xml_now_choose = null;
+      refreshMarkFromSop(GetNowUid().sop);
+    } else if (openWriteRTSS == true && (key === 46 || key === 110)) {
+      var reference;
+      for (var m = 0; m < PatientMark.length; m++) {
+        if (PatientMark[m].showName == getByid('textROIName').value) {
+          reference = PatientMark[m];
+          break;
+        }
+      }
+      PatientMark.splice(PatientMark.indexOf(reference), 1);
       displayMark(NowResize, null, null, null, viewportNumber);
       xml_now_choose = null;
       refreshMarkFromSop(GetNowUid().sop);
@@ -217,7 +229,7 @@ function html_onload() {
     openWriteRTSS = !openWriteRTSS;
     img2darkByClass("RTSS", !openWriteRTSS);
     this.src = openWriteRTSS == true ? '../image/icon/black/rtssdraw_ON.png' : '../image/icon/black/rtssdraw_OFF.png';
-    if (openWriteRTSS == true) getByid('RtssDiv').style.display = '';
+    if (openWriteRTSS == true) getByid('RtssDiv').style.display = 'flex';
     else getByid('RtssDiv').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
     if (openWriteRTSS == true) return;
@@ -235,6 +247,38 @@ function html_onload() {
     }
     set_RTSS_context();
     download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
+    getByid('MouseOperation').click();
+  }
+
+  getByid("GspsTypeSelect").onchange = function () {
+    displayMark(NowResize, null, null, null, viewportNumber);
+  }
+
+  getByid("writeGSPS").onclick = function () {
+    if (imgInvalid(this)) return;
+    cancelTools();
+    openWriteGSPS = !openWriteGSPS;
+    img2darkByClass("GSPS", !openWriteGSPS);
+    this.src = openWriteGSPS == true ? '../image/icon/black/GSPS_on.png' : '../image/icon/black/GSPS_off.png';
+    if (openWriteGSPS == true) getByid('GspsStyleDiv').style.display = '';
+    else getByid('GspsStyleDiv').style.display = 'none';
+    displayMark(NowResize, null, null, null, viewportNumber);
+    if (openWriteGSPS == true) return;
+    // else GSPS_now_choose = null;
+
+    function download(text, name, type) {
+      let a = document.createElement('a');
+      let file = new Blob([text], {
+        type: type
+      });
+      a.href = window.URL.createObjectURL(file);
+      //a.style.display = '';
+      a.download = name;
+      a.click();
+    }
+    set_GSPS_context();
+    download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
+
     getByid('MouseOperation').click();
   }
 

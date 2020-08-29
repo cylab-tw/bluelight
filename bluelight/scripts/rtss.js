@@ -64,22 +64,15 @@ ___item2___
                     </sequence>
                 </item>
             </sequence>
-            <sequence tag="3006,0020" vr="SQ" card="1" name="StructureSetROISequence">
-                <item card="4">
-                    <element tag="3006,0022" vr="IS" vm="1" len="2" name="ROINumber">1</element>
-                    <element tag="3006,0024" vr="UI" vm="1" len="2" name="ReferencedFrameOfReferenceUID">0</element>
-                    <element tag="3006,0026" vr="LO" vm="1" len="___ROIName(len)___" name="ROIName">___ROIName___</element>
-                    <element tag="3006,0036" vr="CS" vm="1" len="6" name="ROIGenerationAlgorithm">MANUAL</element>
-                </item>
+            <sequence tag="3006,0020" vr="SQ" card="1" name="StructureSetROISequence">                 
+___item4___               
             </sequence>
             <sequence tag="3006,0039" vr="SQ" card="1" name="ROIContourSequence">
-                <item card="3">
-                    <element tag="3006,002a" vr="IS" vm="3" len="___ROIDisplayColor(len)___" name="ROIDisplayColor">___ROIDisplayColor___</element>
-                    <sequence tag="3006,0040" vr="SQ" card="5" name="ContourSequence">
+                
+                    
 ___item6___
-                    </sequence>
-                    <element tag="3006,0084" vr="IS" vm="1" len="2" name="ReferencedROINumber">1</element>
-                </item>
+                    
+
             </sequence>
             <sequence tag="3006,0080" vr="SQ" card="1" name="RTROIObservationsSequence">
                 <item card="3">
@@ -99,19 +92,33 @@ var RTSS_format_tail_2 = `
                                             <element tag="0008,1150" vr="UI" vm="1" len="26" name="ReferencedSOPClassUID">1.2.840.10008.5.1.4.1.1.4</element>
                                             <element tag="0008,1155" vr="UI" vm="1" len="___ReferencedSOPInstanceUID(len)___" name="ReferencedSOPInstanceUID">___ReferencedSOPInstanceUID___</element>
                                         </item>`
+var RTSS_format_tail_4 = `
+                <item card="4">
+                    <element tag="3006,0022" vr="IS" vm="1" len="2" name="ROINumber">1</element>
+                    <element tag="3006,0024" vr="UI" vm="1" len="2" name="ReferencedFrameOfReferenceUID">0</element>
+                    <element tag="3006,0026" vr="LO" vm="1" len="___ROIName(len)___" name="ROIName">___ROIName___</element>
+                    <element tag="3006,0036" vr="CS" vm="1" len="6" name="ROIGenerationAlgorithm">MANUAL</element>
+                </item>
+`
 var RTSS_format_tail_6 = `
-                <item card="6">
-                    <sequence tag="3006,0016" vr="SQ" card="1" name="ContourImageSequence">
-                        <item card="2">
-                            <element tag="0008,1150" vr="UI" vm="1" len="26" name="ReferencedSOPClassUID">1.2.840.10008.5.1.4.1.1.4</element>
-                            <element tag="0008,1155" vr="UI" vm="1" len="___ReferencedSOPInstanceUID(len)___" name="ReferencedSOPInstanceUID">___ReferencedSOPInstanceUID___</element>
-                        </item>
-                    </sequence>
-                    <element tag="3006,0042" vr="CS" vm="1" len="14" name="ContourGeometricType">CLOSED_PLANAR</element>
-                    <element tag="3006,0044" vr="DS" vm="1" len="2" name="ContourSlabThickness">5</element>
-                    <element tag="3006,0046" vr="IS" vm="1" len="___NumberOfContourPoints(len)___" name="NumberOfContourPoints">___NumberOfContourPoints___</element>
-                    <element tag="3006,0048" vr="IS" vm="1" len="___ContourNumber(len)___" name="ContourNumber">___ContourNumber___</element>
-                    <element tag="3006,0050" vr="DS" vm="___vm___" len="___len___" name="ContourData">___ContourData___</element>
+                <item card="3">
+                    <element tag="3006,002a" vr="IS" vm="3" len="___ROIDisplayColor(len)___" name="ROIDisplayColor">___ROIDisplayColor___</element>
+                        <sequence tag="3006,0040" vr="SQ" card="5" name="ContourSequence">
+                            <item card="6">
+                                <sequence tag="3006,0016" vr="SQ" card="1" name="ContourImageSequence">
+                                    <item card="2">
+                                        <element tag="0008,1150" vr="UI" vm="1" len="26" name="ReferencedSOPClassUID">1.2.840.10008.5.1.4.1.1.4</element>
+                                        <element tag="0008,1155" vr="UI" vm="1" len="___ReferencedSOPInstanceUID(len)___" name="ReferencedSOPInstanceUID">___ReferencedSOPInstanceUID___</element>
+                                    </item>
+                                </sequence>
+                                <element tag="3006,0042" vr="CS" vm="1" len="14" name="ContourGeometricType">CLOSED_PLANAR</element>
+                                <element tag="3006,0044" vr="DS" vm="1" len="2" name="ContourSlabThickness">5</element>
+                                <element tag="3006,0046" vr="IS" vm="1" len="___NumberOfContourPoints(len)___" name="NumberOfContourPoints">___NumberOfContourPoints___</element>
+                                <element tag="3006,0048" vr="IS" vm="1" len="___ContourNumber(len)___" name="ContourNumber">___ContourNumber___</element>
+                                <element tag="3006,0050" vr="DS" vm="___vm___" len="___len___" name="ContourData">___ContourData___</element>
+                            </item>
+                        </sequence>
+                    <element tag="3006,0084" vr="IS" vm="1" len="2" name="ReferencedROINumber">1</element>
                 </item>`;
 var RTSSc_now_choose = null;
 var temp_xml_format = "";
@@ -209,6 +216,7 @@ function set_RTSS_context() {
     let temp = ""
     let tail6_list = "";
     let tail2_list = "";
+    let tail4_list = ";"
     let index = SearchUid2Index(GetViewport().alt);
     let i = index[0],
         j = index[1],
@@ -236,6 +244,8 @@ function set_RTSS_context() {
             for (var m = 0; m < PatientMark[n].mark.length; m++) {
                 if (PatientMark[n].mark[m].type == "RTSS") {
                     var tail6 = "" + RTSS_format_tail_6;
+                    var tail4 = "" + RTSS_format_tail_4;
+                    tail4 = setTag(tail4, "ROIName", PatientMark[n].showName, true);
                     var tempMark = PatientMark[n].mark[m];
                     var mark_xy = "";
                     for (var o = 0; o < tempMark.markX.length; o += 1) {
@@ -253,12 +263,15 @@ function set_RTSS_context() {
                     tail6 = setTag(tail6, "NumberOfContourPoints", (tempMark.markX.length), true);
                     tail6 = setTag(tail6, "ContourNumber", n + 1, true);
                     tail6 = setTag(tail6, "ReferencedSOPInstanceUID", PatientMark[n].sop, true);
+                    var color = getColorFromRGB(PatientMark[n].color);
+                    tail6 = setTag(tail6, "ROIDisplayColor", "" + color[0] + "\\" + color[1] + "\\" + color[2], true);
                     //tail6 = tail6.replace("___ReferencedSOPInstanceUID___", PatientMark[n].sop);
                     //tail = tail.replace("___PatternOnColorCIELabValue___", "" + SetGraphicColor(PatientMark[n].color));
                     //tail = tail.replace("___GraphicType___", "POLYLINE"); 
                 }
             }
             tail6_list += tail6;
+            tail4_list += tail4;
         }
         var createSopUid = CreateUid("sop");
         var createSeriesUid = CreateUid("series");
@@ -290,19 +303,19 @@ function set_RTSS_context() {
             temp = setTag(temp, "StructureSetLabel", getByid('textStructureSetLabel').value, true);
             temp = setTag(temp, "StructureSetName", getByid('textStructureSetName').value, true);
             temp = setTag(temp, "StructureSetDescription", getByid('textStructureSetDescription').value, true);
-            temp = setTag(temp, "ROIName", getByid('textROIName').value, true);
+           // temp = setTag(temp, "ROIName", getByid('textROIName').value, true);
             temp = setTag(temp, "ObservationNumber", getByid('textObservationNumber').value, true);
             temp = setTag(temp, "ReferencedROINumber", getByid('textReferencedROINumber').value, true);
             temp = setTag(temp, "RTROIInterpretedType", getByid('textRTROIInterpretedType').value, true);
 
-            var color = getColorFromRGB(PatientMark[0].color);
-            temp = setTag(temp, "ROIDisplayColor", "" + color[0] + "\\" + color[1] + "\\" + color[2], true);
+
             temp = setTag(temp, "FileMetaInformationGroupLength", "" + ((8 * 5) + 12 + (2 + 30 + 20 + 24 + 8 + createSopUid.length)), true);
         }
     }
 
     temp = temp.replace("___item6___", tail6_list);
     temp = temp.replace("___item2___", tail2_list);
+    temp = temp.replace("___item4___", tail4_list);
     RTSS_format_object_list.push(temp);
 }
 

@@ -162,7 +162,7 @@ function Mousedown(e) {
 
         dcm.SliceLocation = GetViewport().SliceLocation;
         dcm.mark = [];
-        dcm.showName = "T1"; //"" + getByid("xmlMarkNameText").value;
+        dcm.showName = getByid('textROIName').value; //"" + getByid("xmlMarkNameText").value;
         dcm.mark.push({});
         dcm.sop = Uid.sop;
         var DcmMarkLength = dcm.mark.length - 1;
@@ -176,6 +176,16 @@ function Mousedown(e) {
         RTSSc_now_choose = dcm.mark[DcmMarkLength];
         for (var i = 0; i < Viewport_Total; i++)
             displayMark(NowResize, null, null, null, i);
+    }
+    if (openWriteGSPS == true && !rightMouseDown && getByid("GspsPOLYLINE").selected == true) {
+        var currX = getCurrPoint(e)[0];
+        var currY = getCurrPoint(e)[1];
+
+        var currXml_X1 = currX;
+        var currXml_Y1 = currY;
+        if (Graphic_pounch(currXml_X1, currXml_Y1) == true) {
+            displayMark(NowResize, null, null, null, undefined);
+        };
     }
     if (openWriteGraphic == true && !rightMouseDown) {
         var currX = getCurrPoint(e)[0];
@@ -237,7 +247,7 @@ function Mousemove(e) {
                         GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
                         GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
                         GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
-                    } catch (ex) { }
+                    } catch (ex) {}
                 }
             }
             if (GetmouseY(e) < windowMouseY - 2) {
@@ -350,16 +360,67 @@ function Mousemove(e) {
         for (var i = 0; i < Viewport_Total; i++)
             displayMark(NowResize, null, null, null, i);
     }
-
-    if (openWriteGraphic == true && (MouseDownCheck == true || rightMouseDown == true)) {
+    if (openWriteGSPS == true && MouseDownCheck == true && getByid("GspsCIRCLE").selected == true) { //flag
+        let Uid = SearchNowUid();
+        var dcm = {};
+        dcm.study = Uid.studyuid;
+        dcm.series = Uid.sreiesuid;
+        dcm.color = GetGSPSColor();
+        dcm.mark = [];
+        dcm.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+        dcm.mark.push({});
+        dcm.sop = Uid.sopuid;
+        var DcmMarkLength = dcm.mark.length - 1;
+        dcm.mark[DcmMarkLength].type = "CIRCLE";
+        dcm.mark[DcmMarkLength].markX = [];
+        dcm.mark[DcmMarkLength].markY = [];
+        dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+        dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+        dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX + Math.sqrt(Math.pow(Math.abs(GetViewport().originalPointX - currX), 2) + Math.pow(Math.abs(GetViewport().originalPointY - currY), 2) / 2));
+        dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY + Math.sqrt(Math.pow(Math.abs(GetViewport().originalPointX - currX), 2) + Math.pow(Math.abs(GetViewport().originalPointY - currY), 2) / 2));
+        PatientMark.push(dcm);
+        refreshMark(dcm);
+        for (var i = 0; i < Viewport_Total; i++)
+            displayMark(NowResize, null, null, null, i);
+        displayAngelRular();
+        PatientMark.splice(PatientMark.indexOf(dcm), 1);
+    }
+    if (openWriteGSPS == true && MouseDownCheck == true && getByid("GspsLINE").selected == true) {
+        let Uid = SearchNowUid();
+        var dcm = {};
+        dcm.study = Uid.studyuid;
+        dcm.series = Uid.sreiesuid;
+        dcm.color = GetGSPSColor();
+        dcm.mark = [];
+        dcm.showName = "" + getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+        dcm.mark.push({});
+        dcm.sop = Uid.sopuid;
+        var DcmMarkLength = dcm.mark.length - 1;
+        dcm.mark[DcmMarkLength].type = "POLYLINE";
+        dcm.mark[DcmMarkLength].markX = [];
+        dcm.mark[DcmMarkLength].markY = [];
+        dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+        dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+        dcm.mark[DcmMarkLength].markY.push(currY);
+        dcm.mark[DcmMarkLength].markX.push(currX);
+        PatientMark.push(dcm);
+        refreshMark(dcm);
+        for (var i = 0; i < Viewport_Total; i++)
+            displayMark(NowResize, null, null, null, i);
+        displayAngelRular();
+        PatientMark.splice(PatientMark.indexOf(dcm), 1);
+    }
+    if ((openWriteGraphic == true || (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true)) && (MouseDownCheck == true || rightMouseDown == true)) {
         if (!Graphic_now_choose && MouseDownCheck == true) {
             let Uid = SearchNowUid();
             var dcm = {};
             dcm.study = Uid.studyuid;
             dcm.series = Uid.sreiesuid;
             dcm.color = GetGraphicColor();
+            if (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true) dcm.color = GetGSPSColor();
             dcm.mark = [];
             dcm.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
+            if (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true) dcm.showName = getByid("GspsName").value;
             dcm.mark.push({});
             dcm.sop = Uid.sopuid;
             var DcmMarkLength = dcm.mark.length - 1;
@@ -448,7 +509,7 @@ function Mousemove(e) {
             return;
         }
 
-        if (openChangeFile == true && !openWriteGraphic && !openWriteXML) {
+        if (openChangeFile == true && !openWriteGraphic && !openWriteXML && !openWriteGSPS) {
             var nextInstanceNumber = -1;
             var alt = GetViewport().alt;
             let index = SearchUid2Index(alt);
@@ -527,7 +588,7 @@ function Mousemove(e) {
             let angel2point = rotateCalculation(e);
             magnifierIng(angel2point[0], angel2point[1]);
         }
-        if ((openMouseTool == true || openRotate == true) && openWriteRTSS == false && openChangeFile == false && openWriteXML == false && openWriteGraphic == false) {
+        if ((openMouseTool == true || openRotate == true) && openWriteRTSS == false && openChangeFile == false && openWriteXML == false && openWriteGraphic == false && openWriteGSPS == false) {
             var MouseX = GetmouseX(e);
             var MouseY = GetmouseY(e);
             GetViewport().newMousePointX += MouseX - windowMouseX;
@@ -546,7 +607,7 @@ function Mousemove(e) {
                         GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
                         GetViewport(i).newMousePointX = GetViewport().newMousePointX;
                         GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-                    } catch (ex) { }
+                    } catch (ex) {}
                 }
             }
             putLabel();
@@ -638,14 +699,65 @@ function Mouseup(e) {
         displayAngelRular();
         //setXml_context();
     }
-    if (openWriteGraphic == true && !Graphic_now_choose) {
+    if (openWriteGSPS == true && getByid("GspsLINE").selected == true) {
+        let Uid = SearchNowUid();
+        var dcm = {};
+        dcm.study = Uid.studyuid;
+        dcm.series = Uid.sreiesuid;
+        dcm.color = GetGSPSColor();
+        dcm.mark = [];
+        dcm.showName = "" + getByid("xmlMarkNameText").value; //"" + getByid("xmlMarkNameText").value;
+        dcm.mark.push({});
+        dcm.sop = Uid.sopuid;
+        var DcmMarkLength = dcm.mark.length - 1;
+        dcm.mark[DcmMarkLength].type = "POLYLINE";
+        dcm.mark[DcmMarkLength].markX = [];
+        dcm.mark[DcmMarkLength].markY = [];
+        dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+        dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+        dcm.mark[DcmMarkLength].markY.push(currY);
+        dcm.mark[DcmMarkLength].markX.push(currX);
+        PatientMark.push(dcm);
+        refreshMark(dcm);
+        for (var i = 0; i < Viewport_Total; i++)
+            displayMark(NowResize, null, null, null, i);
+        displayAngelRular();
+    } //flag
+    if (openWriteGSPS == true && getByid("GspsCIRCLE").selected == true) {
+        let Uid = SearchNowUid();
+        var dcm = {};
+        dcm.study = Uid.studyuid;
+        dcm.series = Uid.sreiesuid;
+        dcm.color = GetGSPSColor();
+        dcm.mark = [];
+        dcm.showName = getByid("GspsName").value;
+        dcm.mark.push({});
+        dcm.sop = Uid.sopuid;
+        var DcmMarkLength = dcm.mark.length - 1;
+        dcm.mark[DcmMarkLength].type = "CIRCLE";
+        dcm.mark[DcmMarkLength].markX = [];
+        dcm.mark[DcmMarkLength].markY = [];
+        dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
+        dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+        dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX + Math.sqrt(Math.pow(Math.abs(GetViewport().originalPointX - currX), 2) + Math.pow(Math.abs(GetViewport().originalPointY - currY), 2) / 2));
+        dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY + Math.sqrt(Math.pow(Math.abs(GetViewport().originalPointX - currX), 2) + Math.pow(Math.abs(GetViewport().originalPointY - currY), 2) / 2));
+        PatientMark.push(dcm);
+        refreshMark(dcm);
+        for (var i = 0; i < Viewport_Total; i++)
+            displayMark(NowResize, null, null, null, i);
+        displayAngelRular();
+    }
+    if (openWriteGraphic == true && !Graphic_now_choose || (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true && !Graphic_now_choose)) {
         let Uid = SearchNowUid();
         var dcm = {};
         dcm.study = Uid.studyuid;
         dcm.series = Uid.sreiesuid;
         dcm.color = GetGraphicColor();
+        if (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true) dcm.color = GetGSPSColor();
         dcm.mark = [];
         dcm.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
+        if (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true) dcm.showName = getByid("GspsName").value;
+
         dcm.mark.push({});
         dcm.sop = Uid.sopuid;
         var DcmMarkLength = dcm.mark.length - 1;
