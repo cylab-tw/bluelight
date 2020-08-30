@@ -259,7 +259,7 @@ function html_onload() {
     cancelTools();
     openWriteGSPS = !openWriteGSPS;
     img2darkByClass("GSPS", !openWriteGSPS);
-    this.src = openWriteGSPS == true ? '../image/icon/black/GSPS_on.png' : '../image/icon/black/GSPS_off.png';
+    this.src = openWriteGSPS == true ? '../image/icon/black/gsps_on.png' : '../image/icon/black/gsps_off.png';
     if (openWriteGSPS == true) getByid('GspsStyleDiv').style.display = '';
     else getByid('GspsStyleDiv').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
