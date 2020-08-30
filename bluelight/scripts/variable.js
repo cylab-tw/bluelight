@@ -57,6 +57,8 @@ var openWriteGraphic = false;
 var openWriteRTSS = false;
 //代表GSPS標記模式為開啟狀態
 var openWriteGSPS = false;
+//代表SEG標記模式為開啟狀態
+var openWriteSEG=false;
 //紀錄滑鼠座標
 var windowMouseX = 0,
   windowMouseY = 0;

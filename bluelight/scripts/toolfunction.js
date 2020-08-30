@@ -4,7 +4,7 @@ function CreateUid(UidClass) {
     Uid += date.getFullYear() + "." + (date.getMonth() + 1) + "." + (date.getDate()) + ".";
     Uid += (date.getHours() + 1) + "." + (date.getMinutes()) + "." +
         (date.getSeconds()) + "." + (date.getMilliseconds()) + ".";
-    Uid += random(1, 9999999, 1) + ".";
+    Uid += random(1, 99999, 1) + ".";
     Uid += random(1, 99, 1) + ".";
     Uid += random(1, 9999, 1) + ".";
     if (UidClass == 0 || UidClass == 'study') Uid += random(1, 2, 1);

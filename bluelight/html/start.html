@@ -36,6 +36,7 @@
   <script src="../scripts/xml_format.js"></script>
   <script src="../scripts/graphic_annotation.js"></script>
   <script src="../scripts/rtss.js"></script>
+  <script src="../scripts/seg.js"></script>
   <script src="../scripts/viewer.js"></script>
   <script src="../scripts/common.js"></script>
   <script src="../scripts/other.js"></script>
@@ -86,11 +87,16 @@
     <img class="img XML" alt="writeXML" id="writeXML" src="../image/icon/black/xml_off.png" width="50" height="50">
     <img class="img GSPS" alt="writeGSPS" id="writeGSPS" src="../image/icon/black/gsps_off.png" width="50" height="50">
     <img class="img RTSS" alt="writeRTSS" id="writeRTSS" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">
+    <img class="img SEG" alt="writeSEG" id="writeSEG" src="../image/icon/black/seg_off.png" width="50" height="50">
 
     <img class="img PEN" alt="輸出標記" id="openPenfile" src="../image/icon/black/openPenfile.png" style="display:none;" width="50" height="50">
     <img class="img VR MPR XML PEN" alt="RWD" id="rwdImgTag" src="../image/icon/black/b_CineTools.png" style="display:none;" width="50"
       height="50">
-    
+    <div id="SegStyleDiv" style="background-color:#30306044;">
+        <font color="white">ManufacturerModelName：</font><input type="text" id="SegManufacturerModelName" value="ModelName" size="8" />
+        <font color="white">SeriesDescription：</font><input type="text" id="SegSeriesDescription" value="Research" size="8" />
+        <font color="white">SegmentLabel</font><input type="text" id="SegSegmentLabel" value="SegmentLabel" size="8" />
+    </div>
     <div id="GspsStyleDiv" style="background-color:#30306044;">
       <select id="GSPScolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
         <option id="GSPSBlackSelect" style="color: #000000;font-weight:bold;">Black</option>

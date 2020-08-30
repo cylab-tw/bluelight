@@ -9,7 +9,7 @@ function Wheel(e) {
         var break1 = false;
         if (openLink == true)
             viewportNum = z;
-        if (openWriteRTSS == true || openVR == true || openMPR == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true) {
+        if (openWriteSEG == true || openWriteRTSS == true || openVR == true || openMPR == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true) {
             var currX1 = (e.pageX - canvas.getBoundingClientRect().left - GetViewport().newMousePointX - 100) * (GetViewport().imageWidth / parseInt(canvas.style.width));
             var currY1 = (e.pageY - canvas.getBoundingClientRect().top - GetViewport().newMousePointY - 100) * (GetViewport().imageHeight / parseInt(canvas.style.height));
             var alt = GetViewport(viewportNum).alt;
@@ -112,6 +112,26 @@ function Mousedown(e) {
         magnifierDiv.style.display = "";
         let angel2point = rotateCalculation(e);
         magnifierIng(angel2point[0], angel2point[1]);
+    }
+    if (openWriteSEG == true) {
+        let Uid = GetNowUid();
+        var dcm = {};
+        dcm.study = Uid.study;
+        dcm.series = Uid.sreies;
+
+        dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
+        dcm.mark = [];
+        dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
+        dcm.mark.push({});
+        dcm.sop = Uid.sop;
+        var DcmMarkLength = dcm.mark.length - 1;
+        dcm.mark[DcmMarkLength].type = "SEG";
+        dcm.mark[DcmMarkLength].pixelData = new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
+        PatientMark.push(dcm);
+        refreshMark(dcm);
+        SEG_now_choose = dcm.mark[DcmMarkLength];
+        for (var i = 0; i < Viewport_Total; i++)
+            displayMark(NowResize, null, null, null, i);
     }
     if (openWriteXML == true) {
         var currX = getCurrPoint(e)[0];
@@ -236,7 +256,7 @@ function Mousemove(e) {
         labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
     }
     if (rightMouseDown == true) {
-        if (!openRotate && !openVR && (openMPR == true || openMouseTool == true || openWindow == true || openZoom == true || openMeasure == true)) {
+        if (!openRotate && !openVR && !openWriteGSPS && !openWriteGraphic && (openMPR == true || openMouseTool == true || openWindow == true || openZoom == true || openMeasure == true)) {
             if (openLink == true && openMPR == false) {
                 for (var i = 0; i < Viewport_Total; i++) {
                     if (i == viewportNumber) continue;
@@ -333,7 +353,17 @@ function Mousemove(e) {
         displayAngelRular();
         return;
     }
-
+    if (openWriteSEG == true && MouseDownCheck && !rightMouseDown && SEG_now_choose) {
+        let angel2point = rotateCalculation(e);
+        var rect = 10;
+        for (var s = -rect; s < rect; s++)
+            for (var s2 = -rect; s2 < rect; s2++)
+                SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageHeight + Math.floor(angel2point[0] + s2)] = 1;
+        let Uid = GetNowUid();
+        refreshMark(Uid.sop);
+        for (var i = 0; i < Viewport_Total; i++)
+            displayMark(NowResize, null, null, null, i);
+    }
     if (openWriteRTSS == true && !rightMouseDown && RTSSc_now_choose) {
         let Uid = GetNowUid();
         var angel2point = rotateCalculation(e)
@@ -588,7 +618,7 @@ function Mousemove(e) {
             let angel2point = rotateCalculation(e);
             magnifierIng(angel2point[0], angel2point[1]);
         }
-        if ((openMouseTool == true || openRotate == true) && openWriteRTSS == false && openChangeFile == false && openWriteXML == false && openWriteGraphic == false && openWriteGSPS == false) {
+        if ((openMouseTool == true || openRotate == true) && openWriteRTSS == false && openWriteSEG == false && openChangeFile == false && openWriteXML == false && openWriteGraphic == false && openWriteGSPS == false) {
             var MouseX = GetmouseX(e);
             var MouseY = GetmouseY(e);
             GetViewport().newMousePointX += MouseX - windowMouseX;

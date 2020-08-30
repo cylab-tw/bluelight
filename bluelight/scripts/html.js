@@ -223,6 +223,34 @@ function html_onload() {
     else this.src = '../image/icon/black/b_Cross-hair_OFF.png';
   }
 
+  getByid("writeSEG").onclick = function () {
+    if (imgInvalid(this)) return;
+    cancelTools();
+    openWriteSEG = !openWriteSEG;
+    img2darkByClass("SEG", !openWriteSEG);
+    this.src = openWriteSEG == true ? '../image/icon/black/seg_on.png' : '../image/icon/black/seg_off.png';
+    if (openWriteSEG == true) getByid('SegStyleDiv').style.display = 'flex';
+    else getByid('SegStyleDiv').style.display = 'none';
+    displayMark(NowResize, null, null, null, viewportNumber);
+    if (openWriteSEG == true) return;
+    // else Graphic_now_choose = null;
+
+    function download(text, name, type) {
+      let a = document.createElement('a');
+      let file = new Blob([text], {
+        type: type
+      });
+      a.href = window.URL.createObjectURL(file);
+      //a.style.display = '';
+      a.download = name;
+      a.click();
+    }
+    set_SEG_context();
+    download(String(get_SEG_context()), 'filename_SEG.xml', 'text/plain');
+    getByid('MouseOperation').click();
+  }
+
+
   getByid("writeRTSS").onclick = function () {
     if (imgInvalid(this)) return;
     cancelTools();

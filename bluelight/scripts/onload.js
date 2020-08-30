@@ -29,6 +29,7 @@ function loadLdcmview() {
   getByid("xmlMarkName").style.display = "none";
   getByid("GraphicStyleDiv").style.display = "none";
   getByid("GspsStyleDiv").style.display = "none";
+  getByid("SegStyleDiv").style.display = "none";
   labelPadding = 5;
 
   //設定放大鏡長寬
@@ -103,6 +104,24 @@ function loadLdcmview() {
     NewDiv.SeriesDescription = "";
     NewDiv.SeriesNumber = "";
     NewDiv.RequestingPhysician = "";
+
+    NewDiv.ImagePositionPatient = "";
+    NewDiv.SpacingBetweenSlices = "";
+    NewDiv.SliceThickness = "";
+    NewDiv.ImageType = "";
+    NewDiv.PatientBirthDate = "";
+    NewDiv.PatientSex = "";
+    NewDiv.PatientAge = "";
+    NewDiv.FrameOfReferenceUID = "";
+    NewDiv.PhotometricInterpretation = "";
+    NewDiv.Rows = "";
+    NewDiv.Columns = "";
+    NewDiv.BitsAllocated = "";
+    NewDiv.BitsStored = "";
+    NewDiv.HighBit = "";
+    NewDiv.PixelRepresentation = "";
+    NewDiv.LossyImageCompression = "";
+    NewDiv.PixelSpacing = "";
 
     NewDiv.NowCanvasSizeWidth = null;
     NewDiv.NowCanvasSizeHeight = null;
@@ -378,7 +397,7 @@ function readJson(url) {
             for (var i = 0; i < DicomResponse.length; i++) {
               try {
                 if (DicomResponse[i]["00200013"].Value[0] < min) min = DicomResponse[i]["00200013"].Value[0];
-              } catch (ex) { };
+              } catch (ex) {};
             }
             //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
             //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
@@ -405,7 +424,7 @@ function readJson(url) {
                   //預載入DICOM至Viewport
                   virtualLoadImage(url, 1);
                 }
-              } catch (ex) { }
+              } catch (ex) {}
             }
             //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
             //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
@@ -426,7 +445,7 @@ function readJson(url) {
                   virtualLoadImage(url, 1);
                 else
                   virtualLoadImage(url, 0);
-              } catch (ex) { }
+              } catch (ex) {}
             }
 
           }

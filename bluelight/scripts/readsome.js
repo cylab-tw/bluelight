@@ -416,8 +416,9 @@ function loadDicomSeg(image, imageId) {
       var tvList = ['SEG'];
       var dcm = {};
       dcm.study = image.data.string('x0020000d');
-      dcm.series = image.data.string('x0020000e');
+      dcm.series = image.data.elements.x00081115.items[0].dataSet.string('x0020000e')
       dcm.sop = image.data.elements.x52009230.items[i].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string("x00081155");
+      dcm.ImagePositionPatient = image.data.elements.x52009230.items[i].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
       dcm.mark = [];
       dcm.showName = tvList[0];
       dcm.mark.push({});
@@ -435,8 +436,9 @@ function loadDicomSeg(image, imageId) {
       var tvList = ['SEG'];
       var dcm = {};
       dcm.study = image.data.string('x0020000d');
-      dcm.series = image.data.string('x0020000e');
+      dcm.series = image.data.elements.x00081115.items[0].dataSet.string('x0020000e')
       dcm.sop = image.data.elements.x52009230.items[k].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string("x00081155");
+      dcm.ImagePositionPatient = image.data.elements.x52009230.items[k].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
       dcm.mark = [];
       dcm.showName = tvList[0];
       dcm.mark.push({});
