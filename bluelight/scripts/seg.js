@@ -234,7 +234,7 @@ function set_SEG_context() {
     temp = setTag(temp, "NumberOfFrames", segCount, true);
     temp = setTag(temp, "SegmentNumber", segCount, true);
     var mark_xy = "";
-    var temp_segCount=0;
+    var temp_segCount = 0;
     for (var n = 0; n < PatientMark.length; n++) {
         if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
             for (var m = 0; m < PatientMark[n].mark.length; m++) {
@@ -297,6 +297,9 @@ function set_SEG_context() {
                 }
                 return temp;
             }
+            temp = setTag(temp, "BitsAllocated", '8', true);
+            temp = setTag(temp, "BitsStored", '8', true);
+            temp = setTag(temp, "HighBit", '7', true);
 
             temp = setTagByElTag(temp, "SpacingBetweenSlices", true);
             temp = setTagByElTag(temp, "SliceThickness", true);
@@ -308,9 +311,6 @@ function set_SEG_context() {
             temp = setTagByElTag(temp, "PhotometricInterpretation", true);
             temp = setTagByElTag(temp, "Rows", true);
             temp = setTagByElTag(temp, "Columns", true);
-            temp = setTagByElTag(temp, "BitsAllocated", true);
-            temp = setTagByElTag(temp, "BitsStored", true);
-            temp = setTagByElTag(temp, "HighBit", true);
             temp = setTagByElTag(temp, "PixelRepresentation", true);
             temp = setTagByElTag(temp, "LossyImageCompression", true);
             temp = setTagByElTag(temp, "PixelSpacing", true);

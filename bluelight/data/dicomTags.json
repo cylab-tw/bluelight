@@ -19,6 +19,16 @@
         "name": "Patient ID:",
         "tag": "00100020"
       }
+      ,
+      {
+        "name": "Patient Sex:",
+        "tag": "00100040"
+      }
+      ,
+      {
+        "name": "Patient Age:",
+        "tag": "00101010"
+      }
     ],
     "LB": {},
     "RB": [
