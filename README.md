@@ -71,4 +71,7 @@
 * **BlueLight@Orthanc**
 * **BlueLight@micala**: [micala](https://github.com/cylab-tw/micala) is a noSQL-based medical image repository.
 
+## Acknowledgement
+* This project was supported by a grant from the Ministry of Science and Technology Taiwan. We acknowledge AI99 teams at Taipei Veterans General Hospital (TVGH) for validation and provides many useful suggestions in many aspects of the clinical domain. We acknowledge AI99 teams at Taipei Veterans General Hospital (TVGH) for validation and provides many useful suggestions, especially to thank Dr. Ying-Chou Sun and his professional team.
+
 ## Copyright Chung-Yueh Lien
