@@ -51,11 +51,11 @@
 * 3D Volume Rendering 
 * MIP (maximum intensity projection)
 
-### Labeling tool interfaces 
+### Labeling tool interfaces (on experiment state)
 * [LabelImg](https://github.com/tzutalin/labelImg)
-* GSPS: DICOM Graphic Annotation (Done)
-* DICOM-RT structure set (RTSS) (on going)
-* DICOM SEG (Segementation) (on going)
+* GSPS: DICOM Graphic Annotation 
+* DICOM-RT structure set (RTSS)
+* DICOM SEG (Segementation)
 * **Note:** *Currently, the format of annotation is the DCMTK DICOM-XML, support the download of the DICOM format should be with [micala Server](https://github.com/cylab-tw/micala), we are trying to release it ASAP*
 * Downloading the DICOM-XML, you can use the DCMTK tool: xml2dcm to convert the xml to DICOM format which BlueLight can display as well.
 
@@ -72,6 +72,7 @@
 * **BlueLight@micala**: [micala](https://github.com/cylab-tw/micala) is a noSQL-based medical image repository.
 
 ## Acknowledgement
-* This project was supported by a grant from the Ministry of Science and Technology Taiwan. We acknowledge AI99 teams at Taipei Veterans General Hospital (TVGH) for validation and provides many useful suggestions in many aspects of the clinical domain. We acknowledge AI99 teams at Taipei Veterans General Hospital (TVGH) for validation and provides many useful suggestions, especially to thank Dr. Ying-Chou Sun and his professional team.
+* This project was supported by a grant from the Ministry of Science and Technology Taiwan.
+* We acknowledge AI99 teams at Taipei Veterans General Hospital (TVGH) for validation and provides many useful suggestions in many aspects of the clinical domain, especially to thank Dr. Ying-Chou Sun and his professional team.
 
 ## Copyright Chung-Yueh Lien
