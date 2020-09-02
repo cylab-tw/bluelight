@@ -387,7 +387,7 @@ function readDicom(url, patientmark, openfile) {
                 for (var k2 = 0; k2 < str0.length; k2 += 3) {
                   dcm.mark[DcmMarkLength].markX.push((parseFloat(str0[k2])));
                   dcm.mark[DcmMarkLength].markY.push((parseFloat(str0[k2 + 1])));
-                  dcm.SliceLocation = parseFloat(str0[k2 + 2]);
+                  dcm.imagePositionZ = parseFloat(str0[k2 + 2]);
                 }
                 patientmark.push(dcm);
                 refreshMark(dcm);

@@ -68,10 +68,14 @@ ___item2___
 ___item4___               
             </sequence>
             <sequence tag="3006,0039" vr="SQ" card="1" name="ROIContourSequence">
-                
+            <item card="3">
+            <element tag="3006,002a" vr="IS" vm="3" len="___ROIDisplayColor(len)___" name="ROIDisplayColor">___ROIDisplayColor___</element>
+                <sequence tag="3006,0040" vr="SQ" card="5" name="ContourSequence">      
                     
 ___item6___
-                    
+                </sequence>
+            <element tag="3006,0084" vr="IS" vm="1" len="2" name="ReferencedROINumber">1</element>
+            </item>      
 
             </sequence>
             <sequence tag="3006,0080" vr="SQ" card="1" name="RTROIObservationsSequence">
@@ -101,9 +105,7 @@ var RTSS_format_tail_4 = `
                 </item>
 `
 var RTSS_format_tail_6 = `
-                <item card="3">
-                    <element tag="3006,002a" vr="IS" vm="3" len="___ROIDisplayColor(len)___" name="ROIDisplayColor">___ROIDisplayColor___</element>
-                        <sequence tag="3006,0040" vr="SQ" card="5" name="ContourSequence">
+
                             <item card="6">
                                 <sequence tag="3006,0016" vr="SQ" card="1" name="ContourImageSequence">
                                     <item card="2">
@@ -117,9 +119,7 @@ var RTSS_format_tail_6 = `
                                 <element tag="3006,0048" vr="IS" vm="1" len="___ContourNumber(len)___" name="ContourNumber">___ContourNumber___</element>
                                 <element tag="3006,0050" vr="DS" vm="___vm___" len="___len___" name="ContourData">___ContourData___</element>
                             </item>
-                        </sequence>
-                    <element tag="3006,0084" vr="IS" vm="1" len="2" name="ReferencedROINumber">1</element>
-                </item>`;
+                        `;
 var RTSSc_now_choose = null;
 var temp_xml_format = "";
 
@@ -255,7 +255,7 @@ function set_RTSS_context() {
                         tempX = parseFloat(tempX);
                         tempY = parseFloat(tempY);
                         if (o != 0) mark_xy += "\\";
-                        mark_xy += tempX + "\\" + tempY + "\\" + PatientMark[n].SliceLocation;
+                        mark_xy += tempX + "\\" + tempY + "\\" + PatientMark[n].imagePositionZ;
                     }
                     tail6 = tail6.replace("___ContourData___", mark_xy);
                     tail6 = tail6.replace("___vm___", "" + (tempMark.markX.length * 3));
@@ -303,11 +303,18 @@ function set_RTSS_context() {
             temp = setTag(temp, "StructureSetLabel", getByid('textStructureSetLabel').value, true);
             temp = setTag(temp, "StructureSetName", getByid('textStructureSetName').value, true);
             temp = setTag(temp, "StructureSetDescription", getByid('textStructureSetDescription').value, true);
-           // temp = setTag(temp, "ROIName", getByid('textROIName').value, true);
+            // temp = setTag(temp, "ROIName", getByid('textROIName').value, true);
             temp = setTag(temp, "ObservationNumber", getByid('textObservationNumber').value, true);
             temp = setTag(temp, "ReferencedROINumber", getByid('textReferencedROINumber').value, true);
             temp = setTag(temp, "RTROIInterpretedType", getByid('textRTROIInterpretedType').value, true);
 
+            var color1 = [0, 0, 128];
+            for (var co = 0; co < getClass("RTSSColorSelectOption").length; co++) {
+                if (getClass("RTSSColorSelectOption")[co].selected == true) {
+                    color1 = getColorFromRGB(getClass("RTSSColorSelectOption")[co].style.color);
+                }
+            }
+            temp = setTag(temp, "ROIDisplayColor", "" + color1[0] + "\\" + color1[1] + "\\" + color1[2], true)
 
             temp = setTag(temp, "FileMetaInformationGroupLength", "" + ((8 * 5) + 12 + (2 + 30 + 20 + 24 + 8 + createSopUid.length)), true);
         }

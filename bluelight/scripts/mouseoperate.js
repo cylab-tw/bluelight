@@ -180,7 +180,7 @@ function Mousedown(e) {
             }
         }
 
-        dcm.SliceLocation = GetViewport().SliceLocation;
+        dcm.imagePositionZ = GetViewport().imagePositionZ;
         dcm.mark = [];
         dcm.showName = getByid('textROIName').value; //"" + getByid("xmlMarkNameText").value;
         dcm.mark.push({});
