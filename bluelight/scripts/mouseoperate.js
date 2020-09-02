@@ -752,6 +752,9 @@ function Mouseup(e) {
         for (var i = 0; i < Viewport_Total; i++)
             displayMark(NowResize, null, null, null, i);
         displayAngelRular();
+        Graphic_now_choose = {
+            reference: dcm
+        };
     } //flag
     if (openWriteGSPS == true && getByid("GspsCIRCLE").selected == true) {
         let Uid = SearchNowUid();
@@ -776,6 +779,9 @@ function Mouseup(e) {
         for (var i = 0; i < Viewport_Total; i++)
             displayMark(NowResize, null, null, null, i);
         displayAngelRular();
+        Graphic_now_choose = {
+            reference: dcm
+        };
     }
     if (openWriteGraphic == true && !Graphic_now_choose || (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true && !Graphic_now_choose)) {
         let Uid = SearchNowUid();

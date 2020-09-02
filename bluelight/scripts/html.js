@@ -33,6 +33,14 @@ function html_onload() {
       displayMark(NowResize, null, null, null, viewportNumber);
       xml_now_choose = null;
       refreshMarkFromSop(GetNowUid().sop);
+    } else if (key === 33) {
+      jump2UpOrEnd(getNowInstance() - parseInt(getAllSop().length / 10) + 1, undefined);
+    } else if (key === 34) {
+      jump2UpOrEnd(getNowInstance() + parseInt(getAllSop().length / 10) + 1, undefined);
+    } else if (key === 36) {
+      jump2UpOrEnd(0, 'up');
+    } else if (key === 35) {
+      jump2UpOrEnd(0, 'end');
     }
   }
 

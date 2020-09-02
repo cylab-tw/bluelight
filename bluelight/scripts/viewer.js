@@ -225,13 +225,13 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
                 }
                 //載入image Orientation
                 if (image.data.string('x00200037')) {
-                    element.imageOrientationX = image.data.string('x00200037').split("\\")[0];
-                    element.imageOrientationY = image.data.string('x00200037').split("\\")[1];
-                    element.imageOrientationZ = image.data.string('x00200037').split("\\")[2];
+                    element.imageOrientationX = parseFloat(image.data.string('x00200037').split("\\")[0]);
+                    element.imageOrientationY = parseFloat(image.data.string('x00200037').split("\\")[1]);
+                    element.imageOrientationZ = parseFloat(image.data.string('x00200037').split("\\")[2]);
 
-                    element.imageOrientationX2 = image.data.string('x00200037').split("\\")[3];
-                    element.imageOrientationY2 = image.data.string('x00200037').split("\\")[4];
-                    element.imageOrientationZ2 = image.data.string('x00200037').split("\\")[5];
+                    element.imageOrientationX2 = parseFloat(image.data.string('x00200037').split("\\")[3]);
+                    element.imageOrientationY2 = parseFloat(image.data.string('x00200037').split("\\")[4]);
+                    element.imageOrientationZ2 = parseFloat(image.data.string('x00200037').split("\\")[5]);
                 } else {
                     element.imageOrientationX = 0;
                     element.imageOrientationY = 0;

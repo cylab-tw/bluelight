@@ -847,10 +847,10 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                 }
                             }
                             tempctx.beginPath();
-                            var temp_distance = Math.abs(x1 - x2) > Math.abs(y1 - y2) ? Math.abs(x1 - x2) : Math.abs(y1 - y2);
+                            var temp_distance = getDistance(Math.abs(x1 - x2), Math.abs(y1 - y2));//Math.abs(x1 - x2) > Math.abs(y1 - y2) ? Math.abs(x1 - x2) : Math.abs(y1 - y2);
                             tempctx.arc(x1, y1, temp_distance, 0, 2 * Math.PI);
                             tempctx.stroke();
-                            if (fill == true) tempctx.fill();
+                            //if (fill == true) tempctx.fill();
                             tempctx.closePath();
 
                         }
@@ -905,6 +905,8 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         tempctx.closePath();
                     }
                     if (PatientMark[n].mark[m].type == "RTSS") {
+                        //tempctx.setTransform(1, 0, 0, 1, 0, 0);
+                        //tempctx.scale(1, 1);
                         let checkRtss = 0;
                         checkRtss = checkMark(i, j, n);
                         if (checkRtss == 0) continue;

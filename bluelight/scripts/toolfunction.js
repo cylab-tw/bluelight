@@ -341,6 +341,32 @@ function GetViewportMark(num) {
     return getByid("MarkCanvas" + (num - 0));
 }
 
+function jump2UpOrEnd(number, choose) {
+    let index = SearchUid2Index(GetViewport().alt);
+    let i = index[0],
+        j = index[1],
+        k = index[2];
+    var min = 99999999;
+    var max = -9999999;
+    for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
+        var instance = parseInt(Patient.Study[i].Series[j].Sop[l].InstanceNumber);
+        if (instance < min) min = instance;
+        else if (instance > max) max = instance;
+    }
+    if (choose == 'up') number = min;
+    else if (choose == 'end') number = max;
+    else {
+        if (number > max) number = max;
+        if (number < min) number = min;
+    }
+    for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
+        if (parseInt(Patient.Study[i].Series[j].Sop[l].InstanceNumber) == number) {
+            loadAndViewImage(getImgaeIdFromSop(Patient.Study[i].Series[j].Sop[l].SopUID));
+            return;
+        }
+    }
+}
+
 function jump2Mark(showName) {
     let index = SearchUid2Index(GetViewport().alt);
     if (!index) return;
