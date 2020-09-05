@@ -3,10 +3,13 @@ function getQueryVariable(variable) {
   var vars = query.split("&");
   for (var i = 0; i < vars.length; i++) {
     var pair = vars[i].split("=");
-    if (pair[0] == variable) { return pair[1]; }
+    if (pair[0] == variable) {
+      return pair[1];
+    }
   }
   return ("false");
 }
+
 function getParameterByName(name) {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -23,6 +26,7 @@ function getParameterByName(name) {
   }
   return pairList;
 }
+
 function getParameterByName2(name, str) {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -39,12 +43,14 @@ function getParameterByName2(name, str) {
   }
   return pairList;
 }
+
 function readAllJson() {
   var queryString = LoacationSercher;
   var callURL = "";
   if (queryString.length > 0) {
     var formInput = ["StudyDate", "StudyTime", "AccessionNumber", "ModalitiesInStudy", "ReferringPhysicianName",
-      "PatientName", "PatientID", "StudyID", "StudyInstanceUID"];
+      "PatientName", "PatientID", "StudyID", "StudyInstanceUID"
+    ];
     var tempNum = 1;
     var tempX = -1;
     for (var z = 0; z < tempNum; z++) {
@@ -53,36 +59,37 @@ function readAllJson() {
         if (n > 1 && tempNum == 1 && tempX != x) {
           tempNum = n;
           if (tempX != x) tempX = x;
-          else { tempNum = 1; break; }
+          else {
+            tempNum = 1;
+            break;
+          }
           var inputValue = "";
           if (tempX == x)
             inputValue = getParameterByName(formInput[x])[z];
           callURL += formInput[x] + "=" + inputValue + "&";
-        }
-        else if (n > 1 && tempNum != 1 && tempX == x) {
+        } else if (n > 1 && tempNum != 1 && tempX == x) {
           var inputValue = "";
           inputValue = getParameterByName(formInput[x])[z];
           callURL += formInput[x] + "=" + inputValue + "&";
           if (z == tempNum - 1) tempNum = 1;
-        }
-        else if (n > 1 && tempNum != 1 && tempX != x) {
+        } else if (n > 1 && tempNum != 1 && tempX != x) {
           var inputValue = "";
           inputValue = getParameterByName(formInput[x])[0];
           callURL += formInput[x] + "=" + inputValue + "&";
-        }
-        else {
+        } else {
           inputValue = getParameterByName(formInput[x])[0];
           callURL += formInput[x] + "=" + inputValue + "&";
         }
       }
       if (callURL != "StudyDate=&StudyTime=&AccessionNumber=&ModalitiesInStudy=&ReferringPhysicianName=&PatientName=&PatientID=&StudyID=&StudyInstanceUID=&") {
-        var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/dicom-web/instances/?" + callURL + "";
+        var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/dicom-web/studies/?" + callURL + "";
         readJson4(url);
       }
     }
   }
 }
-function readConfigJson(url) {
+
+function readConfigJson(url,onLosdSerch) {
   var config = {};
   var requestURL = url;
   var request = new XMLHttpRequest();
@@ -125,13 +132,13 @@ function readConfigJson(url) {
 
     ConfigLog = config;
     configOnload = true;
-
-    readAllJson();
+    onLosdSerch();
+    //readAllJson();
   }
 }
 
 function readJson4(url) {
-  readJson(url.replace("http:", "https:") + "/instances");
+  readJson(url.replace("http:", "https:") /*+ "/studies"*/);
 }
 
 function readJson(url) {
@@ -143,49 +150,71 @@ function readJson(url) {
   request.send();
 
   request.onload = function () {
-    var DicomResponse = request.response;
-    var min = 1000000000;
-    for (var i = 0; i < DicomResponse.length; i++) {
-      try {
-        if (DicomResponse[i]["00200013"].Value[0] < min) min = DicomResponse[i]["00200013"].Value[0];
-      }
-      catch (ex) { };
-    }
-    for (var i = 0; i < DicomResponse.length; i++) {
+    var DicomStudyResponse = request.response;
+    for (let series = 0; series < DicomStudyResponse.length; series++) {
+      let SeriesUrl = DicomStudyResponse[series]["00081190"].Value[0] + "/series";
+      SeriesUrl = SeriesUrl.replace("http:", "https:");
+      let SeriesRequest = new XMLHttpRequest();
+      SeriesRequest.open('GET', SeriesUrl);
+      SeriesRequest.responseType = 'json';
+      //發送以Series為單位的請求
+      SeriesRequest.send();
+      SeriesRequest.onload = function () {
+        let DicomSeriesResponse = SeriesRequest.response;
+        for (let instance = 0; instance < DicomSeriesResponse.length; instance++) {
+          let InstanceUrl = DicomSeriesResponse[instance]["00081190"].Value[0] + "/instances";
+          InstanceUrl = InstanceUrl.replace("http:", "https:");
+          let InstanceRequest = new XMLHttpRequest();
+          InstanceRequest.open('GET', InstanceUrl);
+          InstanceRequest.responseType = 'json';
+          //發送以Instance為單位的請求
+          InstanceRequest.send();
+          InstanceRequest.onload = function () {
+            var DicomResponse = InstanceRequest.response;
+            var min = 1000000000;
+            for (var i = 0; i < DicomResponse.length; i++) {
+              try {
+                if (DicomResponse[i]["00200013"].Value[0] < min) min = DicomResponse[i]["00200013"].Value[0];
+              } catch (ex) {};
+            }
+            for (var i = 0; i < DicomResponse.length; i++) {
 
-      var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "/?requestType=WADO&" +
-        "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
-        "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
-        "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
-        "&contentType=" + "application/dicom";
-      var uri = url;
-      try {
-        url = "wadouri:" + url;
-        if (DicomResponse[i]["00200013"].Value[0] == min) {
-          loadUID(DicomResponse[i]["0020000D"].Value[0], DicomResponse[i]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url,
-            DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
-          );
+              var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "/?requestType=WADO&" +
+                "studyUID=" + DicomStudyResponse[series]["0020000D"].Value[0] +
+                "&seriesUID=" + DicomSeriesResponse[instance]["0020000E"].Value[0] +
+                "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
+                "&contentType=" + "application/dicom";
+              var uri = url;
+              try {
+                url = "wadouri:" + url;
+                if (DicomResponse[i]["00200013"].Value[0] == min) {
+                  loadUID(DicomStudyResponse[series]["0020000D"].Value[0], DicomSeriesResponse[instance]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url,
+                    DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
+                  );
+                }
+              } catch (ex) {}
+            }
+
+            for (var i = 0; i < DicomResponse.length; i++) {
+              var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "/?requestType=WADO&" +
+                "studyUID=" + DicomStudyResponse[series]["0020000D"].Value[0] +
+                "&seriesUID=" + DicomSeriesResponse[instance]["0020000E"].Value[0] +
+                "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
+                "&contentType=" + "application/dicom";
+              try {
+                url = "wadouri:" + url;
+                ifStudy = loadUID(DicomStudyResponse[series]["0020000D"].Value[0], DicomSeriesResponse[instance]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url,
+                  DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
+                );
+              } catch (ex) {}
+            }
+          }
         }
       }
-      catch (ex) {
-      }
-    }
-
-    for (var i = 0; i < DicomResponse.length; i++) {
-      var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "/?requestType=WADO&" +
-        "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
-        "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
-        "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
-        "&contentType=" + "application/dicom";
-      try {
-        url = "wadouri:" + url;
-        ifStudy = loadUID(DicomResponse[i]["0020000D"].Value[0], DicomResponse[i]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url,
-          DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
-        );
-      } catch (ex) { }
     }
   }
 }
+
 function loadUID(study, series, sop, instance, imageId, PatientID, StudyDate, ModalitiesInStudy, PatientName) {
   var ifSeries = 0;
   var isStudy = -1;
@@ -214,8 +243,7 @@ function loadUID(study, series, sop, instance, imageId, PatientID, StudyDate, Mo
     Study.Series.push(Series);
     Patient.Study.push(Study);
     Patient.StudyAmount += 1;
-  }
-  else {
+  } else {
     ifSeries = 1;
     var isSeries = -1;
     for (var i = 0; i < Patient.Study[isStudy].SeriesAmount; i++) {
@@ -238,8 +266,7 @@ function loadUID(study, series, sop, instance, imageId, PatientID, StudyDate, Mo
       Series.Sop.push(Sop);
       Patient.Study[isStudy].Series.push(Series);
       Patient.Study[isStudy].SeriesAmount += 1;
-    }
-    else {
+    } else {
       ifSeries = 2;
       var isSop = -1;
       for (var i = 0; i < Patient.Study[isStudy].Series[isSeries].SopAmount; i++) {
@@ -257,8 +284,7 @@ function loadUID(study, series, sop, instance, imageId, PatientID, StudyDate, Mo
         Sop.ModalitiesInStudy = ModalitiesInStudy;
         Patient.Study[isStudy].Series[isSeries].Sop.push(Sop);
         Patient.Study[isStudy].Series[isSeries].SopAmount += 1;
-      }
-      else {
+      } else {
         ifSeries = -1;
       }
     }

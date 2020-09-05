@@ -1,7 +1,9 @@
 window.onload = function () {
   setInterval(function () { createTable() }, 1000);
-  loadLdcmview();
-  getByid("searchButton").onclick();
+  function onLosdSerch(){
+    getByid("searchButton").onclick();
+  }
+  loadLdcmview(onLosdSerch);
 }
 function PasswordCheck() {
   try {
@@ -116,10 +118,10 @@ function createTable() {
   Body.appendChild(Table);
 }
 
-function loadLdcmview() {
+function loadLdcmview(onLosdSerch) {
   labelPadding = 5;
   Patient.patientName = '';
   Patient.StudyAmount = 0;
   Patient.Study = [];
-  readConfigJson("../data/config.json");
+  readConfigJson("../data/config.json",onLosdSerch);
 }
