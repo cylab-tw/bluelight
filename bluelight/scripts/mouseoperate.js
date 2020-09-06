@@ -210,7 +210,22 @@ function Mousedown(e) {
     if (openWriteGraphic == true && !rightMouseDown) {
         var currX = getCurrPoint(e)[0];
         var currY = getCurrPoint(e)[1];
-
+        if (currX <= 0)
+            currX = 0;
+        if (currY <= 0)
+            currY = 0;
+        if (currX > GetViewport().imageWidth)
+            currX = GetViewport().imageWidth;
+        if (currY > GetViewport().imageHeight)
+            currY = GetViewport().imageHeight;
+        if (GetViewport().originalPointX <= 0)
+            GetViewport().originalPointX = 0;
+        if (GetViewport().originalPointY <= 0)
+            GetViewport().originalPointY = 0;
+        if (GetViewport().originalPointX > GetViewport().imageWidth)
+            GetViewport().originalPointX = GetViewport().imageWidth;
+        if (GetViewport().originalPointY > GetViewport().imageHeight)
+            GetViewport().originalPointY = GetViewport().imageHeight;
         var currXml_X1 = currX;
         var currXml_Y1 = currY;
         var currXml_X2 = currXml_X1;
@@ -441,6 +456,22 @@ function Mousemove(e) {
         PatientMark.splice(PatientMark.indexOf(dcm), 1);
     }
     if ((openWriteGraphic == true || (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true)) && (MouseDownCheck == true || rightMouseDown == true)) {
+        if (currX <= 0)
+            currX = 0;
+        if (currY <= 0)
+            currY = 0;
+        if (currX > GetViewport().imageWidth)
+            currX = GetViewport().imageWidth;
+        if (currY > GetViewport().imageHeight)
+            currY = GetViewport().imageHeight;
+        if (GetViewport().originalPointX <= 0)
+            GetViewport().originalPointX = 0;
+        if (GetViewport().originalPointY <= 0)
+            GetViewport().originalPointY = 0;
+        if (GetViewport().originalPointX > GetViewport().imageWidth)
+            GetViewport().originalPointX = GetViewport().imageWidth;
+        if (GetViewport().originalPointY > GetViewport().imageHeight)
+            GetViewport().originalPointY = GetViewport().imageHeight;
         if (!Graphic_now_choose && MouseDownCheck == true) {
             let Uid = SearchNowUid();
             var dcm = {};
@@ -784,6 +815,22 @@ function Mouseup(e) {
         };
     }
     if (openWriteGraphic == true && !Graphic_now_choose || (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true && !Graphic_now_choose)) {
+        if (currX <= 0)
+            currX = 0;
+        if (currY <= 0)
+            currY = 0;
+        if (currX > GetViewport().imageWidth)
+            currX = GetViewport().imageWidth;
+        if (currY > GetViewport().imageHeight)
+            currY = GetViewport().imageHeight;
+        if (GetViewport().originalPointX <= 0)
+            GetViewport().originalPointX = 0;
+        if (GetViewport().originalPointY <= 0)
+            GetViewport().originalPointY = 0;
+        if (GetViewport().originalPointX > GetViewport().imageWidth)
+            GetViewport().originalPointX = GetViewport().imageWidth;
+        if (GetViewport().originalPointY > GetViewport().imageHeight)
+            GetViewport().originalPointY = GetViewport().imageHeight;
         let Uid = SearchNowUid();
         var dcm = {};
         dcm.study = Uid.studyuid;

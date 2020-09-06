@@ -49,9 +49,47 @@ function html_onload() {
   }
 
   document.getElementsByTagName("BODY")[0].ondrop = function (e) {
+    e.stopPropagation();
     e.preventDefault();
-    var files = e.dataTransfer.files;
-    for (var k = 0; k < files.length; k++) {
+
+    function addDirectory(item) {
+      if (item.isDirectory) {
+        var directoryReader = item.createReader();
+        directoryReader.readEntries(function (entries) {
+          entries.forEach(function (entry) {
+            addDirectory(entry);
+          });
+        });
+      } else {
+        item.file(function (file) {
+          let reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onloadend = function () {
+            //virtualLoadImage('wadouri:' + reader.result, -1);
+            loadAndViewImage('wadouri:' + reader.result);
+
+            function load(time) {
+              return new Promise((resolve) => setTimeout(resolve, time));
+            }
+            load(100).then(() => {
+              readXML(reader.result);
+              readDicom(reader.result, PatientMark, true);
+            });
+          }
+        });
+      }
+    }
+    if (e.dataTransfer && e.dataTransfer.items) {
+      var items = e.dataTransfer.items;
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i].webkitGetAsEntry();
+        if (item) {
+          addDirectory(item);
+        }
+      }
+    }
+    //var files = /*e.target.files ||*/ e.dataTransfer.files;
+    /*for (var k = 0; k < files.length; k++) {
       let reader = new FileReader();
       reader.readAsDataURL(files[k]);
       reader.onloadend = function () {
@@ -66,7 +104,7 @@ function html_onload() {
           readDicom(reader.result, PatientMark, true);
         });
       }
-    }
+    }*/
   }
 
   getByid("MouseOperation").onclick = function () {
