@@ -89,7 +89,7 @@ function readAllJson() {
   }
 }
 
-function readConfigJson(url,onLosdSerch) {
+function readConfigJson(url, onLosdSerch) {
   var config = {};
   var requestURL = url;
   var request = new XMLHttpRequest();
@@ -170,12 +170,13 @@ function readJson(url) {
           //發送以Instance為單位的請求
           InstanceRequest.send();
           InstanceRequest.onload = function () {
+            if (SerchState1 != SerchState) return;
             var DicomResponse = InstanceRequest.response;
             var min = 1000000000;
             for (var i = 0; i < DicomResponse.length; i++) {
               try {
                 if (DicomResponse[i]["00200013"].Value[0] < min) min = DicomResponse[i]["00200013"].Value[0];
-              } catch (ex) {};
+              } catch (ex) { };
             }
             for (var i = 0; i < DicomResponse.length; i++) {
 
@@ -192,7 +193,7 @@ function readJson(url) {
                     DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
                   );
                 }
-              } catch (ex) {}
+              } catch (ex) { }
             }
 
             for (var i = 0; i < DicomResponse.length; i++) {
@@ -206,7 +207,7 @@ function readJson(url) {
                 ifStudy = loadUID(DicomStudyResponse[series]["0020000D"].Value[0], DicomSeriesResponse[instance]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url,
                   DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
                 );
-              } catch (ex) {}
+              } catch (ex) { }
             }
           }
         }

@@ -1,6 +1,6 @@
 window.onload = function () {
   setInterval(function () { createTable() }, 1000);
-  function onLosdSerch(){
+  function onLosdSerch() {
     getByid("searchButton").onclick();
   }
   loadLdcmview(onLosdSerch);
@@ -31,7 +31,8 @@ var configOnload = false;
 var LoacationSercher = "";
 var UidListCount = 0;
 var UidListCount2 = 0;
-var SerchState = "";
+
+var SerchState = 0;
 function createTable() {
   if (UidListCount2 == UidListCount) return;
   UidListCount2 = UidListCount;
@@ -106,7 +107,7 @@ function createTable() {
       //str += "PatientID=" + Null2Empty(encodeURI(list[i - 1]));
       //str += "&StudyDate=" + Null2Empty(encodeURI(list2[i - 1]));
       str += "&StudyInstanceUID=" + Null2Empty(encodeURI(list6[i - 1]));
-     //str += "&PatientName=" + Null2Empty(encodeURI(list3[i - 1]));
+      //str += "&PatientName=" + Null2Empty(encodeURI(list3[i - 1]));
       //str += "&ModalitiesInStudy=" + Null2Empty(encodeURI(list5[i - 1]));
 
       row.alt = 'https://cylab-tw.github.io/bluelight/bluelight/html/start.html?' + str;
@@ -123,5 +124,5 @@ function loadLdcmview(onLosdSerch) {
   Patient.patientName = '';
   Patient.StudyAmount = 0;
   Patient.Study = [];
-  readConfigJson("../data/config.json",onLosdSerch);
+  readConfigJson("../data/config.json", onLosdSerch);
 }

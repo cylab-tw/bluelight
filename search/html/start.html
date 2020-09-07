@@ -14,8 +14,8 @@
   <script src="../scripts/readsome.js"></script>
   <script src="../scripts/onload.js"></script>
 
-  <link rel="stylesheet" href="../css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="../css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    crossorigin="anonymous">
 </head>
 <style>
   .PatientRow:hover {
@@ -36,13 +36,16 @@
   <br>
   　PatientID：<input type="text" name="lname" id="PatientIDText" value="*" class="btn btn-dark text-left">
   PatientName：<input type="text" name="lname" id="PatientNameText" class="btn btn-dark text-left">
-  StudyDate：<input type="text" name="lname" id="StudyDateText" class="btn btn-dark text-left"><br><br>
+  StudyDate：<input type="text" name="lname" id="StudyDateText" class="btn btn-dark text-left">
+  Accession Number：<input type="text" name="lname" id="AccessionNumberText" class="btn btn-dark text-left">
+  <br><br>
   　Modality：<input type="text" name="lname" id="ModalitiesInStudyText" class="btn btn-dark text-left">
   　 &nbsp;StudyUID：<input type="text" name="lname" id="StudyInstanceUIDText" class="btn btn-dark text-left">
   &nbsp;&nbsp;Password：<input type="password" name="lname" value="123" id="PasswordText" class="btn btn-dark text-left">
   　
   <button type="button" id="searchButton" class="btn btn-dark" onclick="
   if(!PasswordCheck())return;
+  SerchState++;
   Patient.patientName = '';
   Patient.StudyAmount = 0;
   Patient.Study = [];
@@ -50,10 +53,12 @@
   LoacationSercher='?StudyDate='+ encodeURI(encodeURI(''+getByid('StudyDateText').value));readAllJson();
   LoacationSercher='?PatientName='+ encodeURI(encodeURI(''+getByid('PatientNameText').value));readAllJson();
   LoacationSercher='?ModalitiesInStudy='+ encodeURI(encodeURI(''+getByid('ModalitiesInStudyText').value));readAllJson();
+  LoacationSercher='?AccessionNumber='+ encodeURI(encodeURI(''+getByid('AccessionNumberText').value));readAllJson();
   LoacationSercher='?StudyInstanceUID='+ encodeURI(encodeURI(''+getByid('StudyInstanceUIDText').value));readAllJson();
   ">search</button><br><br>
   <div id="body"></div>
   <header class="page-header" style="display:none">
   </header>
 </body>
+
 </html>
