@@ -55,11 +55,16 @@ function html_onload() {
     function addDirectory(item) {
       if (item.isDirectory) {
         var directoryReader = item.createReader();
-        directoryReader.readEntries(function (entries) {
+
+        var fnReadEntries = function (entries) {
           entries.forEach(function (entry) {
             addDirectory(entry);
           });
-        });
+          if (entries.length > 0) {
+            directoryReader.readEntries(fnReadEntries);
+          }
+        };    
+        directoryReader.readEntries(fnReadEntries)
       } else {
         item.file(function (file) {
           let reader = new FileReader();
@@ -82,6 +87,7 @@ function html_onload() {
     if (e.dataTransfer && e.dataTransfer.items) {
       var items = e.dataTransfer.items;
       for (var i = 0; i < items.length; i++) {
+
         var item = items[i].webkitGetAsEntry();
         if (item) {
           addDirectory(item);
