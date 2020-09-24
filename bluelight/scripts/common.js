@@ -382,7 +382,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
         var mat = tempctx.getTransform();
         var checkTransform = false;
         //標記套用image Orientation和image Position，之後將以反方向旋轉
-        if (GetViewport(viewportNum).imageOrientationX && GetViewport(viewportNum).imageOrientationY && GetViewport(viewportNum).imageOrientationZ) {
+        if (CheckNull(GetViewport(viewportNum).imageOrientationX)==false && CheckNull(GetViewport(viewportNum).imageOrientationY)==false && CheckNull(GetViewport(viewportNum).imageOrientationZ)==false) {
             tempctx.setTransform(new DOMMatrix(
                 [GetViewport(viewportNum).imageOrientationX, -GetViewport(viewportNum).imageOrientationX2, 0, GetViewport(viewportNum).imagePositionX * GetViewport(viewportNum).PixelSpacingX,
                 -GetViewport(viewportNum).imageOrientationY, GetViewport(viewportNum).imageOrientationY2, 0, GetViewport(viewportNum).imagePositionY * GetViewport(viewportNum).PixelSpacingY,

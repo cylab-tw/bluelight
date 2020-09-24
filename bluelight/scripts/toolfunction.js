@@ -64,6 +64,11 @@ function getClass(str) {
     return document.getElementsByClassName(str);
 }
 
+function CheckNull(str) {
+    if (str == undefined || str == null) return true;
+    return false;
+}
+
 function Null2Empty(str) {
     if (str == undefined || str == null) str = "";
     return str;
