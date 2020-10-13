@@ -363,7 +363,7 @@ function readConfigJson(url, callBack, callBack2) {
 
 function readJson(url) {
   //向伺服器請求資料
-  url = url.replace("http:", "https:");
+  if (ConfigLog.WADO.https == "https") url = url.replace("http:", "https:");
   let request = new XMLHttpRequest();
   request.open('GET', url);
   request.responseType = 'json';
@@ -374,7 +374,7 @@ function readJson(url) {
     var DicomStudyResponse = request.response;
     for (let series = 0; series < DicomStudyResponse.length; series++) {
       let SeriesUrl = DicomStudyResponse[series]["00081190"].Value[0] + "/series";
-      SeriesUrl = SeriesUrl.replace("http:", "https:");
+      if (ConfigLog.WADO.https == "https") SeriesUrl = SeriesUrl.replace("http:", "https:");
       let SeriesRequest = new XMLHttpRequest();
       SeriesRequest.open('GET', SeriesUrl);
       SeriesRequest.responseType = 'json';
@@ -384,7 +384,7 @@ function readJson(url) {
         let DicomSeriesResponse = SeriesRequest.response;
         for (let instance = 0; instance < DicomSeriesResponse.length; instance++) {
           let InstanceUrl = DicomSeriesResponse[instance]["00081190"].Value[0] + "/instances";
-          InstanceUrl = InstanceUrl.replace("http:", "https:");
+          if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
           let InstanceRequest = new XMLHttpRequest();
           InstanceRequest.open('GET', InstanceUrl);
           InstanceRequest.responseType = 'json';

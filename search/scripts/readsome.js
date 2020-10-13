@@ -138,7 +138,8 @@ function readConfigJson(url, onLosdSerch) {
 }
 
 function readJson4(url) {
-  readJson(url.replace("http:", "https:") /*+ "/studies"*/);
+  //readJson(url.replace("http:", "https:") /*+ "/studies"*/);
+  readJson(url);
 }
 
 function readJson(url) {
@@ -153,7 +154,7 @@ function readJson(url) {
     var DicomStudyResponse = request.response;
     for (let series = 0; series < DicomStudyResponse.length; series++) {
       let SeriesUrl = DicomStudyResponse[series]["00081190"].Value[0] + "/series";
-      SeriesUrl = SeriesUrl.replace("http:", "https:");
+      if (ConfigLog.WADO.https == "https") SeriesUrl = SeriesUrl.replace("http:", "https:");
       let SeriesRequest = new XMLHttpRequest();
       SeriesRequest.open('GET', SeriesUrl);
       SeriesRequest.responseType = 'json';
@@ -163,7 +164,7 @@ function readJson(url) {
         let DicomSeriesResponse = SeriesRequest.response;
         for (let instance = 0; instance < DicomSeriesResponse.length; instance++) {
           let InstanceUrl = DicomSeriesResponse[instance]["00081190"].Value[0] + "/instances";
-          InstanceUrl = InstanceUrl.replace("http:", "https:");
+          if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
           let InstanceRequest = new XMLHttpRequest();
           InstanceRequest.open('GET', InstanceUrl);
           InstanceRequest.responseType = 'json';
@@ -176,7 +177,7 @@ function readJson(url) {
             for (var i = 0; i < DicomResponse.length; i++) {
               try {
                 if (DicomResponse[i]["00200013"].Value[0] < min) min = DicomResponse[i]["00200013"].Value[0];
-              } catch (ex) { };
+              } catch (ex) {};
             }
             for (var i = 0; i < DicomResponse.length; i++) {
 
@@ -193,7 +194,7 @@ function readJson(url) {
                     DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
                   );
                 }
-              } catch (ex) { }
+              } catch (ex) {}
             }
 
             for (var i = 0; i < DicomResponse.length; i++) {
@@ -207,7 +208,7 @@ function readJson(url) {
                 ifStudy = loadUID(DicomStudyResponse[series]["0020000D"].Value[0], DicomSeriesResponse[instance]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url,
                   DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
                 );
-              } catch (ex) { }
+              } catch (ex) {}
             }
           }
         }
