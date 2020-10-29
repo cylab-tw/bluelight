@@ -106,11 +106,11 @@ function createTable() {
       var str = "";
       //str += "PatientID=" + Null2Empty(encodeURI(list[i - 1]));
       //str += "&StudyDate=" + Null2Empty(encodeURI(list2[i - 1]));
-      str += "&StudyInstanceUID=" + Null2Empty(encodeURI(list6[i - 1]));
+      str += "StudyInstanceUID=" + Null2Empty(encodeURI(list6[i - 1]));
       //str += "&PatientName=" + Null2Empty(encodeURI(list3[i - 1]));
       //str += "&ModalitiesInStudy=" + Null2Empty(encodeURI(list5[i - 1]));
 
-      row.alt = 'https://cylab-tw.github.io/bluelight/bluelight/html/start.html?' + str;
+      row.alt = ConfigLog.QIDO.target+'?' + str;
       row.onclick = function () {
         window.open(this.alt, '_blank');
       };

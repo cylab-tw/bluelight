@@ -1,29 +1,38 @@
 {
-    "DICOMWebServersConfig":[{
-        "AETitle": "YMOrthanc",
-        "enableHTTPS": true,
-        "hostname": "orthanc.dicom.tw",
-        "PORT": 443,
-        "contentType": "application/json",
-        "timeout": 80000,
-        "charset": "UTF=8",
-        "QIDO": "dicom-web",
-        "WADO": "wado",
-        "STOW": "stow"
-    },
-    {
-        "AETitle": "ldcmPACS",
-        "enableHTTPS": true,
-        "hostname": "orthanc.dicom.tw",
-        "PORT": 443,
-        "contentType": "application/json",
-        "timeout": 80000,
-        "charset": "UTF=8",
-        "QIDO": "dicom-web",
-        "WADO": "wado",
-        "STOW": "stow"
-    }
-],
+    "DICOMWebServersConfig": [
+        {
+            "AETitle": "YMOrthanc",
+            "enableHTTPS": true,
+            "hostname": "orthanc.dicom.tw",
+            "PORT": 443,
+            "contentType": "application/json",
+            "timeout": 80000,
+            "charset": "UTF=8",
+            "QIDO": "dicom-web",
+            "WADO": "wado",
+            "STOW": "stow",
+            "enableRetrieveURI": false,
+            "includefield": false,
+            "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
+            "token": ""
+        },
+        {
+            "AETitle": "ldcmPACS",
+            "enableHTTPS": true,
+            "hostname": "orthanc.dicom.tw",
+            "PORT": 443,
+            "contentType": "application/json",
+            "timeout": 80000,
+            "charset": "UTF=8",
+            "QIDO": "dicom-web",
+            "WADO": "wado",
+            "STOW": "stow",
+            "enableRetrieveURI": false,
+            "includefield": false,
+            "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
+            "token": ""
+        }
+    ],
     "//_thumnail_witdth": "縮圖寬度",
     "thumnail_witdth": 70,
     "//_study_comparison": "進片模式",

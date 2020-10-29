@@ -1,5 +1,6 @@
 {
-    "DICOMWebServersConfig": [{
+    "DICOMWebServersConfig": [
+        {
             "AETitle": "YMOrthanc",
             "enableHTTPS": true,
             "hostname": "orthanc.dicom.tw",
@@ -9,7 +10,11 @@
             "charset": "UTF=8",
             "QIDO": "dicom-web",
             "WADO": "wado",
-            "STOW": "stow"
+            "STOW": "stow",
+            "enableRetrieveURI": false,
+            "includefield": false,
+            "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
+            "token": ""
         },
         {
             "AETitle": "ldcmPACS",
@@ -21,7 +26,11 @@
             "charset": "UTF=8",
             "QIDO": "dicom-web",
             "WADO": "wado",
-            "STOW": "stow"
+            "STOW": "stow",
+            "enableRetrieveURI": false,
+            "includefield": false,
+            "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
+            "token": ""
         }
     ],
     "//_thumnail_witdth": "縮圖寬度",

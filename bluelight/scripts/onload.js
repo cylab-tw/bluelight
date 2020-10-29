@@ -308,9 +308,19 @@ function readAllJson(callBack) {
   var queryString = ("" + location.search).replace("?", "");
   var callURL = queryString;
   if (queryString.length > 0) {
-    var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/dicom-web/studies/?" + callURL + "";
+    var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/studies" + "?" + callURL + "";
+    url = fitUrl(url);
     callBack(url);
   }
+}
+
+function fitUrl(url) {
+  url = url.replace('?&', '?');
+  url = url.replace("http://http://", "http://");
+  url = url.replace("https://http://", "https://");
+  url = url.replace("http://https://", "http://");
+  url = url.replace("https://https://", "https://");
+  return url;
 }
 
 function readConfigJson(url, callBack, callBack2) {
@@ -333,6 +343,7 @@ function readConfigJson(url, callBack, callBack2) {
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
     tempConfig.charset = tempDicomResponse["charset"];
+    tempConfig.includefield = tempDicomResponse["includefield"];
 
     config.WADO = {};
     tempConfig = config.WADO;
@@ -343,6 +354,7 @@ function readConfigJson(url, callBack, callBack2) {
     tempConfig.service = tempDicomResponse["WADO"];
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
+    tempConfig.includefield = tempDicomResponse["includefield"];
 
     config.STOW = {};
     tempConfig = config.STOW;
@@ -353,6 +365,7 @@ function readConfigJson(url, callBack, callBack2) {
     tempConfig.service = tempDicomResponse["STOW"];
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
+    tempConfig.includefield = tempDicomResponse["includefield"];
 
     Object.assign(ConfigLog, config);
     configOnload = true;
@@ -384,6 +397,7 @@ function readJson(url) {
         let DicomSeriesResponse = SeriesRequest.response;
         for (let instance = 0; instance < DicomSeriesResponse.length; instance++) {
           let InstanceUrl = DicomSeriesResponse[instance]["00081190"].Value[0] + "/instances";
+          if (ConfigLog.WADO.includefield == true) InstanceUrl += "?includefield=all";
           if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
           let InstanceRequest = new XMLHttpRequest();
           InstanceRequest.open('GET', InstanceUrl);
@@ -397,7 +411,7 @@ function readJson(url) {
             for (var i = 0; i < DicomResponse.length; i++) {
               try {
                 if (DicomResponse[i]["00200013"].Value[0] < min) min = DicomResponse[i]["00200013"].Value[0];
-              } catch (ex) {};
+              } catch (ex) { };
             }
             //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
             //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
@@ -405,11 +419,12 @@ function readJson(url) {
             //載入標記以及首張影像
             for (var i = 0; i < DicomResponse.length; i++) {
               //取得WADO的路徑
-              var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "/?requestType=WADO&" +
+              var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
                 "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
                 "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
                 "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
                 "&contentType=" + "application/dicom";
+              url = fitUrl(url);
               var uri = url;
               //如果包含標記，則載入標記
               if (DicomResponse[i]["00080016"] && DicomResponse[i]["00080016"].Value[0] == '1.2.840.10008.5.1.4.1.1.481.3') {
@@ -424,18 +439,19 @@ function readJson(url) {
                   //預載入DICOM至Viewport
                   virtualLoadImage(url, 1);
                 }
-              } catch (ex) {}
+              } catch (ex) { }
             }
             //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
             //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
 
             //載入其餘所有影像
             for (var i = 0; i < DicomResponse.length; i++) {
-              var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "/?requestType=WADO&" +
+              var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
                 "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
                 "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
                 "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
                 "&contentType=" + "application/dicom";
+              url = fitUrl(url);
               try {
                 url = "wadouri:" + url;
                 //載入DICOM的階層資料至物件清單
@@ -445,7 +461,7 @@ function readJson(url) {
                   virtualLoadImage(url, 1);
                 else
                   virtualLoadImage(url, 0);
-              } catch (ex) {}
+              } catch (ex) { }
             }
 
           }

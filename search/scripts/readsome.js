@@ -81,12 +81,33 @@ function readAllJson() {
           callURL += formInput[x] + "=" + inputValue + "&";
         }
       }
+      callURL = callURL.replace('StudyDate=&', '');
+      callURL = callURL.replace('StudyTime=&', '');
+      callURL = callURL.replace('AccessionNumber=&', '');
+      callURL = callURL.replace('ModalitiesInStudy=&', '');
+      callURL = callURL.replace('ReferringPhysicianName=&', '');
+      callURL = callURL.replace('PatientName=&', '');
+      callURL = callURL.replace('PatientID=&', '');
+      callURL = callURL.replace('StudyID=&', '');
+      callURL = callURL.replace('StudyInstanceUID=&', '');
+      callURL = callURL.replace('&', '');
+      if (callURL == '') return
       if (callURL != "StudyDate=&StudyTime=&AccessionNumber=&ModalitiesInStudy=&ReferringPhysicianName=&PatientName=&PatientID=&StudyID=&StudyInstanceUID=&") {
-        var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/dicom-web/studies/?" + callURL + "";
-        readJson4(url);
+        var url = ConfigLog.WADO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/studies" + "?" + callURL + "";
+        url=fitUrl(url);
+        readJson(url);
       }
     }
   }
+}
+
+function fitUrl(url) {
+  url = url.replace('?&', '?');
+  url = url.replace("http://http://", "http://");
+  url = url.replace("https://http://", "https://");
+  url = url.replace("http://https://", "http://");
+  url = url.replace("https://https://", "https://");
+  return url;
 }
 
 function readConfigJson(url, onLosdSerch) {
@@ -109,6 +130,9 @@ function readConfigJson(url, onLosdSerch) {
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
     tempConfig.charset = tempDicomResponse["charset"];
+    tempConfig.includefield = tempDicomResponse["includefield"];
+    tempConfig.target = tempDicomResponse["target"];
+    tempConfig.enableRetrieveURI = tempDicomResponse["enableRetrieveURI"];
 
     config.WADO = {};
     tempConfig = config.WADO;
@@ -119,6 +143,9 @@ function readConfigJson(url, onLosdSerch) {
     tempConfig.service = tempDicomResponse["WADO"];
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
+    tempConfig.includefield = tempDicomResponse["includefield"];
+    tempConfig.target = tempDicomResponse["target"];
+    tempConfig.enableRetrieveURI = tempDicomResponse["enableRetrieveURI"];
 
     config.STOW = {};
     tempConfig = config.STOW;
@@ -129,6 +156,9 @@ function readConfigJson(url, onLosdSerch) {
     tempConfig.service = tempDicomResponse["STOW"];
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
+    tempConfig.includefield = tempDicomResponse["includefield"];
+    tempConfig.target = tempDicomResponse["target"];
+    tempConfig.enableRetrieveURI = tempDicomResponse["enableRetrieveURI"];
 
     ConfigLog = config;
     configOnload = true;
@@ -137,14 +167,11 @@ function readConfigJson(url, onLosdSerch) {
   }
 }
 
-function readJson4(url) {
-  //readJson(url.replace("http:", "https:") /*+ "/studies"*/);
-  readJson(url);
-}
-
 function readJson(url) {
   const SerchState1 = SerchState;
   var requestURL = url;
+  var originWADOUrl = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT  + "/" + ConfigLog.QIDO.service +"/studies/";
+  originWADOUrl = originWADOUrl.replace("?", "");
   var request = new XMLHttpRequest();
   request.open('GET', requestURL);
   request.responseType = 'json';
@@ -153,8 +180,16 @@ function readJson(url) {
   request.onload = function () {
     var DicomStudyResponse = request.response;
     for (let series = 0; series < DicomStudyResponse.length; series++) {
-      let SeriesUrl = DicomStudyResponse[series]["00081190"].Value[0] + "/series";
+      let SeriesUrl = "";
+      if (ConfigLog.WADO.enableRetrieveURI == true) {
+        SeriesUrl = originWADOUrl + DicomStudyResponse[series]["0020000D"].Value[0] + "/series/";
+      } else {
+        SeriesUrl = DicomStudyResponse[series]["00081190"].Value[0] + "/series";
+      }
       if (ConfigLog.WADO.https == "https") SeriesUrl = SeriesUrl.replace("http:", "https:");
+      SeriesUrl=fitUrl(SeriesUrl);
+      SeriesUrl.replace("https", "");
+      SeriesUrl.replace("http", "");
       let SeriesRequest = new XMLHttpRequest();
       SeriesRequest.open('GET', SeriesUrl);
       SeriesRequest.responseType = 'json';
@@ -163,8 +198,17 @@ function readJson(url) {
       SeriesRequest.onload = function () {
         let DicomSeriesResponse = SeriesRequest.response;
         for (let instance = 0; instance < DicomSeriesResponse.length; instance++) {
-          let InstanceUrl = DicomSeriesResponse[instance]["00081190"].Value[0] + "/instances";
+          let InstanceUrl = ""
+          if (ConfigLog.WADO.enableRetrieveURI == true) {
+            InstanceUrl = SeriesUrl + DicomSeriesResponse[instance]["0020000E"].Value[0] + "/instances/";
+          } else {
+            InstanceUrl = DicomSeriesResponse[instance]["00081190"].Value[0] + "/instances";
+          }
+          if (ConfigLog.WADO.includefield == true) InstanceUrl += "?includefield=all";
           if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
+          InstanceUrl.replace("https", "");
+          InstanceUrl.replace("http", "");
+          InstanceUrl=fitUrl(InstanceUrl);
           let InstanceRequest = new XMLHttpRequest();
           InstanceRequest.open('GET', InstanceUrl);
           InstanceRequest.responseType = 'json';
@@ -177,8 +221,9 @@ function readJson(url) {
             for (var i = 0; i < DicomResponse.length; i++) {
               try {
                 if (DicomResponse[i]["00200013"].Value[0] < min) min = DicomResponse[i]["00200013"].Value[0];
-              } catch (ex) {};
+              } catch (ex) { };
             }
+
             for (var i = 0; i < DicomResponse.length; i++) {
 
               var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "/?requestType=WADO&" +
@@ -186,6 +231,7 @@ function readJson(url) {
                 "&seriesUID=" + DicomSeriesResponse[instance]["0020000E"].Value[0] +
                 "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
                 "&contentType=" + "application/dicom";
+                url=fitUrl(url);
               var uri = url;
               try {
                 url = "wadouri:" + url;
@@ -194,7 +240,7 @@ function readJson(url) {
                     DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
                   );
                 }
-              } catch (ex) {}
+              } catch (ex) { }
             }
 
             for (var i = 0; i < DicomResponse.length; i++) {
@@ -203,12 +249,13 @@ function readJson(url) {
                 "&seriesUID=" + DicomSeriesResponse[instance]["0020000E"].Value[0] +
                 "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
                 "&contentType=" + "application/dicom";
+                url=fitUrl(url);
               try {
                 url = "wadouri:" + url;
                 ifStudy = loadUID(DicomStudyResponse[series]["0020000D"].Value[0], DicomSeriesResponse[instance]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url,
                   DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
                 );
-              } catch (ex) {}
+              } catch (ex) { }
             }
           }
         }
