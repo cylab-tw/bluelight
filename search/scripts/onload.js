@@ -46,6 +46,7 @@ function createTable() {
   var list4 = [];
   var list5 = [];
   var list6 = [];
+  var list7 = [];
   for (var i = 0; i < Patient.StudyAmount; i++) {
     var flag = 0;
     for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
@@ -57,6 +58,7 @@ function createTable() {
         list4.push(Patient.Study[i].Series[j].SopAmount);
         list5.push(Patient.Study[i].Series[j].Sop[k].ModalitiesInStudy)
         list6.push(Patient.Study[i].StudyUID);
+        list7.push(Patient.Study[i].Series[j].Sop[k].AccessionNumber);
         flag = 1;
         break;
       }
@@ -87,6 +89,9 @@ function createTable() {
   var cells3 = row0.insertCell(4);
   cells3.innerHTML = "# of related Instances";
 
+  var cells5 = row0.insertCell(5);
+  cells5.innerHTML = "Accession Number";
+
   for (var i = 1; i <= rows; i++) {
     var row = Table.insertRow(i);
     row.className = "PatientRow";
@@ -103,6 +108,9 @@ function createTable() {
 
       cells = row.insertCell(j + 4);
       cells.innerHTML = "" + list4[i - 1];
+
+      cells = row.insertCell(j + 5);
+      cells.innerHTML = "" + list7[i - 1];
       var str = "";
       //str += "PatientID=" + Null2Empty(encodeURI(list[i - 1]));
       //str += "&StudyDate=" + Null2Empty(encodeURI(list2[i - 1]));

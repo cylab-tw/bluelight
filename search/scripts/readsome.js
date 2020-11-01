@@ -237,7 +237,7 @@ function readJson(url) {
                 url = "wadouri:" + url;
                 if (DicomResponse[i]["00200013"].Value[0] == min) {
                   loadUID(DicomStudyResponse[series]["0020000D"].Value[0], DicomSeriesResponse[instance]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url,
-                    DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
+                    DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"],DicomResponse[i]["00080050"].Value[0]
                   );
                 }
               } catch (ex) { }
@@ -253,7 +253,7 @@ function readJson(url) {
               try {
                 url = "wadouri:" + url;
                 ifStudy = loadUID(DicomStudyResponse[series]["0020000D"].Value[0], DicomSeriesResponse[instance]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url,
-                  DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"]
+                  DicomResponse[i]["00100020"].Value[0], DicomResponse[i]["00080020"].Value[0], DicomResponse[i]["00080060"].Value[0], DicomResponse[i]["00100010"].Value[0]["Alphabetic"],DicomResponse[i]["00080050"].Value[0]
                 );
               } catch (ex) { }
             }
@@ -264,7 +264,7 @@ function readJson(url) {
   }
 }
 
-function loadUID(study, series, sop, instance, imageId, PatientID, StudyDate, ModalitiesInStudy, PatientName) {
+function loadUID(study, series, sop, instance, imageId, PatientID, StudyDate, ModalitiesInStudy, PatientName,AccessionNumber) {
   var ifSeries = 0;
   var isStudy = -1;
   for (var i = 0; i < Patient.StudyAmount; i++) {
@@ -288,6 +288,7 @@ function loadUID(study, series, sop, instance, imageId, PatientID, StudyDate, Mo
     Sop.StudyDate = StudyDate;
     Sop.PatientName = PatientName;
     Sop.ModalitiesInStudy = ModalitiesInStudy;
+    Sop.AccessionNumber=AccessionNumber;
     Series.Sop.push(Sop);
     Study.Series.push(Series);
     Patient.Study.push(Study);
@@ -312,6 +313,7 @@ function loadUID(study, series, sop, instance, imageId, PatientID, StudyDate, Mo
       Sop.StudyDate = StudyDate;
       Sop.PatientName = PatientName;
       Sop.ModalitiesInStudy = ModalitiesInStudy;
+      Sop.AccessionNumber=AccessionNumber;
       Series.Sop.push(Sop);
       Patient.Study[isStudy].Series.push(Series);
       Patient.Study[isStudy].SeriesAmount += 1;
@@ -331,6 +333,7 @@ function loadUID(study, series, sop, instance, imageId, PatientID, StudyDate, Mo
         Sop.StudyDate = StudyDate;
         Sop.PatientName = PatientName;
         Sop.ModalitiesInStudy = ModalitiesInStudy;
+        Sop.AccessionNumber=AccessionNumber;
         Patient.Study[isStudy].Series[isSeries].Sop.push(Sop);
         Patient.Study[isStudy].Series[isSeries].SopAmount += 1;
       } else {
