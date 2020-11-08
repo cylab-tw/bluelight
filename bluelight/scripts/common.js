@@ -730,7 +730,16 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                     y4 = (tempMark.markY[o + 3] - GetViewport(viewportNum).imagePositionY) + currY;
                                 }
                             }
-
+                            if (tempMark.GSPS_Text&& o == 0) {
+                                tempctx.font = "" + (parseInt(tempctx.lineWidth) * 4) + "px Arial";
+                                tempctx.fillStyle = "red";
+                                let tempAlpha = tempctx.globalAlpha;
+                                tempctx.globalAlpha = 1.0;
+                                //-(tempMark.GSPS_Text.length)
+                                tempctx.fillText("" + tempMark.GSPS_Text, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 7 : y2 - 7);
+                                tempctx.globalAlpha = tempAlpha;
+                                // tempctx.fillText(tempMark.GSPS_Text, 10, 50);
+                            }
                             tempctx.moveTo(x1, y1);
                             tempctx.lineTo(x2, y2);
                             tempctx.stroke();
