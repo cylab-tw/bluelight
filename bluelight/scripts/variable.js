@@ -152,3 +152,5 @@ var ConfigLog = {};
 var configOnload = false;
 //decode function
 let decodeImageFrame;
+//代表按下ctrl
+let KeyCode_ctrl=false;

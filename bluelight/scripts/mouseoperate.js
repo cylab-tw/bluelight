@@ -114,22 +114,42 @@ function Mousedown(e) {
         magnifierIng(angel2point[0], angel2point[1]);
     }
     if (openWriteSEG == true) {
-        let Uid = GetNowUid();
-        var dcm = {};
-        dcm.study = Uid.study;
-        dcm.series = Uid.sreies;
+        var alt = GetViewport().alt;
+        var index_Seg = SearchUid2Index(alt);
+        if (!index_Seg) return;
+        let i_s = index_Seg[0],
+            j_s = index_Seg[1],
+            k_s = index_Seg[2];
+        var break1 = false;
+        for (var n_s = 0; n_s < PatientMark.length; n_s++) {
+            if (PatientMark[n_s].sop == Patient.Study[i_s].Series[j_s].Sop[k_s].SopUID) {
+                for (var m_s = 0; m_s < PatientMark[n_s].mark.length; m_s++) {
+                    if (break1 == true) break;
+                    if (PatientMark[n_s].mark[m_s].type == "SEG") {
+                        SEG_now_choose = PatientMark[n_s].mark[m_s];
+                        break1 = true;
+                    }
+                }
+            }
+        }
+        if (break1 == false) {
+            let Uid = GetNowUid();
+            var dcm = {};
+            dcm.study = Uid.study;
+            dcm.series = Uid.sreies;
 
-        dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
-        dcm.mark = [];
-        dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
-        dcm.mark.push({});
-        dcm.sop = Uid.sop;
-        var DcmMarkLength = dcm.mark.length - 1;
-        dcm.mark[DcmMarkLength].type = "SEG";
-        dcm.mark[DcmMarkLength].pixelData = new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
-        PatientMark.push(dcm);
-        refreshMark(dcm);
-        SEG_now_choose = dcm.mark[DcmMarkLength];
+            dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
+            dcm.mark = [];
+            dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
+            dcm.mark.push({});
+            dcm.sop = Uid.sop;
+            var DcmMarkLength = dcm.mark.length - 1;
+            dcm.mark[DcmMarkLength].type = "SEG";
+            dcm.mark[DcmMarkLength].pixelData = new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
+            PatientMark.push(dcm);
+            refreshMark(dcm);
+            SEG_now_choose = dcm.mark[DcmMarkLength];
+        }
         for (var i = 0; i < Viewport_Total; i++)
             displayMark(NowResize, null, null, null, i);
     }
@@ -371,9 +391,15 @@ function Mousemove(e) {
     if (openWriteSEG == true && MouseDownCheck && !rightMouseDown && SEG_now_choose) {
         let angel2point = rotateCalculation(e);
         var rect = 10;
-        for (var s = -rect; s < rect; s++)
-            for (var s2 = -rect; s2 < rect; s2++)
-                SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageHeight + Math.floor(angel2point[0] + s2)] = 1;
+        if (KeyCode_ctrl == true) {
+            for (var s = -rect; s < rect; s++)
+                for (var s2 = -rect; s2 < rect; s2++)
+                    SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageHeight + Math.floor(angel2point[0] + s2)] = 0;
+        } else {
+            for (var s = -rect; s < rect; s++)
+                for (var s2 = -rect; s2 < rect; s2++)
+                    SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageHeight + Math.floor(angel2point[0] + s2)] = 1;
+        }
         let Uid = GetNowUid();
         refreshMark(Uid.sop);
         for (var i = 0; i < Viewport_Total; i++)

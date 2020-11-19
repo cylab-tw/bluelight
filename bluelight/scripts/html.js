@@ -8,7 +8,10 @@ function html_onload() {
   }
 
   window.addEventListener("keydown", KeyDown, true);
-
+  window.addEventListener("keyup", KeyUp, true);
+  function KeyUp(KeyboardKeys) {
+    KeyCode_ctrl=false;
+  }
   function KeyDown(KeyboardKeys) {
     var key = KeyboardKeys.which
     if ((openWriteGSPS || openWriteGraphic) && Graphic_now_choose && (key === 46 || key === 110)) {
@@ -41,6 +44,8 @@ function html_onload() {
       jump2UpOrEnd(0, 'up');
     } else if (key === 35) {
       jump2UpOrEnd(0, 'end');
+    } else if (key === 17) {
+      KeyCode_ctrl=true;
     }
   }
 
