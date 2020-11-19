@@ -63,7 +63,7 @@ function html_onload() {
           if (entries.length > 0) {
             directoryReader.readEntries(fnReadEntries);
           }
-        };    
+        };
         directoryReader.readEntries(fnReadEntries)
       } else {
         item.file(function (file) {
@@ -111,6 +111,43 @@ function html_onload() {
         });
       }
     }*/
+  }
+
+  getByid("overlay2seg").onclick = function () {
+    getByid("overlay2seg").style.display = "none";
+    var alt = GetViewport().alt;
+    //if (o3DElement) alt = o3DElement.alt;
+    let index = SearchUid2Index(alt);
+    if (!index) return;
+    let i = index[0],
+      j = index[1],
+      k = index[2];
+    for (var n = 0; n < PatientMark.length; n++) {
+      if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
+        for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
+          for (var m = 0; m < PatientMark[n].mark.length; m++) {
+            if (PatientMark[n].mark[m].type == "Overlay" && PatientMark[n].sop == Patient.Study[i].Series[j].Sop[l].SopUID) {
+              let Uid = GetNowUid();
+              var dcm = {};
+              dcm.study = Uid.study;
+              dcm.series = Uid.sreies;
+
+              dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
+              dcm.mark = [];
+              dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
+              dcm.mark.push({});
+              dcm.sop = Patient.Study[i].Series[j].Sop[l].SopUID;
+              var DcmMarkLength = dcm.mark.length - 1;
+              dcm.mark[DcmMarkLength].type = "SEG";
+              dcm.mark[DcmMarkLength].pixelData = PatientMark[n].mark[m].pixelData;// new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
+              PatientMark.push(dcm);
+              refreshMark(dcm);
+              SEG_now_choose = dcm.mark[DcmMarkLength];
+            }
+          }
+        }
+      }
+    }
   }
 
   getByid("MouseOperation").onclick = function () {
@@ -281,9 +318,13 @@ function html_onload() {
     openWriteSEG = !openWriteSEG;
     img2darkByClass("SEG", !openWriteSEG);
     this.src = openWriteSEG == true ? '../image/icon/black/seg_on.png' : '../image/icon/black/seg_off.png';
-    if (openWriteSEG == true) getByid('SegStyleDiv').style.display = 'flex';
+    if (openWriteSEG == true) {
+      getByid("overlay2seg").style.display = "";
+      getByid('SegStyleDiv').style.display = 'flex';
+    }
     else getByid('SegStyleDiv').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
+
     if (openWriteSEG == true) return;
     // else Graphic_now_choose = null;
 
