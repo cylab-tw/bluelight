@@ -425,9 +425,9 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         if (checkRtss == 0) continue;
                         Css(MarkCanvas, 'zIndex', "8");
                         var imgData2 = tempctx.getImageData(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
-                        var select_b = 255;
-                        var select_g = 0;
-                        var select_r = 0;
+                        var select_b = 0;
+                        var select_g = 255;
+                        var select_r = 255;
                         var select_a = parseInt(255 * alpha);
                         if (getByid("BlueSelect").selected == true) {
                             select_g = select_r = 0;

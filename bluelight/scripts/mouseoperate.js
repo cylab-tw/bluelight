@@ -302,7 +302,7 @@ function Mousemove(e) {
                         GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
                         GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
                         GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
-                    } catch (ex) {}
+                    } catch (ex) { }
                 }
             }
             if (GetmouseY(e) < windowMouseY - 2) {
@@ -388,17 +388,26 @@ function Mousemove(e) {
         displayAngelRular();
         return;
     }
+
     if (openWriteSEG == true && MouseDownCheck && !rightMouseDown && SEG_now_choose) {
         let angel2point = rotateCalculation(e);
-        var rect = 10;
+        var rect = getByid("SegBrushSizeText").value;
+        rect = parseInt(rect);
+        if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
         if (KeyCode_ctrl == true) {
-            for (var s = -rect; s < rect; s++)
-                for (var s2 = -rect; s2 < rect; s2++)
-                    SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageHeight + Math.floor(angel2point[0] + s2)] = 0;
+            for (var s = -rect; s < rect; s++) {
+                for (var s2 = -rect; s2 < rect; s2++) {
+                    if ((s * s) + (s2 * s2) < rect * rect)
+                        SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageHeight + Math.floor(angel2point[0] + s2)] = 0;
+                }
+            }
         } else {
-            for (var s = -rect; s < rect; s++)
-                for (var s2 = -rect; s2 < rect; s2++)
-                    SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageHeight + Math.floor(angel2point[0] + s2)] = 1;
+            for (var s = -rect; s < rect; s++) {
+                for (var s2 = -rect; s2 < rect; s2++) {
+                    if ((s * s) + (s2 * s2) < rect * rect)
+                        SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageHeight + Math.floor(angel2point[0] + s2)] = 1;
+                }
+            }
         }
         let Uid = GetNowUid();
         refreshMark(Uid.sop);
@@ -694,7 +703,7 @@ function Mousemove(e) {
                         GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
                         GetViewport(i).newMousePointX = GetViewport().newMousePointX;
                         GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-                    } catch (ex) {}
+                    } catch (ex) { }
                 }
             }
             putLabel();
@@ -742,6 +751,21 @@ function Mousemove(e) {
                     displayMark(NowResize, null, null, null, i);
             }
         }
+    }
+    if (openWriteSEG == true && !MouseDownCheck && !rightMouseDown) {
+        var rect = getByid("SegBrushSizeText").value;
+        rect = parseInt(rect);
+        if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
+        refreshMarkFromSop(GetNowUid().sop);
+        let angel2point = rotateCalculation(e);
+        var MarkCanvas = GetViewportMark();
+        var segCtx = MarkCanvas.getContext("2d");
+        segCtx.beginPath();
+        segCtx.strokeStyle = "#FFFF00";
+        segCtx.lineWidth = "3";
+        segCtx.arc(angel2point[0], angel2point[1], rect, 0, 2 * Math.PI);
+        segCtx.stroke();
+        segCtx.closePath();
     }
 }
 

@@ -10,7 +10,7 @@ function html_onload() {
   window.addEventListener("keydown", KeyDown, true);
   window.addEventListener("keyup", KeyUp, true);
   function KeyUp(KeyboardKeys) {
-    KeyCode_ctrl=false;
+    KeyCode_ctrl = false;
   }
   function KeyDown(KeyboardKeys) {
     var key = KeyboardKeys.which
@@ -45,7 +45,7 @@ function html_onload() {
     } else if (key === 35) {
       jump2UpOrEnd(0, 'end');
     } else if (key === 17) {
-      KeyCode_ctrl=true;
+      KeyCode_ctrl = true;
     }
   }
 
@@ -145,14 +145,18 @@ function html_onload() {
               var DcmMarkLength = dcm.mark.length - 1;
               dcm.mark[DcmMarkLength].type = "SEG";
               dcm.mark[DcmMarkLength].pixelData = PatientMark[n].mark[m].pixelData;// new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
+              //PatientMark[n].mark[m].type = "null";
               PatientMark.push(dcm);
               refreshMark(dcm);
               SEG_now_choose = dcm.mark[DcmMarkLength];
+
+              // PatientMark.splice(PatientMark.indexOf(temp_overlay), 1);
             }
           }
         }
       }
     }
+    refreshMarkFromSop(GetNowUid().sop);
   }
 
   getByid("MouseOperation").onclick = function () {
