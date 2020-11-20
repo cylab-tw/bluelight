@@ -113,7 +113,7 @@ function Mousedown(e) {
         let angel2point = rotateCalculation(e);
         magnifierIng(angel2point[0], angel2point[1]);
     }
-    if (openWriteSEG == true) {
+    if (openWriteSEG == true && openWindow == false) {
         var alt = GetViewport().alt;
         var index_Seg = SearchUid2Index(alt);
         if (!index_Seg) return;
@@ -389,7 +389,7 @@ function Mousemove(e) {
         return;
     }
 
-    if (openWriteSEG == true && MouseDownCheck && !rightMouseDown && SEG_now_choose) {
+    if (openWriteSEG == true && MouseDownCheck && !rightMouseDown && SEG_now_choose && openWindow == false) {
         let angel2point = rotateCalculation(e);
         var rect = getByid("SegBrushSizeText").value;
         rect = parseInt(rect);
@@ -752,7 +752,7 @@ function Mousemove(e) {
             }
         }
     }
-    if (openWriteSEG == true && !MouseDownCheck && !rightMouseDown) {
+    if (openWriteSEG == true & !rightMouseDown && openWindow == false) {
         var rect = getByid("SegBrushSizeText").value;
         rect = parseInt(rect);
         if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;

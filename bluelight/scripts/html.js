@@ -726,6 +726,12 @@ function imgInvalid(element) {
   } else if (openWriteGraphic) {
     if (element.classList.contains("GRA")) return false;
     else return true;
+  } else if (openWriteSEG) {
+    if (element.classList.contains("SEG")) return false;
+    else return true;
+  } else if (openWriteRTSS) {
+    if (element.classList.contains("RTSS")) return false;
+    else return true;
   }
   /*else if (openPenDraw) {//暫時移除的功能
      if (element.classList.contains("PEN")) return false;
