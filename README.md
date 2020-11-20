@@ -56,7 +56,8 @@
 * GSPS: DICOM Graphic Annotation 
 * DICOM-RT structure set (RTSS)
 * DICOM SEG (Segementation)
-* **Note:** *Currently, the format of annotation is the DCMTK DICOM-XML, support the download of the DICOM format should be with [micala Server](https://github.com/cylab-tw/micala), we are trying to release it ASAP*
+ - Provide converting DICOM Overalys to a DICOM SEG object.
+* **Note:** *Currently, the format of annotation is the DCMTK DICOM-XML, support the download of the DICOM format should be with [Raccoon.net](https://github.com/cylab-tw/micala), we are trying to release it ASAP*
 * Downloading the DICOM-XML, you can use the DCMTK tool: xml2dcm to convert the xml to DICOM format which BlueLight can display as well.
 
 ## Supported library
@@ -69,7 +70,7 @@
 ## Special projects
 * **BlueLight@XANT**
 * **BlueLight@Orthanc**
-* **BlueLight@micala**: [micala](https://github.com/cylab-tw/micala) is a noSQL-based medical image repository.
+* **BlueLight@micala**: [Raccoon.net](https://github.com/cylab-tw/raccoon) is a noSQL-based medical image repository.
 
 ## Acknowledgement
 * This project was supported by a grant from the Ministry of Science and Technology Taiwan.
