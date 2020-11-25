@@ -49,12 +49,24 @@
   Patient.patientName = '';
   Patient.StudyAmount = 0;
   Patient.Study = [];
-  LoacationSercher='?PatientID='+ encodeURI(encodeURI(''+getByid('PatientIDText').value));readAllJson();
-  LoacationSercher='?StudyDate='+ encodeURI(encodeURI(''+getByid('StudyDateText').value));readAllJson();
-  LoacationSercher='?PatientName='+ encodeURI(encodeURI(''+getByid('PatientNameText').value));readAllJson();
-  LoacationSercher='?ModalitiesInStudy='+ encodeURI(encodeURI(''+getByid('ModalitiesInStudyText').value));readAllJson();
-  LoacationSercher='?AccessionNumber='+ encodeURI(encodeURI(''+getByid('AccessionNumberText').value));readAllJson();
-  LoacationSercher='?StudyInstanceUID='+ encodeURI(encodeURI(''+getByid('StudyInstanceUIDText').value));readAllJson();
+  LoacationSercher='?';
+  if(getByid('PatientIDText').value!='')
+  LoacationSercher+='&PatientID='+ encodeURI(encodeURI(''+getByid('PatientIDText').value));
+  if(getByid('StudyDateText').value!='')
+  LoacationSercher+='&StudyDate='+ encodeURI(encodeURI(''+getByid('StudyDateText').value));
+  if(getByid('PatientNameText').value!='')
+  LoacationSercher+='&PatientName='+ encodeURI(encodeURI(''+getByid('PatientNameText').value));
+  if(getByid('ModalitiesInStudyText').value!='')
+  LoacationSercher+='&ModalitiesInStudy='+ encodeURI(encodeURI(''+getByid('ModalitiesInStudyText').value));
+  if(getByid('AccessionNumberText').value!='')
+  LoacationSercher+='&AccessionNumber='+ encodeURI(encodeURI(''+getByid('AccessionNumberText').value));
+  if(getByid('StudyInstanceUIDText').value!='')
+  LoacationSercher+='&StudyInstanceUID='+ encodeURI(encodeURI(''+getByid('StudyInstanceUIDText').value));
+  if (getByid('myTable1')) {
+    var elem = getByid('myTable1');
+    elem.parentElement.removeChild(elem);
+  }
+  readAllJson();
   ">search</button><br><br>
   <div id="body"></div>
   <header class="page-header" style="display:none">
