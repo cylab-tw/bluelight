@@ -17,11 +17,12 @@
 * 標記顯示方面支援RTSS、Overlay、Graphic Annotation、AIM等標記，亦可於3D系統中轉換成3D標記。
 * 此專案亦支援LabelImg格式的標記繪製。
 * 3D VR顯示模式支援染色、窗度、透明、壓縮、貼皮、內插、降噪、打光、挖洞及最大密度投影，針對骨骼及肺氣管有專門的顯示模式，MPR模式則支援內插、貼皮、染色以及3D切面的顯示。
+* 通過台灣醫學資訊聯測 MI-TW 2020 - Track 4: DICOMWeb Query/Retrieve Consumer
 
 ## Key Features
 ### Network support
 * load local files
-* Integration with any DICOMWeb Image Archive, including Orthanc, and dcm4chee server
+* Integration with any DICOMWeb Image Archive, including Raccoon, Orthanc, and dcm4chee server
 * Integration with IHE Invoke Image Display (IID) Profile, as the Image Display Acotr in Transaction [RAD-106]. (on going)
   - We are trying to implement it with in the scenario of FHIR ImagingStudy.
 * Integration with XNAT (currently doesn't build as an XNAT plugin)
@@ -57,7 +58,7 @@
 * DICOM-RT structure set (RTSS)
 * DICOM SEG (Segementation)
  - Provide converting DICOM Overalys to a DICOM SEG object.
-* **Note:** *Currently, the format of annotation is the DCMTK DICOM-XML, support the download of the DICOM format should be with [Raccoon.net](https://github.com/cylab-tw/micala), we are trying to release it ASAP*
+* **Note:** *Currently, the format of annotation is the DCMTK DICOM-XML, support the download of the DICOM format should be with [Raccoon.net](https://github.com/cylab-tw/raccoon), we are trying to release it ASAP*
 * Downloading the DICOM-XML, you can use the DCMTK tool: xml2dcm to convert the xml to DICOM format which BlueLight can display as well.
 
 ## Supported library
@@ -70,7 +71,7 @@
 ## Special projects
 * **BlueLight@XANT**
 * **BlueLight@Orthanc**
-* **BlueLight@micala**: [Raccoon.net](https://github.com/cylab-tw/raccoon) is a noSQL-based medical image repository.
+* **BlueLight@Raccoon.net**: [Raccoon.net](https://github.com/cylab-tw/raccoon) is a noSQL-based medical image repository.
 
 ## Acknowledgement
 * This project was supported by a grant from the Ministry of Science and Technology Taiwan.
