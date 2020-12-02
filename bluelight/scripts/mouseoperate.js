@@ -398,14 +398,14 @@ function Mousemove(e) {
             for (var s = -rect; s < rect; s++) {
                 for (var s2 = -rect; s2 < rect; s2++) {
                     if ((s * s) + (s2 * s2) < rect * rect)
-                        SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageHeight + Math.floor(angel2point[0] + s2)] = 0;
+                        SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageWidth + Math.floor(angel2point[0] + s2)] = 0;
                 }
             }
         } else {
             for (var s = -rect; s < rect; s++) {
                 for (var s2 = -rect; s2 < rect; s2++) {
                     if ((s * s) + (s2 * s2) < rect * rect)
-                        SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageHeight + Math.floor(angel2point[0] + s2)] = 1;
+                        SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageWidth + Math.floor(angel2point[0] + s2)] = 1;
                 }
             }
         }
