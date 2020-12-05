@@ -441,20 +441,20 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         if (GetViewport(viewportNum).openHorizontalFlip == true && GetViewport(viewportNum).openVerticalFlip == true) {
                             for (var data = 0; data < imgData2.data.length; data += 4) {
                                 if (PatientMark[n].mark[m].pixelData[(PatientMark[n].mark[m].pixelData.length - 1) - data / 4] == 1) {
-                                    imgData2.data[data] = select_r;
-                                    imgData2.data[data + 1] = select_g;
-                                    imgData2.data[data + 2] = select_b;
-                                    imgData2.data[data + 3] = select_a;
+                                    imgData2.data[data] += select_r;
+                                    imgData2.data[data + 1]+= select_g;
+                                    imgData2.data[data + 2] += select_b;
+                                    imgData2.data[data + 3] += select_a;
                                 }
                             }
                         } else if (GetViewport(viewportNum).openVerticalFlip == true) {
                             for (var dataH = 0; dataH < GetViewport(viewportNum).imageHeight; dataH += 1) {
                                 for (var dataW = 0; dataW < GetViewport(viewportNum).imageWidth * 4; dataW += 4) {
                                     if (PatientMark[n].mark[m].pixelData[((GetViewport(viewportNum).imageHeight - dataH - 1) * GetViewport(viewportNum).imageWidth * 4 + dataW) / 4] == 1) {
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] = select_r;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] = select_g;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] = select_b;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] = select_a;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] += select_r;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] += select_g;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] += select_b;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] += select_a;
                                     }
                                 }
                             }
@@ -462,20 +462,20 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             for (var dataH = 0; dataH < GetViewport(viewportNum).imageHeight; dataH += 1) {
                                 for (var dataW = 0; dataW < GetViewport(viewportNum).imageWidth * 4; dataW += 4) {
                                     if (PatientMark[n].mark[m].pixelData[(dataH * GetViewport(viewportNum).imageWidth * 4 + (GetViewport(viewportNum).imageWidth * 4 - dataW - 4)) / 4] == 1) {
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] = select_r;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] = select_g;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] = select_b;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] = select_a;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] += select_r;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] += select_g;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] += select_b;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] += select_a;
                                     }
                                 }
                             }
                         } else {
                             for (var data = 0; data < imgData2.data.length; data += 4) {
                                 if (PatientMark[n].mark[m].pixelData[data / 4] != 0) {
-                                    imgData2.data[data] = select_r;
-                                    imgData2.data[data + 1] = select_g;
-                                    imgData2.data[data + 2] = select_b;
-                                    imgData2.data[data + 3] = select_a;
+                                    imgData2.data[data] += select_r;
+                                    imgData2.data[data + 1] += select_g;
+                                    imgData2.data[data + 2] += select_b;
+                                    imgData2.data[data + 3] += select_a;
                                 }
                             }
                         }
@@ -503,20 +503,20 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         if (GetViewport(viewportNum).openHorizontalFlip == true && GetViewport(viewportNum).openVerticalFlip == true) {
                             for (var data = 0; data < imgData2.data.length; data += 4) {
                                 if (PatientMark[n].mark[m].pixelData[(PatientMark[n].mark[m].pixelData.length - 1) - data / 4] == 1) {
-                                    imgData2.data[data] = select_r;
-                                    imgData2.data[data + 1] = select_g;
-                                    imgData2.data[data + 2] = select_b;
-                                    imgData2.data[data + 3] = select_a;
+                                    imgData2.data[data] += select_r;
+                                    imgData2.data[data + 1] += select_g;
+                                    imgData2.data[data + 2] += select_b;
+                                    imgData2.data[data + 3] += select_a;
                                 }
                             }
                         } else if (GetViewport(viewportNum).openVerticalFlip == true) {
                             for (var dataH = 0; dataH < GetViewport(viewportNum).imageHeight; dataH += 1) {
                                 for (var dataW = 0; dataW < GetViewport(viewportNum).imageWidth * 4; dataW += 4) {
                                     if (PatientMark[n].mark[m].pixelData[((GetViewport(viewportNum).imageHeight - dataH - 1) * GetViewport(viewportNum).imageWidth * 4 + dataW) / 4] == 1) {
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] = select_r;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] = select_g;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] = select_b;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] = select_a;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] += select_r;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] += select_g;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] += select_b;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] += select_a;
                                     }
                                 }
                             }
@@ -524,20 +524,20 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             for (var dataH = 0; dataH < GetViewport(viewportNum).imageHeight; dataH += 1) {
                                 for (var dataW = 0; dataW < GetViewport(viewportNum).imageWidth * 4; dataW += 4) {
                                     if (PatientMark[n].mark[m].pixelData[(dataH * GetViewport(viewportNum).imageWidth * 4 + (GetViewport(viewportNum).imageWidth * 4 - dataW - 4)) / 4] == 1) {
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] = select_r;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] = select_g;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] = select_b;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] = select_a;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] += select_r;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] += select_g;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] += select_b;
+                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] += select_a;
                                     }
                                 }
                             }
                         } else {
                             for (var data = 0; data < imgData2.data.length; data += 4) {
                                 if (PatientMark[n].mark[m].pixelData[data / 4] == 1) {
-                                    imgData2.data[data] = select_r;
-                                    imgData2.data[data + 1] = select_g;
-                                    imgData2.data[data + 2] = select_b;
-                                    imgData2.data[data + 3] = select_a;
+                                    imgData2.data[data] += select_r;
+                                    imgData2.data[data + 1] += select_g;
+                                    imgData2.data[data + 2] += select_b;
+                                    imgData2.data[data + 3] += select_a;
                                 }
                             }
                         }

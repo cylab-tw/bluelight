@@ -144,7 +144,10 @@ function html_onload() {
               dcm.sop = Patient.Study[i].Series[j].Sop[l].SopUID;
               var DcmMarkLength = dcm.mark.length - 1;
               dcm.mark[DcmMarkLength].type = "SEG";
-              dcm.mark[DcmMarkLength].pixelData = PatientMark[n].mark[m].pixelData;// new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
+              function jsonDeepClone(obj) {
+                return JSON.parse(JSON.stringify(obj));
+              }
+              dcm.mark[DcmMarkLength].pixelData = jsonDeepClone(PatientMark[n].mark[m].pixelData);// new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
               //PatientMark[n].mark[m].type = "null";
               PatientMark.push(dcm);
               refreshMark(dcm);
