@@ -327,6 +327,18 @@ function html_onload() {
     else this.src = '../image/icon/black/b_Cross-hair_OFF.png';
   }
 
+  function CreateRandom() {
+    var Uid = "xml_";
+    var date = new Date();
+    Uid += date.getFullYear() + "y" + (date.getMonth() + 1) + "m" + (date.getDate()) + "d";
+    Uid += (date.getHours() + 1) + "h" + (date.getMinutes()) + "mm" +
+      (date.getSeconds()) + "ss" + (date.getMilliseconds()) + "mmm";
+
+    Uid += random(1, 999, 1) + "b";
+    Uid += random(1, 999, 1) + "l";
+    return Uid;
+  }
+
   getByid("writeSEG").onclick = function () {
     if (imgInvalid(this)) return;
     cancelTools();
@@ -353,8 +365,31 @@ function html_onload() {
       a.download = name;
       a.click();
     }
+    function download2(text, name, type) {
+      let a = document.createElement('a');
+      let file = new File([text], name + ".xml", {
+        type: type
+      });
+      var xhr = new XMLHttpRequest();
+
+      xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+      xhr.setRequestHeader("enctype", "multipart/form-data");
+      // define new form
+      var formData = new FormData();
+      formData.append("files", file);
+      xhr.send(formData);
+      xhr.onload = function () {
+        if (xhr.status == 200) {
+          let data = JSON.parse(xhr.responseText);
+          for (let url of data) {
+            window.open(url);
+          }
+        }
+      }
+    }
     set_SEG_context();
-    download(String(get_SEG_context()), 'filename_SEG.xml', 'text/plain');
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_SEG_context()), "" + CreateRandom(), 'text/plain');
+    else download(String(get_SEG_context()), 'filename_SEG.xml', 'text/plain');
     getByid('MouseOperation').click();
   }
 
@@ -381,8 +416,32 @@ function html_onload() {
       a.download = name;
       a.click();
     }
+    function download2(text, name, type) {
+      let a = document.createElement('a');
+      let file = new File([text], name + ".xml", {
+        type: type
+      });
+      var xhr = new XMLHttpRequest();
+
+      xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+      xhr.setRequestHeader("enctype", "multipart/form-data");
+      // define new form
+      var formData = new FormData();
+      formData.append("files", file);
+      xhr.send(formData);
+      xhr.onload = function () {
+        if (xhr.status == 200) {
+          let data = JSON.parse(xhr.responseText);
+          for (let url of data) {
+            window.open(url);
+          }
+        }
+      }
+    }
     set_RTSS_context();
-    download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_RTSS_context()), "" + CreateRandom(), 'text/plain');
+    else download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
+    //download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
     getByid('MouseOperation').click();
   }
 
@@ -412,8 +471,32 @@ function html_onload() {
       a.download = name;
       a.click();
     }
+    function download2(text, name, type) {
+      let a = document.createElement('a');
+      let file = new File([text], name + ".xml", {
+        type: type
+      });
+      var xhr = new XMLHttpRequest();
+
+      xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+      xhr.setRequestHeader("enctype", "multipart/form-data");
+      // define new form
+      var formData = new FormData();
+      formData.append("files", file);
+      xhr.send(formData);
+      xhr.onload = function () {
+        if (xhr.status == 200) {
+          let data = JSON.parse(xhr.responseText);
+          for (let url of data) {
+            window.open(url);
+          }
+        }
+      }
+    }
     set_GSPS_context();
-    download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_Graphic_context()), "" + CreateRandom(), 'text/plain');
+    else download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
+    //download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
 
     getByid('MouseOperation').click();
   }
@@ -440,9 +523,33 @@ function html_onload() {
       a.download = name;
       a.click();
     }
+    function download2(text, name, type) {
+      let a = document.createElement('a');
+      let file = new File([text], name + ".xml", {
+        type: type
+      });
+      var xhr = new XMLHttpRequest();
+
+      xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+      xhr.setRequestHeader("enctype", "multipart/form-data");
+      // define new form
+      var formData = new FormData();
+      formData.append("files", file);
+      xhr.send(formData);
+      xhr.onload = function () {
+        if (xhr.status == 200) {
+          let data = JSON.parse(xhr.responseText);
+          for (let url of data) {
+            window.open(url);
+          }
+        }
+      }
+    }
 
     set_Graphic_context();
-    download(String(get_Graphic_context()), 'filename_Graphic.xml', 'text/plain');
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_Graphic_context()), "" + CreateRandom(), 'text/plain');
+    else download(String(get_Graphic_context()), 'filename_Graphic.xml', 'text/plain');
+    //download(String(get_Graphic_context()), 'filename_Graphic.xml', 'text/plain');
     /*if (getByid("GraphicMarkSelect").selected == true) {
       set_Graphic_context();
       download(String(get_Graphic_context()), 'filename_Graphic.xml', 'text/plain');

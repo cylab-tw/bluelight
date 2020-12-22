@@ -344,6 +344,8 @@ function readConfigJson(url, callBack, callBack2) {
     tempConfig.timeout = tempDicomResponse["timeout"];
     tempConfig.charset = tempDicomResponse["charset"];
     tempConfig.includefield = tempDicomResponse["includefield"];
+    //tempConfig.enableXml2Dcm=tempDicomResponse["enableXml2Dcm"];
+    //tempConfig.Xml2DcmUrl=tempDicomResponse["Xml2DcmUrl"];
 
     config.WADO = {};
     tempConfig = config.WADO;
@@ -355,6 +357,8 @@ function readConfigJson(url, callBack, callBack2) {
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
     tempConfig.includefield = tempDicomResponse["includefield"];
+    //tempConfig.enableXml2Dcm=tempDicomResponse["enableXml2Dcm"];
+    //tempConfig.Xml2DcmUrl=tempDicomResponse["Xml2DcmUrl"];
 
     config.STOW = {};
     tempConfig = config.STOW;
@@ -366,6 +370,13 @@ function readConfigJson(url, callBack, callBack2) {
     tempConfig.contentType = tempDicomResponse["contentType"];
     tempConfig.timeout = tempDicomResponse["timeout"];
     tempConfig.includefield = tempDicomResponse["includefield"];
+    //tempConfig.enableXml2Dcm=tempDicomResponse["enableXml2Dcm"];
+    //tempConfig.Xml2DcmUrl=tempDicomResponse["Xml2DcmUrl"];
+
+    config.Xml2Dcm = {};
+    tempConfig = config.Xml2Dcm;
+    tempConfig.enableXml2Dcm=tempDicomResponse["enableXml2Dcm"];
+    tempConfig.Xml2DcmUrl=tempDicomResponse["Xml2DcmUrl"];
 
     Object.assign(ConfigLog, config);
     configOnload = true;

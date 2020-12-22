@@ -13,6 +13,8 @@
             "STOW": "stow",
             "enableRetrieveURI": false,
             "includefield": false,
+            "enableXml2Dcm":false,
+            "Xml2DcmUrl":"/upload",
             "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
             "token": ""
         },
@@ -29,6 +31,8 @@
             "STOW": "stow",
             "enableRetrieveURI": false,
             "includefield": false,
+            "enableXml2Dcm":false,
+            "Xml2DcmUrl":"/upload",
             "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
             "token": ""
         }
