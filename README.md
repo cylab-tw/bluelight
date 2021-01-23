@@ -56,10 +56,11 @@
 * [LabelImg](https://github.com/tzutalin/labelImg)
 * GSPS: DICOM Graphic Annotation 
 * DICOM-RT structure set (RTSS)
+* DICOM Overlay
 * DICOM SEG (Segementation)
-  - Provide converting DICOM Overalys to a DICOM SEG object.
   - **Download as DCMTK DICOM-XML**: only launch BlueLight
   - **Download as DIOCM SEG**: It is integrated with [Raccoon.net](https://github.com/cylab-tw/raccoon). Please put the BlightLight on Raccoon.  
+* *Provide the function to convert the DICOM Overalys to a DICOM SEG object.*
 
 ## Supported library
 * BlueLight Viewer uses several oepn source libraries as folowing:
@@ -75,11 +76,11 @@
 * Display DICOM Supplement 219 - JSON Representation of DICOM Structured Reports. Referenced standard: [DICOM Sup 219](https://www.dicomstandard.org/News-dir/ftsup/docs/sups/Sup219.pdf)
 * Display DICOM Structured Report
 
-
 # Special projects
-* **BlueLight@XANT**
-* **BlueLight@Orthanc**
-* **BlueLight@Raccoon.net**: [Raccoon.ㄙet](https://github.com/cylab-tw/raccoon) is a noSQL-based medical image repository.
+* **BlueLight-WSI**: :construction:
+* **BlueLight@Orthanc**: :secret:
+* **BlueLight@XANT**: :white_check_mark:
+* **BlueLight@Raccoon.net**: :white_check_mark: - [Raccoon.net](https://github.com/cylab-tw/raccoon) is a noSQL-based medical image repository.
 
 # Acknowledgement
 * This project was supported by a grant from the Ministry of Science and Technology Taiwan.
