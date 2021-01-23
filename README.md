@@ -67,21 +67,20 @@
   - <a href="https://github.com/cornerstonejs">cornerstone</a> for reading, parsing DICOM-formatted data.
   - <a href="https://github.com/cornerstonejs/dicomParser">dicomParser</a> for parsing DICOM tags.
   - <a href="https://github.com/cornerstonejs/cornerstoneWADOImageLoader">cornerstoneWADOImageLoader</a> for communicating with the DICOMWeb servers such as  <a href="https://www.orthanc-server.com">Orthanc</a> and <a href="https://www.dcm4che.org">Dcm4chee</a> 
- 
-## Special projects
+
+# To Do List 
+* FHIR ImagingStudy Query/Retrieve Interface
+* Support the IHE Invoke Image Display (IID) Profile [RAD-106]
+* Display DICOM Whole Slide Imaging (WSI) implemented by DICOMWeb. Referenced standard: [DICOM WSI](http://dicom.nema.org/Dicom/DICOMWSI/)
+* Display DICOM Supplement 219 - JSON Representation of DICOM Structured Reports. Referenced standard: [DICOM Sup 219](https://www.dicomstandard.org/News-dir/ftsup/docs/sups/Sup219.pdf)
+* Display DICOM Structured Report
+
+
+# Special projects
 * **BlueLight@XANT**
 * **BlueLight@Orthanc**
 * **BlueLight@Raccoon.net**: [Raccoon.ㄙet](https://github.com/cylab-tw/raccoon) is a noSQL-based medical image repository.
 
-## To Do List 
-* FHIR ImagingStudy Query/Retrieve Interface
-* Support the IHE Invoke Image Display (IID) Profile [RAD-106]
-* Display DICOM Whole Slide Imaging (WSI) implemented by DICOMWeb. Referenced standard: [DICOM WSI](http://dicom.nema.org/Dicom/DICOMWSI/)
-* Display DICOM Supplement 219 - JSON Representation of DICOM Structured Reports. Referenced standard: [DICOM WSI](http://dicom.nema.org/Dicom/DICOMWSI/)
-* Display DICOM Structured Report
-
-## Acknowledgement
+# Acknowledgement
 * This project was supported by a grant from the Ministry of Science and Technology Taiwan.
 * We acknowledge AI99 teams at Taipei Veterans General Hospital (TVGH) for validation and provides many useful suggestions in many aspects of the clinical domain, especially to thank Dr. Ying-Chou Sun and his professional team.
-
-## Copyright Chung-Yueh Lien
