@@ -21,7 +21,7 @@
 
 ## Key Features
 ### Network support
-* load local files
+* Load local files
 * Integration with any DICOMWeb Image Archive, including Raccoon, Orthanc, and dcm4chee server
 * Integration with IHE Invoke Image Display (IID) Profile, as the Image Display Acotr in Transaction [RAD-106]. (on going)
   - We are trying to implement it with in the scenario of FHIR ImagingStudy.
@@ -57,9 +57,9 @@
 * GSPS: DICOM Graphic Annotation 
 * DICOM-RT structure set (RTSS)
 * DICOM SEG (Segementation)
- - Provide converting DICOM Overalys to a DICOM SEG object.
-* **Note:** *Currently, the format of annotation is the DCMTK DICOM-XML, support the download of the DICOM format should be with [Raccoon.net](https://github.com/cylab-tw/raccoon), we are trying to release it ASAP*
-* Downloading the DICOM-XML, you can use the DCMTK tool: xml2dcm to convert the xml to DICOM format which BlueLight can display as well.
+  - Provide converting DICOM Overalys to a DICOM SEG object.
+  - **Download as DCMTK DICOM-XML**: only launch BlueLight
+  - **Download as DIOCM SEG**: It is integrated with [Raccoon.net](https://github.com/cylab-tw/raccoon). Please put the BlightLight on Raccoon.  
 
 ## Supported library
 * BlueLight Viewer uses several oepn source libraries as folowing:
@@ -71,7 +71,14 @@
 ## Special projects
 * **BlueLight@XANT**
 * **BlueLight@Orthanc**
-* **BlueLight@Raccoon.net**: [Raccoon.net](https://github.com/cylab-tw/raccoon) is a noSQL-based medical image repository.
+* **BlueLight@Raccoon.net**: [Raccoon.ㄙet](https://github.com/cylab-tw/raccoon) is a noSQL-based medical image repository.
+
+## To Do List 
+* FHIR ImagingStudy Query/Retrieve Interface
+* Support the IHE Invoke Image Display (IID) Profile [RAD-106]
+* Display DICOM Whole Slide Imaging (WSI) implemented by DICOMWeb. Referenced standard: [DICOM WSI](http://dicom.nema.org/Dicom/DICOMWSI/)
+* Display DICOM Supplement 219 - JSON Representation of DICOM Structured Reports. Referenced standard: [DICOM WSI](http://dicom.nema.org/Dicom/DICOMWSI/)
+* Display DICOM Structured Report
 
 ## Acknowledgement
 * This project was supported by a grant from the Ministry of Science and Technology Taiwan.
