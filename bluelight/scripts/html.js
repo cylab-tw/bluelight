@@ -303,16 +303,18 @@ function html_onload() {
     TableSelectOnChange();
   }
 
-  getByid("ImgMPR").onclick = function () {
+  getByid("ImgMPR").onclick = function (catchError) {
     if (imgInvalid(this)) return;
     openMPR = !openMPR;
+    if(catchError=="error") openMPR=false;
     img2darkByClass("MPR", !openMPR);
     initMPR();
   }
 
-  getByid("ImgVR").onclick = function () {
+  getByid("ImgVR").onclick = function (catchError) {
     if (imgInvalid(this)) return;
     openVR = !openVR;
+    if(catchError=="error") openVR=false;
     img2darkByClass("VR", !openVR);
     initVR();
   }

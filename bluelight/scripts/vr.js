@@ -241,10 +241,13 @@ function initVR() {
                     }
                 } catch (ex) {
                     catchError = true;
-                    alert("Error, this image may not support 3D.");
+                    if (openVR == true) {
+                        openVR = false;
+                        alert("Error, this image may not support 3D.");
+                    };
                     openRendering = false;
-                    img2darkByClass("VR", !openVR);
-                    getByid("ImgVR").onclick();
+                    //img2darkByClass("VR", !openVR);
+                    getByid("ImgVR").onclick('error');
                     return;
                 }
             }, function (err) {

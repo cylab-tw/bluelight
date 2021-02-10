@@ -433,10 +433,12 @@ function initMPR() {
                     }
                 } catch (ex) {
                     catchError = true;
-                    alert("Error, this image may not support 3D.");
+                    if (openMPR == true) {
+                        openMPR = false;
+                        alert("Error, this image may not support 3D.");
+                    };
                     openRendering = false;
-                    img2darkByClass("MPR", !openVR);
-                    getByid("ImgMPR").onclick();
+                    getByid("ImgMPR").onclick('error');
                     return;
                 };
             }, function (err) {

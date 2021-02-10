@@ -459,7 +459,7 @@ function readJson(url) {
                 //else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
                 if (DicomResponse[i]["00200013"].Value[0] == min) {
                   //載入DICOM的階層資料至物件清單
-                  loadUID(DicomResponse[i]["0020000D"].Value[0], DicomResponse[i]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url, DicomResponse[i]["00100020"].Value[0]);
+                  if (ConfigLog.WADO.WADOType == "URI") loadUID(DicomResponse[i]["0020000D"].Value[0], DicomResponse[i]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url, DicomResponse[i]["00100020"].Value[0]);
                   //預載入DICOM至Viewport
                   if (ConfigLog.WADO.WADOType == "URI") virtualLoadImage(url, 1);
                   else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
@@ -488,7 +488,7 @@ function readJson(url) {
                 if (ConfigLog.WADO.WADOType == "URI") url = "wadouri:" + url;
                 // else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
                 //載入DICOM的階層資料至物件清單
-                var Hierarchy = loadUID(DicomResponse[i]["0020000D"].Value[0], DicomResponse[i]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url, DicomResponse[i]["00100020"].Value[0]);
+                if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = loadUID(DicomResponse[i]["0020000D"].Value[0], DicomResponse[i]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url, DicomResponse[i]["00100020"].Value[0]);
                 //預載入DICOM至Viewport
                 if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
                 else {
