@@ -23,6 +23,8 @@
 ### Network support
 * Load local files
 * Integration with any DICOMWeb Image Archive, including Raccoon, Orthanc, and dcm4chee server
+  - Retrieve methods: WADO-URI (as default) and WADO-RS: specify one of them in config.json. 
+        - ContentType= application/dicom
 * Integration with IHE Invoke Image Display (IID) Profile, as the Image Display Acotr in Transaction [RAD-106]. (on going)
   - We are trying to implement it with in the scenario of FHIR ImagingStudy.
 * Integration with XNAT (currently doesn't build as an XNAT plugin)
@@ -68,6 +70,7 @@
   - <a href="https://github.com/cornerstonejs">cornerstone</a> for reading, parsing DICOM-formatted data.
   - <a href="https://github.com/cornerstonejs/dicomParser">dicomParser</a> for parsing DICOM tags.
   - <a href="https://github.com/cornerstonejs/cornerstoneWADOImageLoader">cornerstoneWADOImageLoader</a> for communicating with the DICOMWeb servers such as  <a href="https://www.orthanc-server.com">Orthanc</a> and <a href="https://www.dcm4che.org">Dcm4chee</a> 
+  - <a href="https://www.npmjs.com/package/lodash">lodash</a> for decoding the multipart/related objects in WADO-RS response.
 
 # To Do List 
 * FHIR ImagingStudy Query/Retrieve Interface
