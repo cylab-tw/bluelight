@@ -390,6 +390,11 @@ function readConfigJson(url, callBack, callBack2) {
 }
 
 function readJson(url) {
+  function getValue(obj) {
+    if (obj && obj.Value && obj.Value[0]) {
+      return obj.Value[0];
+    }
+  }
   //向伺服器請求資料
   if (ConfigLog.WADO.https == "https") url = url.replace("http:", "https:");
   let request = new XMLHttpRequest();
@@ -425,7 +430,7 @@ function readJson(url) {
             //取得最小的Instance Number
             for (var i = 0; i < DicomResponse.length; i++) {
               try {
-                if (DicomResponse[i]["00200013"].Value[0] < min) min = DicomResponse[i]["00200013"].Value[0];
+                if (getValue(DicomResponse[i]["00200013"]) < min) min = getValue(DicomResponse[i]["00200013"]);
               } catch (ex) { console.log(ex); };
             }
             //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
@@ -450,16 +455,16 @@ function readJson(url) {
               url = fitUrl(url);
               var uri = url;
               //如果包含標記，則載入標記
-              if (DicomResponse[i]["00080016"] && DicomResponse[i]["00080016"].Value[0] == '1.2.840.10008.5.1.4.1.1.481.3') {
+              if (DicomResponse[i]["00080016"] && getValue(DicomResponse[i]["00080016"]) == '1.2.840.10008.5.1.4.1.1.481.3') {
                 readDicom(uri, PatientMark);
               }
               try {
                 //cornerstone的WADO請求需要加"wadouri"
                 if (ConfigLog.WADO.WADOType == "URI") url = "wadouri:" + url;
                 //else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
-                if (DicomResponse[i]["00200013"].Value[0] == min) {
+                if (getValue(DicomResponse[i]["00200013"]) == min) {
                   //載入DICOM的階層資料至物件清單
-                  if (ConfigLog.WADO.WADOType == "URI") loadUID(DicomResponse[i]["0020000D"].Value[0], DicomResponse[i]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url, DicomResponse[i]["00100020"].Value[0]);
+                  if (ConfigLog.WADO.WADOType == "URI") loadUID(getValue(DicomResponse[i]["0020000D"]), getValue(DicomResponse[i]["0020000E"]), getValue(DicomResponse[i]["00080018"]), getValue(DicomResponse[i]["00200013"]), url, getValue(DicomResponse[i]["00100020"]));
                   //預載入DICOM至Viewport
                   if (ConfigLog.WADO.WADOType == "URI") virtualLoadImage(url, 1);
                   else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
@@ -488,7 +493,7 @@ function readJson(url) {
                 if (ConfigLog.WADO.WADOType == "URI") url = "wadouri:" + url;
                 // else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
                 //載入DICOM的階層資料至物件清單
-                if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = loadUID(DicomResponse[i]["0020000D"].Value[0], DicomResponse[i]["0020000E"].Value[0], DicomResponse[i]["00080018"].Value[0], DicomResponse[i]["00200013"].Value[0], url, DicomResponse[i]["00100020"].Value[0]);
+                if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = loadUID(getValue(DicomResponse[i]["0020000D"]), getValue(DicomResponse[i]["0020000E"]), getValue(DicomResponse[i]["00080018"]), getValue(DicomResponse[i]["00200013"]), url, getValue(DicomResponse[i]["00100020"]));
                 //預載入DICOM至Viewport
                 if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
                 else {
