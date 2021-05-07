@@ -402,7 +402,7 @@ function checkMark(i, j, n) {
             if (getByid("dicomDivListDIV" + dCount).alt == Patient.Study[i].Series[j].SeriesUID) {
                 var elem = document.querySelectorAll("#dicomDivListDIV" + dCount + " label input");
                 for (var elemNum in elem) {
-                    if (elem[elemNum].name == PatientMark[n].showName) {
+                    if (elem[elemNum].name == PatientMark[n].hideName) {
                         if (elem[elemNum].alt == "true") {
                             checkRtss = 1;
                             return checkRtss;

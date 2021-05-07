@@ -141,6 +141,7 @@ function Mousedown(e) {
             dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
             dcm.mark = [];
             dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
+            dcm.hideName = dcm.showName;
             dcm.mark.push({});
             dcm.sop = Uid.sop;
             var DcmMarkLength = dcm.mark.length - 1;
@@ -203,6 +204,7 @@ function Mousedown(e) {
         dcm.imagePositionZ = GetViewport().imagePositionZ;
         dcm.mark = [];
         dcm.showName = getByid('textROIName').value; //"" + getByid("xmlMarkNameText").value;
+        dcm.hideName = dcm.showName;
         dcm.mark.push({});
         dcm.sop = Uid.sop;
         var DcmMarkLength = dcm.mark.length - 1;
@@ -448,6 +450,7 @@ function Mousemove(e) {
         dcm.color = GetGSPSColor();
         dcm.mark = [];
         dcm.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+        dcm.hideName = dcm.showName;
         dcm.mark.push({});
         dcm.sop = Uid.sopuid;
         var DcmMarkLength = dcm.mark.length - 1;
@@ -473,6 +476,7 @@ function Mousemove(e) {
         dcm.color = GetGSPSColor();
         dcm.mark = [];
         dcm.showName = "" + getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+        dcm.hideName = dcm.showName;
         dcm.mark.push({});
         dcm.sop = Uid.sopuid;
         var DcmMarkLength = dcm.mark.length - 1;
@@ -516,6 +520,7 @@ function Mousemove(e) {
             if (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true) dcm.color = GetGSPSColor();
             dcm.mark = [];
             dcm.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
+            dcm.hideName = dcm.showName;
             if (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true) dcm.showName = getByid("GspsName").value;
             dcm.mark.push({});
             dcm.sop = Uid.sopuid;
@@ -720,6 +725,7 @@ function Mousemove(e) {
                 dcm.color = "#0000FF";
                 dcm.mark = [];
                 dcm.showName = "" + getByid("xmlMarkNameText").value;
+                dcm.hideName = dcm.showName;
                 dcm.mark.push({});
                 dcm.sop = Uid.sopuid;
                 var DcmMarkLength = dcm.mark.length - 1;
@@ -793,6 +799,7 @@ function Mouseup(e) {
         dcm.color = "#0000FF";
         dcm.mark = [];
         dcm.showName = "" + getByid("xmlMarkNameText").value;
+        dcm.hideName = dcm.showName;
         dcm.mark.push({});
         dcm.sop = Uid.sopuid;
         var DcmMarkLength = dcm.mark.length - 1;
@@ -818,6 +825,7 @@ function Mouseup(e) {
         dcm.color = GetGSPSColor();
         dcm.mark = [];
         dcm.showName = "" + getByid("xmlMarkNameText").value; //"" + getByid("xmlMarkNameText").value;
+        dcm.hideName = dcm.showName;
         dcm.mark.push({});
         dcm.sop = Uid.sopuid;
         var DcmMarkLength = dcm.mark.length - 1;
@@ -845,6 +853,7 @@ function Mouseup(e) {
         dcm.color = GetGSPSColor();
         dcm.mark = [];
         dcm.showName = getByid("GspsName").value;
+        dcm.hideName = dcm.showName;
         dcm.mark.push({});
         dcm.sop = Uid.sopuid;
         var DcmMarkLength = dcm.mark.length - 1;
@@ -889,6 +898,7 @@ function Mouseup(e) {
         if (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true) dcm.color = GetGSPSColor();
         dcm.mark = [];
         dcm.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
+        dcm.hideName = dcm.showName;
         if (openWriteGSPS == true && getByid("GspsPOLYLINE").selected == true) dcm.showName = getByid("GspsName").value;
 
         dcm.mark.push({});

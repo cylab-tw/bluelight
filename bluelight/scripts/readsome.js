@@ -2,14 +2,14 @@ function readXML(url) {
   var oReq = new XMLHttpRequest();
   try {
     oReq.open("get", url, true);
-  } catch (err) {}
+  } catch (err) { }
   oReq.responseType = "xml";
   oReq.onreadystatechange = function (oEvent) {
     try {
       var parser = new DOMParser();
       var xmlDoc = parser.parseFromString(oReq.response, "text/xml");
       var studyTemp = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-      getElementsByTagName("imageReferenceEntityCollection")[0].getElementsByTagName("ImageReferenceEntity")[0]
+        getElementsByTagName("imageReferenceEntityCollection")[0].getElementsByTagName("ImageReferenceEntity")[0]
         .getElementsByTagName("imageStudy")[0];
 
       var study = (studyTemp.getElementsByTagName("instanceUid")[0].getAttribute("root"));
@@ -18,7 +18,7 @@ function readXML(url) {
         .getElementsByTagName("Image")[0].getElementsByTagName("sopInstanceUid")[0].getAttribute("root"));
 
       var temp = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-      getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("markupEntityCollection")[0]
+        getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("markupEntityCollection")[0]
         .getElementsByTagName("MarkupEntity");
       var dcm = {};
       dcm.study = study;
@@ -26,16 +26,17 @@ function readXML(url) {
       dcm.sop = sop;
       dcm.mark = [];
       dcm.showName = "AIM";
+      dcm.hideName = dcm.showName;
       try {
         var tempText = xmlDoc.getElementsByTagName("ImageAnnotationCollection")[0].getElementsByTagName("imageAnnotations")[0].
-        getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("imagingObservationEntityCollection")[0]
+          getElementsByTagName("ImageAnnotation")[0].getElementsByTagName("imagingObservationEntityCollection")[0]
           .getElementsByTagName("ImagingObservationEntity");
         for (var i = 0; i < tempText.length; i++) {
           dcm.mark.push({});
           var DcmMarkLength = dcm.mark.length - 1;
           dcm.mark[DcmMarkLength].type = "Characteristic";
           var temp2 = tempText[i].getElementsByTagName("imagingObservationCharacteristicCollection")[0].
-          getElementsByTagName("ImagingObservationCharacteristic");
+            getElementsByTagName("ImagingObservationCharacteristic");
           dcm.mark[DcmMarkLength].markTitle = "";
           dcm.mark[DcmMarkLength].markTitle = "" + tempText[i].getElementsByTagName("label")[0].getAttribute("value") +
             ":" + tempText[i].getElementsByTagName("typeCode")[0].getElementsByTagName("iso:displayName")[0].getAttribute("value");;
@@ -103,68 +104,80 @@ function readXML(url) {
 
       PatientMark.push(dcm);
       refreshMark(dcm);
-    } catch (ex) {}
+    } catch (ex) { }
   }
   oReq.send();
 }
-
 function readDicom(url, patientmark, openfile) {
   var oReq = new XMLHttpRequest();
   try {
     oReq.open("get", url, true);
-  } catch (err) {}
+  } catch (err) { }
   oReq.responseType = "arraybuffer";
   oReq.onreadystatechange = function (oEvent) {
     if (oReq.readyState == 4) {
       if (oReq.status == 200) {
         var byteArray = new Uint8Array(oReq.response);
         var dataSet = dicomParser.parseDicom(byteArray);
-        try {
-          var pixelData = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x60003000.dataOffset, dataSet.elements.x60003000.length);
-          var tempPixeldata = new Uint8Array(pixelData.length * 8);
-          var tempi = 0;
-          var tempnum = 0;
-          for (var num of pixelData) {
-            tempnum = num;
-            if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 0] = 1;
-            else tempPixeldata[num * 8 + 0] = 0;
-            tempnum /= 2;
-            if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 1] = 1;
-            else tempPixeldata[num * 8 + 1] = 0;
-            tempnum /= 2;
-            if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 2] = 1;
-            else tempPixeldata[num * 8 + 2] = 0;
-            tempnum /= 2;
-            if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 3] = 1;
-            else tempPixeldata[num * 8 + 3] = 0;
-            tempnum /= 2;
-            if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 4] = 1;
-            else tempPixeldata[num * 8 + 4] = 0;
-            tempnum /= 2;
-            if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 5] = 1;
-            else tempPixeldata[num * 8 + 5] = 0;
-            tempnum /= 2;
-            if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 6] = 1;
-            else tempPixeldata[num * 8 + 6] = 0;
-            tempnum /= 2;
-            if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 7] = 1;
-            else tempPixeldata[num * 8 + 7] = 0;
-            tempi += 8;
+        if (!dataSet.elements.x60003000) {
+
+        } else {
+          for (var ov = 0; ov <= 28; ov += 2) {
+            var ov_str = "" + ov;
+            if (ov < 10) ov_str = "0" + ov;
+            if (!dataSet.elements['x600' + ov + '3000']) continue;
+            try {
+              var pixelData = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements['x60' + ov_str + '3000'].dataOffset, dataSet.elements['x60' + ov_str + '3000'].length);
+              var tempPixeldata = new Uint8Array(pixelData.length * 8);
+              var tempi = 0;
+              var tempnum = 0;
+              for (var num of pixelData) {
+                tempnum = num;
+                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 0] = 1;
+                else tempPixeldata[num * 8 + 0] = 0;
+                tempnum /= 2;
+                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 1] = 1;
+                else tempPixeldata[num * 8 + 1] = 0;
+                tempnum /= 2;
+                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 2] = 1;
+                else tempPixeldata[num * 8 + 2] = 0;
+                tempnum /= 2;
+                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 3] = 1;
+                else tempPixeldata[num * 8 + 3] = 0;
+                tempnum /= 2;
+                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 4] = 1;
+                else tempPixeldata[num * 8 + 4] = 0;
+                tempnum /= 2;
+                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 5] = 1;
+                else tempPixeldata[num * 8 + 5] = 0;
+                tempnum /= 2;
+                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 6] = 1;
+                else tempPixeldata[num * 8 + 6] = 0;
+                tempnum /= 2;
+                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 7] = 1;
+                else tempPixeldata[num * 8 + 7] = 0;
+                tempi += 8;
+              }
+              var tvList = ['Overlay'];
+              var dcm = {};
+              dcm.study = dataSet.string('x0020000d');
+              dcm.series = dataSet.string('x0020000e');
+              dcm.sop = dataSet.string('x00080018');
+              dcm.mark = [];
+              dcm.showName = tvList[0];
+              dcm.hideName = dcm.showName + 'x60' + ov_str + '1500';
+              if (dataSet.string('x60' + ov_str + '1500')) {
+                dcm.showName = dataSet.string('x60' + ov_str + '1500');
+              }
+              dcm.mark.push({});
+              var DcmMarkLength = dcm.mark.length - 1;
+              dcm.mark[DcmMarkLength].type = "Overlay";
+              dcm.mark[DcmMarkLength].pixelData = tempPixeldata.slice(0);;
+              patientmark.push(dcm);
+              refreshMark(dcm);
+            } catch (ex) { }
           }
-          var tvList = ['Overlay'];
-          var dcm = {};
-          dcm.study = dataSet.string('x0020000d');
-          dcm.series = dataSet.string('x0020000e');
-          dcm.sop = dataSet.string('x00080018');
-          dcm.mark = [];
-          dcm.showName = tvList[0];
-          dcm.mark.push({});
-          var DcmMarkLength = dcm.mark.length - 1;
-          dcm.mark[DcmMarkLength].type = "Overlay";
-          dcm.mark[DcmMarkLength].pixelData = tempPixeldata.slice(0);;
-          patientmark.push(dcm);
-          refreshMark(dcm);
-        } catch (ex) {}
+        }
         ////暫時取消的功能
         /*
         if (openfile && openfile == true) {
@@ -207,7 +220,7 @@ function readDicom(url, patientmark, openfile) {
                     tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
                     try {
                       GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[0].dataSet.string("x00700006")
-                    } catch (ex) {}
+                    } catch (ex) { }
                     break;
                   };
                   if (tempsop != sop1) continue;
@@ -243,6 +256,7 @@ function readDicom(url, patientmark, openfile) {
                   }
 
                   dcm.showName = tvList[0];
+                  dcm.hideName = dcm.showName;
                   var DcmMarkLength = dcm.mark.length - 1;
                   dcm.mark[DcmMarkLength].type = "POLYLINE";
                   dcm.mark[DcmMarkLength].markX = [];
@@ -310,6 +324,7 @@ function readDicom(url, patientmark, openfile) {
                     }
                   }
                   dcm.showName = tvList[0];
+                  dcm.hideName = dcm.showName;
                   var DcmMarkLength = dcm.mark.length - 1;
                   dcm.mark[DcmMarkLength].type = "CIRCLE";
                   dcm.mark[DcmMarkLength].markX = [];
@@ -343,6 +358,7 @@ function readDicom(url, patientmark, openfile) {
                   dcm.mark.push({});
                   var tvList = ['ELLIPSE'];
                   dcm.showName = tvList[0];
+                  dcm.hideName = dcm.showName;
                   var DcmMarkLength = dcm.mark.length - 1;
                   dcm.mark[DcmMarkLength].type = "ELLIPSE";
                   dcm.mark[DcmMarkLength].markX = [];
@@ -356,7 +372,7 @@ function readDicom(url, patientmark, openfile) {
                     var output3 = xTemp16[k2 + 2].charCodeAt(0).toString(2) + "";
                     var output4 = xTemp16[k2 + 3].charCodeAt(0).toString(2) + "";
                     var data = [parseInt(output1, 2), parseInt(output2, 2), parseInt(output3, 2), parseInt(output4, 2)];
-                    var buf = new ArrayBuffer(4 /* * 4*/ );
+                    var buf = new ArrayBuffer(4 /* * 4*/);
                     var view = new DataView(buf);
                     data.forEach(function (b, i) {
                       view.setUint8(i, b, true);
@@ -391,13 +407,14 @@ function readDicom(url, patientmark, openfile) {
                 dcm.series = dataSet.string('x0020000e');
                 try {
                   dcm.series = dataSet.elements.x30060010.items[0].dataSet.elements.x30060012.items[0].dataSet.elements.x30060014.items[0].dataSet.string('x0020000e');
-                } catch (ex) {}
+                } catch (ex) { }
 
                 dcm.color = color;
                 dcm.mark = [];
                 if (tvList[i]) {
                   dcm.showName = tvList[i];
                 }
+                dcm.hideName = dcm.showName;
                 dcm.mark.push({});
                 //dcm.SliceLocation=dataSet.string('x00201041');
                 dcm.sop = dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.elements.x30060016.items[k].dataSet.string('x00081155');;
@@ -443,6 +460,7 @@ function loadDicomSeg(image, imageId) {
       dcm.ImagePositionPatient = image.data.elements.x52009230.items[i].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
       dcm.mark = [];
       dcm.showName = tvList[0];
+      dcm.hideName = dcm.showName;
       dcm.mark.push({});
       var DcmMarkLength = dcm.mark.length - 1;
       dcm.mark[DcmMarkLength].type = "SEG";
@@ -463,6 +481,7 @@ function loadDicomSeg(image, imageId) {
       dcm.ImagePositionPatient = image.data.elements.x52009230.items[k].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
       dcm.mark = [];
       dcm.showName = tvList[0];
+      dcm.hideName = dcm.showName;
       dcm.mark.push({});
       var DcmMarkLength = dcm.mark.length - 1;
       dcm.mark[DcmMarkLength].type = "SEG";

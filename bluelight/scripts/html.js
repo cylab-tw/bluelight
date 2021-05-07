@@ -140,6 +140,7 @@ function html_onload() {
               dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
               dcm.mark = [];
               dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
+              dcm.hideName = dcm.showName;
               dcm.mark.push({});
               dcm.sop = Patient.Study[i].Series[j].Sop[l].SopUID;
               var DcmMarkLength = dcm.mark.length - 1;
@@ -306,7 +307,7 @@ function html_onload() {
   getByid("ImgMPR").onclick = function (catchError) {
     if (imgInvalid(this)) return;
     openMPR = !openMPR;
-    if(catchError=="error") openMPR=false;
+    if (catchError == "error") openMPR = false;
     img2darkByClass("MPR", !openMPR);
     initMPR();
   }
@@ -314,7 +315,7 @@ function html_onload() {
   getByid("ImgVR").onclick = function (catchError) {
     if (imgInvalid(this)) return;
     openVR = !openVR;
-    if(catchError=="error") openVR=false;
+    if (catchError == "error") openVR = false;
     img2darkByClass("VR", !openVR);
     initVR();
   }
@@ -684,6 +685,7 @@ function html_onload() {
   getByid("xmlMarkNameText").onchange = function () {
     if (xml_now_choose) {
       xml_now_choose.reference.showName = '' + this.value;
+      xml_now_choose.reference.hideName = xml_now_choose.reference.showName;
       refreshMark(xml_now_choose.reference);
       xml_now_choose = null;
       //this.value = '';

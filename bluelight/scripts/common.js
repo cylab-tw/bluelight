@@ -1257,6 +1257,7 @@ function SetToLeft(alt, checki, patientid) {
     smallDiv.id = "menu" + alt;
     var rtssList = [];
     var colorList = [];
+    var hideList=[];
     let index = SearchUid2IndexBySeries(alt);
     let i = index[0],
         j = index[1];
@@ -1266,14 +1267,16 @@ function SetToLeft(alt, checki, patientid) {
                 if (rtssList.length == 0) {
                     rtssList.push(PatientMark[n].showName);
                     colorList.push(PatientMark[n].color);
+                    hideList.push(PatientMark[n].hideName);
                 } else {
                     var check = 0;
                     for (var o = 0; o < rtssList.length; o++) {
-                        if (rtssList[o] == PatientMark[n].showName) {
+                        if (hideList[o] == PatientMark[n].hideName) {
                             check = 1;
                         }
                     }
                     if (check == 0) {
+                        hideList.push(PatientMark[n].hideName);
                         rtssList.push(PatientMark[n].showName);
                         colorList.push(PatientMark[n].color);
                     }
@@ -1286,7 +1289,7 @@ function SetToLeft(alt, checki, patientid) {
         div.style.height = parseInt(div.style.height) + 35 + "px";
         var label = document.createElement('LABEL');
         label.innerText = "" + rtssList[o];
-        label.name = "" + rtssList[o];
+        label.name = "" + hideList[o];
         label.style = "text-shadow:0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff;" +
             "color:" + colorList[o] + ";";
         var li1 = document.createElement('input');
@@ -1294,7 +1297,7 @@ function SetToLeft(alt, checki, patientid) {
         li1.id = "dicomDivListLabel" + dicomImageCount + o;
         if (checki >= 0) li1.id = "dicomDivListLabel" + checki + o;
         li1.checked = true;
-        li1.name = "" + rtssList[o];
+        li1.name = "" + hideList[o];
         li1.alt = 'true';
         if (getByid("dicomDivListLabel" + checki + o)) {
             li1.checked = getByid("dicomDivListLabel" + checki + o).checked;
