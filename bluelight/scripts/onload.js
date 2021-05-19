@@ -455,8 +455,10 @@ function readJson(url) {
               url = fitUrl(url);
               var uri = url;
               //如果包含標記，則載入標記
-              if (DicomResponse[i]["00080016"] && getValue(DicomResponse[i]["00080016"]) == '1.2.840.10008.5.1.4.1.1.481.3') {
-                readDicom(uri, PatientMark);
+              if (DicomResponse[i]["00080016"]) { //&& getValue(DicomResponse[i]["00080016"]) == '1.2.840.10008.5.1.4.1.1.481.3') {
+                try {
+                  readDicom(uri, PatientMark);
+                } catch (ex) { };
               }
               try {
                 //cornerstone的WADO請求需要加"wadouri"
