@@ -230,11 +230,11 @@ function initMPR() {
         }
         for (var i = 0; i < Viewport_Total; i++) {
             GetViewport(i).removeEventListener("contextmenu", contextmenuF, false);
-            GetViewport(i).removeEventListener("mousemove", mousemoveF, false);
-            GetViewport(i).removeEventListener("mousedown", mousedownF, false);
-            GetViewport(i).removeEventListener("mouseup", mouseupF, false);
-            GetViewport(i).removeEventListener("mouseout", mouseoutF, false);
-            GetViewport(i).removeEventListener("wheel", wheelF, false);
+            GetViewport(i).removeEventListener("mousemove", Mousemove, false);
+            GetViewport(i).removeEventListener("mousedown", Mousedown, false);
+            GetViewport(i).removeEventListener("mouseup", Mouseup, false);
+            GetViewport(i).removeEventListener("mouseout", Mouseout, false);
+            GetViewport(i).removeEventListener("wheel", Wheel, false);
             GetViewport(i).removeEventListener("mousedown", thisF, false);
             GetViewport(i).removeEventListener("touchstart", touchstartF, false);
             GetViewport(i).removeEventListener("touchend", touchendF, false);
@@ -248,8 +248,12 @@ function initMPR() {
         o3DListLength = 0;
         var alt0 = GetViewport(0).alt;
         var uid0 = SearchUid2Json(alt0);
+        //set_BL_model('MouseTool');
+        //mouseTool();
         if (uid0)
             loadAndViewImage(Patient.Study[uid0.studyuid].Series[uid0.sreiesuid].Sop[uid0.sopuid].imageId, null, null, 0);
+        canvas = GetViewport().canvas()
+        //getByid("MouseOperation").onclick();
     } else if (openMPR == true) {
         openLink = false;
         changeLinkImg();
@@ -269,11 +273,11 @@ function initMPR() {
         loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId);
         for (var i1 = 0; i1 < Viewport_Total; i1++) {
             GetViewport(i1).removeEventListener("contextmenu", contextmenuF, false);
-            GetViewport(i1).removeEventListener("mousemove", mousemoveF, false);
-            GetViewport(i1).removeEventListener("mousedown", mousedownF, false);
-            GetViewport(i1).removeEventListener("mouseup", mouseupF, false);
-            GetViewport(i1).removeEventListener("mouseout", mouseoutF, false);
-            GetViewport(i1).removeEventListener("wheel", wheelF, false);
+            GetViewport(i1).removeEventListener("mousemove", Mousemove, false);
+            GetViewport(i1).removeEventListener("mousedown", Mousedown, false);
+            GetViewport(i1).removeEventListener("mouseup", Mouseup, false);
+            GetViewport(i1).removeEventListener("mouseout", Mouseout, false);
+            GetViewport(i1).removeEventListener("wheel", Wheel, false);
             GetViewport(i1).removeEventListener("mousedown", thisF, false);
             GetViewport(i1).removeEventListener("touchstart", touchstartF, false);
             GetViewport(i1).removeEventListener("touchend", touchendF, false);
@@ -284,14 +288,14 @@ function initMPR() {
         GetViewport().removeEventListener("touchstart", thisF, false);
         GetViewport().removeEventListener("mousedown", thisF, false);
         GetViewport().addEventListener("contextmenu", contextmenuF, false);
-        GetViewport().addEventListener("mousemove", mousemoveF, false);
-        GetViewport().addEventListener("mousedown", mousedownF, false);
-        GetViewport().addEventListener("mouseup", mouseupF, false);
-        GetViewport().addEventListener("mouseout", mouseoutF, false);
+        GetViewport().addEventListener("mousemove", Mousemove_origin, false);
+        GetViewport().addEventListener("mousedown", Mousedown_origin, false);
+        GetViewport().addEventListener("mouseup", Mouseup_origin, false);
+        GetViewport().addEventListener("mouseout", Mouseout, false);
         GetViewport().addEventListener("touchstart", touchstartF, false);
         GetViewport().addEventListener("touchmove", touchmoveF, false);
         GetViewport().addEventListener("touchend", touchendF, false);
-        GetViewport().addEventListener("wheel", wheelF, false);
+        GetViewport().addEventListener("wheel", Wheel, false);
         GetViewport(3).addEventListener("mousemove", mousemove3D, false);
         GetViewport(3).addEventListener("mousedown", mousedown3D, false);
         GetViewport(3).addEventListener("mouseup", mouseup3D, false);

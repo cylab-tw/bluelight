@@ -338,3 +338,14 @@ function get_SEG_context() {
     }
     return temp_str;
 }
+
+function writeSeg() {
+    if (BL_mode == 'writeSeg') {
+        DeleteMouseEvent();
+        Mousedown=Mousedown_origin;
+        Mousemove=Mousemove_origin;
+        Mouseup=Mouseup_origin;
+        AddMouseEvent();
+        return;
+    }
+}

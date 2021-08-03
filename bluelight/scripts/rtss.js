@@ -333,3 +333,127 @@ function get_RTSS_context() {
     }
     return temp_str;
 }
+
+function writertss() {
+    if (BL_mode == 'writertss') {
+        DeleteMouseEvent();
+        Mousedown=Mousedown_origin;
+        Mousemove=Mousemove_origin;
+        Mouseup=Mouseup_origin;
+        AddMouseEvent();
+        return;
+        Mousedown = function (e) {
+            if (e.which == 1) MouseDownCheck = true;
+            else if (e.which == 3) rightMouseDown = true;
+            var currX = getCurrPoint(e)[0];
+            var currY = getCurrPoint(e)[1];
+            windowMouseX = GetmouseX(e);
+            windowMouseY = GetmouseY(e);
+            GetViewport().originalPointX = getCurrPoint(e)[0];
+            GetViewport().originalPointY = getCurrPoint(e)[1];
+            if (!rightMouseDown) {
+                var angel2point = rotateCalculation(e)
+                var currX11 = Math.floor(angel2point[0]);
+                var currY11 = Math.floor(angel2point[1]);
+                var currX02 = currX11;
+                var currY02 = currY11;
+
+                if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
+                    currX02 = (currX11 * GetViewport().imageOrientationX + currY11 * -GetViewport().imageOrientationY + 0);
+                    currY02 = (currX11 * -GetViewport().imageOrientationX2 + currY11 * GetViewport().imageOrientationY2 + 0);
+                    if ((GetViewport().openHorizontalFlip != GetViewport().openVerticalFlip)) {
+                        currX02 = currX02 - (currX02 - currX11) * 2;
+                        currY02 = currY02 - (currY02 - currY11) * 2;
+                    }
+                }
+                currX02 = currX02 / GetViewport().PixelSpacingX + GetViewport().imagePositionX;
+                currY02 = currY02 / GetViewport().PixelSpacingY + GetViewport().imagePositionY;
+                let Uid = GetNowUid();
+                var dcm = {};
+                dcm.study = Uid.study;
+                dcm.series = Uid.sreies;
+                dcm.color = "rgb(0,0,128)";
+                for (var co = 0; co < getClass("RTSSColorSelectOption").length; co++) {
+                    if (getClass("RTSSColorSelectOption")[co].selected == true) {
+                        dcm.color = getClass("RTSSColorSelectOption")[co].style.color;
+                    }
+                }
+
+                dcm.imagePositionZ = GetViewport().imagePositionZ;
+                dcm.mark = [];
+                dcm.showName = getByid('textROIName').value; //"" + getByid("xmlMarkNameText").value;
+                dcm.mark.push({});
+                dcm.sop = Uid.sop;
+                var DcmMarkLength = dcm.mark.length - 1;
+                dcm.mark[DcmMarkLength].type = "RTSS";
+                dcm.mark[DcmMarkLength].markX = [];
+                dcm.mark[DcmMarkLength].markY = [];
+                dcm.mark[DcmMarkLength].markX.push(angel2point[0] - Math.abs(currX02 - angel2point[0]));
+                dcm.mark[DcmMarkLength].markY.push(angel2point[1] - Math.abs(currY02 - angel2point[1]));
+                PatientMark.push(dcm);
+                refreshMark(dcm);
+                RTSSc_now_choose = dcm.mark[DcmMarkLength];
+                for (var i = 0; i < Viewport_Total; i++)
+                    displayMark(NowResize, null, null, null, i);
+            }
+        };
+
+        Mousemove = function (e) {
+            var currX = getCurrPoint(e)[0];
+            var currY = getCurrPoint(e)[1];
+            var labelXY = getClass('labelXY'); {
+                let angel2point = rotateCalculation(e);
+                labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
+            }
+            if (rightMouseDown == true) {
+                scale_size(e, currX, currY);
+            }
+
+            if (openLink == true) {
+                for (var i = 0; i < Viewport_Total; i++) {
+                    GetViewport(i).newMousePointX = GetViewport().newMousePointX;
+                    GetViewport(i).newMousePointY = GetViewport().newMousePointY;
+                }
+            }
+            putLabel();
+            for (var i = 0; i < Viewport_Total; i++)
+                displayRular(i);
+            if (openWriteRTSS == true && !rightMouseDown && RTSSc_now_choose) {
+                let Uid = GetNowUid();
+                var angel2point = rotateCalculation(e)
+                var currX11 = Math.floor(angel2point[0]);
+                var currY11 = Math.floor(angel2point[1]);
+                var currX02 = currX11;
+                var currY02 = currY11;
+
+                if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
+                    currX02 = (currX11 * GetViewport().imageOrientationX + currY11 * -GetViewport().imageOrientationY + 0);
+                    currY02 = (currX11 * -GetViewport().imageOrientationX2 + currY11 * GetViewport().imageOrientationY2 + 0);
+                    if ((GetViewport().openHorizontalFlip != GetViewport().openVerticalFlip)) {
+                        currX02 = currX02 - (currX02 - currX11) * 2;
+                        currY02 = currY02 - (currY02 - currY11) * 2;
+                    }
+                }
+                currX02 = currX02 / GetViewport().PixelSpacingX + GetViewport().imagePositionX;
+                currY02 = currY02 / GetViewport().PixelSpacingY + GetViewport().imagePositionY;
+                // var DcmMarkLength = RTSSc_now_choose.mark.length - 1;
+                RTSSc_now_choose.markX.push(angel2point[0] - Math.abs(currX02 - angel2point[0]));
+                RTSSc_now_choose.markY.push(angel2point[1] - Math.abs(currY02 - angel2point[1]));
+                //PatientMark.push(RTSSc_now_choose);
+                refreshMark(Uid.sop);
+                for (var i = 0; i < Viewport_Total; i++)
+                    displayMark(NowResize, null, null, null, i);
+            }
+
+        }
+        Mouseup = function (e) {
+            var currX = getCurrPoint(e)[0];
+            var currY = getCurrPoint(e)[1];
+            MouseDownCheck = false;
+            rightMouseDown = false;
+            if (RTSSc_now_choose) {
+                RTSSc_now_choose = null;
+            }
+        }
+    }
+}

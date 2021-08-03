@@ -35,11 +35,11 @@ function initVR() {
         GetViewport(0).removeEventListener("touchend", touchend3D, false);
         for (var i = 0; i < Viewport_Total; i++) {
             GetViewport(i).removeEventListener("contextmenu", contextmenuF, false);
-            GetViewport(i).removeEventListener("mousemove", mousemoveF, false);
-            GetViewport(i).removeEventListener("mousedown", mousedownF, false);
-            GetViewport(i).removeEventListener("mouseup", mouseupF, false);
-            GetViewport(i).removeEventListener("mouseout", mouseoutF, false);
-            GetViewport(i).removeEventListener("wheel", wheelF, false);
+            GetViewport(i).removeEventListener("mousemove", Mousemove, false);
+            GetViewport(i).removeEventListener("mousedown", Mousedown, false);
+            GetViewport(i).removeEventListener("mouseup", Mouseup, false);
+            GetViewport(i).removeEventListener("mouseout", Mouseout, false);
+            GetViewport(i).removeEventListener("wheel", Wheel, false);
             GetViewport(i).removeEventListener("mousedown", thisF, false);
             GetViewport(i).removeEventListener("touchstart", touchstartF, false);
             GetViewport(i).removeEventListener("touchend", touchendF, false);
@@ -68,6 +68,7 @@ function initVR() {
         //SetTable();
         var alt0 = GetViewport(0).alt;
         var uid0 = SearchUid2Json(alt0);
+       
         if (uid0)
             loadAndViewImage(Patient.Study[uid0.studyuid].Series[uid0.sreiesuid].Sop[uid0.sopuid].imageId, null, null, 0);
         o3DListLength = 0;
@@ -92,11 +93,11 @@ function initVR() {
 
         for (var i1 = 0; i1 < Viewport_Total; i1++) {
             GetViewport(i1).removeEventListener("contextmenu", contextmenuF, false);
-            GetViewport(i1).removeEventListener("mousemove", mousemoveF, false);
-            GetViewport(i1).removeEventListener("mousedown", mousedownF, false);
-            GetViewport(i1).removeEventListener("mouseup", mouseupF, false);
-            GetViewport(i1).removeEventListener("mouseout", mouseoutF, false);
-            GetViewport(i1).removeEventListener("wheel", wheelF, false);
+            GetViewport(i1).removeEventListener("mousemove", Mousemove, false);
+            GetViewport(i1).removeEventListener("mousedown", Mousedown, false);
+            GetViewport(i1).removeEventListener("mouseup", Mouseup, false);
+            GetViewport(i1).removeEventListener("mouseout", Mouseout, false);
+            GetViewport(i1).removeEventListener("wheel", Wheel, false);
             GetViewport(i1).removeEventListener("mousedown", thisF, false);
             GetViewport(i1).removeEventListener("touchstart", touchstartF, false);
             GetViewport(i1).removeEventListener("touchend", touchendF, false);

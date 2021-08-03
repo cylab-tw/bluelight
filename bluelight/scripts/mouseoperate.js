@@ -63,7 +63,7 @@ function Wheel(e) {
     }
 }
 
-function Mousedown(e) {
+function Mousedown_origin(e) {
     // if (openPenDraw == true) return;
     getByid("MeasureLabel").style.display = "none";
     switch (e.which) {
@@ -266,7 +266,7 @@ function Mousedown(e) {
 
 }
 
-function Mousemove(e) {
+function Mousemove_origin(e) {
     if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
     if (openMPR == true && openWindow != true && openChangeFile == false) {
         if (MouseDownCheck == true) {
@@ -775,7 +775,7 @@ function Mousemove(e) {
     }
 }
 
-function Mouseup(e) {
+function Mouseup_origin(e) {
     var currX = getCurrPoint(e)[0];
     var currY = getCurrPoint(e)[1];
     // if (openPenDraw == true) return;

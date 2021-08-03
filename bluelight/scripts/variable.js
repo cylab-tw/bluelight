@@ -58,7 +58,7 @@ var openWriteRTSS = false;
 //代表GSPS標記模式為開啟狀態
 var openWriteGSPS = false;
 //代表SEG標記模式為開啟狀態
-var openWriteSEG=false;
+var openWriteSEG = false;
 //紀錄滑鼠座標
 var windowMouseX = 0,
   windowMouseY = 0;
@@ -153,4 +153,51 @@ var configOnload = false;
 //decode function
 let decodeImageFrame;
 //代表按下ctrl
-let KeyCode_ctrl=false;
+let KeyCode_ctrl = false;
+let BL_mode = 'MouseTool';
+let AddMouseEvent = function () {
+  try {
+    GetViewport().removeEventListener("touchstart", thisF, false);
+    GetViewport().removeEventListener("mousedown", thisF, false);
+    GetViewport().addEventListener("contextmenu", contextmenuF, false);
+    GetViewport().addEventListener("mousemove", Mousemove, false);
+    GetViewport().addEventListener("mousedown", Mousedown, false);
+    GetViewport().addEventListener("mouseup", Mouseup, false);
+    GetViewport().addEventListener("mouseout", Mouseout, false);
+    GetViewport().addEventListener("touchstart", touchstartF, false);
+    GetViewport().addEventListener("touchmove", touchmoveF, false);
+    GetViewport().addEventListener("touchend", touchendF, false);
+    GetViewport().addEventListener("wheel", Wheel, false);
+  } catch (ex) { console.log(ex); }
+}
+let DeleteMouseEvent = function () {
+  try {
+    for (var i = 0; i < Viewport_Total; i++) {
+      GetViewport(i).removeEventListener("contextmenu", contextmenuF, false);
+      GetViewport(i).removeEventListener("mousemove", Mousemove, false);
+      GetViewport(i).removeEventListener("mousedown", Mousedown, false);
+      GetViewport(i).removeEventListener("mouseup", Mouseup, false);
+      GetViewport(i).removeEventListener("mouseout", Mouseout, false);
+      GetViewport(i).removeEventListener("wheel", Wheel, false);
+      GetViewport(i).removeEventListener("mousedown", thisF, false);
+      GetViewport(i).removeEventListener("touchstart", touchstartF, false);
+      GetViewport(i).removeEventListener("touchend", touchendF, false);
+      GetViewport(i).removeEventListener("wheel", Wheel, false);
+      GetViewport(i).addEventListener("touchstart", thisF, false);
+      GetViewport(i).addEventListener("mousedown", thisF, false);
+      GetViewport(i).addEventListener("wheel", Wheel, false);
+    }
+  } catch (ex) { console.log(ex); }
+}
+
+let set_BL_model = function (string) {
+  BL_mode = string;
+
+  if (!this.init) {
+    set_BL_model.onchange1 = function () {
+      return 0;
+    }
+    this.init = true;
+  }
+  set_BL_model.onchange1();
+}

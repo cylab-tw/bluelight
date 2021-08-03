@@ -168,15 +168,19 @@ function html_onload() {
 
   getByid("MouseOperation").onclick = function () {
     if (imgInvalid(this)) return;
-    cancelTools();
-    openMouseTool = true;
+    //BL_mode = 'MouseTool';
+    set_BL_model('MouseTool');
+    mouseTool();
+    //cancelTools();
+    //openMouseTool = true;
     drawBorder(this);
   }
 
   getByid("b_Scroll").onclick = function () {
     if (imgInvalid(this)) return;
-    cancelTools();
-    openChangeFile = true;
+    //BL_mode = 'scroll';
+    set_BL_model('scroll');
+    scroll();
     drawBorder(this);
   }
 
@@ -190,33 +194,33 @@ function html_onload() {
 
   getByid("MouseRotate").onclick = function () {
     if (imgInvalid(this)) return;
-    cancelTools();
-    openRotate = true;
-    openChangeFile = true;
+    //BL_mode = 'rotate';
+    set_BL_model('rotate');
+    rotate();
     drawBorder(this);
   }
 
   getByid("WindowRevision").onclick = function () {
     if (imgInvalid(this)) return;
-    cancelTools();
-    textWC.style.display = '';
-    textWW.style.display = '';
-    getByid('WindowLevelDiv').style.display = '';
-    //  getByid('myWW').style.display = '';
-    openWindow = true;
+    //BL_mode = 'windowlevel';
+    set_BL_model('windowlevel');
+    windowlevel();
     drawBorder(this);
-    SetTable();
+    //cancelTools();
+    //textWC.style.display = '';
+    //textWW.style.display = '';
+    // getByid('WindowLevelDiv').style.display = '';
+    //openWindow = true;
+    //drawBorder(this);
+    //SetTable();
   }
 
   getByid("zoom").onclick = function () {
     if (imgInvalid(this)) return;
-    cancelTools();
+    //BL_mode = 'zoom';
+    set_BL_model('zoom')
+    zoom();
     drawBorder(this);
-    openZoom = true;
-    SetWindowWL(true);
-    getByid('labelZoom').style.display = '';
-    getByid('textZoom').style.display = '';
-    SetTable();
   }
 
   getByid("horizontal_flip").onclick = function () {
@@ -246,15 +250,17 @@ function html_onload() {
 
   getByid("MeasureRular").onclick = function () {
     if (imgInvalid(this)) return;
-    cancelTools();
-    openMeasure = true;
+    set_BL_model('measure');
+    measure();
+
     drawBorder(this);
   }
 
   getByid("AngelRular").onclick = function () {
     if (imgInvalid(this)) return;
-    cancelTools();
-    openAngel = 1;
+    //cancelTools();
+    set_BL_model('angel');
+    angel();
     drawBorder(this);
   }
 
@@ -263,8 +269,14 @@ function html_onload() {
     openAngel = 0;
     drawBorder(this);
     GetViewport().openPlay = !GetViewport().openPlay;
-    getByid('labelPlay').style.display = '';
-    getByid('textPlay').style.display = '';
+    if (GetViewport().openPlay) {
+      getByid('labelPlay').style.display = '';
+      getByid('textPlay').style.display = '';
+    }
+    else {
+      getByid('labelPlay').style.display = 'none';
+      getByid('textPlay').style.display = 'none';
+    }
     PlayTimer();
   }
 
@@ -318,6 +330,7 @@ function html_onload() {
     if (catchError == "error") openVR = false;
     img2darkByClass("VR", !openVR);
     initVR();
+    getByid("MouseOperation").onclick();
   }
 
   getByid("3dDisplay").onclick = function () {
@@ -351,6 +364,8 @@ function html_onload() {
     if (openWriteSEG == true) {
       getByid("overlay2seg").style.display = "";
       getByid('SegStyleDiv').style.display = 'flex';
+      set_BL_model('writeSeg');
+      writeSeg();
     }
     else getByid('SegStyleDiv').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
@@ -403,7 +418,11 @@ function html_onload() {
     openWriteRTSS = !openWriteRTSS;
     img2darkByClass("RTSS", !openWriteRTSS);
     this.src = openWriteRTSS == true ? '../image/icon/black/rtssdraw_ON.png' : '../image/icon/black/rtssdraw_OFF.png';
-    if (openWriteRTSS == true) getByid('RtssDiv').style.display = 'flex';
+    if (openWriteRTSS == true) {
+      getByid('RtssDiv').style.display = 'flex';
+      set_BL_model('writertss');
+      writertss();
+    }
     else getByid('RtssDiv').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
     if (openWriteRTSS == true) return;
@@ -458,7 +477,11 @@ function html_onload() {
     openWriteGSPS = !openWriteGSPS;
     img2darkByClass("GSPS", !openWriteGSPS);
     this.src = openWriteGSPS == true ? '../image/icon/black/gsps_on.png' : '../image/icon/black/gsps_off.png';
-    if (openWriteGSPS == true) getByid('GspsStyleDiv').style.display = '';
+    if (openWriteGSPS == true) {
+      getByid('GspsStyleDiv').style.display = '';
+      set_BL_model('writegsps');
+      writegsps();
+    }
     else getByid('GspsStyleDiv').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
     if (openWriteGSPS == true) return;
@@ -513,7 +536,16 @@ function html_onload() {
     if (openWriteGraphic == true) getByid('GraphicStyleDiv').style.display = '';
     else getByid('GraphicStyleDiv').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
-    if (openWriteGraphic == true) return;
+    //temp
+    if (openWriteGraphic == true) {
+      set_BL_model('writeGraphic');
+      DeleteMouseEvent();
+      Mousedown = Mousedown_origin;
+      Mousemove = Mousemove_origin;
+      Mouseup = Mouseup_origin;
+      AddMouseEvent();
+      return;
+    }
     else Graphic_now_choose = null;
 
     function download(text, name, type) {
@@ -570,7 +602,11 @@ function html_onload() {
     openWriteXML = !openWriteXML;
     img2darkByClass("XML", !openWriteXML);
     this.src = openWriteXML == true ? '../image/icon/black/xml_on.png' : '../image/icon/black/xml_off.png';
-    if (openWriteXML == true) getByid('xmlMarkName').style.display = '';
+    if (openWriteXML == true) {
+      getByid('xmlMarkName').style.display = '';
+      set_BL_model('writexml');
+      writexml();
+    }
     else getByid('xmlMarkName').style.display = 'none';
     displayMark(NowResize, null, null, null, viewportNumber);
     if (openWriteXML == true) return;
@@ -767,6 +803,7 @@ function html_onload() {
   }
 
   addEvent2SplitViewport();
+  getByid("MouseOperation").onclick();
 }
 
 function addEvent2SplitViewport() {

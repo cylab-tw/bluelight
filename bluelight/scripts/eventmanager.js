@@ -12,21 +12,22 @@ var zoomRatio3D = 1;
 var contextmenuF = function (e) {
     e.preventDefault();
 };
+/*
 var mousedownF = function (e) {
-    Mousedown(e)
+    Mousedown_origin(e)
 };
 var mousemoveF = function (e) {
-    Mousemove(e)
+    Mousemove_origin(e)
 };
 var mouseoutF = function (e) {
-    Mouseout(e)
+    Mouseout_origin(e)
 };
 var wheelF = function (e) {
-    Wheel(e)
+    Wheel_origin(e)
 };
 var mouseupF = function (e) {
-    Mouseup(e)
-};
+    Mouseup_origin(e)
+};*/
 var touchstartF = function (e) {
     if (e.touches[1]) Touchstart(e.touches[0], e.touches[1]);
     else Touchstart(e.touches[0]);

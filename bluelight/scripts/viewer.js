@@ -549,30 +549,32 @@ function initNewCanvas(newCanvas) {
     ctx = canvas.getContext("2d");
     var viewportNumber2 = (viewportNumber + 1);
     if (viewportNumber2 > 3) viewportNumber2 = 0
-    for (var i = 0; i < Viewport_Total; i++) {
-        GetViewport(i).removeEventListener("contextmenu", contextmenuF, false);
-        GetViewport(i).removeEventListener("mousemove", mousemoveF, false);
-        GetViewport(i).removeEventListener("mousedown", mousedownF, false);
-        GetViewport(i).removeEventListener("mouseup", mouseupF, false);
-        GetViewport(i).removeEventListener("mouseout", mouseoutF, false);
-        GetViewport(i).removeEventListener("wheel", wheelF, false);
-        GetViewport(i).removeEventListener("mousedown", thisF, false);
-        GetViewport(i).removeEventListener("touchstart", touchstartF, false);
-        GetViewport(i).removeEventListener("touchend", touchendF, false);
-        GetViewport(i).addEventListener("touchstart", thisF, false);
-        GetViewport(i).addEventListener("mousedown", thisF, false);
-        GetViewport(i).addEventListener("wheel", wheelF, false);
-    }
-    GetViewport().removeEventListener("touchstart", thisF, false);
-    GetViewport().removeEventListener("mousedown", thisF, false);
-    GetViewport().addEventListener("contextmenu", contextmenuF, false);
-    GetViewport().addEventListener("mousemove", mousemoveF, false);
-    GetViewport().addEventListener("mousedown", mousedownF, false);
-    GetViewport().addEventListener("mouseup", mouseupF, false);
-    GetViewport().addEventListener("mouseout", mouseoutF, false);
-    GetViewport().addEventListener("touchstart", touchstartF, false);
-    GetViewport().addEventListener("touchmove", touchmoveF, false);
-    GetViewport().addEventListener("touchend", touchendF, false);
+    try {
+        for (var i = 0; i < Viewport_Total; i++) {
+            GetViewport(i).removeEventListener("contextmenu", contextmenuF, false);
+            GetViewport(i).removeEventListener("mousemove", Mousemove, false);
+            GetViewport(i).removeEventListener("mousedown", Mousedown, false);
+            GetViewport(i).removeEventListener("mouseup", Mouseup, false);
+            GetViewport(i).removeEventListener("mouseout", Mouseout, false);
+            GetViewport(i).removeEventListener("wheel", Wheel, false);
+            GetViewport(i).removeEventListener("mousedown", thisF, false);
+            GetViewport(i).removeEventListener("touchstart", touchstartF, false);
+            GetViewport(i).removeEventListener("touchend", touchendF, false);
+            GetViewport(i).addEventListener("touchstart", thisF, false);
+            GetViewport(i).addEventListener("mousedown", thisF, false);
+            GetViewport(i).addEventListener("wheel", Wheel, false);
+        }
+        GetViewport().removeEventListener("touchstart", thisF, false);
+        GetViewport().removeEventListener("mousedown", thisF, false);
+        GetViewport().addEventListener("contextmenu", contextmenuF, false);
+        GetViewport().addEventListener("mousemove", Mousemove, false);
+        GetViewport().addEventListener("mousedown", Mousedown, false);
+        GetViewport().addEventListener("mouseup", Mouseup, false);
+        GetViewport().addEventListener("mouseout", Mouseout, false);
+        GetViewport().addEventListener("touchstart", touchstartF, false);
+        GetViewport().addEventListener("touchmove", touchmoveF, false);
+        GetViewport().addEventListener("touchend", touchendF, false);
+    } catch (ex) { console.log(ex); }
     //GetViewport((viewportNumber )).addEventListener("wheel", wheelF, false); --*
 }
 
