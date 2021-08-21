@@ -78,6 +78,68 @@ function zoom() {
                     displayRular(i);
             }
         }
+
+        Touchstart = function (e, e2) {
+            if (openVR == true) return;
+            if (!e2) TouchDownCheck = true;
+            else rightTouchDown = true;
+            windowMouseX = GetmouseX(e);
+            windowMouseY = GetmouseY(e);
+            if (rightTouchDown == true && e2) {
+                windowMouseX2 = GetmouseX(e2);
+                windowMouseY2 = GetmouseY(e2);
+            }
+            GetViewport().originalPointX = getCurrPoint(e)[0];
+            GetViewport().originalPointY = getCurrPoint(e)[1];
+            if (rightTouchDown == true && e2) {
+                GetViewport().originalPointX2 = getCurrPoint(e2)[0];
+                GetViewport().originalPointY2 = getCurrPoint(e2)[1];
+            }
+            //  if (openZoom == true && MouseDownCheck == true)
+            {
+                magnifierDiv.style.display = "";
+                let angel2point = rotateCalculation(e);
+                var currX11 = angel2point[0];
+                var currY11 = angel2point[1];
+                magnifierIng(currX11, currY11);
+            }
+        }
+        Touchmove = function (e, e2) {
+            //尚未完成
+            if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+            if (openVR == true) return;
+            var currX = getCurrPoint(e)[0];
+            var currY = getCurrPoint(e)[1];
+            if (e2) {
+                var currX2 = getCurrPoint(e2)[0];
+                var currY2 = getCurrPoint(e2)[1];
+            }
+            var labelXY = getClass('labelXY');
+            labelXY[viewportNumber].innerText = "X: " + Math.floor(currX) + " Y: " + Math.floor(currY);
+            if (TouchDownCheck == true && rightTouchDown == false) {
+                if (/*openZoom == true && */rightTouchDown == false) {
+                    magnifierDiv.style.display = "";
+                    let angel2point = rotateCalculation(e);
+                    var currX11 = angel2point[0];
+                    var currY11 = angel2point[1];
+                    magnifierIng(currX11, currY11);
+                }
+            }
+        }
+        Touchend = function (e, e2) {
+            if (TouchDownCheck == true) {
+                if (openAngel == 1) openAngel = 2;
+                else if (openAngel == 2) openAngel = 3;
+            }
+            TouchDownCheck = false;
+            rightTouchDown = false;
+            if (openVR == true) return;
+            magnifierDiv.style.display = "none";
+            displayMeasureRular();
+        }
+        // Touchstart = function (e, e2) {}
+        // Touchmove = function (e, e2) {}
+        // Touchend = function (e, e2) {}
         AddMouseEvent();
     }
 }

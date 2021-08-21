@@ -12,8 +12,8 @@ function angel() {
             getByid("AngelLabel").style.display = "none";
             displayMark();
             angel.angel_ = false;
-           // document.documentElement.onmousemove = DivDraw;
-           // document.documentElement.ontouchmove = DivDraw;
+            // document.documentElement.onmousemove = DivDraw;
+            // document.documentElement.ontouchmove = DivDraw;
             set_BL_model.onchange1 = function () { return 0; };
         }
         Mousedown = function (e) {
@@ -91,6 +91,80 @@ function angel() {
             }
             MouseDownCheck = false;
             rightMouseDown = false;
+        }
+        Touchstart = function (e, e2) {
+            if (openVR == true) return;
+            if (!e2) TouchDownCheck = true;
+            else rightTouchDown = true;
+            windowMouseX = GetmouseX(e);
+            windowMouseY = GetmouseY(e);
+            if (rightTouchDown == true && e2) {
+                windowMouseX2 = GetmouseX(e2);
+                windowMouseY2 = GetmouseY(e2);
+            }
+            GetViewport().originalPointX = getCurrPoint(e)[0];
+            GetViewport().originalPointY = getCurrPoint(e)[1];
+            if (rightTouchDown == true && e2) {
+                GetViewport().originalPointX2 = getCurrPoint(e2)[0];
+                GetViewport().originalPointY2 = getCurrPoint(e2)[1];
+            }
+            if (angel.angel_ == 3) angel.angel_ = 1;
+            if (angel.angel_ == 2) getByid("AngelLabel").style.display = '';
+            if (angel.angel_ == 1) {
+                let angel2point = rotateCalculation(e);
+                var currX11 = angel2point[0];
+                var currY11 = angel2point[1];
+
+                AngelXY0 = [currX11, currY11];
+                AngelXY1 = [currX11, currY11];
+                for (var i = 0; i < Viewport_Total; i++)
+                    displayMark(NowResize, null, null, null, i);
+                displayAngelRular();
+            }
+        }
+        Touchmove = function (e, e2) {
+            if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+            if (openVR == true) return;
+            var currX = getCurrPoint(e)[0];
+            var currY = getCurrPoint(e)[1];
+            if (e2) {
+                var currX2 = getCurrPoint(e2)[0];
+                var currY2 = getCurrPoint(e2)[1];
+            }
+            var labelXY = getClass('labelXY');
+            labelXY[viewportNumber].innerText = "X: " + Math.floor(currX) + " Y: " + Math.floor(currY);
+            if (angel.angel_ == 2) {
+                let angel2point = rotateCalculation(e);
+                var currX11 = angel2point[0];
+                var currY11 = angel2point[1];
+                AngelXY2 = [currX11, currY11];
+                for (var i = 0; i < Viewport_Total; i++)
+                    displayMark(NowResize, null, null, null, i);
+                displayAngelRular();
+                return;
+            }
+            if (angel.angel_ == 1) {
+                // MeasureXY = [getCurrPoint(e)[0], getCurrPoint(e)[1]];
+                let angel2point = rotateCalculation(e);
+                var currX11 = angel2point[0];
+                var currY11 = angel2point[1];
+                AngelXY0 = [currX11, currY11];
+                for (var i = 0; i < Viewport_Total; i++)
+                    displayMark(NowResize, null, null, null, i);
+                displayAngelRular();
+                return;
+            }
+        }
+        Touchend = function (e, e2) {
+            if (TouchDownCheck == true) {
+                if (angel.angel_ == 1) angel.angel_ = 2;
+                else if (angel.angel_ == 2) angel.angel_ = 3;
+            }
+            TouchDownCheck = false;
+            rightTouchDown = false;
+            if (openVR == true) return;
+            magnifierDiv.style.display = "none";
+            displayMeasureRular();
         }
         AddMouseEvent();
     }

@@ -543,6 +543,9 @@ function html_onload() {
       Mousedown = Mousedown_origin;
       Mousemove = Mousemove_origin;
       Mouseup = Mouseup_origin;
+      Touchstart = Touchstart_origin;
+      Touchmove = Touchmove_origin;
+      Touchend = Touchend_origin;
       AddMouseEvent();
       return;
     }

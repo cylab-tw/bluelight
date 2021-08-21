@@ -1,4 +1,4 @@
-function Touchstart(e, e2) {
+function Touchstart_origin(e, e2) {
   if (openVR == true) return;
   getByid("MeasureLabel").style.display = "none";
   if (!e2) TouchDownCheck = true;
@@ -65,7 +65,7 @@ function Touchstart(e, e2) {
   }
 }
 
-function Touchmove(e, e2) {
+function Touchmove_origin(e, e2) {
   if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
   if (openVR == true) return;
   if (openMPR == true && openWindow != true && openChangeFile == false) {
@@ -333,7 +333,7 @@ function Touchmove(e, e2) {
   }
 }
 
-function Touchend(e, e2) {
+function Touchend_origin(e, e2) {
   if (TouchDownCheck == true) {
     if (openAngel == 1) openAngel = 2;
     else if (openAngel == 2) openAngel = 3;
