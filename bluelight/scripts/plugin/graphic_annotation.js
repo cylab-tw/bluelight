@@ -1,3 +1,66 @@
+window.addEventListener("load", function (event) {
+
+    getByid("GspsTypeSelect").onchange = function () {
+        displayMark(NowResize, null, null, null, viewportNumber);
+    }
+
+    getByid("writeGSPS").onclick = function () {
+        if (imgInvalid(this)) return;
+        cancelTools();
+        openWriteGSPS = !openWriteGSPS;
+        img2darkByClass("GSPS", !openWriteGSPS);
+        this.src = openWriteGSPS == true ? '../image/icon/black/gsps_on.png' : '../image/icon/black/gsps_off.png';
+        if (openWriteGSPS == true) {
+            getByid('GspsStyleDiv').style.display = '';
+            set_BL_model('writegsps');
+            writegsps();
+        }
+        else getByid('GspsStyleDiv').style.display = 'none';
+        displayMark(NowResize, null, null, null, viewportNumber);
+        if (openWriteGSPS == true) return;
+        // else GSPS_now_choose = null;
+
+        function download(text, name, type) {
+            let a = document.createElement('a');
+            let file = new Blob([text], {
+                type: type
+            });
+            a.href = window.URL.createObjectURL(file);
+            //a.style.display = '';
+            a.download = name;
+            a.click();
+        }
+        function download2(text, name, type) {
+            let a = document.createElement('a');
+            let file = new File([text], name + ".xml", {
+                type: type
+            });
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+            xhr.setRequestHeader("enctype", "multipart/form-data");
+            // define new form
+            var formData = new FormData();
+            formData.append("files", file);
+            xhr.send(formData);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    let data = JSON.parse(xhr.responseText);
+                    for (let url of data) {
+                        window.open(url);
+                    }
+                }
+            }
+        }
+        set_GSPS_context();
+        if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_Graphic_context()), "" + CreateRandom(), 'text/plain');
+        else download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
+        //download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
+
+        getByid('MouseOperation').click();
+    }
+});
+
 var Graphic_Annotation_format =
     `<?xml version="1.0" encoding="UTF-8"?>
 <file-format>
@@ -93,7 +156,7 @@ var temp_xml_format = "";
 
 function Graphic_pounch(currX, currY, dcm) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
-    let index = SearchUid2Index(GetViewport((viewportNumber)).alt);
+    let index = SearchUid2Index(GetViewport().alt);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -389,11 +452,7 @@ function set_GSPS_context() {
 function writegsps() {
     if (BL_mode == 'writegsps') {
         DeleteMouseEvent();
-        Mousedown=Mousedown_origin;
-        Mousemove=Mousemove_origin;
-        Mouseup=Mouseup_origin;
-        AddMouseEvent();
-        return;
+
         Mousedown = function (e) {
             if (e.which == 1) MouseDownCheck = true;
             else if (e.which == 3) rightMouseDown = true;
@@ -419,9 +478,9 @@ function writegsps() {
                 let angel2point = rotateCalculation(e);
                 labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
             }
-            if (rightMouseDown == true) {
-                scale_size(e, currX, currY);
-            }
+            // if (rightMouseDown == true) {
+            //      scale_size(e, currX, currY);
+            // }
 
             if (openLink == true) {
                 for (var i = 0; i < Viewport_Total; i++) {
@@ -441,6 +500,7 @@ function writegsps() {
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+                dcm.hideName = dcm.showName;
                 dcm.mark.push({});
                 dcm.sop = Uid.sopuid;
                 var DcmMarkLength = dcm.mark.length - 1;
@@ -466,6 +526,7 @@ function writegsps() {
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = "" + getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+                dcm.hideName = dcm.showName;
                 dcm.mark.push({});
                 dcm.sop = Uid.sopuid;
                 var DcmMarkLength = dcm.mark.length - 1;
@@ -509,6 +570,7 @@ function writegsps() {
                     if (getByid("GspsPOLYLINE").selected == true) dcm.color = GetGSPSColor();
                     dcm.mark = [];
                     dcm.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
+                    dcm.hideName = dcm.showName;
                     if (getByid("GspsPOLYLINE").selected == true) dcm.showName = getByid("GspsName").value;
                     dcm.mark.push({});
                     dcm.sop = Uid.sopuid;
@@ -592,6 +654,7 @@ function writegsps() {
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = "" + getByid("xmlMarkNameText").value; //"" + getByid("xmlMarkNameText").value;
+                dcm.hideName = dcm.showName;
                 dcm.mark.push({});
                 dcm.sop = Uid.sopuid;
                 var DcmMarkLength = dcm.mark.length - 1;
@@ -619,6 +682,7 @@ function writegsps() {
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = getByid("GspsName").value;
+                dcm.hideName = dcm.showName;
                 dcm.mark.push({});
                 dcm.sop = Uid.sopuid;
                 var DcmMarkLength = dcm.mark.length - 1;
@@ -663,6 +727,7 @@ function writegsps() {
                 if (getByid("GspsPOLYLINE").selected == true) dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
+                dcm.hideName = dcm.showName;
                 if (getByid("GspsPOLYLINE").selected == true) dcm.showName = getByid("GspsName").value;
 
                 dcm.mark.push({});
@@ -691,4 +756,5 @@ function writegsps() {
             }
         }
     }
+    AddMouseEvent();
 }

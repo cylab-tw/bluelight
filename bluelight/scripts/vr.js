@@ -194,6 +194,7 @@ function initVR() {
                     sleep(100).then(() => {
                         openRendering = false;
                         img2darkByClass("VR", !openVR);
+                        setTimeout(getByid("MouseOperation").click(), 100);
                     })
                 })
             }

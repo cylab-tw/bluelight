@@ -288,9 +288,6 @@ function initMPR() {
         GetViewport().removeEventListener("touchstart", thisF, false);
         GetViewport().removeEventListener("mousedown", thisF, false);
         GetViewport().addEventListener("contextmenu", contextmenuF, false);
-        GetViewport().addEventListener("mousemove", Mousemove_origin, false);
-        GetViewport().addEventListener("mousedown", Mousedown_origin, false);
-        GetViewport().addEventListener("mouseup", Mouseup_origin, false);
         GetViewport().addEventListener("mouseout", Mouseout, false);
         GetViewport().addEventListener("touchstart", touchstartF, false);
         GetViewport().addEventListener("touchmove", touchmoveF, false);
@@ -390,6 +387,7 @@ function initMPR() {
                     sleep(100).then(() => {
                         openRendering = false;
                         img2darkByClass("MPR", !openMPR);
+                        setTimeout(getByid("MouseOperation").click(), 100);
                     })
                 })
             }
@@ -458,7 +456,7 @@ function initMPR() {
             if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "";
         }*/
 
-        Thickness = -Thickness + big;
+        Thickness = -Thickness + big; 
         return;
     }
 }

@@ -1,3 +1,60 @@
+window.addEventListener("load", function (event) {
+    getByid("writeRTSS").onclick = function () {
+        if (imgInvalid(this)) return;
+        cancelTools();
+        openWriteRTSS = !openWriteRTSS;
+        img2darkByClass("RTSS", !openWriteRTSS);
+        this.src = openWriteRTSS == true ? '../image/icon/black/rtssdraw_ON.png' : '../image/icon/black/rtssdraw_OFF.png';
+        if (openWriteRTSS == true) {
+          getByid('RtssDiv').style.display = 'flex';
+          set_BL_model('writertss');
+          writertss();
+        }
+        else getByid('RtssDiv').style.display = 'none';
+        displayMark(NowResize, null, null, null, viewportNumber);
+        if (openWriteRTSS == true) return;
+        // else Graphic_now_choose = null;
+    
+        function download(text, name, type) {
+          let a = document.createElement('a');
+          let file = new Blob([text], {
+            type: type
+          });
+          a.href = window.URL.createObjectURL(file);
+          //a.style.display = '';
+          a.download = name;
+          a.click();
+        }
+        function download2(text, name, type) {
+          let a = document.createElement('a');
+          let file = new File([text], name + ".xml", {
+            type: type
+          });
+          var xhr = new XMLHttpRequest();
+    
+          xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+          xhr.setRequestHeader("enctype", "multipart/form-data");
+          // define new form
+          var formData = new FormData();
+          formData.append("files", file);
+          xhr.send(formData);
+          xhr.onload = function () {
+            if (xhr.status == 200) {
+              let data = JSON.parse(xhr.responseText);
+              for (let url of data) {
+                window.open(url);
+              }
+            }
+          }
+        }
+        set_RTSS_context();
+        if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_RTSS_context()), "" + CreateRandom(), 'text/plain');
+        else download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
+        //download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
+        getByid('MouseOperation').click();
+      }
+});
+
 var RTSS_format =
     `<?xml version="1.0" encoding="UTF-8"?>
     <file-format>
@@ -120,13 +177,13 @@ var RTSS_format_tail_6 = `
                                 <element tag="3006,0050" vr="DS" vm="___vm___" len="___len___" name="ContourData">___ContourData___</element>
                             </item>
                         `;
-var RTSSc_now_choose = null;
+var RTSS_now_choose = null;
 var temp_xml_format = "";
 
 
 function RTSS_pounch(currX, currY, dcm) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
-    let index = SearchUid2Index(GetViewport((viewportNumber)).alt);
+    let index = SearchUid2Index(GetViewport().alt);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -337,11 +394,8 @@ function get_RTSS_context() {
 function writertss() {
     if (BL_mode == 'writertss') {
         DeleteMouseEvent();
-        Mousedown=Mousedown_origin;
-        Mousemove=Mousemove_origin;
-        Mouseup=Mouseup_origin;
-        AddMouseEvent();
-        return;
+
+        //return;
         Mousedown = function (e) {
             if (e.which == 1) MouseDownCheck = true;
             else if (e.which == 3) rightMouseDown = true;
@@ -382,6 +436,7 @@ function writertss() {
                 dcm.imagePositionZ = GetViewport().imagePositionZ;
                 dcm.mark = [];
                 dcm.showName = getByid('textROIName').value; //"" + getByid("xmlMarkNameText").value;
+                dcm.hideName = dcm.showName;
                 dcm.mark.push({});
                 dcm.sop = Uid.sop;
                 var DcmMarkLength = dcm.mark.length - 1;
@@ -392,7 +447,7 @@ function writertss() {
                 dcm.mark[DcmMarkLength].markY.push(angel2point[1] - Math.abs(currY02 - angel2point[1]));
                 PatientMark.push(dcm);
                 refreshMark(dcm);
-                RTSSc_now_choose = dcm.mark[DcmMarkLength];
+                RTSS_now_choose = dcm.mark[DcmMarkLength];
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
             }
@@ -418,7 +473,7 @@ function writertss() {
             putLabel();
             for (var i = 0; i < Viewport_Total; i++)
                 displayRular(i);
-            if (openWriteRTSS == true && !rightMouseDown && RTSSc_now_choose) {
+            if (!rightMouseDown && RTSS_now_choose) {
                 let Uid = GetNowUid();
                 var angel2point = rotateCalculation(e)
                 var currX11 = Math.floor(angel2point[0]);
@@ -436,10 +491,10 @@ function writertss() {
                 }
                 currX02 = currX02 / GetViewport().PixelSpacingX + GetViewport().imagePositionX;
                 currY02 = currY02 / GetViewport().PixelSpacingY + GetViewport().imagePositionY;
-                // var DcmMarkLength = RTSSc_now_choose.mark.length - 1;
-                RTSSc_now_choose.markX.push(angel2point[0] - Math.abs(currX02 - angel2point[0]));
-                RTSSc_now_choose.markY.push(angel2point[1] - Math.abs(currY02 - angel2point[1]));
-                //PatientMark.push(RTSSc_now_choose);
+                // var DcmMarkLength = RTSS_now_choose.mark.length - 1;
+                RTSS_now_choose.markX.push(angel2point[0] - Math.abs(currX02 - angel2point[0]));
+                RTSS_now_choose.markY.push(angel2point[1] - Math.abs(currY02 - angel2point[1]));
+                //PatientMark.push(RTSS_now_choose);
                 refreshMark(Uid.sop);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
@@ -451,9 +506,10 @@ function writertss() {
             var currY = getCurrPoint(e)[1];
             MouseDownCheck = false;
             rightMouseDown = false;
-            if (RTSSc_now_choose) {
-                RTSSc_now_choose = null;
+            if (RTSS_now_choose) {
+                RTSS_now_choose = null;
             }
         }
+        AddMouseEvent();
     }
 }

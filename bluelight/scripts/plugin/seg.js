@@ -1,3 +1,62 @@
+window.addEventListener("load", function (event) {
+
+    getByid("writeSEG").onclick = function () {
+        if (imgInvalid(this)) return;
+        cancelTools();
+        openWriteSEG = !openWriteSEG;
+        img2darkByClass("SEG", !openWriteSEG);
+        this.src = openWriteSEG == true ? '../image/icon/black/seg_on.png' : '../image/icon/black/seg_off.png';
+        if (openWriteSEG == true) {
+          getByid("overlay2seg").style.display = "";
+          getByid('SegStyleDiv').style.display = 'flex';
+          set_BL_model('writeSeg');
+          writeSeg();
+        }
+        else getByid('SegStyleDiv').style.display = 'none';
+        displayMark(NowResize, null, null, null, viewportNumber);
+    
+        if (openWriteSEG == true) return;
+        // else Graphic_now_choose = null;
+    
+        function download(text, name, type) {
+          let a = document.createElement('a');
+          let file = new Blob([text], {
+            type: type
+          });
+          a.href = window.URL.createObjectURL(file);
+          //a.style.display = '';
+          a.download = name;
+          a.click();
+        }
+        function download2(text, name, type) {
+          let a = document.createElement('a');
+          let file = new File([text], name + ".xml", {
+            type: type
+          });
+          var xhr = new XMLHttpRequest();
+    
+          xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+          xhr.setRequestHeader("enctype", "multipart/form-data");
+          // define new form
+          var formData = new FormData();
+          formData.append("files", file);
+          xhr.send(formData);
+          xhr.onload = function () {
+            if (xhr.status == 200) {
+              let data = JSON.parse(xhr.responseText);
+              for (let url of data) {
+                window.open(url);
+              }
+            }
+          }
+        }
+        set_SEG_context();
+        if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_SEG_context()), "" + CreateRandom(), 'text/plain');
+        else download(String(get_SEG_context()), 'filename_SEG.xml', 'text/plain');
+        getByid('MouseOperation').click();
+      }
+});
+
 var SEG_format =
     `<?xml version="1.0" encoding="UTF-8"?>
     <file-format>
@@ -342,10 +401,131 @@ function get_SEG_context() {
 function writeSeg() {
     if (BL_mode == 'writeSeg') {
         DeleteMouseEvent();
-        Mousedown=Mousedown_origin;
-        Mousemove=Mousemove_origin;
-        Mouseup=Mouseup_origin;
+        Mousedown = function (e) {
+            if (e.which == 1) MouseDownCheck = true;
+            else if (e.which == 3) rightMouseDown = true;
+            windowMouseX = GetmouseX(e);
+            windowMouseY = GetmouseY(e);
+            GetViewport().originalPointX = getCurrPoint(e)[0];
+            GetViewport().originalPointY = getCurrPoint(e)[1];
+            if (openWindow != true) {
+                var alt = GetViewport().alt;
+                var index_Seg = SearchUid2Index(alt);
+                if (!index_Seg) return;
+                let i_s = index_Seg[0],
+                    j_s = index_Seg[1],
+                    k_s = index_Seg[2];
+                var break1 = false;
+                for (var n_s = 0; n_s < PatientMark.length; n_s++) {
+                    if (PatientMark[n_s].sop == Patient.Study[i_s].Series[j_s].Sop[k_s].SopUID) {
+                        for (var m_s = 0; m_s < PatientMark[n_s].mark.length; m_s++) {
+                            if (break1 == true) break;
+                            if (PatientMark[n_s].mark[m_s].type == "SEG") {
+                                SEG_now_choose = PatientMark[n_s].mark[m_s];
+                                break1 = true;
+                            }
+                        }
+                    }
+                }
+                if (break1 == false) {
+                    let Uid = GetNowUid();
+                    var dcm = {};
+                    dcm.study = Uid.study;
+                    dcm.series = Uid.sreies;
+
+                    dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
+                    dcm.mark = [];
+                    dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
+                    dcm.hideName = dcm.showName;
+                    dcm.mark.push({});
+                    dcm.sop = Uid.sop;
+                    var DcmMarkLength = dcm.mark.length - 1;
+                    dcm.mark[DcmMarkLength].type = "SEG";
+                    dcm.mark[DcmMarkLength].pixelData = new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
+                    PatientMark.push(dcm);
+                    refreshMark(dcm);
+                    SEG_now_choose = dcm.mark[DcmMarkLength];
+                }
+                for (var i = 0; i < Viewport_Total; i++)
+                    displayMark(NowResize, null, null, null, i);
+            }
+        };
+
+        Mousemove = function (e) {
+            var currX = getCurrPoint(e)[0];
+            var currY = getCurrPoint(e)[1];
+            var labelXY = getClass('labelXY'); {
+                let angel2point = rotateCalculation(e);
+                labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
+            }
+            if (MouseDownCheck && !rightMouseDown && SEG_now_choose && openWindow != true) {
+                let angel2point = rotateCalculation(e);
+                var rect = getByid("SegBrushSizeText").value;
+                rect = parseInt(rect);
+                if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
+                if (KeyCode_ctrl == true) {
+                    for (var s = -rect; s < rect; s++) {
+                        for (var s2 = -rect; s2 < rect; s2++) {
+                            if ((s * s) + (s2 * s2) < rect * rect)
+                                SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageWidth + Math.floor(angel2point[0] + s2)] = 0;
+                        }
+                    }
+                } else {
+                    for (var s = -rect; s < rect; s++) {
+                        for (var s2 = -rect; s2 < rect; s2++) {
+                            if ((s * s) + (s2 * s2) < rect * rect)
+                                SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageWidth + Math.floor(angel2point[0] + s2)] = 1;
+                        }
+                    }
+                }
+                let Uid = GetNowUid();
+                refreshMark(Uid.sop);
+                for (var i = 0; i < Viewport_Total; i++)
+                    displayMark(NowResize, null, null, null, i);
+            }
+            if (!rightMouseDown && openWindow != true) {
+                var rect = getByid("SegBrushSizeText").value;
+                rect = parseInt(rect);
+                if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
+                refreshMarkFromSop(GetNowUid().sop);
+                let angel2point = rotateCalculation(e);
+                var MarkCanvas = GetViewportMark();
+                var segCtx = MarkCanvas.getContext("2d");
+                segCtx.beginPath();
+                segCtx.strokeStyle = "#FFFF00";
+                segCtx.lineWidth = "3";
+                segCtx.arc(angel2point[0], angel2point[1], rect, 0, 2 * Math.PI);
+                segCtx.stroke();
+                segCtx.closePath();
+            }
+
+        }
+        Mouseup = function (e) {
+            var currX = getCurrPoint(e)[0];
+            var currY = getCurrPoint(e)[1];
+            if (openMouseTool == true && rightMouseDown == true)
+                displayMark(NowResize, null, null, null, viewportNumber);
+            MouseDownCheck = false;
+            rightMouseDown = false;
+            magnifierDiv.style.display = "none";
+            displayMeasureRular();
+            if (openLink) {
+                for (var i = 0; i < Viewport_Total; i++)
+                    displayRular(i);
+            }
+        }
         AddMouseEvent();
         return;
     }
+
+
+
+
+
+
+
+
+
 }
+
+

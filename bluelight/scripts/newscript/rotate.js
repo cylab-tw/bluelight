@@ -131,8 +131,9 @@ function rotate() {
                             try {
                                 GetViewport(i).canvas().style.width = GetViewport().canvas().style.width;
                                 GetViewport(i).canvas().style.height = GetViewport().canvas().style.height;
-                                GetViewportMark(i).style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-                                GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
+                                setTransform(i);
+
+
                                 GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
                                 GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
                             } catch (ex) { }
@@ -153,8 +154,8 @@ function rotate() {
                             GetViewport().newMousePointY -= Math.abs(tempHeight - (parseFloat(cnavsH))) / 2;
                         else
                             GetViewport().newMousePointY -= Math.abs(tempHeight - (parseFloat(cnavsH))) / 2;
-                        GetViewportMark(viewportNumber).style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-                        canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
+                        setTransform();
+
                     } else if (Math.abs(GetmouseY(e2) - GetmouseY(e)) + 2 < Math.abs(windowMouseY - windowMouseY2) - 2 ||
                         Math.abs(GetmouseX(e2) - GetmouseX(e)) + 2 < Math.abs(windowMouseX - windowMouseX2) - 2) {
                         var tempWidth = parseFloat(canvas.style.width);
@@ -169,8 +170,8 @@ function rotate() {
                             GetViewport().newMousePointY += Math.abs(tempHeight - (parseFloat(cnavsH))) / 2;
                         else
                             GetViewport().newMousePointY += Math.abs(tempHeight - (parseFloat(cnavsH))) / 2;
-                        GetViewportMark(viewportNumber).style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-                        canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
+                        setTransform();
+
                     }
                     windowMouseX = GetmouseX(e);
                     windowMouseY = GetmouseY(e);
@@ -183,8 +184,9 @@ function rotate() {
                             if (i == viewportNumber) continue;
                             GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = GetViewport().canvas().style.width;
                             GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = GetViewport().canvas().style.height;
-                            GetViewportMark(i).style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-                            GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
+                            setTransform(i);
+
+
                             GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
                             GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
                         }
@@ -200,14 +202,16 @@ function rotate() {
                         else if (currY > GetViewport().originalPointY + 3)
                             GetViewport().rotateValue -= 2;
                     }
-                    GetViewportMark(viewportNumber).style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-                    GetViewport().canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
+                    setTransform();
+
+
 
                     if (openLink == true) {
                         for (var z = 0; z < Viewport_Total; z++) {
                             rotateValue[z] = GetViewport().rotateValue;
-                            GetViewportMark((z)).style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-                            GetViewport(z).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
+                            setTransform(z);
+
+
                         }
                     }
                 }
@@ -217,8 +221,7 @@ function rotate() {
                 var MouseY = GetmouseY(e);
                 GetViewport().newMousePointX += MouseX - windowMouseX;
                 GetViewport().newMousePointY += MouseY - windowMouseY;
-                canvas.style.transform = "translate(" + ToPx(GetViewport().newMousePointX) + "," + ToPx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-                GetViewportMark(viewportNumber).style.transform = "translate(" + ToPx(GetViewport().newMousePointX) + "," + ToPx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
+                setTransform();
                 windowMouseX = GetmouseX(e);
                 windowMouseY = GetmouseY(e);
 
@@ -226,8 +229,9 @@ function rotate() {
                     for (var i = 0; i < Viewport_Total; i++) {
                         GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = GetViewport().canvas().style.width;
                         GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = GetViewport().canvas().style.height;
-                        GetViewportMark(i).style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-                        GetViewport(i).canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
+                        setTransform(i);
+
+
                         newMousePointX[i] = GetViewport().newMousePointX;
                         newMousePointX[i] = GetViewport().newMousePointX;
                     }

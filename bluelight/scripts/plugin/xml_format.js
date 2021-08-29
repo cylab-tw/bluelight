@@ -1,3 +1,36 @@
+window.addEventListener("load", function(event) {
+  getByid("writeXML").onclick = function () {
+    if (imgInvalid(this)) return;
+    cancelTools();
+    openWriteXML = !openWriteXML;
+    img2darkByClass("XML", !openWriteXML);
+    this.src = openWriteXML == true ? '../image/icon/black/xml_on.png' : '../image/icon/black/xml_off.png';
+    if (openWriteXML == true) {
+      getByid('xmlMarkName').style.display = '';
+      set_BL_model('writexml');
+      writexml();
+    }
+    else getByid('xmlMarkName').style.display = 'none';
+    displayMark(NowResize, null, null, null, viewportNumber);
+    if (openWriteXML == true) return;
+    else xml_now_choose = null;
+
+    function download(text, name, type) {
+      let a = document.createElement('a');
+      let file = new Blob([text], {
+        type: type
+      });
+      a.href = window.URL.createObjectURL(file);
+      //a.style.display = '';
+      a.download = name;
+      a.click();
+    }
+    setXml_context();
+    download(String(getXml_context()), 'filename.xml', 'text/plain');
+    getByid('MouseOperation').click();
+  }
+});
+
 var xml_format = `
 <annotation>
   <folder>Unknown</folder>
@@ -66,7 +99,7 @@ function setXml_context() {
   xml_format_object_list = []
   let temp = ""
   // x1 = parseInt(x1); x2 = parseInt(x2); y1 = parseInt(y1); y2 = parseInt(y2);
-  let index = SearchUid2Index(GetViewport((viewportNumber)).alt);
+  let index = SearchUid2Index(GetViewport().alt);
   let i = index[0],
     j = index[1],
     k = index[2];
@@ -105,7 +138,7 @@ function getXml_context() {
 
 function xml_pounch(currX, currY) {
   let block_size = getMarkSize(GetViewportMark(), false) * 4;
-  let index = SearchUid2Index(GetViewport((viewportNumber)).alt);
+  let index = SearchUid2Index(GetViewport().alt);
   let i = index[0],
     j = index[1],
     k = index[2];
@@ -164,7 +197,7 @@ function xml_pounch(currX, currY) {
 }
 
 function deleteXml() {
-  let index = SearchUid2Index(GetViewport((viewportNumber)).alt);
+  let index = SearchUid2Index(GetViewport().alt);
   let i = index[0],
     j = index[1],
     k = index[2];
@@ -206,6 +239,7 @@ function importXml(url) {
         dcm.color = "#0000FF";
         dcm.mark = [];
         dcm.showName = "" + objlist[i].getElementsByTagName("name")[0].childNodes[0].data;
+        dcm.hideName = dcm.showName;
         dcm.mark.push({});
         dcm.sop = Uid.sopuid;
         var DcmMarkLength = dcm.mark.length - 1;
@@ -231,11 +265,6 @@ function writexml() {
 
   if (BL_mode == 'writexml') {
     DeleteMouseEvent();
-    Mousedown=Mousedown_origin;
-    Mousemove=Mousemove_origin;
-    Mouseup=Mouseup_origin;
-    AddMouseEvent();
-    return;
     //this.angel_=1;
     //cancelTools();
     /*set_BL_model.onchange1 = function () {
@@ -290,6 +319,7 @@ function writexml() {
           dcm.color = "#0000FF";
           dcm.mark = [];
           dcm.showName = "" + getByid("xmlMarkNameText").value;
+          dcm.hideName = dcm.showName;
           dcm.mark.push({});
           dcm.sop = Uid.sopuid;
           var DcmMarkLength = dcm.mark.length - 1;
@@ -336,6 +366,7 @@ function writexml() {
         dcm.color = "#0000FF";
         dcm.mark = [];
         dcm.showName = "" + getByid("xmlMarkNameText").value;
+        dcm.hideName = dcm.showName;
         dcm.mark.push({});
         dcm.sop = Uid.sopuid;
         var DcmMarkLength = dcm.mark.length - 1;
@@ -355,4 +386,5 @@ function writexml() {
       }
     }
   }
+  AddMouseEvent();
 }

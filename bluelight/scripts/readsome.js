@@ -158,13 +158,13 @@ function readDicom(url, patientmark, openfile) {
                 else tempPixeldata[num * 8 + 7] = 0;
                 tempi += 8;
               }
-              var tvList = ['Overlay'];
+              //var tvList = ['Overlay'];
               var dcm = {};
               dcm.study = dataSet.string('x0020000d');
               dcm.series = dataSet.string('x0020000e');
               dcm.sop = dataSet.string('x00080018');
               dcm.mark = [];
-              dcm.showName = tvList[0];
+              dcm.showName = 'Overlay';
               dcm.hideName = dcm.showName + 'x60' + ov_str + '1500';
               if (dataSet.string('x60' + ov_str + '1500')) {
                 dcm.showName = dataSet.string('x60' + ov_str + '1500');
@@ -225,17 +225,17 @@ function readDicom(url, patientmark, openfile) {
                     dcm.mark = [];
                     dcm.mark.push({});
 
-                    var tvList = ['POLYLINE'];
+                    var showname = 'POLYLINE';
                     if (tempDataSet[j].dataSet.elements.x00700232) {
                       var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
                       var color = ConvertGraphicColor(ColorSequence.uint16('x00700251', 0), ColorSequence.uint16('x00700251', 1), ColorSequence.uint16('x00700251', 2));
                       if (color) {
                         dcm.color = color[0];
-                        tvList = [color[1]];
+                        showname = color[1];
                       }
                     }
 
-                    dcm.showName = tvList[0];
+                    dcm.showName = showname;
                     if (GSPS_Text != "" && GSPS_Text != undefined) {
                       dcm.showName = GSPS_Text;
                     };
@@ -299,16 +299,16 @@ function readDicom(url, patientmark, openfile) {
                     dcm.sop = sop1;
                     dcm.mark = [];
                     dcm.mark.push({});
-                    var tvList = ['CIRCLE'];
+                    var showname = 'CIRCLE';
                     if (tempDataSet[j].dataSet.elements.x00700232) {
                       var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
                       var color = ConvertGraphicColor(ColorSequence.uint16('x00700251', 0), ColorSequence.uint16('x00700251', 1), ColorSequence.uint16('x00700251', 2));
                       if (color) {
                         dcm.color = color[0];
-                        tvList = [color[1]];
+                        showname = color[1];
                       }
                     }
-                    dcm.showName = tvList[0];
+                    dcm.showName = showname;
                     dcm.hideName = dcm.showName;
                     var DcmMarkLength = dcm.mark.length - 1;
                     dcm.mark[DcmMarkLength].type = "CIRCLE";
@@ -341,8 +341,8 @@ function readDicom(url, patientmark, openfile) {
                     dcm.sop = sop1;
                     dcm.mark = [];
                     dcm.mark.push({});
-                    var tvList = ['ELLIPSE'];
-                    dcm.showName = tvList[0];
+                    var showname = 'ELLIPSE';
+                    dcm.showName = showname;
                     dcm.hideName = dcm.showName;
                     var DcmMarkLength = dcm.mark.length - 1;
                     dcm.mark[DcmMarkLength].type = "ELLIPSE";
@@ -471,14 +471,14 @@ function loadDicomSeg(image, imageId) {
       var NewpixelData = decodeImageFrame(ImageFrame, dataSet.string("x00020010"), pixeldata, {
         usePDFJS: false
       }).pixelData;
-      var tvList = ['SEG'];
+      var showname = 'SEG';
       var dcm = {};
       dcm.study = image.data.string('x0020000d');
       dcm.series = image.data.elements.x00081115.items[0].dataSet.string('x0020000e')
       dcm.sop = image.data.elements.x52009230.items[i].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string("x00081155");
       dcm.ImagePositionPatient = image.data.elements.x52009230.items[i].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
       dcm.mark = [];
-      dcm.showName = tvList[0];
+      dcm.showName = showname;
       dcm.hideName = dcm.showName;
       dcm.mark.push({});
       var DcmMarkLength = dcm.mark.length - 1;
@@ -492,14 +492,14 @@ function loadDicomSeg(image, imageId) {
   } else {
     var NewpixelData = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length);
     for (var k = 0; k < image.data.elements.x52009230.items.length; k++) {
-      var tvList = ['SEG'];
+      var showname = 'SEG';
       var dcm = {};
       dcm.study = image.data.string('x0020000d');
       dcm.series = image.data.elements.x00081115.items[0].dataSet.string('x0020000e')
       dcm.sop = image.data.elements.x52009230.items[k].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string("x00081155");
       dcm.ImagePositionPatient = image.data.elements.x52009230.items[k].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
       dcm.mark = [];
-      dcm.showName = tvList[0];
+      dcm.showName = showname;
       dcm.hideName = dcm.showName;
       dcm.mark.push({});
       var DcmMarkLength = dcm.mark.length - 1;
@@ -518,7 +518,9 @@ function loadDicomSeg(image, imageId) {
   }
 }
 
-function loadUID(study, series, sop, instance, imageId, patientId) {
+function loadUID(DICOM_obj) {
+  var study = DICOM_obj.study, series = DICOM_obj.series, sop = DICOM_obj.sop;
+  var instance = DICOM_obj.instance, imageId = DICOM_obj.imageId, patientId = DICOM_obj.patientId;
   var Hierarchy = 0;
   var NumberOfStudy = -1;
   for (var i = 0; i < Patient.StudyAmount; i++) {

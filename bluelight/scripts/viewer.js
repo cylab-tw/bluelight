@@ -115,7 +115,15 @@ function virtualLoadImage(imageId, left) {
         }).then(function (image) {
             //StudyUID:x0020000d,Series UID:x0020000e,SOP UID:x00080018,
             //Instance Number:x00200013,影像檔編碼資料:imageId,PatientId:x00100020
-            var Hierarchy = loadUID(image.data.string('x0020000d'), image.data.string('x0020000e'), image.data.string('x00080018'), image.data.string('x00200013'), imageId, image.data.string('x00100020'));
+            var DICOM_obj = {
+                study: image.data.string('x0020000d'),
+                series: image.data.string('x0020000e'),
+                sop: image.data.string('x00080018'),
+                instance: image.data.string('x00200013'),
+                imageId: imageId,
+                patientId: image.data.string('x00100020')
+              };
+            var Hierarchy = loadUID(DICOM_obj);
             NowAlt = image.data.string('x0020000e');
             DisplaySeriesCount(null);
             //如果為使用local端開啟並且為初次載入，顯示影像
@@ -268,8 +276,15 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
 
             //StudyUID:x0020000d,Series UID:x0020000e,SOP UID:x00080018,
             //Instance Number:x00200013,影像檔編碼資料:imageId,PatientId:x00100020
-            loadUID(image.data.string('x0020000d'), image.data.string('x0020000e'), image.data.string('x00080018'),
-                image.data.string('x00200013'), imageId, image.data.string('x00100020'));
+            var DICOM_obj = {
+                study: image.data.string('x0020000d'),
+                series: image.data.string('x0020000e'),
+                sop: image.data.string('x00080018'),
+                instance: image.data.string('x00200013'),
+                imageId: imageId,
+                patientId: image.data.string('x00100020')
+              };
+            loadUID(DICOM_obj);
 
             function getTag(tag) {
                 var group = tag.substring(1, 5);

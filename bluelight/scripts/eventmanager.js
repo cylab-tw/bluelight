@@ -12,22 +12,7 @@ var zoomRatio3D = 1;
 var contextmenuF = function (e) {
     e.preventDefault();
 };
-/*
-var mousedownF = function (e) {
-    Mousedown_origin(e)
-};
-var mousemoveF = function (e) {
-    Mousemove_origin(e)
-};
-var mouseoutF = function (e) {
-    Mouseout_origin(e)
-};
-var wheelF = function (e) {
-    Wheel_origin(e)
-};
-var mouseupF = function (e) {
-    Mouseup_origin(e)
-};*/
+
 var touchstartF = function (e) {
     if (e.touches[1]) Touchstart(e.touches[0], e.touches[1]);
     else Touchstart(e.touches[0]);
@@ -598,8 +583,107 @@ window.addEventListener('load', function () {
         }
 
     };
-
     document.addEventListener('touchstart', touchStartHandler, false);
     document.addEventListener('touchmove', touchMoveHandler, false);
-
 });
+
+function Wheel(e) {
+    if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+    //if (openPenDraw == true) return;
+    var nextInstanceNumber = 0;
+    getByid("MeasureLabel").style.display = "none";
+    var break1 = false;
+    var viewportNum = viewportNumber;
+    for (var z = 0; z < Viewport_Total; z++) {
+        var break1 = false;
+        if (openLink == true)
+            viewportNum = z;
+        if (openWriteSEG == true || openWriteRTSS == true || openVR == true || openMPR == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true) {
+            var currX1 = (e.pageX - canvas.getBoundingClientRect().left - GetViewport().newMousePointX - 100) * (GetViewport().imageWidth / parseInt(canvas.style.width));
+            var currY1 = (e.pageY - canvas.getBoundingClientRect().top - GetViewport().newMousePointY - 100) * (GetViewport().imageHeight / parseInt(canvas.style.height));
+            var alt = GetViewport(viewportNum).alt;
+            let index = SearchUid2Index(alt);
+            if (!index) continue;
+            let i = index[0],
+                j = index[1],
+                k = index[2];
+            var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
+            var list = sortInstance(alt);
+            if (e.deltaY < 0) {
+                for (var l = 0; l < list.length; l++) {
+                    if (break1 == true) break;
+                    if (list[l].InstanceNumber == Onum) {
+                        if (l - 1 < 0) {
+                            loadAndViewImage(list[list.length - 1].imageId, currX1, currY1, viewportNum);
+                            nextInstanceNumber = list.length - 1;
+                            break1 = true;
+                            break;
+                        }
+                        loadAndViewImage(list[l - 1].imageId, currX1, currY1, viewportNum);
+                        nextInstanceNumber = l - 1;
+                        break1 = true;
+                        break;
+                    }
+                }
+            } else {
+                for (var l = 0; l < list.length; l++) {
+                    if (break1 == true) break;
+                    if (list[l].InstanceNumber == Onum) {
+                        if (l + 1 >= list.length) {
+                            loadAndViewImage(list[0].imageId, currX1, currY1, viewportNum);
+                            nextInstanceNumber = 0;
+                            break1 = true;
+                            break;
+                        }
+                        loadAndViewImage(list[l + 1].imageId, currX1, currY1, viewportNum);
+                        nextInstanceNumber = l + 1;
+                        break1 = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (openLink == false)
+            break;
+    }
+    if (openMPR == true) {
+        Anatomical_Section(nextInstanceNumber);
+        Anatomical_Section2(nextInstanceNumber);
+    }
+}
+
+function Mouseout(e) {
+    magnifierDiv.style.display = "none";
+}
+
+interact('.LeftImg').draggable({
+    onmove(event) {
+      dragalt = event.target.alt;
+    }
+  })
+  
+  interact('.MyDicomDiv').dropzone({
+    accept: '.LeftImg',
+    ondropactivate: function (event) {
+      event.target.classList.add('drop-active')
+    },
+    ondragenter: function (event) {
+      var draggableElement = event.relatedTarget
+      var dropzoneElement = event.target
+      dropzoneElement.classList.add('drop-target')
+      draggableElement.classList.add('can-drop')
+    },
+    ondragleave: function (event) {
+      event.target.classList.remove('drop-target')
+      event.relatedTarget.classList.remove('can-drop')
+  
+    },
+    ondrop: function (event) {
+      viewportNumber = parseInt(event.target.viewportNum);
+      PictureOnclick(dragalt);
+    },
+    ondropdeactivate: function (event) {
+      event.target.classList.remove('drop-active')
+      event.target.classList.remove('drop-target')
+    }
+  })

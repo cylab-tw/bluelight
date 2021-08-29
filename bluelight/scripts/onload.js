@@ -52,7 +52,7 @@ function loadLdcmview() {
     var NewDiv = document.createElement("DIV");
     var NewCanvas = document.createElement("CANVAS");
     NewDiv.id = "MyDicomDiv" + i;
-    NewDiv.viewportNum = i - 0;
+    NewDiv.viewportNum = i;
     NewDiv.className = "MyDicomDiv";
 
     NewDiv.setAttribute("data-role", "drag-drop-container");
@@ -303,14 +303,13 @@ function readDicomTags(url) {
   }
 }
 
-function readAllJson(callBack) {
+function readAllJson(readJson) {
   //整合QIDO-RS的URL並發送至伺服器
   var queryString = ("" + location.search).replace("?", "");
-  var callURL = queryString;
   if (queryString.length > 0) {
-    var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/studies" + "?" + callURL + "";
+    var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/studies" + "?" + queryString + "";
     url = fitUrl(url);
-    callBack(url);
+    readJson(url);
   }
 }
 
@@ -323,7 +322,7 @@ function fitUrl(url) {
   return url;
 }
 
-function readConfigJson(url, callBack, callBack2) {
+function readConfigJson(url, readAllJson, readJson) {
   //載入config檔的設定，包含伺服器、請求協定、類型...等等
   var config = {};
   var request = new XMLHttpRequest();
@@ -334,58 +333,58 @@ function readConfigJson(url, callBack, callBack2) {
     var DicomResponse = request.response;
     config.QIDO = {};
 
-    tempDicomResponse = DicomResponse["DICOMWebServersConfig"][0];
+    tempResponse = DicomResponse["DICOMWebServersConfig"][0];
     tempConfig = config.QIDO
-    tempConfig.hostname = tempDicomResponse["hostname"];
-    tempConfig.https = tempDicomResponse["enableHTTPS"] == true ? "https" : "http";
-    tempConfig.PORT = tempDicomResponse["PORT"];
-    tempConfig.service = tempDicomResponse["QIDO"];
-    tempConfig.contentType = tempDicomResponse["contentType"];
-    tempConfig.timeout = tempDicomResponse["timeout"];
-    tempConfig.charset = tempDicomResponse["charset"];
-    tempConfig.includefield = tempDicomResponse["includefield"];
-    //tempConfig.enableXml2Dcm=tempDicomResponse["enableXml2Dcm"];
-    //tempConfig.Xml2DcmUrl=tempDicomResponse["Xml2DcmUrl"];
+    tempConfig.hostname = tempResponse["hostname"];
+    tempConfig.https = tempResponse["enableHTTPS"] == true ? "https" : "http";
+    tempConfig.PORT = tempResponse["PORT"];
+    tempConfig.service = tempResponse["QIDO"];
+    tempConfig.contentType = tempResponse["contentType"];
+    tempConfig.timeout = tempResponse["timeout"];
+    tempConfig.charset = tempResponse["charset"];
+    tempConfig.includefield = tempResponse["includefield"];
+    //tempConfig.enableXml2Dcm=tempResponse["enableXml2Dcm"];
+    //tempConfig.Xml2DcmUrl=tempResponse["Xml2DcmUrl"];
 
     config.WADO = {};
     tempConfig = config.WADO;
-    tempDicomResponse = DicomResponse["DICOMWebServersConfig"][0];
-    tempConfig.hostname = tempDicomResponse["hostname"];
-    tempConfig.https = tempDicomResponse["enableHTTPS"] == true ? "https" : "http";
-    tempConfig.PORT = tempDicomResponse["PORT"];
-    tempConfig.WADOType = tempDicomResponse["WADO-RS/RUI"];
-    if (tempConfig.WADOType == "URI") tempConfig.service = tempDicomResponse["WADO-URI"];
-    else if (tempConfig.WADOType == "RS") tempConfig.service = tempDicomResponse["WADO-RS"];
-    else tempConfig.service = tempDicomResponse["WADO-URI"];
-    tempConfig.contentType = tempDicomResponse["contentType"];
-    tempConfig.timeout = tempDicomResponse["timeout"];
-    tempConfig.includefield = tempDicomResponse["includefield"];
+    tempResponse = DicomResponse["DICOMWebServersConfig"][0];
+    tempConfig.hostname = tempResponse["hostname"];
+    tempConfig.https = tempResponse["enableHTTPS"] == true ? "https" : "http";
+    tempConfig.PORT = tempResponse["PORT"];
+    tempConfig.WADOType = tempResponse["WADO-RS/RUI"];
+    if (tempConfig.WADOType == "URI") tempConfig.service = tempResponse["WADO-URI"];
+    else if (tempConfig.WADOType == "RS") tempConfig.service = tempResponse["WADO-RS"];
+    else tempConfig.service = tempResponse["WADO-URI"];
+    tempConfig.contentType = tempResponse["contentType"];
+    tempConfig.timeout = tempResponse["timeout"];
+    tempConfig.includefield = tempResponse["includefield"];
 
-    //tempConfig.enableXml2Dcm=tempDicomResponse["enableXml2Dcm"];
-    //tempConfig.Xml2DcmUrl=tempDicomResponse["Xml2DcmUrl"];
+    //tempConfig.enableXml2Dcm=tempResponse["enableXml2Dcm"];
+    //tempConfig.Xml2DcmUrl=tempResponse["Xml2DcmUrl"];
 
     config.STOW = {};
     tempConfig = config.STOW;
-    tempDicomResponse = DicomResponse["DICOMWebServersConfig"][0];
-    tempConfig.hostname = tempDicomResponse["hostname"];
-    tempConfig.https = tempDicomResponse["enableHTTPS"] == true ? "https" : "http";
-    tempConfig.PORT = tempDicomResponse["PORT"];
-    tempConfig.service = tempDicomResponse["STOW"];
-    tempConfig.contentType = tempDicomResponse["contentType"];
-    tempConfig.timeout = tempDicomResponse["timeout"];
-    tempConfig.includefield = tempDicomResponse["includefield"];
-    //tempConfig.enableXml2Dcm=tempDicomResponse["enableXml2Dcm"];
-    //tempConfig.Xml2DcmUrl=tempDicomResponse["Xml2DcmUrl"];
+    tempResponse = DicomResponse["DICOMWebServersConfig"][0];
+    tempConfig.hostname = tempResponse["hostname"];
+    tempConfig.https = tempResponse["enableHTTPS"] == true ? "https" : "http";
+    tempConfig.PORT = tempResponse["PORT"];
+    tempConfig.service = tempResponse["STOW"];
+    tempConfig.contentType = tempResponse["contentType"];
+    tempConfig.timeout = tempResponse["timeout"];
+    tempConfig.includefield = tempResponse["includefield"];
+    //tempConfig.enableXml2Dcm=tempResponse["enableXml2Dcm"];
+    //tempConfig.Xml2DcmUrl=tempResponse["Xml2DcmUrl"];
 
     config.Xml2Dcm = {};
     tempConfig = config.Xml2Dcm;
-    tempConfig.enableXml2Dcm = tempDicomResponse["enableXml2Dcm"];
-    tempConfig.Xml2DcmUrl = tempDicomResponse["Xml2DcmUrl"];
+    tempConfig.enableXml2Dcm = tempResponse["enableXml2Dcm"];
+    tempConfig.Xml2DcmUrl = tempResponse["Xml2DcmUrl"];
 
     Object.assign(ConfigLog, config);
     configOnload = true;
 
-    callBack(callBack2);
+    readAllJson(readJson);
   }
 }
 
@@ -466,7 +465,15 @@ function readJson(url) {
                 //else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
                 if (getValue(DicomResponse[i]["00200013"]) == min) {
                   //載入DICOM的階層資料至物件清單
-                  if (ConfigLog.WADO.WADOType == "URI") loadUID(getValue(DicomResponse[i]["0020000D"]), getValue(DicomResponse[i]["0020000E"]), getValue(DicomResponse[i]["00080018"]), getValue(DicomResponse[i]["00200013"]), url, getValue(DicomResponse[i]["00100020"]));
+                  var DICOM_obj = {
+                    study: getValue(DicomResponse[i]["0020000D"]),
+                    series: getValue(DicomResponse[i]["0020000E"]),
+                    sop: getValue(DicomResponse[i]["00080018"]),
+                    instance: getValue(DicomResponse[i]["00200013"]),
+                    imageId: url,
+                    patientId: getValue(DicomResponse[i]["00100020"])
+                  };
+                  if (ConfigLog.WADO.WADOType == "URI") loadUID(DICOM_obj);
                   //預載入DICOM至Viewport
                   if (ConfigLog.WADO.WADOType == "URI") virtualLoadImage(url, 1);
                   else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
@@ -495,7 +502,15 @@ function readJson(url) {
                 if (ConfigLog.WADO.WADOType == "URI") url = "wadouri:" + url;
                 // else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
                 //載入DICOM的階層資料至物件清單
-                if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = loadUID(getValue(DicomResponse[i]["0020000D"]), getValue(DicomResponse[i]["0020000E"]), getValue(DicomResponse[i]["00080018"]), getValue(DicomResponse[i]["00200013"]), url, getValue(DicomResponse[i]["00100020"]));
+                var DICOM_obj = {
+                  study: getValue(DicomResponse[i]["0020000D"]),
+                  series: getValue(DicomResponse[i]["0020000E"]),
+                  sop: getValue(DicomResponse[i]["00080018"]),
+                  instance: getValue(DicomResponse[i]["00200013"]),
+                  imageId: url,
+                  patientId: getValue(DicomResponse[i]["00100020"])
+                };
+                if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = loadUID(DICOM_obj);
                 //預載入DICOM至Viewport
                 if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
                 else {

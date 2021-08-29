@@ -15,6 +15,18 @@ function CreateUid(UidClass) {
     return Uid;
 }
 
+function CreateRandom() {
+    var Uid = "xml_";
+    var date = new Date();
+    Uid += date.getFullYear() + "y" + (date.getMonth() + 1) + "m" + (date.getDate()) + "d";
+    Uid += (date.getHours() + 1) + "h" + (date.getMinutes()) + "mm" +
+      (date.getSeconds()) + "ss" + (date.getMilliseconds()) + "mmm";
+
+    Uid += random(1, 999, 1) + "b";
+    Uid += random(1, 999, 1) + "l";
+    return Uid;
+  }
+
 function random(min, max, step) {
     if (!step) step = 1;
     var len = ((max - min) / step) + 1;
