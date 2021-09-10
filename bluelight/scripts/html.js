@@ -166,8 +166,29 @@ function html_onload() {
     refreshMarkFromSop(GetNowUid().sop);
   }
 
+  getByid("ExportButton").onclick = function () {
+    var Export2png = function () {
+      var link = document.createElement('a');
+      link.download = 'dicom.png';
+
+      function BuildCanvas(oldCanvas) {
+        var newCanvas = document.createElement('canvas');
+        newCanvas.width = oldCanvas.width;
+        newCanvas.height = oldCanvas.height;
+        return newCanvas;
+      }
+      var newCanvas = BuildCanvas(GetViewport().canvas());
+      var context = newCanvas.getContext('2d');
+      context.drawImage(GetViewport().canvas(), 0, 0);
+      context.drawImage(GetViewportMark(), 0, 0);
+      link.href = newCanvas.toDataURL()
+      link.click();
+    }
+    Export2png();
+  }
+
   getByid("MouseOperation").onclick = function () {
-    
+
     if (imgInvalid(this)) return;
     //BL_mode = 'MouseTool';
     set_BL_model('MouseTool');
