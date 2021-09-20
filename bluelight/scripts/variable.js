@@ -142,6 +142,8 @@ var magnifierDiv = getByid("magnifierDiv");
 var NowResize = false;
 //裝DICOM階層樣式表等資訊的物件
 var Patient = {};
+//
+var getPatientbyImageID = {};
 //裝標記的物件
 var PatientMark = [];
 //裝DICOM Tags設定檔的物件

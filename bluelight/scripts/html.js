@@ -72,476 +72,480 @@ function html_onload() {
         directoryReader.readEntries(fnReadEntries)
       } else {
         item.file(function (file) {
-          let reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onloadend = function () {
-            //virtualLoadImage('wadouri:' + reader.result, -1);
-            loadAndViewImage('wadouri:' + reader.result);
+          var url = URL.createObjectURL(file);
+          loadAndViewImage('wadouri:' + url);
 
-            function load(time) {
-              return new Promise((resolve) => setTimeout(resolve, time));
-            }
-            load(100).then(() => {
-              readXML(reader.result);
-              readDicom(reader.result, PatientMark, true);
-            });
+          function load(time) {
+            return new Promise((resolve) => setTimeout(resolve, time));
           }
+          load(100).then(() => {
+            readXML(url);
+            readDicom(url, PatientMark, true);
+          });
+        //}
         });
-      }
     }
-    if (e.dataTransfer && e.dataTransfer.items) {
-      var items = e.dataTransfer.items;
-      for (var i = 0; i < items.length; i++) {
-
-        var item = items[i].webkitGetAsEntry();
-        if (item) {
-          addDirectory(item);
-        }
-      }
-    }
-    //var files = /*e.target.files ||*/ e.dataTransfer.files;
-    /*for (var k = 0; k < files.length; k++) {
-      let reader = new FileReader();
-      reader.readAsDataURL(files[k]);
-      reader.onloadend = function () {
-        //virtualLoadImage('wadouri:' + reader.result, -1);
-        loadAndViewImage('wadouri:' + reader.result);
-
-        function load(time) {
-          return new Promise((resolve) => setTimeout(resolve, time));
-        }
-        load(100).then(() => {
-          readXML(reader.result);
-          readDicom(reader.result, PatientMark, true);
-        });
-      }
-    }*/
   }
+  if (e.dataTransfer && e.dataTransfer.items) {
+    var items = e.dataTransfer.items;
+    for (var i = 0; i < items.length; i++) {
 
-  getByid("overlay2seg").onclick = function () {
-    getByid("overlay2seg").style.display = "none";
-    var alt = GetViewport().alt;
-    //if (o3DElement) alt = o3DElement.alt;
-    let index = SearchUid2Index(alt);
-    if (!index) return;
-    let i = index[0],
-      j = index[1],
-      k = index[2];
-    for (var n = 0; n < PatientMark.length; n++) {
-      if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
-        for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-          for (var m = 0; m < PatientMark[n].mark.length; m++) {
-            if (PatientMark[n].mark[m].type == "Overlay" && PatientMark[n].sop == Patient.Study[i].Series[j].Sop[l].SopUID) {
-              let Uid = GetNowUid();
-              var dcm = {};
-              dcm.study = Uid.study;
-              dcm.series = Uid.sreies;
+      var item = items[i].webkitGetAsEntry();
+      if (item) {
+        addDirectory(item);
+      }
+    }
+  }
+  //var files = /*e.target.files ||*/ e.dataTransfer.files;
+  /*for (var k = 0; k < files.length; k++) {
+    let reader = new FileReader();
+    reader.readAsDataURL(files[k]);
+    reader.onloadend = function () {
+      //virtualLoadImage('wadouri:' + reader.result, -1);
+      loadAndViewImage('wadouri:' + reader.result);
 
-              dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
-              dcm.mark = [];
-              dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
-              dcm.hideName = dcm.showName;
-              dcm.mark.push({});
-              dcm.sop = Patient.Study[i].Series[j].Sop[l].SopUID;
-              var DcmMarkLength = dcm.mark.length - 1;
-              dcm.mark[DcmMarkLength].type = "SEG";
-              function jsonDeepClone(obj) {
-                return JSON.parse(JSON.stringify(obj));
-              }
-              dcm.mark[DcmMarkLength].pixelData = new Uint8Array(PatientMark[n].mark[m].pixelData.length)
-              for (var p = 0; p < dcm.mark[DcmMarkLength].pixelData.length; p++)
-                dcm.mark[DcmMarkLength].pixelData[p] = PatientMark[n].mark[m].pixelData[p];
-              //dcm.mark[DcmMarkLength].pixelData = PatientMark[n].mark[m].pixelData.concat(cm.mark[DcmMarkLength].pixelData);//)jsonDeepClone(PatientMark[n].mark[m].pixelData);// new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
-              //PatientMark[n].mark[m].type = "null";
-              PatientMark.push(dcm);
-              refreshMark(dcm);
-              SEG_now_choose = dcm.mark[DcmMarkLength];
+      function load(time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+      }
+      load(100).then(() => {
+        readXML(reader.result);
+        readDicom(reader.result, PatientMark, true);
+      });
+    }
+  }*/
+}
 
-              // PatientMark.splice(PatientMark.indexOf(temp_overlay), 1);
+getByid("overlay2seg").onclick = function () {
+  getByid("overlay2seg").style.display = "none";
+  var alt = GetViewport().alt;
+  //if (o3DElement) alt = o3DElement.alt;
+  let index = SearchUid2Index(alt);
+  if (!index) return;
+  let i = index[0],
+    j = index[1],
+    k = index[2];
+  for (var n = 0; n < PatientMark.length; n++) {
+    if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
+      for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
+        for (var m = 0; m < PatientMark[n].mark.length; m++) {
+          if (PatientMark[n].mark[m].type == "Overlay" && PatientMark[n].sop == Patient.Study[i].Series[j].Sop[l].SopUID) {
+            let Uid = GetNowUid();
+            var dcm = {};
+            dcm.study = Uid.study;
+            dcm.series = Uid.sreies;
+
+            dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
+            dcm.mark = [];
+            dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
+            dcm.hideName = dcm.showName;
+            dcm.mark.push({});
+            dcm.sop = Patient.Study[i].Series[j].Sop[l].SopUID;
+            var DcmMarkLength = dcm.mark.length - 1;
+            dcm.mark[DcmMarkLength].type = "SEG";
+            function jsonDeepClone(obj) {
+              return JSON.parse(JSON.stringify(obj));
             }
+            dcm.mark[DcmMarkLength].pixelData = new Uint8Array(PatientMark[n].mark[m].pixelData.length)
+            for (var p = 0; p < dcm.mark[DcmMarkLength].pixelData.length; p++)
+              dcm.mark[DcmMarkLength].pixelData[p] = PatientMark[n].mark[m].pixelData[p];
+            //dcm.mark[DcmMarkLength].pixelData = PatientMark[n].mark[m].pixelData.concat(cm.mark[DcmMarkLength].pixelData);//)jsonDeepClone(PatientMark[n].mark[m].pixelData);// new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
+            //PatientMark[n].mark[m].type = "null";
+            PatientMark.push(dcm);
+            refreshMark(dcm);
+            SEG_now_choose = dcm.mark[DcmMarkLength];
+
+            // PatientMark.splice(PatientMark.indexOf(temp_overlay), 1);
           }
         }
       }
     }
-    refreshMarkFromSop(GetNowUid().sop);
   }
+  refreshMarkFromSop(GetNowUid().sop);
+}
 
-  getByid("ExportButton").onclick = function () {
-    var Export2png = function () {
-      var link = document.createElement('a');
-      link.download = 'dicom.png';
+getByid("ExportButton").onclick = function () {
+  var Export2png = function () {
+    var link = document.createElement('a');
+    link.download = 'dicom.png';
 
-      function BuildCanvas(oldCanvas) {
-        var newCanvas = document.createElement('canvas');
-        newCanvas.width = oldCanvas.width;
-        newCanvas.height = oldCanvas.height;
-        return newCanvas;
-      }
-      var newCanvas = BuildCanvas(GetViewport().canvas());
-      var context = newCanvas.getContext('2d');
-      context.drawImage(GetViewport().canvas(), 0, 0);
-      context.drawImage(GetViewportMark(), 0, 0);
-      link.href = newCanvas.toDataURL()
-      link.click();
+    function BuildCanvas(oldCanvas) {
+      var newCanvas = document.createElement('canvas');
+      newCanvas.width = oldCanvas.width;
+      newCanvas.height = oldCanvas.height;
+      return newCanvas;
     }
-    Export2png();
+    var newCanvas = BuildCanvas(GetViewport().canvas());
+    var context = newCanvas.getContext('2d');
+    context.drawImage(GetViewport().canvas(), 0, 0);
+    context.drawImage(GetViewportMark(), 0, 0);
+    link.href = newCanvas.toDataURL()
+    link.click();
   }
+  Export2png();
+}
 
-  getByid("MouseOperation").onclick = function () {
+getByid("MouseOperation").onclick = function () {
 
-    if (imgInvalid(this)) return;
-    //BL_mode = 'MouseTool';
-    set_BL_model('MouseTool');
-    mouseTool();
-    //cancelTools();
-    //openMouseTool = true;
-    drawBorder(this);
+  if (imgInvalid(this)) return;
+  //BL_mode = 'MouseTool';
+  set_BL_model('MouseTool');
+  mouseTool();
+  //cancelTools();
+  //openMouseTool = true;
+  drawBorder(this);
+}
+
+getByid("b_Scroll").onclick = function () {
+  if (imgInvalid(this)) return;
+  //BL_mode = 'scroll';
+  set_BL_model('scroll');
+  scroll();
+  drawBorder(this);
+}
+
+getByid("annotation1").onclick = function () {
+  if (imgInvalid(this)) return;
+  if (getByid("SplitViewportDiv").style.display == "none")
+    getByid("SplitViewportDiv").style.display = "";
+  else
+    getByid("SplitViewportDiv").style.display = "none";
+}
+
+getByid("MouseRotate").onclick = function () {
+  if (imgInvalid(this)) return;
+  //BL_mode = 'rotate';
+  set_BL_model('rotate');
+  rotate();
+  drawBorder(this);
+}
+
+getByid("WindowRevision").onclick = function () {
+  if (imgInvalid(this)) return;
+  //BL_mode = 'windowlevel';
+  set_BL_model('windowlevel');
+  windowlevel();
+  drawBorder(this);
+  //cancelTools();
+  //textWC.style.display = '';
+  //textWW.style.display = '';
+  // getByid('WindowLevelDiv').style.display = '';
+  //openWindow = true;
+  //drawBorder(this);
+  //SetTable();
+}
+
+getByid("zoom").onclick = function () {
+  if (imgInvalid(this)) return;
+  //BL_mode = 'zoom';
+  set_BL_model('zoom')
+  zoom();
+  drawBorder(this);
+}
+
+getByid("horizontal_flip").onclick = function () {
+  if (imgInvalid(this)) return;
+  GetViewport().openHorizontalFlip = !GetViewport().openHorizontalFlip;
+  SetWindowWL(true);
+  displayMark(NowResize, null, null, null, viewportNumber);
+}
+
+getByid("vertical_flip").onclick = function () {
+  if (imgInvalid(this)) return;
+  GetViewport().openVerticalFlip = !GetViewport().openVerticalFlip;
+  SetWindowWL(true);
+  displayMark(NowResize, null, null, null, viewportNumber);
+}
+getByid("color_invert").onclick = function () {
+  if (imgInvalid(this)) return;
+  GetViewport().openInvert = !GetViewport().openInvert;
+  SetWindowWL(true);
+}
+
+getByid("unlink").onclick = function () {
+  if (imgInvalid(this)) return;
+  openLink = !openLink;
+  changeLinkImg();
+}
+
+getByid("MeasureRular").onclick = function () {
+  if (imgInvalid(this)) return;
+  set_BL_model('measure');
+  measure();
+
+  drawBorder(this);
+}
+
+getByid("AngelRular").onclick = function () {
+  if (imgInvalid(this)) return;
+  //cancelTools();
+  set_BL_model('angel');
+  angel();
+  drawBorder(this);
+}
+
+getByid("playvideo").onclick = function () {
+  if (imgInvalid(this)) return;
+  openAngel = 0;
+  drawBorder(this);
+  GetViewport().openPlay = !GetViewport().openPlay;
+  if (GetViewport().openPlay) {
+    getByid('labelPlay').style.display = '';
+    getByid('textPlay').style.display = '';
   }
-
-  getByid("b_Scroll").onclick = function () {
-    if (imgInvalid(this)) return;
-    //BL_mode = 'scroll';
-    set_BL_model('scroll');
-    scroll();
-    drawBorder(this);
+  else {
+    getByid('labelPlay').style.display = 'none';
+    getByid('textPlay').style.display = 'none';
   }
+  PlayTimer();
+}
 
-  getByid("annotation1").onclick = function () {
-    if (imgInvalid(this)) return;
-    if (getByid("SplitViewportDiv").style.display == "none")
-      getByid("SplitViewportDiv").style.display = "";
-    else
-      getByid("SplitViewportDiv").style.display = "none";
-  }
+getByid("MarkButton").onclick = function () {
+  GetViewport().openMark = !GetViewport().openMark;
+  for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
+  changeMarkImg();
+}
 
-  getByid("MouseRotate").onclick = function () {
-    if (imgInvalid(this)) return;
-    //BL_mode = 'rotate';
-    set_BL_model('rotate');
-    rotate();
-    drawBorder(this);
-  }
+getByid("annotation").onclick = function () {
+  if (imgInvalid(this)) return;
+  openAnnotation = !openAnnotation;
+  displayAnnotation();
+}
 
-  getByid("WindowRevision").onclick = function () {
-    if (imgInvalid(this)) return;
-    //BL_mode = 'windowlevel';
-    set_BL_model('windowlevel');
-    windowlevel();
-    drawBorder(this);
-    //cancelTools();
-    //textWC.style.display = '';
-    //textWW.style.display = '';
-    // getByid('WindowLevelDiv').style.display = '';
-    //openWindow = true;
-    //drawBorder(this);
-    //SetTable();
-  }
-
-  getByid("zoom").onclick = function () {
-    if (imgInvalid(this)) return;
-    //BL_mode = 'zoom';
-    set_BL_model('zoom')
-    zoom();
-    drawBorder(this);
-  }
-
-  getByid("horizontal_flip").onclick = function () {
-    if (imgInvalid(this)) return;
-    GetViewport().openHorizontalFlip = !GetViewport().openHorizontalFlip;
-    SetWindowWL(true);
-    displayMark(NowResize, null, null, null, viewportNumber);
-  }
-
-  getByid("vertical_flip").onclick = function () {
-    if (imgInvalid(this)) return;
-    GetViewport().openVerticalFlip = !GetViewport().openVerticalFlip;
-    SetWindowWL(true);
-    displayMark(NowResize, null, null, null, viewportNumber);
-  }
-  getByid("color_invert").onclick = function () {
-    if (imgInvalid(this)) return;
-    GetViewport().openInvert = !GetViewport().openInvert;
-    SetWindowWL(true);
-  }
-
-  getByid("unlink").onclick = function () {
-    if (imgInvalid(this)) return;
-    openLink = !openLink;
-    changeLinkImg();
-  }
-
-  getByid("MeasureRular").onclick = function () {
-    if (imgInvalid(this)) return;
-    set_BL_model('measure');
-    measure();
-
-    drawBorder(this);
-  }
-
-  getByid("AngelRular").onclick = function () {
-    if (imgInvalid(this)) return;
-    //cancelTools();
-    set_BL_model('angel');
-    angel();
-    drawBorder(this);
-  }
-
-  getByid("playvideo").onclick = function () {
-    if (imgInvalid(this)) return;
-    openAngel = 0;
-    drawBorder(this);
-    GetViewport().openPlay = !GetViewport().openPlay;
-    if (GetViewport().openPlay) {
-      getByid('labelPlay').style.display = '';
-      getByid('textPlay').style.display = '';
-    }
+getByid("MarkupImg").onclick = function () {
+  if (imgInvalid(this)) return;
+  openDisplayMarkup = !openDisplayMarkup;
+  var TableSelectOnChange = function () {
+    GetViewport().style.overflowY = "hidden";
+    GetViewport().style.overflowX = "hidden";
+    if (getByid("DICOMTagsSelect").selected == true)
+      displayDicomTagsList();
+    else if (getByid("AIMSelect").selected == true)
+      displayAIM();
     else {
-      getByid('labelPlay').style.display = 'none';
-      getByid('textPlay').style.display = 'none';
+      for (var i = 0; i < Viewport_Total; i++)
+        dropTable(i);
     }
-    PlayTimer();
   }
-
-  getByid("MarkButton").onclick = function () {
-    GetViewport().openMark = !GetViewport().openMark;
-    for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
-    changeMarkImg();
+  if (getByid('MarkStyleDiv').style.display == 'none') {
+    getByid('MarkStyleDiv').style.display = '';
+  } else {
+    getByid('MarkStyleDiv').style.display = 'none';
   }
+  getByid("TableSelect").onchange = TableSelectOnChange;
+  TableSelectOnChange();
+}
 
-  getByid("annotation").onclick = function () {
-    if (imgInvalid(this)) return;
-    openAnnotation = !openAnnotation;
-    displayAnnotation();
-  }
+getByid("ImgMPR").onclick = function (catchError) {
+  if (imgInvalid(this)) return;
+  openMPR = !openMPR;
+  if (catchError == "error") openMPR = false;
+  img2darkByClass("MPR", !openMPR);
+  initMPR();
+}
 
-  getByid("MarkupImg").onclick = function () {
-    if (imgInvalid(this)) return;
-    openDisplayMarkup = !openDisplayMarkup;
-    var TableSelectOnChange = function () {
-      GetViewport().style.overflowY = "hidden";
-      GetViewport().style.overflowX = "hidden";
-      if (getByid("DICOMTagsSelect").selected == true)
-        displayDicomTagsList();
-      else if (getByid("AIMSelect").selected == true)
-        displayAIM();
-      else {
-        for (var i = 0; i < Viewport_Total; i++)
-          dropTable(i);
-      }
+getByid("ImgVR").onclick = function (catchError) {
+  if (imgInvalid(this)) return;
+  openVR = !openVR;
+  if (catchError == "error") openVR = false;
+  img2darkByClass("VR", !openVR);
+  initVR();
+  getByid("MouseOperation").onclick();
+}
+
+getByid("3dDisplay").onclick = function () {
+  o3dWindowLevel();
+}
+
+getByid("3dCave").onclick = function () {
+  openCave = !openCave;
+  if (openCave == true) this.src = '../image/icon/black/b_Cross-hair_ON.png';
+  else this.src = '../image/icon/black/b_Cross-hair_OFF.png';
+}
+
+getByid("openPenfile").onclick = function () {
+  createSeg();
+}
+
+getByid("rwdImgTag").onclick = function () {
+  openRWD = !openRWD;
+  EnterRWD();
+}
+
+getByid("3dZipText").onchange = getByid("3dZipCheckbox").onclick = function () {
+  if (getByid("3dZipCheckbox").checked == false) {
+    for (var ll = 0; ll < o3DListLength; ll++) {
+      var canvas1 = getByid("3DDiv" + ll).canvas();
+      canvas1.style.display = "";
     }
-    if (getByid('MarkStyleDiv').style.display == 'none') {
-      getByid('MarkStyleDiv').style.display = '';
-    } else {
-      getByid('MarkStyleDiv').style.display = 'none';
-    }
-    getByid("TableSelect").onchange = TableSelectOnChange;
-    TableSelectOnChange();
-  }
-
-  getByid("ImgMPR").onclick = function (catchError) {
-    if (imgInvalid(this)) return;
-    openMPR = !openMPR;
-    if (catchError == "error") openMPR = false;
-    img2darkByClass("MPR", !openMPR);
-    initMPR();
-  }
-
-  getByid("ImgVR").onclick = function (catchError) {
-    if (imgInvalid(this)) return;
-    openVR = !openVR;
-    if (catchError == "error") openVR = false;
-    img2darkByClass("VR", !openVR);
-    initVR();
-    getByid("MouseOperation").onclick();
-  }
-
-  getByid("3dDisplay").onclick = function () {
-    o3dWindowLevel();
-  }
-
-  getByid("3dCave").onclick = function () {
-    openCave = !openCave;
-    if (openCave == true) this.src = '../image/icon/black/b_Cross-hair_ON.png';
-    else this.src = '../image/icon/black/b_Cross-hair_OFF.png';
-  }
-
-  getByid("openPenfile").onclick = function () {
-    createSeg();
-  }
-
-  getByid("rwdImgTag").onclick = function () {
-    openRWD = !openRWD;
-    EnterRWD();
-  }
-
-  getByid("3dZipText").onchange = getByid("3dZipCheckbox").onclick = function () {
-    if (getByid("3dZipCheckbox").checked == false) {
-      for (var ll = 0; ll < o3DListLength; ll++) {
-        var canvas1 = getByid("3DDiv" + ll).canvas();
-        canvas1.style.display = "";
-      }
-    } else {
-      for (var ll = 0; ll < o3DListLength; ll++) {
-        var canvas1 = getByid("3DDiv" + ll).canvas();
-        canvas1.style.display = "";
-        if (getByid("3dZipCheckbox").checked == true && parseInt(getByid("3dZipText").value) < o3DListLength) {
-          if (ll % parseInt(o3DListLength / parseFloat(getByid("3dZipText").value)) != 0)
-            canvas1.style.display = "none";
-        }
+  } else {
+    for (var ll = 0; ll < o3DListLength; ll++) {
+      var canvas1 = getByid("3DDiv" + ll).canvas();
+      canvas1.style.display = "";
+      if (getByid("3dZipCheckbox").checked == true && parseInt(getByid("3dZipText").value) < o3DListLength) {
+        if (ll % parseInt(o3DListLength / parseFloat(getByid("3dZipText").value)) != 0)
+          canvas1.style.display = "none";
       }
     }
   }
+}
 
-  getByid("markFillCheck").onclick = function () {
-    for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
+getByid("markFillCheck").onclick = function () {
+  for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
+}
+
+getByid("MarkcolorSelect").onchange = function () {
+  for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
+}
+
+getByid("WindowLevelSelect").onchange = function () {
+  if (getByid("WindowDefault").selected == true) {
+    getByid("textWC").value = GetViewport().windowCenterList = GetViewport().windowCenter;
+    getByid("textWW").value = GetViewport().windowWidthList = GetViewport().windowWidth;
+    if (openVR) return;
+    SetWindowWL();
+    WindowOpen = true;
+    return;
   }
-
-  getByid("MarkcolorSelect").onchange = function () {
-    for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
-  }
-
-  getByid("WindowLevelSelect").onchange = function () {
-    if (getByid("WindowDefault").selected == true) {
-      getByid("textWC").value = GetViewport().windowCenterList = GetViewport().windowCenter;
-      getByid("textWW").value = GetViewport().windowWidthList = GetViewport().windowWidth;
+  for (var i = 0; i < getClass("WindowSelect").length; i++) {
+    if (getClass("WindowSelect")[i].selected == true) {
+      GetViewport().windowCenterList = getByid("textWC").value = parseInt(getClass("WindowSelect")[i].getAttribute('wc'));
+      GetViewport().windowWidthList = getByid("textWW").value = parseInt(getClass("WindowSelect")[i].getAttribute('ww'));
       if (openVR) return;
       SetWindowWL();
       WindowOpen = true;
-      return;
+      break;
     }
-    for (var i = 0; i < getClass("WindowSelect").length; i++) {
-      if (getClass("WindowSelect")[i].selected == true) {
-        GetViewport().windowCenterList = getByid("textWC").value = parseInt(getClass("WindowSelect")[i].getAttribute('wc'));
-        GetViewport().windowWidthList = getByid("textWW").value = parseInt(getClass("WindowSelect")[i].getAttribute('ww'));
-        if (openVR) return;
-        SetWindowWL();
-        WindowOpen = true;
-        break;
+  }
+}
+
+getByid("textWC").onchange = function () {
+  GetViewport().windowCenterList = parseInt(textWC.value);
+  getByid("WindowCustom").selected = true;
+  if (openVR) return;
+  SetWindowWL();
+  WindowOpen = true;
+}
+
+getByid("textWW").onchange = function () {
+  GetViewport().windowWidthList = parseInt(textWW.value);
+  getByid("WindowCustom").selected = true;
+  if (openVR) return;
+  SetWindowWL();
+  WindowOpen = true;
+}
+
+getByid("textPlay").onchange = function () {
+  if ((parseInt(getByid('textPlay').value) <= 1)) getByid('textPlay').value = 1;
+  else if (parseInt(getByid('textPlay').value) >= 60) getByid('textPlay').value = 60;
+  else if (!(parseInt(getByid('textPlay').value) >= 1)) getByid('textPlay').value = 10;
+  PlayTimer();
+}
+
+getByid("labelZoom").onchange = function () {
+  if ((zoom <= 25)) getByid('textZoom').value = zoom = 25;
+  if (zoom >= 400) getByid('textZoom').value = zoom = 400;
+  SetWindowWL();
+}
+
+getByid("o3dAlphaValueText").onchange = function () {
+  if ((parseInt(getByid('o3dAlphaValueText').value) <= 1)) getByid('o3dAlphaValueText').value = 1;
+  else if (parseInt(getByid('o3dAlphaValueText').value) >= 100) getByid('o3dAlphaValueText').value = 100;
+  o3DAlphaValue = parseInt(getByid('o3dAlphaValueText').value);
+}
+
+getByid("xmlMarkNameText").onchange = function () {
+  if (xml_now_choose) {
+    xml_now_choose.reference.showName = '' + this.value;
+    xml_now_choose.reference.hideName = xml_now_choose.reference.showName;
+    refreshMark(xml_now_choose.reference);
+    xml_now_choose = null;
+    //this.value = '';
+    for (var i = 0; i < Viewport_Total; i++)
+      displayMark(NowResize, null, null, null, i);
+  }
+}
+
+getByid("markAlphaText").onchange = function () {
+  if ((parseInt(getByid('markAlphaText').value) <= 1)) getByid('markAlphaText').value = 1;
+  else if ((parseInt(getByid('markAlphaText').value) >= 100)) getByid('markAlphaText').value = 100;
+  else if ((parseInt(getByid('markAlphaText').value) < 100));
+  else getByid('markAlphaText').value = 100;
+  for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
+}
+
+getByid("markSizeText").onchange = function () {
+  if ((parseFloat(getByid('markSizeText').value) <= 0.1)) getByid('markSizeText').value = 0.1;
+  else if ((parseInt(getByid('markSizeText').value) >= 10)) getByid('markSizeText').value = 10;
+  else if ((parseInt(getByid('markSizeText').value) < 10));
+  else getByid('markSizeText').value = 1;
+  for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
+}
+
+getByid("3dInsertText").onchange = function () {
+  if ((parseFloat(getByid('3dInsertText').value) <= 0)) getByid('3dInsertText').value = 0;
+  else if ((parseInt(getByid('3dInsertText').value) >= 5)) getByid('3dInsertText').value = 5;
+  else if ((parseInt(getByid('3dInsertText').value) < 5));
+  else getByid('3dInsertText').value = 1;
+  // for (var i = 0; i < Viewport_Total; i++)displayMark(NowResize, null, null, null, i);
+}
+
+getByid("3DskinText").onchange = function () {
+  if ((parseFloat(getByid('3DskinText').value) <= 0)) getByid('3DskinText').value = 0;
+  else if ((parseInt(getByid('3DskinText').value) >= 100)) getByid('3DskinText').value = 100;
+  else if ((parseInt(getByid('3DskinText').value) < 100));
+  else getByid('3DskinText').value = 0;
+  // for (var i = 0; i < Viewport_Total; i++)displayMark(NowResize, null, null, null, i);
+}
+getByid("3dShadow").onchange = function () {
+  setVrLight();
+}
+
+getByid("3dStrengthen").onchange = function () {
+  if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected) {
+    if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
+    // document.body.style.transformStyle = "preserve-3d";
+  } else {
+    // document.body.style.transformStyle = ""
+    if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "";
+  };
+}
+
+getByid("3dPerspective").onchange = function () {
+  if ((parseFloat(getByid('3dPerspective').value) <= -10000)) getByid('3dPerspective').value = -10000;
+  else if ((parseInt(getByid('3dPerspective').value) >= 10000)) getByid('3dPerspective').value = 10000;
+  else if ((parseInt(getByid('3dPerspective').value) < 10000));
+  else getByid('3dPerspective').value = 0;
+  document.body.style.perspective = getByid('3dPerspective').value + "px";
+}
+
+getByid("myfile").onchange = function () {
+  for (var k = 0; k < this.files.length; k++) {
+    let reader = new FileReader();
+    reader.readAsDataURL(this.files[k]);
+    reader.onloadend = function () {
+      //virtualLoadImage('wadouri:' + reader.result, -1);
+      loadAndViewImage('wadouri:' + reader.result);
+      /*
+      var baseUrl = window.URL || window.webkitURL;
+              var blob = new Blob(reader.result);
+             // return baseUrl.createObjectURL(blob);
+             var url=baseUrl.createObjectURL(blob);
+              loadAndViewImage('wadouri:' + url);
+              console.log(url);
+      */
+      function load(time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
       }
+      load(100).then(() => {
+        readXML(reader.result);
+        readDicom(reader.result, PatientMark, true);
+      });
     }
   }
+}
 
-  getByid("textWC").onchange = function () {
-    GetViewport().windowCenterList = parseInt(textWC.value);
-    getByid("WindowCustom").selected = true;
-    if (openVR) return;
-    SetWindowWL();
-    WindowOpen = true;
-  }
-
-  getByid("textWW").onchange = function () {
-    GetViewport().windowWidthList = parseInt(textWW.value);
-    getByid("WindowCustom").selected = true;
-    if (openVR) return;
-    SetWindowWL();
-    WindowOpen = true;
-  }
-
-  getByid("textPlay").onchange = function () {
-    if ((parseInt(getByid('textPlay').value) <= 1)) getByid('textPlay').value = 1;
-    else if (parseInt(getByid('textPlay').value) >= 60) getByid('textPlay').value = 60;
-    else if (!(parseInt(getByid('textPlay').value) >= 1)) getByid('textPlay').value = 10;
-    PlayTimer();
-  }
-
-  getByid("labelZoom").onchange = function () {
-    if ((zoom <= 25)) getByid('textZoom').value = zoom = 25;
-    if (zoom >= 400) getByid('textZoom').value = zoom = 400;
-    SetWindowWL();
-  }
-
-  getByid("o3dAlphaValueText").onchange = function () {
-    if ((parseInt(getByid('o3dAlphaValueText').value) <= 1)) getByid('o3dAlphaValueText').value = 1;
-    else if (parseInt(getByid('o3dAlphaValueText').value) >= 100) getByid('o3dAlphaValueText').value = 100;
-    o3DAlphaValue = parseInt(getByid('o3dAlphaValueText').value);
-  }
-
-  getByid("xmlMarkNameText").onchange = function () {
-    if (xml_now_choose) {
-      xml_now_choose.reference.showName = '' + this.value;
-      xml_now_choose.reference.hideName = xml_now_choose.reference.showName;
-      refreshMark(xml_now_choose.reference);
-      xml_now_choose = null;
-      //this.value = '';
-      for (var i = 0; i < Viewport_Total; i++)
-        displayMark(NowResize, null, null, null, i);
-    }
-  }
-
-  getByid("markAlphaText").onchange = function () {
-    if ((parseInt(getByid('markAlphaText').value) <= 1)) getByid('markAlphaText').value = 1;
-    else if ((parseInt(getByid('markAlphaText').value) >= 100)) getByid('markAlphaText').value = 100;
-    else if ((parseInt(getByid('markAlphaText').value) < 100));
-    else getByid('markAlphaText').value = 100;
-    for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
-  }
-
-  getByid("markSizeText").onchange = function () {
-    if ((parseFloat(getByid('markSizeText').value) <= 0.1)) getByid('markSizeText').value = 0.1;
-    else if ((parseInt(getByid('markSizeText').value) >= 10)) getByid('markSizeText').value = 10;
-    else if ((parseInt(getByid('markSizeText').value) < 10));
-    else getByid('markSizeText').value = 1;
-    for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
-  }
-
-  getByid("3dInsertText").onchange = function () {
-    if ((parseFloat(getByid('3dInsertText').value) <= 0)) getByid('3dInsertText').value = 0;
-    else if ((parseInt(getByid('3dInsertText').value) >= 5)) getByid('3dInsertText').value = 5;
-    else if ((parseInt(getByid('3dInsertText').value) < 5));
-    else getByid('3dInsertText').value = 1;
-    // for (var i = 0; i < Viewport_Total; i++)displayMark(NowResize, null, null, null, i);
-  }
-
-  getByid("3DskinText").onchange = function () {
-    if ((parseFloat(getByid('3DskinText').value) <= 0)) getByid('3DskinText').value = 0;
-    else if ((parseInt(getByid('3DskinText').value) >= 100)) getByid('3DskinText').value = 100;
-    else if ((parseInt(getByid('3DskinText').value) < 100));
-    else getByid('3DskinText').value = 0;
-    // for (var i = 0; i < Viewport_Total; i++)displayMark(NowResize, null, null, null, i);
-  }
-  getByid("3dShadow").onchange = function () {
-    setVrLight();
-  }
-
-  getByid("3dStrengthen").onchange = function () {
-    if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected) {
-      if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
-      // document.body.style.transformStyle = "preserve-3d";
-    } else {
-      // document.body.style.transformStyle = ""
-      if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "";
-    };
-  }
-
-  getByid("3dPerspective").onchange = function () {
-    if ((parseFloat(getByid('3dPerspective').value) <= -10000)) getByid('3dPerspective').value = -10000;
-    else if ((parseInt(getByid('3dPerspective').value) >= 10000)) getByid('3dPerspective').value = 10000;
-    else if ((parseInt(getByid('3dPerspective').value) < 10000));
-    else getByid('3dPerspective').value = 0;
-    document.body.style.perspective = getByid('3dPerspective').value + "px";
-  }
-
-  getByid("myfile").onchange = function () {
-    for (var k = 0; k < this.files.length; k++) {
-      let reader = new FileReader();
-      reader.readAsDataURL(this.files[k]);
-      reader.onloadend = function () {
-        //virtualLoadImage('wadouri:' + reader.result, -1);
-        loadAndViewImage('wadouri:' + reader.result);
-
-        function load(time) {
-          return new Promise((resolve) => setTimeout(resolve, time));
-        }
-        load(100).then(() => {
-          readXML(reader.result);
-          readDicom(reader.result, PatientMark, true);
-        });
-      }
-    }
-  }
-
-  addEvent2SplitViewport();
-  getByid("MouseOperation").onclick();
+addEvent2SplitViewport();
+getByid("MouseOperation").onclick();
 }
 
 function addEvent2SplitViewport() {

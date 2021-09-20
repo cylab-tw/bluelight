@@ -1,5 +1,5 @@
 function setTransform(viewportnum) {
-    if (!viewportnum) {
+    if (viewportnum == undefined) {
         GetViewportMark().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
         GetViewport().canvas().style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
     } else {

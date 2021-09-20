@@ -35,7 +35,7 @@ var PlayTimer = function () {
     } else {
         getByid('playvideo').src = '../image/icon/black/b_CinePause.png';
     }
-    if (openLink == true) {
+    if (openLink == true || GetViewport().openPlay == false) {
         for (var i = 0; i < Viewport_Total; i++) {
             GetViewport(i).openPlay = GetViewport().openPlay;
         }

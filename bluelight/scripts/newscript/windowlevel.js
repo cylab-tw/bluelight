@@ -8,13 +8,14 @@ function windowlevel() {
         //  getByid('myWW').style.display = '';
         openWindow = true;
 
-        SetTable();
         set_BL_model.onchange1 = function () {
             openWindow = false;
             getByid('WindowLevelDiv').style.display = 'none';
             set_BL_model.onchange1 = function () { return 0; };
         }
+        if (openVR || openMPR) return;
 
+        SetTable();
         Mousedown = function (e) {
             if (e.which == 1) MouseDownCheck = true;
             else if (e.which == 3) rightMouseDown = true;

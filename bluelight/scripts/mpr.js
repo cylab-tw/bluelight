@@ -188,7 +188,7 @@ function initMPR() {
                 var elem = getByid("3DDiv" + ll);
                 elem.canvas().width = 2;
                 elem.canvas().height = 2;
-                elem.getElementsByClassName("cornerstone-canvas")[0] = null;
+                elem.getElementsByClassName("VrCanvas")[0] = null;
                 delete elem.canvas();
                 elem.parentElement.removeChild(elem);
                 delete elem;
@@ -199,12 +199,12 @@ function initMPR() {
                 var elem = getByid("3DDiv2_" + ll);
                 elem.canvas().width = 2;
                 elem.canvas().height = 2;
-                elem.getElementsByClassName("cornerstone-canvas")[0] = null;
+                elem.getElementsByClassName("VrCanvas")[0] = null;
                 delete elem;
                 elem = getByid("3DDiv3_" + ll);
                 elem.canvas().width = 2;
                 elem.canvas().height = 2;
-                elem.getElementsByClassName("cornerstone-canvas")[0] = null;
+                elem.getElementsByClassName("VrCanvas")[0] = null;
                 delete elem;
             } catch (ex) { }
         }
@@ -313,7 +313,7 @@ function initMPR() {
                     var elem = getByid("3DDiv" + ll);
                     elem.canvas().width = 2;
                     elem.canvas().height = 2;
-                    elem.getElementsByClassName("cornerstone-canvas")[0] = null;
+                    elem.getElementsByClassName("VrCanvas")[0] = null;
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
@@ -326,7 +326,7 @@ function initMPR() {
                     var elem = getByid("3DDiv2_" + ll);
                     elem.canvas().width = 2;
                     elem.canvas().height = 2;
-                    elem.getElementsByClassName("cornerstone-canvas")[0] = null;
+                    elem.getElementsByClassName("VrCanvas")[0] = null;
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
@@ -337,7 +337,7 @@ function initMPR() {
                     var elem = getByid("3DDiv3_" + ll);
                     elem.canvas().width = 2;
                     elem.canvas().height = 2;
-                    elem.getElementsByClassName("cornerstone-canvas")[0] = null;
+                    elem.getElementsByClassName("VrCanvas")[0] = null;
                     delete elem.canvas();
                     elem.parentElement.removeChild(elem);
                     delete elem;
@@ -359,93 +359,98 @@ function initMPR() {
             return new Promise((resolve) => setTimeout(resolve, time));
         }
         var catchError = false;
-        var onImageRendered = function (e) {
-            checkRender += 1;
-            this.removeEventListener('cornerstoneimagerendered', onImageRendered);
+        function onImageRendered() {
             if (catchError == true && openMPR == true) {
                 openRendering = false;
                 img2darkByClass("MPR", !openMPR);
                 getByid("ImgMPR").onclick();
                 return;
             }
-            if (checkRender == o3DListLength) {
+
+            sleep(100).then(() => {
+                Direction_VR = 1;
+                if ((getByid("3DDiv" + (o3DListLength - 1)).thickness - Thickness) - (getByid("3DDiv" + 0).thickness - Thickness) < 0) {
+                    Direction_VR = -1;
+                    var thicknessList = [];
+                    for (var ll = 0; ll < o3DListLength; ll++) {
+                        var div1 = getByid("3DDiv" + ll);
+                        thicknessList.push(div1.thickness);
+                    }
+                    for (var ll = 0; ll < o3DListLength; ll++) {
+                        var div1 = getByid("3DDiv" + ll);
+                        div1.thickness = thicknessList[o3DListLength - ll - 1];
+                    }
+                }
+                Alpha3D();
                 sleep(100).then(() => {
-                    Direction_VR = 1;
-                    if ((getByid("3DDiv" + (o3DListLength - 1)).thickness - Thickness) - (getByid("3DDiv" + 0).thickness - Thickness) < 0) {
-                        Direction_VR = -1;
-                        var thicknessList = [];
-                        for (var ll = 0; ll < o3DListLength; ll++) {
-                            var div1 = getByid("3DDiv" + ll);
-                            thicknessList.push(div1.thickness);
-                        }
-                        for (var ll = 0; ll < o3DListLength; ll++) {
-                            var div1 = getByid("3DDiv" + ll);
-                            div1.thickness = thicknessList[o3DListLength - ll - 1];
-                        }
-                    }
-                    Alpha3D();
-                    sleep(100).then(() => {
-                        openRendering = false;
-                        img2darkByClass("MPR", !openMPR);
-                        setTimeout(getByid("MouseOperation").click(), 100);
-                    })
-                })
-            }
-        }
-        for (var l = 0; l < list.length; l++) {
-            const l2 = l;
-            cornerstone.loadAndCacheImage(list[l].imageId, {
-                usePDFJS: true
-            }).then(function (image) {
-                try {
-                    var NewDiv = document.createElement("DIV");
-                    NewDiv.addEventListener("contextmenu", contextmenuF, false);
-                    NewDiv.addEventListener('cornerstoneimagerendered', onImageRendered);
-                    NewDiv.id = "3DDiv" + l2;
-                    NewDiv.className = "o3DDiv";
-                    NewDiv.width = image.width;
-                    NewDiv.height = image.height;
-                    NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetViewport().PixelSpacingX;
-                    if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
-                    if (NewDiv.thickness < big) big = NewDiv.thickness;
-                    NewDiv.style.width = image.width + "px";
-                    NewDiv.style.height = image.height + "px";
-                    NewDiv.alt = image.data.string('x00080018');
-                    NewDiv.style.zIndex = l2;
-                    // NewDiv.style = "position:absolute;width:" + image.width + "px;height:" + image.height + "px;z-index:" + l2 + ";";
-                    o3Dcount = list.length;
-                    OutSide3dDiv.appendChild(NewDiv);
-                    getByid("3DDiv" + l2).parentNode.replaceChild(NewDiv, getByid("3DDiv" + l2));
-                    showTheImage(NewDiv, image, '3d', null, null);
-                    NewDiv.style.transform = "rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px)";
-                    NewDiv.style.width = WandH[0] + "px";
-                    NewDiv.style.height = WandH[1] + "px";
-                    //NewDiv.style = "transform:rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px);;position:absolute;width:" + WandH[0] + "px;height:" + WandH[1] + "px;"; //z-index:" + l2 + ";";
-                    NewDiv.canvas = function () {
-                        if (this.getElementsByClassName("cornerstone-canvas")[0])
-                            return this.getElementsByClassName("cornerstone-canvas")[0];
-                        else
-                            return null;
-                    }
-                    NewDiv.ctx = function () {
-                        if (this.getElementsByClassName("cornerstone-canvas")[0])
-                            return this.getElementsByClassName("cornerstone-canvas")[0].getContext("2d");
-                        else
-                            return null;
-                    }
-                } catch (ex) {
-                    catchError = true;
-                    if (openMPR == true) {
-                        openMPR = false;
-                        alert("Error, this image may not support 3D.");
-                    };
                     openRendering = false;
-                    getByid("ImgMPR").onclick('error');
-                    return;
-                };
-            }, function (err) {
-                alert(err);
-            });
+                    img2darkByClass("MPR", !openMPR);
+                    setTimeout(getByid("MouseOperation").click(), 100);
+                })
+            })
+        }
+
+
+        function displayCanvas(DicomCanvas, image, pixelData) {
+            DicomCanvas.width = image.width;
+            DicomCanvas.height = image.height
+            DicomCanvas.style.width = image.width + "px";
+            DicomCanvas.style.height = image.height + "px";
+            var ctx2 = DicomCanvas.getContext("2d");
+            var imgData2 = ctx2.createImageData(image.width, image.height);
+            var windowWidth = image.windowWidth;
+            var windowCenter = image.windowCenter;
+            if (getByid("o3DAngio").selected == true) {
+                windowWidth = 332;
+                windowCenter = 287;
+            } else if (getByid("o3DAirways").selected == true) {
+                //如果是肺氣管模型，使用對應的Window Level
+                windowWidth = 409;
+                windowCenter = -538;
+            }
+            var high = windowCenter + (windowWidth / 2);
+            var low = windowCenter - (windowWidth / 2);
+            var intercept = image.intercept;
+            if (CheckNull(intercept)) intercept = 0;
+            var slope = image.slope;
+            if (CheckNull(slope)) slope = 1;
+
+            var _firstNumber = 0;
+            if (image.color == true) {
+                for (var i = 0; i < imgData2.data.length; i += 4) {
+                    _firstNumber = pixelData[i];
+                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                    imgData2.data[i + 0] = _firstNumber;
+                    _firstNumber = pixelData[i + 1];
+                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                    imgData2.data[i + 1] = _firstNumber;
+                    _firstNumber = pixelData[i + 2];
+                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                    imgData2.data[i + 2] = _firstNumber;
+                    imgData2.data[i + 3] = 255;
+                }
+            }
+            else if ((image.invert != true && GetViewport().openInvert == true) || (image.invert == true && GetViewport().openInvert == false)) {
+                for (var i = 0; i < imgData2.data.length; i += 4) {
+                    _firstNumber = pixelData[i / 4];
+                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                    imgData2.data[i + 0] = 255 - _firstNumber
+                    imgData2.data[i + 1] = 255 - _firstNumber
+                    imgData2.data[i + 2] = 255 - _firstNumber
+                    imgData2.data[i + 3] = 255;
+                }
+            }
+            else {
+                for (var i = 0; i < imgData2.data.length; i += 4) {
+                    _firstNumber = pixelData[i / 4];
+                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                    imgData2.data[i + 0] = _firstNumber
+                    imgData2.data[i + 1] = _firstNumber
+                    imgData2.data[i + 2] = _firstNumber
+                    imgData2.data[i + 3] = 255;
+                }
+            }
+            ctx2.putImageData(imgData2, 0, 0);
         }
         GetViewport(3).appendChild(OutSide3dDiv);
         getByid("OutSide3dDiv").parentNode.replaceChild(OutSide3dDiv, getByid("OutSide3dDiv"));
@@ -456,7 +461,66 @@ function initMPR() {
             if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "";
         }*/
 
-        Thickness = -Thickness + big; 
+        Thickness = -Thickness + big;
+
+        for (var l = 0; l < list.length; l++) {
+            const l2 = l;
+            const image = getPatientbyImageID[list[l2].imageId].image;
+            const pixelData = getPatientbyImageID[list[l2].imageId].pixelData;
+            try {
+                var NewDiv = document.createElement("DIV");
+                NewDiv.addEventListener("contextmenu", contextmenuF, false);
+                //NewDiv.addEventListener('cornerstoneimagerendered', onImageRendered);
+                NewDiv.id = "3DDiv" + l2;
+                NewDiv.className = "o3DDiv";
+                NewDiv.alt = image.data.string('x00080018');
+                NewDiv.width = image.width;
+                NewDiv.height = image.height;
+                NewDiv.style.width = image.width + "px";
+                NewDiv.style.height = image.height + "px";
+                NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetViewport().PixelSpacingX;
+                if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
+                if (NewDiv.thickness < big) big = NewDiv.thickness;
+
+                o3Dcount = list.length;
+                OutSide3dDiv.appendChild(NewDiv);
+                getByid("3DDiv" + l2).parentNode.replaceChild(NewDiv, getByid("3DDiv" + l2));
+                NewDiv.style.zIndex = l2;
+
+                var NewCanvas = document.createElement("CANVAS");
+                NewCanvas.className = "VrCanvas";
+                NewDiv.appendChild(NewCanvas);
+                displayCanvas(NewCanvas, image, pixelData);
+                //showTheImage(NewDiv, image, '3d', null, null);
+                NewDiv.style.transform = "rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px)";
+                NewDiv.style.width = WandH[0] + "px";
+                NewDiv.style.height = WandH[1] + "px";
+                //NewDiv.style = "transform:rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px);;position:absolute;width:" + WandH[0] + "px;height:" + WandH[1] + "px;"; //z-index:" + l2 + ";";
+                NewDiv.canvas = function () {
+                    if (this.getElementsByClassName("VrCanvas")[0])
+                        return this.getElementsByClassName("VrCanvas")[0];
+                    else
+                        return null;
+                }
+                NewDiv.ctx = function () {
+                    if (this.getElementsByClassName("VrCanvas")[0])
+                        return this.getElementsByClassName("VrCanvas")[0].getContext("2d");
+                    else
+                        return null;
+                }
+            } catch (ex) {
+                catchError = true;
+                if (openMPR == true) {
+                    openMPR = false;
+                    alert("Error, this image may not support 3D.");
+                };
+                openRendering = false;
+                getByid("ImgMPR").onclick('error');
+                return;
+            };
+
+        }
+        onImageRendered();
         return;
     }
 }
@@ -522,7 +586,7 @@ function o3dWindowLevel() {
             var elem = getByid("3DDiv2_" + ll);
             elem.canvas().width = 2;
             elem.canvas().height = 2;
-            elem.getElementsByClassName("cornerstone-canvas")[0] = null;
+            elem.getElementsByClassName("VrCanvas")[0] = null;
             delete elem.canvas();
             elem.parentElement.removeChild(elem);
             delete elem;
@@ -531,7 +595,7 @@ function o3dWindowLevel() {
             var elem = getByid("3DDiv3_" + ll);
             elem.canvas().width = 2;
             elem.canvas().height = 2;
-            elem.getElementsByClassName("cornerstone-canvas")[0] = null;
+            elem.getElementsByClassName("VrCanvas")[0] = null;
             delete elem.canvas();
             elem.parentElement.removeChild(elem);
             delete elem;
@@ -554,79 +618,140 @@ function o3dWindowLevel() {
         return new Promise((resolve) => setTimeout(resolve, time));
     }
 
-    var onImageRendered = function (e) {
-        checkRender += 1;
-        this.removeEventListener('cornerstoneimagerendered', onImageRendered);
-        if (checkRender == o3DListLength) {
-            Direction_VR = 1;
-            sleep(100).then(() => {
-                if ((getByid("3DDiv" + (o3DListLength - 1)).thickness - Thickness) - (getByid("3DDiv" + 0).thickness - Thickness) < 0) {
-                    var thicknessList = [];
-                    Direction_VR = -1;
-                    for (var ll = 0; ll < o3DListLength; ll++) {
-                        var div1 = getByid("3DDiv" + ll);
-                        thicknessList.push(div1.thickness);
-                    }
-                    for (var ll = 0; ll < o3DListLength; ll++) {
-                        var div1 = getByid("3DDiv" + ll);
-                        div1.thickness = thicknessList[o3DListLength - ll - 1];
-                    }
+    function onImageRendered() {
+        Direction_VR = 1;
+        sleep(100).then(() => {
+            if ((getByid("3DDiv" + (o3DListLength - 1)).thickness - Thickness) - (getByid("3DDiv" + 0).thickness - Thickness) < 0) {
+                var thicknessList = [];
+                Direction_VR = -1;
+                for (var ll = 0; ll < o3DListLength; ll++) {
+                    var div1 = getByid("3DDiv" + ll);
+                    thicknessList.push(div1.thickness);
                 }
-                Alpha3D();
-                sleep(100).then(() => {
-                    openRendering = false;
-                    if (openMPR) img2darkByClass("MPR", !openMPR);
-                    else if (openVR) img2darkByClass("VR", !openVR);
-                })
+                for (var ll = 0; ll < o3DListLength; ll++) {
+                    var div1 = getByid("3DDiv" + ll);
+                    div1.thickness = thicknessList[o3DListLength - ll - 1];
+                }
+            }
+            Alpha3D();
+            sleep(100).then(() => {
+                openRendering = false;
+                if (openMPR) img2darkByClass("MPR", !openMPR);
+                else if (openVR) img2darkByClass("VR", !openVR);
             })
-        }
+        })
+
     }
+    function displayCanvas(DicomCanvas, image, pixelData) {
+        DicomCanvas.width = image.width;
+        DicomCanvas.height = image.height
+        DicomCanvas.style.width = image.width + "px";
+        DicomCanvas.style.height = image.height + "px";
+        var ctx2 = DicomCanvas.getContext("2d");
+        var imgData2 = ctx2.createImageData(image.width, image.height);
+        var windowWidth = GetViewport().windowWidthList;
+        var windowCenter = GetViewport().windowCenterList;
+        if (getByid("o3DAngio").selected == true) {
+            windowWidth = 332;
+            windowCenter = 287;
+        } else if (getByid("o3DAirways").selected == true) {
+            //如果是肺氣管模型，使用對應的Window Level
+            windowWidth = 409;
+            windowCenter = -538;
+        }
+        var high = windowCenter + (windowWidth / 2);
+        var low = windowCenter - (windowWidth / 2);
+        var intercept = image.intercept;
+        if (CheckNull(intercept)) intercept = 0;
+        var slope = image.slope;
+        if (CheckNull(slope)) slope = 1;
+        var _firstNumber = 0;
+        if (image.color == true) {
+            for (var i = 0; i < imgData2.data.length; i += 4) {
+                _firstNumber = pixelData[i];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 0] = _firstNumber;
+                _firstNumber = pixelData[i + 1];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 1] = _firstNumber;
+                _firstNumber = pixelData[i + 2];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 2] = _firstNumber;
+                imgData2.data[i + 3] = 255;
+            }
+        }
+        else if ((image.invert != true && GetViewport().openInvert == true) || (image.invert == true && GetViewport().openInvert == false)) {
+            for (var i = 0; i < imgData2.data.length; i += 4) {
+                _firstNumber = pixelData[i / 4];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 0] = 255 - _firstNumber
+                imgData2.data[i + 1] = 255 - _firstNumber
+                imgData2.data[i + 2] = 255 - _firstNumber
+                imgData2.data[i + 3] = 255;
+            }
+        }
+        else {
+            for (var i = 0; i < imgData2.data.length; i += 4) {
+                _firstNumber = pixelData[i / 4];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 0] = _firstNumber
+                imgData2.data[i + 1] = _firstNumber
+                imgData2.data[i + 2] = _firstNumber
+                imgData2.data[i + 3] = 255;
+            }
+        }
+        ctx2.putImageData(imgData2, 0, 0);
+    }
+    Thickness = 0;
+    var big = 10000000000000000000;
+    Thickness = -Thickness + big;
     for (var l = 0; l < list.length; l++) {
         const l2 = l;
-        cornerstone.loadAndCacheImage(list[l].imageId, {
-            usePDFJS: true
-        }).then(function (image) {
-            var NewDiv = document.createElement("DIV");
-            NewDiv.addEventListener("contextmenu", contextmenuF, false);
-            NewDiv.addEventListener('cornerstoneimagerendered', onImageRendered);
-            NewDiv.id = "3DDiv" + l2;
-            NewDiv.className = "o3DDiv";
-            NewDiv.alt = image.data.string('x00080018');
-            NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetViewport().PixelSpacingX;
-            if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
-            if (NewDiv.thickness < big) big = NewDiv.thickness;
-            NewDiv.width = image.width;
-            NewDiv.height = image.height;
-            NewDiv.style.width = image.width + "px";
-            NewDiv.style.height = image.height + "px";
-            NewDiv.style.zIndex = l2;
-            //NewDiv.style = "position:absolute;width:" + image.width + "px;height:" + image.height + "px;z-index:" + l2 + ";";
-            o3Dcount = list.length;
-            if (openVR == true) GetViewport(0).appendChild(NewDiv);
-            else if (openMPR == true) GetViewport(3).appendChild(NewDiv);
-            getByid("3DDiv" + l2).parentNode.replaceChild(NewDiv, getByid("3DDiv" + l2));
-            showTheImage(NewDiv, image, '3d', null, null);
-            NewDiv.style.transform = "rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px)";
-            NewDiv.style.width = WandH[0] + "px";
-            NewDiv.style.height = WandH[1] + "px";
-            //NewDiv.style = "transform:rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px);;position:absolute;width:" + WandH[0] + "px;height:" + WandH[1] + "px;"; //z-index:" + l2 + ";";
+        const image = getPatientbyImageID[list[l2].imageId].image;
+        const pixelData = getPatientbyImageID[list[l2].imageId].pixelData;
+        var NewDiv = document.createElement("DIV");
+        NewDiv.addEventListener("contextmenu", contextmenuF, false);
+        // NewDiv.addEventListener('cornerstoneimagerendered', onImageRendered);
+        NewDiv.id = "3DDiv" + l2;
+        NewDiv.className = "o3DDiv";
+        NewDiv.alt = image.data.string('x00080018');
+        NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetViewport().PixelSpacingX;
+        if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
+        if (NewDiv.thickness < big) big = NewDiv.thickness;
+        NewDiv.width = image.width;
+        NewDiv.height = image.height;
+        NewDiv.style.width = image.width + "px";
+        NewDiv.style.height = image.height + "px";
+        NewDiv.style.zIndex = l2;
+        //NewDiv.style = "position:absolute;width:" + image.width + "px;height:" + image.height + "px;z-index:" + l2 + ";";
+        o3Dcount = list.length;
+        if (openVR == true) GetViewport(0).appendChild(NewDiv);
+        else if (openMPR == true) GetViewport(3).appendChild(NewDiv);
+        getByid("3DDiv" + l2).parentNode.replaceChild(NewDiv, getByid("3DDiv" + l2));
 
-            NewDiv.canvas = function () {
-                if (this.getElementsByClassName("cornerstone-canvas")[0])
-                    return this.getElementsByClassName("cornerstone-canvas")[0];
-                else
-                    return null;
-            }
-            NewDiv.ctx = function () {
-                if (this.getElementsByClassName("cornerstone-canvas")[0])
-                    return this.getElementsByClassName("cornerstone-canvas")[0].getContext("2d");
-                else
-                    return null;
-            }
-        }, function (err) {
-            alert(err);
-        });
+        var NewCanvas = document.createElement("CANVAS");
+        NewCanvas.className = "VrCanvas";
+        NewDiv.appendChild(NewCanvas);
+        displayCanvas(NewCanvas, image, pixelData);
+        //showTheImage(NewDiv, image, '3d', null, null);
+        NewDiv.style.transform = "rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px)";
+        NewDiv.style.width = WandH[0] + "px";
+        NewDiv.style.height = WandH[1] + "px";
+        //NewDiv.style = "transform:rotate3d(0, 0, 0 , 0deg) translateZ(-" + l2 + "px);;position:absolute;width:" + WandH[0] + "px;height:" + WandH[1] + "px;"; //z-index:" + l2 + ";";
+
+        NewDiv.canvas = function () {
+            if (this.getElementsByClassName("VrCanvas")[0])
+                return this.getElementsByClassName("VrCanvas")[0];
+            else
+                return null;
+        }
+        NewDiv.ctx = function () {
+            if (this.getElementsByClassName("VrCanvas")[0])
+                return this.getElementsByClassName("VrCanvas")[0].getContext("2d");
+            else
+                return null;
+        }
     }
-    Thickness = -Thickness + big;
+    onImageRendered();
     return;
 }

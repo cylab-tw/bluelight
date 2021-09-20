@@ -463,14 +463,14 @@ function rotate3dVR(VrDistance) {
     if ((!(degerrY >= 90 && degerrY <= 270) && (degerrX >= 90 && degerrX <= 270)) ||
         (degerrY >= 90 && degerrY <= 270) && !(degerrX >= 90 && degerrX <= 270)) {
         for (var ll = 0; ll < o3DListLength; ll++) {
-            var canvas1 = getByid("3DDiv" + ll).getElementsByClassName("cornerstone-canvas")[0];
+            var canvas1 = getByid("3DDiv" + ll).getElementsByClassName("VrCanvas")[0];
             var div1 = getByid("3DDiv" + ll);
             div1.style.zIndex = -ll + o3DListLength + o3d_3degree;
             div1.style.transform = "translate3d(0,0,0) rotateY(" + degerrX + "deg) rotateX(" + degerrY + "deg)  translateZ(" + (parseFloat(parseFloat(1) * (parseFloat(canvas1.style.height) / parseFloat(GetViewport().imageHeight))) * (div1.thickness - Thickness) - (VrDistance / 2)) + "px)";
         }
     } else {
         for (var ll = 0; ll < o3DListLength; ll++) {
-            var canvas1 = getByid("3DDiv" + ll).getElementsByClassName("cornerstone-canvas")[0];
+            var canvas1 = getByid("3DDiv" + ll).getElementsByClassName("VrCanvas")[0];
             var div1 = getByid("3DDiv" + ll);
             div1.style.zIndex = ll + o3d_3degree;
             div1.style.transform = "translate3d(0,0,0) rotateY(" + degerrX + "deg) rotateX(" + degerrY + "deg)  translateZ(" + (parseFloat(parseFloat(1) * (parseFloat(canvas1.style.height) / parseFloat(GetViewport().imageHeight))) * (div1.thickness - Thickness) - (VrDistance / 2)) + "px)";

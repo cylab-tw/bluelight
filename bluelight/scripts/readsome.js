@@ -108,6 +108,7 @@ function readXML(url) {
   }
   oReq.send();
 }
+
 function readDicom(url, patientmark, openfile) {
   var oReq = new XMLHttpRequest();
   try {
@@ -520,7 +521,7 @@ function loadDicomSeg(image, imageId) {
 
 function loadUID(DICOM_obj) {
   var study = DICOM_obj.study, series = DICOM_obj.series, sop = DICOM_obj.sop;
-  var instance = DICOM_obj.instance, imageId = DICOM_obj.imageId, patientId = DICOM_obj.patientId;
+  var instance = DICOM_obj.instance, imageId = DICOM_obj.imageId, patientId = DICOM_obj.patientId, image = DICOM_obj.image,pixelData=DICOM_obj.pixelData;
   var Hierarchy = 0;
   var NumberOfStudy = -1;
   for (var i = 0; i < Patient.StudyAmount; i++) {
@@ -541,6 +542,9 @@ function loadUID(DICOM_obj) {
     Sop.InstanceNumber = instance;
     Sop.SopUID = sop;
     Sop.imageId = imageId;
+    Sop.image = image;
+    Sop.pixelData =pixelData;
+    getPatientbyImageID[imageId] = Sop;
     Series.Sop.push(Sop);
     Study.Series.push(Series);
     Patient.Study.push(Study);
@@ -561,6 +565,9 @@ function loadUID(DICOM_obj) {
       Sop.InstanceNumber = instance;
       Sop.SopUID = sop;
       Sop.imageId = imageId;
+      Sop.image = image;
+      Sop.pixelData =pixelData;
+      getPatientbyImageID[imageId] = Sop;
       Series.Sop.push(Sop);
       Patient.Study[NumberOfStudy].Series.push(Series);
       Patient.Study[NumberOfStudy].SeriesAmount += 1;
@@ -576,8 +583,11 @@ function loadUID(DICOM_obj) {
         Sop.InstanceNumber = instance;
         Sop.SopUID = sop;
         Sop.imageId = imageId;
+        Sop.image = image;
+        Sop.pixelData =pixelData;
         Patient.Study[NumberOfStudy].Series[isSeries].Sop.push(Sop);
         Patient.Study[NumberOfStudy].Series[isSeries].SopAmount += 1;
+        getPatientbyImageID[imageId] = Sop;
       } else {
         //  console.log("重複載入");
         Hierarchy = -1;

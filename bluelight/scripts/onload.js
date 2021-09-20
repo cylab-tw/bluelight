@@ -133,6 +133,7 @@ function loadLdcmview() {
     NewDiv.DicomTagsList = [];
 
     //只要取得canvas()就能快速取得該Viewport的影像
+    /*
     NewDiv.canvas = function () {
       if (this.getElementsByClassName("cornerstone-canvas")[0])
         return this.getElementsByClassName("cornerstone-canvas")[0];
@@ -144,7 +145,20 @@ function loadLdcmview() {
         return this.getElementsByClassName("cornerstone-canvas")[0].getContext("2d");
       else
         return null;
+    }*/
+    NewDiv.canvas = function () {
+      if (this.getElementsByClassName("DicomCanvas")[0])
+        return this.getElementsByClassName("DicomCanvas")[0];
+      else
+        return null;
     }
+    NewDiv.ctx = function () {
+      if (this.getElementsByClassName("DicomCanvas")[0])
+        return this.getElementsByClassName("DicomCanvas")[0].getContext("2d");
+      else
+        return null;
+    }
+
     NewCanvas.id = "MarkCanvas" + i;
     NewDiv.appendChild(NewCanvas);
   }
@@ -207,15 +221,28 @@ function loadLdcmview() {
     labelXY1.innerText = "X: " + 0 + " Y: " + 0;
     GetViewport(count - 1).appendChild(labelXY1);
   }
+  count = 0;
+  while (getClass("DicomCanvas").length < Viewport_Total) {
+    count++;
+    var DicomCanvas1 = document.createElement("CANVAS");
+    DicomCanvas1.className = "DicomCanvas";
+    GetViewport(count - 1).appendChild(DicomCanvas1);
+  }
+
+  var DicomCanvas1 = document.createElement("CANVAS");
+  DicomCanvas1.className = "originDicomCanvas";
+  DicomCanvas1.id = "originDicomCanvas";
+  getByid("origindicomImage").appendChild(DicomCanvas1);
+
   getByid("origindicomImage").canvas = function () {
-    if (this.getElementsByClassName("cornerstone-canvas")[0])
-      return this.getElementsByClassName("cornerstone-canvas")[0];
+    if (this.getElementsByClassName("originDicomCanvas")[0])
+      return this.getElementsByClassName("originDicomCanvas")[0];
     else
       return null;
   }
   getByid("origindicomImage").ctx = function () {
-    if (this.getElementsByClassName("cornerstone-canvas")[0])
-      return this.getElementsByClassName("cornerstone-canvas")[0].getContext("2d");
+    if (this.getElementsByClassName("originDicomCanvas")[0])
+      return this.getElementsByClassName("originDicomCanvas")[0].getContext("2d");
     else
       return null;
   }
@@ -510,7 +537,8 @@ function readJson(url) {
                   imageId: url,
                   patientId: getValue(DicomResponse[i]["00100020"])
                 };
-                if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = loadUID(DICOM_obj);
+                //if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = loadUID(DICOM_obj);
+                var Hierarchy=0;
                 //預載入DICOM至Viewport
                 if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
                 else {
