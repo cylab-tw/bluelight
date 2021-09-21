@@ -500,7 +500,7 @@ function readJson(url) {
                     imageId: url,
                     patientId: getValue(DicomResponse[i]["00100020"])
                   };
-                  if (ConfigLog.WADO.WADOType == "URI") loadUID(DICOM_obj);
+                  // if (ConfigLog.WADO.WADOType == "URI") loadUID(DICOM_obj);
                   //預載入DICOM至Viewport
                   if (ConfigLog.WADO.WADOType == "URI") virtualLoadImage(url, 1);
                   else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
@@ -537,12 +537,12 @@ function readJson(url) {
                   imageId: url,
                   patientId: getValue(DicomResponse[i]["00100020"])
                 };
-                //if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = loadUID(DICOM_obj);
-                var Hierarchy=0;
+                if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = SearchUid2IndexBySeries(getValue(DicomResponse[i]["0020000E"]));//loadUID(DICOM_obj);
+                //var Hierarchy = 0;
                 //預載入DICOM至Viewport
                 if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
                 else {
-                  if (Hierarchy == 0)
+                  if (Hierarchy == undefined)
                     virtualLoadImage(url, 1);
                   else
                     virtualLoadImage(url, 0);

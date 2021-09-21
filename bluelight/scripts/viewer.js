@@ -164,6 +164,9 @@ function EnterRWD() {
 
 function virtualLoadImage(imageId, left) {
     //left==1代表為該series首張影像，為零代表非首張影像，為-1代表為使用local端載入
+    textWC = getByid("textWC");
+    textWW = getByid("textWW");
+    labelWC = getClass("labelWC");
     try {
         cornerstone.loadAndCacheImage(imageId, {
             usePDFJS: true
@@ -186,15 +189,15 @@ function virtualLoadImage(imageId, left) {
             NowAlt = image.data.string('x0020000e');
             DisplaySeriesCount(null);
             //如果為使用local端開啟並且為初次載入，顯示影像
-            if (left != -1 && (Hierarchy == 0 || Hierarchy == 1)) left = 1;
+            if (left != -1 && (Hierarchy == 0 || Hierarchy == 1)) left = 7;
             //如果為首張，顯示影像
-            if (left == 1) {
+            if (left == 7) {
                 var newView = SetToLeft(image.data.string('x0020000e'), undefined, image.data.string('x00100020'));
                 //showTheImage(newView, image, 'leftCanvas');
+                leftCanvasStudy.push(image.data.string('x0020000e'));
                 var NewCanvas = document.createElement("CANVAS");
                 NewCanvas.className = "LeftCanvas";
                 newView.appendChild(NewCanvas);
-                //console.log(777);
                 displayLefyCanvas(NewCanvas, image, pixelData);
                 loadAndViewImage(imageId);
             }
@@ -331,7 +334,6 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
         loadDicomSeg(image, imageId);
         return;
     }
-    //console.log(image.getPixelData());
 
     function displayCanvas(DicomCanvas) {
         DicomCanvas.width = image.width;
@@ -580,6 +582,7 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
             checkleftCanvas = checkSeries;
         }
     }
+
     //如果未曾出現在左側面板，就加到左側面板
     if (checkleftCanvas == -1) {
         var newView = SetToLeft(image.data.string('x0020000e'), -1, image.data.string('x00100020'));
@@ -591,12 +594,13 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
         // showTheImage(newView, image, 'leftCanvas', null, viewportNum);
     } else {
         var checkNum;
-        for (var dCount = 0; dCount < dicomImageCount; dCount++) {
+        for (var dCount = 0; dCount <= dicomImageCount; dCount++) {
             if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).alt == image.data.string('x0020000e')) {
                 checkNum = dCount;
+                break;
             }
         }
-        SetToLeft(image.data.string('x0020000e'), checkNum, image.data.string('x00100020'));
+        if (checkNum != undefined) SetToLeft(image.data.string('x0020000e'), checkNum, image.data.string('x00100020'));
     }
     //顯示資訊到label
     DisplaySeriesCount(image.data.string('x00200013'), viewportNum, date);
