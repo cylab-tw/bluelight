@@ -171,15 +171,15 @@ function displayRular(viewportNum0) {
     if (viewportNum0 >= 0) viewportNum = viewportNum0;
     else viewportNum = viewportNumber;
     try {
-        var RularCanvas = getClass("downRule");
+        var downRule = getClass("downRule");
         var offsetWidth = GetViewport(viewportNum).offsetWidth;
-        RularCanvas[viewportNum].width = offsetWidth;
-        RularCanvas[viewportNum].style.left = '50%';
-        RularCanvas[viewportNum].style.transform = 'translateX(-50%)';
+        downRule[viewportNum].width = offsetWidth;
+        downRule[viewportNum].style.left = '50%';
+        downRule[viewportNum].style.transform = 'translateX(-50%)';
 
-        var tempctx = RularCanvas[viewportNum].getContext("2d");
+        var tempctx = downRule[viewportNum].getContext("2d");
         tempctx.clearRect(0, 0, offsetWidth, 20);
-        tempctx.strokeStyle = "#FF0000";
+        tempctx.strokeStyle = "#FFFFFF";
         tempctx.lineWidth = "2";
         tempctx.beginPath();
         var x1 = 0;
@@ -203,16 +203,16 @@ function displayRular2(viewportNum0) {
     if (viewportNum0 >= 0) viewportNum = viewportNum0;
 
     try {
-        var RularCanvas = getClass("leftRule");
+        var leftRule = getClass("leftRule");
         var offsetHeight = GetViewport(viewportNum).offsetHeight;
-        RularCanvas[viewportNum].height = offsetHeight;
-        RularCanvas[viewportNum].style.left = 10 + bordersize + "px";
-        RularCanvas[viewportNum].style.top = '50%';
-        RularCanvas[viewportNum].style.transform = 'translateY(-50%)';
-        var tempctx = RularCanvas[viewportNum].getContext("2d");
+        leftRule[viewportNum].height = offsetHeight;
+        leftRule[viewportNum].style.left = 10 + bordersize + "px";
+        leftRule[viewportNum].style.top = '50%';
+        leftRule[viewportNum].style.transform = 'translateY(-50%)';
+        var tempctx = leftRule[viewportNum].getContext("2d");
         var canvas = GetViewport(viewportNum).canvas();
         tempctx.clearRect(0, 0, 20, offsetHeight);
-        tempctx.strokeStyle = "#FF0000";
+        tempctx.strokeStyle = "#FFFFFF";
         tempctx.lineWidth = "2";
         tempctx.beginPath();
         var x1 = 0;

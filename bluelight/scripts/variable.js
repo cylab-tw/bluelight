@@ -80,7 +80,7 @@ var magnifierHeight = 200;
 //代表目前處於基本操作狀態
 var openMouseTool = false;
 //代表病患資訊顯示狀態
-var openAnnotation = false;
+var openAnnotation = true;
 //代表正在使用測量工具
 var openMeasure = false;
 //代表正在使用旋轉工具

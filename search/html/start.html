@@ -14,8 +14,8 @@
   <script src="../scripts/readsome.js"></script>
   <script src="../scripts/onload.js"></script>
 
-  <link rel="stylesheet" href="../css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-    crossorigin="anonymous">
+  <link rel="stylesheet" href="../css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <style>
   .PatientRow:hover {
@@ -33,18 +33,29 @@
 </script>
 
 <body style="background-color:#000000;color:#FFFFFF" onkeypress="kerypressT(event);">
-  <br>
-  　PatientID：<input type="text" name="lname" id="PatientIDText" value="*" class="btn btn-dark text-left">
-  PatientName：<input type="text" name="lname" id="PatientNameText" class="btn btn-dark text-left">
-  StudyDate：<input type="text" name="lname" id="StudyDateText" class="btn btn-dark text-left">
-  Accession Number：<input type="text" name="lname" id="AccessionNumberText" class="btn btn-dark text-left">
-  <br><br>
-  　Modality：<input type="text" name="lname" id="ModalitiesInStudyText" class="btn btn-dark text-left">
-  　 &nbsp;StudyUID：<input type="text" name="lname" id="StudyInstanceUIDText" class="btn btn-dark text-left">
-  &nbsp;&nbsp;Password：<input type="password" name="lname" value="123" id="PasswordText" class="btn btn-dark text-left">
-  　
-  <button type="button" id="searchButton" class="btn btn-dark" onclick="
-  if(!PasswordCheck())return;
+  <div style="margin-top: 7px;">
+    
+    　PatientID：<input type="text" style="width: 100px;height:32px;" name="lname" id="PatientIDText" value="*"
+      class="btn btn-dark text-left">
+    PatientName：<input type="text" style="width: 100px;height:32px;" name="lname" id="PatientNameText"
+      class="btn btn-dark text-left">
+    StudyDate：<input type="text" name="lname" style="width: 180px;height:32px;" id="StudyDateText" class="btn btn-dark text-left">
+    Accession Number：<input type="text" name="lname" style="width: 220px;height:32px;" id="AccessionNumberText"
+      class="btn btn-dark text-left">
+    <br>
+    　Modality：&nbsp;<input type="text" name="lname" style="margin-top: 3px;width: 100px;height:32px;" id="ModalitiesInStudyText"
+      class="btn btn-dark text-left">
+    　StudyUID：&nbsp;<input type="text" style="margin-top: 3px;width: 180px;height:32px;" name="lname" id="StudyInstanceUIDText"
+      class="btn btn-dark text-left">
+    <!--&nbsp;&nbsp;Password：<input type="password" name="lname" value="123" id="PasswordText" class="btn btn-dark text-left">-->
+    &nbsp;&nbsp;Limit：&nbsp;<input type="number" name="lname" style="margin-top: 3px;width: 80px;height:32px;" value="10" id="LimitInput"
+      data-decimals="2" class="btn btn-dark text-left">
+    &nbsp;&nbsp;&nbsp;&nbsp;Offset：&nbsp;<input type="number" name="lname" style="margin-top: 3px;width: 80px;height:32px;" value="0"
+      id="OffsetInput" data-decimals="2" class="btn btn-dark text-left">&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+    <button type="button" id="searchButton" style="margin-top: 2px;" class="btn btn-dark" onclick="
+  //if(!PasswordCheck())return;
   SerchState++;
   Patient.patientName = '';
   Patient.StudyAmount = 0;
@@ -62,13 +73,36 @@
   LoacationSercher+='&AccessionNumber='+ encodeURI(encodeURI(''+getByid('AccessionNumberText').value));
   if(getByid('StudyInstanceUIDText').value!='')
   LoacationSercher+='&StudyInstanceUID='+ encodeURI(encodeURI(''+getByid('StudyInstanceUIDText').value));
+
+
+  if(getByid('LimitInput').value!='') LoacationSercher+='&limit='+ encodeURI(encodeURI(''+getByid('LimitInput').value));
+  if(getByid('OffsetInput').value!='') LoacationSercher+='&offset='+ encodeURI(encodeURI(''+getByid('OffsetInput').value));
+  //LoacationSercher+='&limit=2&offset=4';
   if (getByid('myTable1')) {
     var elem = getByid('myTable1');
     elem.parentElement.removeChild(elem);
   }
   readAllJson();
-  ">search</button><br><br>
+  ">search</button>
+  </div>
+  
+  <button class="previous btn btn-dark" onclick="
+  getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)- parseInt(getByid('LimitInput').value);
+  getByid('searchButton').click();
+  ">&#8249;</button>
+  <button class="next btn btn-dark" onclick="
+  getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)+ parseInt(getByid('LimitInput').value);
+  getByid('searchButton').click();
+  ">&#8250;</button>
   <div id="body"></div>
+  <button class="previous btn btn-dark" onclick="
+  getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)- parseInt(getByid('LimitInput').value);
+  getByid('searchButton').click();
+  ">&#8249;</button>
+  <button class="next btn btn-dark" onclick="
+  getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)+ parseInt(getByid('LimitInput').value);
+  getByid('searchButton').click();
+  ">&#8250;</button>
   <header class="page-header" style="display:none">
   </header>
 </body>
