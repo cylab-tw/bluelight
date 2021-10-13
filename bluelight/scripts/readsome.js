@@ -120,65 +120,67 @@ function readDicom(url, patientmark, openfile) {
       if (oReq.status == 200) {
         var byteArray = new Uint8Array(oReq.response);
         var dataSet = dicomParser.parseDicom(byteArray);
-        if (!dataSet.elements.x60003000) {
+        //console.log(dataSet.elements);
+       // dataSet1 = dataSet;
+        // if (!dataSet.elements.x60003000) {
 
-        } else {
-          for (var ov = 0; ov <= 28; ov += 2) {
-            var ov_str = "" + ov;
-            if (ov < 10) ov_str = "0" + ov;
-            if (!dataSet.elements['x600' + ov + '3000']) continue;
-            try {
-              var pixelData = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements['x60' + ov_str + '3000'].dataOffset, dataSet.elements['x60' + ov_str + '3000'].length);
-              var tempPixeldata = new Uint8Array(pixelData.length * 8);
-              var tempi = 0;
-              var tempnum = 0;
-              for (var num of pixelData) {
-                tempnum = num;
-                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 0] = 1;
-                else tempPixeldata[num * 8 + 0] = 0;
-                tempnum /= 2;
-                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 1] = 1;
-                else tempPixeldata[num * 8 + 1] = 0;
-                tempnum /= 2;
-                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 2] = 1;
-                else tempPixeldata[num * 8 + 2] = 0;
-                tempnum /= 2;
-                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 3] = 1;
-                else tempPixeldata[num * 8 + 3] = 0;
-                tempnum /= 2;
-                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 4] = 1;
-                else tempPixeldata[num * 8 + 4] = 0;
-                tempnum /= 2;
-                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 5] = 1;
-                else tempPixeldata[num * 8 + 5] = 0;
-                tempnum /= 2;
-                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 6] = 1;
-                else tempPixeldata[num * 8 + 6] = 0;
-                tempnum /= 2;
-                if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 7] = 1;
-                else tempPixeldata[num * 8 + 7] = 0;
-                tempi += 8;
-              }
-              //var tvList = ['Overlay'];
-              var dcm = {};
-              dcm.study = dataSet.string('x0020000d');
-              dcm.series = dataSet.string('x0020000e');
-              dcm.sop = dataSet.string('x00080018');
-              dcm.mark = [];
-              dcm.showName = 'Overlay';
-              dcm.hideName = dcm.showName + 'x60' + ov_str + '1500';
-              if (dataSet.string('x60' + ov_str + '1500')) {
-                dcm.showName = dataSet.string('x60' + ov_str + '1500');
-              }
-              dcm.mark.push({});
-              var DcmMarkLength = dcm.mark.length - 1;
-              dcm.mark[DcmMarkLength].type = "Overlay";
-              dcm.mark[DcmMarkLength].pixelData = tempPixeldata.slice(0);;
-              patientmark.push(dcm);
-              refreshMark(dcm);
-            } catch (ex) { }
-          }
+        // } else {
+        for (var ov = 0; ov <= 28; ov += 2) {
+          var ov_str = "" + ov;
+          if (ov < 10) ov_str = "0" + ov;
+          if (!dataSet.elements['x600' + ov + '3000']) continue;
+          try {
+            var pixelData = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements['x60' + ov_str + '3000'].dataOffset, dataSet.elements['x60' + ov_str + '3000'].length);
+            var tempPixeldata = new Uint8Array(pixelData.length * 8);
+            var tempi = 0;
+            var tempnum = 0;
+            for (var num of pixelData) {
+              tempnum = num;
+              if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 0] = 1;
+              else tempPixeldata[num * 8 + 0] = 0;
+              tempnum /= 2;
+              if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 1] = 1;
+              else tempPixeldata[num * 8 + 1] = 0;
+              tempnum /= 2;
+              if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 2] = 1;
+              else tempPixeldata[num * 8 + 2] = 0;
+              tempnum /= 2;
+              if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 3] = 1;
+              else tempPixeldata[num * 8 + 3] = 0;
+              tempnum /= 2;
+              if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 4] = 1;
+              else tempPixeldata[num * 8 + 4] = 0;
+              tempnum /= 2;
+              if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 5] = 1;
+              else tempPixeldata[num * 8 + 5] = 0;
+              tempnum /= 2;
+              if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 6] = 1;
+              else tempPixeldata[num * 8 + 6] = 0;
+              tempnum /= 2;
+              if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 7] = 1;
+              else tempPixeldata[num * 8 + 7] = 0;
+              tempi += 8;
+            }
+            //var tvList = ['Overlay'];
+            var dcm = {};
+            dcm.study = dataSet.string('x0020000d');
+            dcm.series = dataSet.string('x0020000e');
+            dcm.sop = dataSet.string('x00080018');
+            dcm.mark = [];
+            dcm.showName = 'Overlay';
+            dcm.hideName = dcm.showName + 'x60' + ov_str + '1500';
+            if (dataSet.string('x60' + ov_str + '1500')) {
+              dcm.showName = dataSet.string('x60' + ov_str + '1500');
+            }
+            dcm.mark.push({});
+            var DcmMarkLength = dcm.mark.length - 1;
+            dcm.mark[DcmMarkLength].type = "Overlay";
+            dcm.mark[DcmMarkLength].pixelData = tempPixeldata.slice(0);;
+            patientmark.push(dcm);
+            refreshMark(dcm);
+          } catch (ex) { }
         }
+        //   }
         ////暫時取消的功能
         /*
         if (openfile && openfile == true) {
@@ -521,7 +523,7 @@ function loadDicomSeg(image, imageId) {
 
 function loadUID(DICOM_obj) {
   var study = DICOM_obj.study, series = DICOM_obj.series, sop = DICOM_obj.sop;
-  var instance = DICOM_obj.instance, imageId = DICOM_obj.imageId, patientId = DICOM_obj.patientId, image = DICOM_obj.image,pixelData=DICOM_obj.pixelData;
+  var instance = DICOM_obj.instance, imageId = DICOM_obj.imageId, patientId = DICOM_obj.patientId, image = DICOM_obj.image, pixelData = DICOM_obj.pixelData;
   var Hierarchy = 0;
   var NumberOfStudy = -1;
   for (var i = 0; i < Patient.StudyAmount; i++) {
@@ -543,7 +545,7 @@ function loadUID(DICOM_obj) {
     Sop.SopUID = sop;
     Sop.imageId = imageId;
     Sop.image = image;
-    Sop.pixelData =pixelData;
+    Sop.pixelData = pixelData;
     getPatientbyImageID[imageId] = Sop;
     Series.Sop.push(Sop);
     Study.Series.push(Series);
@@ -566,7 +568,7 @@ function loadUID(DICOM_obj) {
       Sop.SopUID = sop;
       Sop.imageId = imageId;
       Sop.image = image;
-      Sop.pixelData =pixelData;
+      Sop.pixelData = pixelData;
       getPatientbyImageID[imageId] = Sop;
       Series.Sop.push(Sop);
       Patient.Study[NumberOfStudy].Series.push(Series);
@@ -584,7 +586,7 @@ function loadUID(DICOM_obj) {
         Sop.SopUID = sop;
         Sop.imageId = imageId;
         Sop.image = image;
-        Sop.pixelData =pixelData;
+        Sop.pixelData = pixelData;
         Patient.Study[NumberOfStudy].Series[isSeries].Sop.push(Sop);
         Patient.Study[NumberOfStudy].Series[isSeries].SopAmount += 1;
         getPatientbyImageID[imageId] = Sop;

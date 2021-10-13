@@ -337,6 +337,9 @@ var Uint8Canvas = [];
 
 function Alpha3D() {
     if (!openVR && !openMPR) return;
+    if (getByid("OutSide3dDiv")) {
+        getByid("OutSide3dDiv").style.transformStyle = "";
+    }
     zoomRatio3D = 1;
     var r0 = parseFloat((100 - 0) / 85);
     var g0 = parseFloat((50 - 0) / 85);
@@ -554,25 +557,29 @@ function Alpha3D() {
         NewCanvas.rotatePosition = ll * (canvas.height / o3DListLength);
         var imgData2 = NewCanvas.getContext("2d").getImageData(0, 0, NewCanvas.width, NewCanvas.height);
         if (getByid("3DDiv" + (o3DListLength - 1)).thickness - Thickness - (getByid("3DDiv" + 0).thickness - Thickness) < 0) {
-            for (var l = 0; l < o3DListLength; l++) {
-                for (var dataH = l; dataH == l; dataH += 1) {
-                    for (var dataW = 0; dataW < NewCanvas.width * 4; dataW += 4) {
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW] = Uint8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + (dataW) + 0];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 1] = Uint8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 1];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 2] = Uint8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 2];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 3] = Uint8Canvas[l][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 3];
-                    }
+            var l, pixelPoint1, pixelPoint2, dataW, pointer;
+            for (l = 0; l < o3DListLength; l++) {
+                pointer = Uint8Canvas[l];
+                pixelPoint1 = l * NewCanvas.width * 4;
+                pixelPoint2 = (parseInt((ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4;
+                for (dataW = 0; dataW < NewCanvas.width * 4; dataW += 4) {
+                    imgData2.data[pixelPoint1 + dataW] = pointer[pixelPoint2 + dataW + 0];
+                    imgData2.data[pixelPoint1 + dataW + 1] = pointer[pixelPoint2 + dataW + 1];
+                    imgData2.data[pixelPoint1 + dataW + 2] = pointer[pixelPoint2 + dataW + 2];
+                    imgData2.data[pixelPoint1 + dataW + 3] = pointer[pixelPoint2 + dataW + 3];
                 }
             }
         } else {
-            for (var l = 0; l < o3DListLength; l++) {
-                for (var dataH = l; dataH == l; dataH += 1) {
-                    for (var dataW = 0; dataW < NewCanvas.width * 4; dataW += 4) {
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW] = Uint8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + (dataW) + 0];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 1] = Uint8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 1];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 2] = Uint8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 2];
-                        imgData2.data[(dataH) * NewCanvas.width * 4 + dataW + 3] = Uint8Canvas[o3DListLength - l - 1][(parseInt(( /*o3d_3degree -*/ ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4 + dataW + 3];
-                    }
+            var l, pixelPoint1, pixelPoint2, dataW, pointer;
+            for (l = 0; l < o3DListLength; l++) {
+                pixelPoint1 = l * NewCanvas.width * 4;
+                pointer = Uint8Canvas[o3DListLength - l - 1];
+                pixelPoint2 = (parseInt((ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4;
+                for (dataW = 0; dataW < NewCanvas.width * 4; dataW += 4) {
+                    imgData2.data[pixelPoint1 + dataW] = pointer[pixelPoint2 + dataW + 0];
+                    imgData2.data[pixelPoint1 + dataW + 1] = pointer[pixelPoint2 + dataW + 1];
+                    imgData2.data[pixelPoint1 + dataW + 2] = pointer[pixelPoint2 + dataW + 2];
+                    imgData2.data[pixelPoint1 + dataW + 3] = pointer[pixelPoint2 + dataW + 3];
                 }
             }
         }
@@ -622,25 +629,35 @@ function Alpha3D() {
         var imgData2 = NewCanvas.getContext("2d").getImageData(0, 0, NewCanvas.width, NewCanvas.height);
 
         if (getByid("3DDiv" + (o3DListLength - 1)).thickness - Thickness - (getByid("3DDiv" + 0).thickness - Thickness) < 0) {
-            for (var l = 0; l < o3DListLength; l++) {
-                for (var dataH = 0; dataH < NewCanvas.height; dataH += 1) {
-                    for (var dataW = l * 4; dataW == l * 4; dataW += 4) {
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW] = Uint8Canvas[l][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = Uint8Canvas[l][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 1];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = Uint8Canvas[l][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 2];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = Uint8Canvas[l][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width - */ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 3];
-                    }
+            var dataW, dataH, pixelPoint1, pixelPoint2, pixelPoint_1, pixelPoint_2, pointer;
+            for (l = 0; l < o3DListLength; l++) {
+                dataW = l * 4;
+                pointer = Uint8Canvas[l];
+                pixelPoint1 = NewCanvas.width * 4;
+                pixelPoint2 = (parseInt((ll) * (canvas.width / o3d_3degree))) * 4;
+                for (dataH = 0; dataH < NewCanvas.height; dataH += 1) {
+                    pixelPoint_1 = dataH * pixelPoint1 + dataW;
+                    pixelPoint_2 = dataH * o3Dcanvas.width * 4 + pixelPoint2;
+                    imgData2.data[pixelPoint_1] = pointer[pixelPoint_2];
+                    imgData2.data[pixelPoint_1 + 1] = pointer[pixelPoint_2 + 1];
+                    imgData2.data[pixelPoint_1 + 2] = pointer[pixelPoint_2 + 2];
+                    imgData2.data[pixelPoint_1 + 3] = pointer[pixelPoint_2 + 3];
                 }
             }
         } else {
+            var dataW, dataH, pixelPoint1, pixelPoint2, pixelPoint_1, pixelPoint_2, pointer;
             for (var l = 0; l < o3DListLength; l++) {
-                for (var dataH = 0; dataH < NewCanvas.height; dataH += 1) {
-                    for (var dataW = l * 4; dataW == l * 4; dataW += 4) {
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW] = Uint8Canvas[o3DListLength - l - 1][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = Uint8Canvas[o3DListLength - l - 1][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 1];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = Uint8Canvas[o3DListLength - l - 1][( /*NewCanvas.height -*/ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width -*/ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 2];
-                        imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = Uint8Canvas[o3DListLength - l - 1][( /*NewCanvas.height - */ dataH) * o3Dcanvas.width * 4 + ( /*o3Dcanvas.width - */ parseInt(( /*o3d_3degree -*/ ll) * (canvas.width / o3d_3degree))) * 4 + 3];
-                    }
+                dataW = l * 4;
+                pixelPoint1 = NewCanvas.width * 4;
+                pixelPoint2 = (parseInt((ll) * (canvas.width / o3d_3degree))) * 4;
+                pointer = Uint8Canvas[o3DListLength - l - 1];
+                for (dataH = 0; dataH < NewCanvas.height; dataH += 1) {
+                    pixelPoint_1 = dataH * pixelPoint1 + dataW;
+                    pixelPoint_2 = (dataH) * o3Dcanvas.width * 4 + pixelPoint2;
+                    imgData2.data[pixelPoint_1] = pointer[pixelPoint_2];
+                    imgData2.data[pixelPoint_1 + 1] = pointer[pixelPoint_2 + 1];
+                    imgData2.data[pixelPoint_1 + 2] = pointer[pixelPoint_2 + 2];
+                    imgData2.data[pixelPoint_1 + 3] = pointer[pixelPoint_2 + 3];
                 }
             }
         }
@@ -730,4 +747,11 @@ function Alpha3D() {
         div2.ondragstart = canvas2.ondragstart = function () { return false; };
     }
     setVrLight();
+    setTimeout(function () {
+        if (getByid("3dStrengthenAuto").selected == true) {
+            if (getByid("OutSide3dDiv") && !openMPR) {
+                getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
+            }
+        }
+    }, 10);
 }
