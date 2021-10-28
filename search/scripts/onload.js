@@ -1,10 +1,11 @@
 window.onload = function () {
-  setInterval(function () { createTable() }, 1000);
+  //setInterval(function () { createTable() }, 1000);
   function onLosdSerch() {
     getByid("searchButton").onclick();
   }
   loadLdcmview(onLosdSerch);
 }
+
 function PasswordCheck() {
   try {
     var str = "" + getByid('PasswordText').value;
@@ -34,7 +35,20 @@ var UidListCount2 = 0;
 
 var SerchState = 0;
 function createTable() {
+  var Body = document.getElementById("body");
   if (UidListCount2 == UidListCount) return;
+  if (!getByid("floatTable")) {
+    // var floatTable = document.createElement("table");
+    // floatTable.id = "floatTable";
+    //floatTable.style.display = "none";
+    // Body.appendChild(floatTable);
+    //var floatTable = document.createElement("table");
+    // floatTable.id = "floatTable2";
+    // floatTable.style.display = "none";
+    //Body.appendChild(floatTable);
+  } else {
+    // getByid("floatTable").style.display = getByid("floatTable2").style.display = "none";
+  }
   UidListCount2 = UidListCount;
   if (getByid("myTable1")) {
     var elem = getByid("myTable1");
@@ -54,7 +68,7 @@ function createTable() {
   var SopAmount_list = [];
 
   var StudyUID_list = [];
-
+  var StudyObj_list = [];
   for (var i = 0; i < Patient.StudyAmount; i++) {
     var flag = 0;
     for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
@@ -68,10 +82,10 @@ function createTable() {
         AccessionNumber_list.push(Patient.Study[i].Series[j].Sop[k].AccessionNumber);
         //date = ("" + date).replace(/^(\d{4})(\d\d)(\d\d)$/, '$1/$2/$3');
         // time = ("" + time).replace(/^(\d{2})(\d\d)(\d\d)/, '$1:$2:$3');
-        if(Patient.Study[i].Series[j].Sop[k].StudyDate!=undefined)
-        StudyDate_list.push(("" + Patient.Study[i].Series[j].Sop[k].StudyDate).replace(/^(\d{4})(\d\d)(\d\d)$/, '$1/$2/$3'));
-        if(Patient.Study[i].Series[j].Sop[k].StudyTime!=undefined)
-        StudyTime_list.push(("" + Patient.Study[i].Series[j].Sop[k].StudyTime).replace(/^(\d{2})(\d\d)(\d\d)/, '$1:$2:$3').substr(0, 8));
+        if (Patient.Study[i].Series[j].Sop[k].StudyDate != undefined)
+          StudyDate_list.push(("" + Patient.Study[i].Series[j].Sop[k].StudyDate).replace(/^(\d{4})(\d\d)(\d\d)$/, '$1/$2/$3'));
+        if (Patient.Study[i].Series[j].Sop[k].StudyTime != undefined)
+          StudyTime_list.push(("" + Patient.Study[i].Series[j].Sop[k].StudyTime).replace(/^(\d{2})(\d\d)(\d\d)/, '$1:$2:$3').substr(0, 8));
         StudyDescription_list.push(Patient.Study[i].Series[j].Sop[k].StudyDescription);
 
         SeriesAmount_list.push(Patient.Study[i].SeriesAmount);
@@ -81,7 +95,7 @@ function createTable() {
         }
         SopAmount_list.push(SopAmount1);
         StudyUID_list.push(Patient.Study[i].StudyUID);
-
+        StudyObj_list.push(Patient.Study[i]);
         flag = 1;
         break;
       }
@@ -156,6 +170,7 @@ function createTable() {
     cells = row.insertCell(10);
     cells.innerHTML = undefined2null("" + SopAmount_list[i - 1]);
 
+    row.Study = StudyObj_list[i - 1];
     var str = "";
     //str += "PatientID=" + Null2Empty(encodeURI(list[i - 1]));
     //str += "&StudyDate=" + Null2Empty(encodeURI(StudyDate_list[i - 1]));
@@ -165,11 +180,106 @@ function createTable() {
 
     row.alt = ConfigLog.QIDO.target + '?' + str;
     row.onclick = function () {
-      window.open(this.alt, '_blank');
+      let scrollY = window.scrollY;
+      //window.open(this.alt, '_blank');
+      var Body = document.getElementById("body");
+      var Table = document.createElement("table");
+      Table.id = "floatTable";
+      Table.style.color = "#000000";
+      Table.style.position = "absolute"
+      Table.className = "table table-striped";
+      Table.style.backgroundColor="rgb(210,222,239)"
+      Table.setAttribute("border", 2);
+      Table.style.borderColor='black';
+
+      for (var c = 0; c < getClass("PatientRow").length; c++)getClass("PatientRow")[c].style.height = "";
+      //
+      var row = Table.insertRow(0);
+      var cell = row.insertCell(0); cell.innerHTML = "<b>Open This Study </b><img src='../image/icon/goto.png'></img>";
+      cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
+      cell.onclick = function () { window.open(this.alt, '_blank'); }
+      row.insertCell(1).innerHTML = "StudyInstanceUID=" + this.Study.StudyUID;
+      row.className = "SecondRow2";
+
+      var Table2 = document.createElement("table");
+      Table2.id = "floatTable2";
+      Table2.style.color = "#000000";
+      Table2.style.position = "absolute"
+      Table2.className = "table table-striped";
+      Table2.style.backgroundColor="rgb(255,242,204)"
+      Table2.setAttribute("border", 2);
+      Table2.style.borderColor='black';
+
+      var row0 = Table2.insertRow(0);
+      row0.insertCell(0).innerHTML = "<img src='../image/icon/x.png' onclick='hidefloatTable()'></img>";
+      row0.insertCell(1).innerHTML = "Modality";
+      row0.insertCell(2).innerHTML = "Series Description";
+      row0.insertCell(3).innerHTML = "Series Number";
+      row0.insertCell(4).innerHTML = "#I";
+      row0.style.color = "#FFFFFF";
+      row0.style.backgroundColor = "#203852";
+     // row0.className = "SecondRow";
+      //row0.style.backgroundColor = "#d8dafe";
+      //row0.className="Primary";
+      for (var c = 0; c < this.Study.Series.length; c++) {
+        var row = Table2.insertRow(c + 1);
+        var cell = row.insertCell(0); cell.innerHTML = "<b>Open This Series </b><img src='../image/icon/goto.png'></img>";
+        cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+        cell.onclick = function () { window.open(this.alt, '_blank'); }
+        row.insertCell(1).innerHTML = undefined2null("" + this.Study.Series[c].Sop[0].ModalitiesInStudy);//"SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+        row.insertCell(2).innerHTML = undefined2null("" + this.Study.Series[c].Sop[0].SeriesDescription);
+        row.insertCell(3).innerHTML = undefined2null("" + this.Study.Series[c].Sop[0].SeriesNumber);;
+        row.insertCell(4).innerHTML = "" + this.Study.Series[c].Sop.length;
+        row.setAttribute("border", 3);
+        row.style.borderColor='black';
+        row.className = "SecondRow";
+      }
+      Body.appendChild(Table);
+      Body.appendChild(Table2);
+
+      try {
+        getByid("floatTable").parentNode.replaceChild(Table, getByid("floatTable"));
+        getByid("floatTable2").parentNode.replaceChild(Table2, getByid("floatTable2"));
+      } catch (ex) { console.log(ex); }
+
+      Table2.style.marginLeft = (30) + 'px';// Table.style.marginLeft = (this.getClientRects()[0].x) - (getByid("myTable1").getClientRects()[0].x) +
+      Table.style.marginLeft = (30) + 'px';// 
+      Table2.style.marginTop = (this.getClientRects()[0].y) + (this.getClientRects()[0].height * 1) - (getByid("myTable1").getClientRects()[0].y) + 'px';
+      Table.style.marginTop = (parseInt(Table2.style.marginTop) -2) + (Table2.getClientRects()[0].height) + 'px';
+
+      this.style.height = (this.getClientRects()[0].height) * (this.Study.Series.length + 3) + (5) + "px";
+      getByid("floatTable").style.display = getByid("floatTable2").style.display = "";
+
+      var Table = getByid("myTable1");
+      Body.appendChild(Table);
+      try {
+        getByid("myTable1").parentNode.replaceChild(Table, getByid("myTable1"));
+      } catch (ex) { console.log(ex); }
+      window.scroll(0, scrollY);
+      getByid("myTable1").style.backgroundColor="rgba(127,127,127,0.7)";
+      getByid("floatTable2").style.width="calc(100% - 30px)";
+      getByid("floatTable").style.width="calc(100% - 30px)";
     };
     //}
   }
+  getByid("loadingSpan").style.display = "none";
+
+
+  try {
+    if (getByid("floatTable") && getByid("floatTable2")) {
+      var table1 = getByid("floatTable"), table2 = getByid("floatTable2");
+      Body.appendChild(table1);
+      Body.appendChild(table2);
+      getByid("floatTable").parentNode.replaceChild(table1, getByid("floatTable"));
+      getByid("floatTable2").parentNode.replaceChild(table2, getByid("floatTable2"));
+    }
+  } catch (ex) { console.log(ex); }
+
+
   Body.appendChild(Table);
+  try {
+    getByid("myTable1").parentNode.replaceChild(Table, getByid("myTable1"));
+  } catch (ex) { console.log(ex); }
 }
 
 function loadLdcmview(onLosdSerch) {

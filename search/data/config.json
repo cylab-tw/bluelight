@@ -13,7 +13,7 @@
             "STOW": "stow",
             "enableRetrieveURI": false,
             "includefield": false,
-            "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
+            "target": "../../bluelight/html/start.html",
             "token": ""
         },
         {
@@ -29,7 +29,7 @@
             "STOW": "stow",
             "enableRetrieveURI": false,
             "includefield": false,
-            "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
+            "target": "../../bluelight/html/start.html",
             "token": ""
         }
     ],

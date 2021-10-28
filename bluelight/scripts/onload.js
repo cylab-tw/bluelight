@@ -334,7 +334,7 @@ function readAllJson(readJson) {
   //整合QIDO-RS的URL並發送至伺服器
   var queryString = ("" + location.search).replace("?", "");
   if (queryString.length > 0) {
-    var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/studies" + "?" + queryString + "";
+    var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/series" + "?" + queryString + "";
     url = fitUrl(url);
     readJson(url);
   }
@@ -423,136 +423,124 @@ function readJson(url) {
   }
   //向伺服器請求資料
   if (ConfigLog.WADO.https == "https") url = url.replace("http:", "https:");
-  let request = new XMLHttpRequest();
-  request.open('GET', url);
-  request.responseType = 'json';
-  //發送以Study為單位的請求
-  request.send();
-
-  request.onload = function () {
-    var DicomStudyResponse = request.response;
-    for (let series = 0; series < DicomStudyResponse.length; series++) {
-      let SeriesUrl = DicomStudyResponse[series]["00081190"].Value[0] + "/series";
-      if (ConfigLog.WADO.https == "https") SeriesUrl = SeriesUrl.replace("http:", "https:");
-      let SeriesRequest = new XMLHttpRequest();
-      SeriesRequest.open('GET', SeriesUrl);
-      SeriesRequest.responseType = 'json';
-      //發送以Series為單位的請求
-      SeriesRequest.send();
-      SeriesRequest.onload = function () {
-        let DicomSeriesResponse = SeriesRequest.response;
-        for (let instance = 0; instance < DicomSeriesResponse.length; instance++) {
-          let InstanceUrl = DicomSeriesResponse[instance]["00081190"].Value[0] + "/instances";
-          if (ConfigLog.WADO.includefield == true) InstanceUrl += "?includefield=all";
-          if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
-          let InstanceRequest = new XMLHttpRequest();
-          InstanceRequest.open('GET', InstanceUrl);
-          InstanceRequest.responseType = 'json';
-          //發送以Instance為單位的請求
-          InstanceRequest.send();
-          InstanceRequest.onload = function () {
-            let DicomResponse = InstanceRequest.response;
-            var min = 1000000000;
-            //取得最小的Instance Number
-            for (var i = 0; i < DicomResponse.length; i++) {
-              try {
-                if (getValue(DicomResponse[i]["00200013"]) < min) min = getValue(DicomResponse[i]["00200013"]);
-              } catch (ex) { console.log(ex); };
-            }
-            //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
-            //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
-
-            //載入標記以及首張影像
-            for (var i = 0; i < DicomResponse.length; i++) {
-              //取得WADO的路徑
-              if (ConfigLog.WADO.WADOType == "URI") {
-                var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
-                  "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
-                  "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
-                  "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
-                  "&contentType=" + "application/dicom";
-              } else if (ConfigLog.WADO.WADOType == "RS") {
-                var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service +
-                  "/studies/" + DicomResponse[i]["0020000D"].Value[0] +
-                  "/series/" + DicomResponse[i]["0020000E"].Value[0] +
-                  "/instances/" + DicomResponse[i]["00080018"].Value[0];
-              }
-              //console.log(url);
-              url = fitUrl(url);
-              var uri = url;
-              //如果包含標記，則載入標記
-              if (DicomResponse[i]["00080016"]) { //&& getValue(DicomResponse[i]["00080016"]) == '1.2.840.10008.5.1.4.1.1.481.3') {
-                try {
-                  readDicom(uri, PatientMark);
-                } catch (ex) { };
-              }
-              try {
-                //cornerstone的WADO請求需要加"wadouri"
-                if (ConfigLog.WADO.WADOType == "URI") url = "wadouri:" + url;
-                //else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
-                if (getValue(DicomResponse[i]["00200013"]) == min) {
-                  //載入DICOM的階層資料至物件清單
-                  var DICOM_obj = {
-                    study: getValue(DicomResponse[i]["0020000D"]),
-                    series: getValue(DicomResponse[i]["0020000E"]),
-                    sop: getValue(DicomResponse[i]["00080018"]),
-                    instance: getValue(DicomResponse[i]["00200013"]),
-                    imageId: url,
-                    patientId: getValue(DicomResponse[i]["00100020"])
-                  };
-                  // if (ConfigLog.WADO.WADOType == "URI") loadUID(DICOM_obj);
-                  //預載入DICOM至Viewport
-                  if (ConfigLog.WADO.WADOType == "URI") virtualLoadImage(url, 1);
-                  else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
-                }
-              } catch (ex) { console.log(ex); }
-            }
-            //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
-            //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
-
-            //載入其餘所有影像
-            for (var i = 0; i < DicomResponse.length; i++) {
-              if (ConfigLog.WADO.WADOType == "URI") {
-                var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
-                  "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
-                  "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
-                  "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
-                  "&contentType=" + "application/dicom";
-              } else if (ConfigLog.WADO.WADOType == "RS") {
-                var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service +
-                  "/studies/" + DicomResponse[i]["0020000D"].Value[0] +
-                  "/series/" + DicomResponse[i]["0020000E"].Value[0] +
-                  "/instances/" + DicomResponse[i]["00080018"].Value[0];
-              }
-              url = fitUrl(url);
-              try {
-                if (ConfigLog.WADO.WADOType == "URI") url = "wadouri:" + url;
-                // else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
-                //載入DICOM的階層資料至物件清單
-                var DICOM_obj = {
-                  study: getValue(DicomResponse[i]["0020000D"]),
-                  series: getValue(DicomResponse[i]["0020000E"]),
-                  sop: getValue(DicomResponse[i]["00080018"]),
-                  instance: getValue(DicomResponse[i]["00200013"]),
-                  imageId: url,
-                  patientId: getValue(DicomResponse[i]["00100020"])
-                };
-                if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = SearchUid2IndexBySeries(getValue(DicomResponse[i]["0020000E"]));//loadUID(DICOM_obj);
-                //var Hierarchy = 0;
-                //預載入DICOM至Viewport
-                if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
-                else {
-                  if (Hierarchy == undefined)
-                    virtualLoadImage(url, 1);
-                  else
-                    virtualLoadImage(url, 0);
-                }
-              } catch (ex) { console.log(ex); }
-            }
-
-          }
+  let SeriesRequest = new XMLHttpRequest();
+  SeriesRequest.open('GET', url);
+  SeriesRequest.responseType = 'json';
+  //發送以Series為單位的請求
+  SeriesRequest.send();
+  SeriesRequest.onload = function () {
+    let DicomSeriesResponse = SeriesRequest.response;
+    for (let instance = 0; instance < DicomSeriesResponse.length; instance++) {
+      let InstanceUrl = DicomSeriesResponse[instance]["00081190"].Value[0] + "/instances";
+      if (ConfigLog.WADO.includefield == true) InstanceUrl += "?includefield=all";
+      if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
+      let InstanceRequest = new XMLHttpRequest();
+      InstanceRequest.open('GET', InstanceUrl);
+      InstanceRequest.responseType = 'json';
+      //發送以Instance為單位的請求
+      InstanceRequest.send();
+      InstanceRequest.onload = function () {
+        let DicomResponse = InstanceRequest.response;
+        var min = 1000000000;
+        //取得最小的Instance Number
+        for (var i = 0; i < DicomResponse.length; i++) {
+          try {
+            if (getValue(DicomResponse[i]["00200013"]) < min) min = getValue(DicomResponse[i]["00200013"]);
+          } catch (ex) { console.log(ex); };
         }
+        //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
+        //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
+
+        //載入標記以及首張影像
+        for (var i = 0; i < DicomResponse.length; i++) {
+          //取得WADO的路徑
+          if (ConfigLog.WADO.WADOType == "URI") {
+            var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
+              "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
+              "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
+              "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
+              "&contentType=" + "application/dicom";
+          } else if (ConfigLog.WADO.WADOType == "RS") {
+            var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service +
+              "/studies/" + DicomResponse[i]["0020000D"].Value[0] +
+              "/series/" + DicomResponse[i]["0020000E"].Value[0] +
+              "/instances/" + DicomResponse[i]["00080018"].Value[0];
+          }
+          //console.log(url);
+          url = fitUrl(url);
+          var uri = url;
+          //如果包含標記，則載入標記
+          if (DicomResponse[i]["00080016"]) { //&& getValue(DicomResponse[i]["00080016"]) == '1.2.840.10008.5.1.4.1.1.481.3') {
+            try {
+              readDicom(uri, PatientMark);
+            } catch (ex) { };
+          }
+          try {
+            //cornerstone的WADO請求需要加"wadouri"
+            if (ConfigLog.WADO.WADOType == "URI") url = "wadouri:" + url;
+            //else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
+            if (getValue(DicomResponse[i]["00200013"]) == min) {
+              //載入DICOM的階層資料至物件清單
+              var DICOM_obj = {
+                study: getValue(DicomResponse[i]["0020000D"]),
+                series: getValue(DicomResponse[i]["0020000E"]),
+                sop: getValue(DicomResponse[i]["00080018"]),
+                instance: getValue(DicomResponse[i]["00200013"]),
+                imageId: url,
+                patientId: getValue(DicomResponse[i]["00100020"])
+              };
+              // if (ConfigLog.WADO.WADOType == "URI") loadUID(DICOM_obj);
+              //預載入DICOM至Viewport
+              if (ConfigLog.WADO.WADOType == "URI") virtualLoadImage(url, 1);
+              else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
+            }
+          } catch (ex) { console.log(ex); }
+        }
+        //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
+        //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
+
+        //載入其餘所有影像
+        for (var i = 0; i < DicomResponse.length; i++) {
+          if (ConfigLog.WADO.WADOType == "URI") {
+            var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
+              "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
+              "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
+              "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
+              "&contentType=" + "application/dicom";
+          } else if (ConfigLog.WADO.WADOType == "RS") {
+            var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service +
+              "/studies/" + DicomResponse[i]["0020000D"].Value[0] +
+              "/series/" + DicomResponse[i]["0020000E"].Value[0] +
+              "/instances/" + DicomResponse[i]["00080018"].Value[0];
+          }
+          url = fitUrl(url);
+          try {
+            if (ConfigLog.WADO.WADOType == "URI") url = "wadouri:" + url;
+            // else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
+            //載入DICOM的階層資料至物件清單
+            var DICOM_obj = {
+              study: getValue(DicomResponse[i]["0020000D"]),
+              series: getValue(DicomResponse[i]["0020000E"]),
+              sop: getValue(DicomResponse[i]["00080018"]),
+              instance: getValue(DicomResponse[i]["00200013"]),
+              imageId: url,
+              patientId: getValue(DicomResponse[i]["00100020"])
+            };
+            if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = SearchUid2IndexBySeries(getValue(DicomResponse[i]["0020000E"]));//loadUID(DICOM_obj);
+            //var Hierarchy = 0;
+            //預載入DICOM至Viewport
+            if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
+            else {
+              if (Hierarchy == undefined)
+                virtualLoadImage(url, 1);
+              else
+                virtualLoadImage(url, 0);
+            }
+          } catch (ex) { console.log(ex); }
+        }
+
       }
     }
   }
+
 }

@@ -121,7 +121,7 @@ function readDicom(url, patientmark, openfile) {
         var byteArray = new Uint8Array(oReq.response);
         var dataSet = dicomParser.parseDicom(byteArray);
         //console.log(dataSet.elements);
-       // dataSet1 = dataSet;
+        // dataSet1 = dataSet;
         // if (!dataSet.elements.x60003000) {
 
         // } else {
@@ -208,209 +208,210 @@ function readDicom(url, patientmark, openfile) {
           if (dataSet.string('x00081115')) {
             for (var ii2 in dataSet.elements.x00081115.items) {
               var x00081115DataSet = dataSet.elements.x00081115.items[ii2].dataSet.elements.x00081140.items;
+              //console.log(x00081115DataSet.length);
+              for (var s = 0; s < x00081115DataSet.length; s++) {
+                //for (var ii3 in x00081115DataSet) {
+                sop1 = x00081115DataSet[s].dataSet.string('x00081155');
+                //}
 
-              //for (var ii3 in x00081115DataSet) {
-              sop1 = x00081115DataSet[0].dataSet.string('x00081155');
-              //}
+                var tempsop = ""
+                var tempDataSet = "";
+                var GSPS_Text = "";
+                function POLYLINE_Function(tempDataSet, GSPS_Text) {
 
-              var tempsop = ""
-              var tempDataSet = "";
-              var GSPS_Text = "";
-              function POLYLINE_Function(tempDataSet, GSPS_Text) {
-
-                if (tempDataSet == "") {
-                  return;
-                };
-                for (var j in tempDataSet) {
-                  if (tempDataSet[j].dataSet.string('x00700023') == 'POLYLINE') {
-                    var dcm = {};
-                    dcm.sop = sop1;
-                    dcm.mark = [];
-                    dcm.mark.push({});
-
-                    var showname = 'POLYLINE';
-                    if (tempDataSet[j].dataSet.elements.x00700232) {
-                      var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
-                      var color = ConvertGraphicColor(ColorSequence.uint16('x00700251', 0), ColorSequence.uint16('x00700251', 1), ColorSequence.uint16('x00700251', 2));
-                      if (color) {
-                        dcm.color = color[0];
-                        showname = color[1];
-                      }
-                    }
-
-                    dcm.showName = showname;
-                    if (GSPS_Text != "" && GSPS_Text != undefined) {
-                      dcm.showName = GSPS_Text;
-                    };
-                    dcm.hideName = dcm.showName;
-                    var DcmMarkLength = dcm.mark.length - 1;
-                    dcm.mark[DcmMarkLength].type = "POLYLINE";
-                    dcm.mark[DcmMarkLength].markX = [];
-                    dcm.mark[DcmMarkLength].markY = [];
-                    dcm.mark[DcmMarkLength].RotationAngle = tempDataSet[j].dataSet.double('x00710230');
-                    dcm.mark[DcmMarkLength].RotationPoint = [tempDataSet[j].dataSet.float('x00710273', 0), tempDataSet[j].dataSet.float('x00710273', 1)];
-                    if (GSPS_Text != "" && GSPS_Text != undefined) {
-                      dcm.mark[DcmMarkLength].GSPS_Text = GSPS_Text;
-                    };
-                    var xTemp16 = tempDataSet[j].dataSet.string('x00700022');
-
-                    function getTag(tag) {
-                      var group = tag.substring(1, 5);
-                      var element = tag.substring(5, 9);
-                      var tagIndex = ("(" + group + "," + element + ")").toUpperCase();
-                      var attr = TAG_DICT[tagIndex];
-                      return attr;
-                    }
-                    var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
-                    for (var r = 0; r < rect; r += 2) {
-                      var GraphicData = getTag("x00700022");
-                      var numX = 0,
-                        numY = 0;
-                      if (GraphicData.vr == 'US') {
-                        numX = tempDataSet[j].dataSet.uint16("x00700022", r);
-                        numY = tempDataSet[j].dataSet.uint16("x00700022", r + 1);
-                      } else if (GraphicData.vr === 'SS') {
-                        numX = tempDataSet[j].dataSet.int16("x00700022", r);
-                        numY = tempDataSet[j].dataSet.int16("x00700022", r + 1);
-                      } else if (GraphicData.vr === 'UL') {
-                        numX = tempDataSet[j].dataSet.uint32("x00700022", r);
-                        numY = tempDataSet[j].dataSet.uint32("x00700022", r + 1);
-                      } else if (GraphicData.vr === 'SL') {
-                        numX = tempDataSet[j].dataSet.int32("x00700022", r);
-                        numY = tempDataSet[j].dataSet.int32("x00700022", r + 1);
-                      } else if (GraphicData.vr === 'FD') {
-                        numX = tempDataSet[j].dataSet.double("x00700022", r);
-                        numY = tempDataSet[j].dataSet.double("x00700022", r + 1);
-                      } else if (GraphicData.vr === 'FL') {
-                        numX = tempDataSet[j].dataSet.float("x00700022", r);
-                        numY = tempDataSet[j].dataSet.float("x00700022", r + 1);
-                      } else {
-                        numX = tempDataSet[j].dataSet.float("x00700022", r);
-                        numY = tempDataSet[j].dataSet.float("x00700022", r + 1);
-                      }
-                      if (dcm.mark[DcmMarkLength].RotationAngle && dcm.mark[DcmMarkLength].RotationPoint) {
-                        [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
-                      }
-                      dcm.mark[DcmMarkLength].markX.push(parseFloat(numX));
-                      dcm.mark[DcmMarkLength].markY.push(parseFloat(numY));
-                    }
-                    patientmark.push(dcm);
-                    refreshMark(dcm);
-                  }
-                  if (tempDataSet[j].dataSet.string('x00700023') == 'CIRCLE') {
-                    var dcm = {};
-                    dcm.sop = sop1;
-                    dcm.mark = [];
-                    dcm.mark.push({});
-                    var showname = 'CIRCLE';
-                    if (tempDataSet[j].dataSet.elements.x00700232) {
-                      var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
-                      var color = ConvertGraphicColor(ColorSequence.uint16('x00700251', 0), ColorSequence.uint16('x00700251', 1), ColorSequence.uint16('x00700251', 2));
-                      if (color) {
-                        dcm.color = color[0];
-                        showname = color[1];
-                      }
-                    }
-                    dcm.showName = showname;
-                    dcm.hideName = dcm.showName;
-                    var DcmMarkLength = dcm.mark.length - 1;
-                    dcm.mark[DcmMarkLength].type = "CIRCLE";
-                    dcm.mark[DcmMarkLength].markX = [];
-                    dcm.mark[DcmMarkLength].markY = [];
-                    var xTemp16 = tempDataSet[j].dataSet.string('x00700022');;
-                    var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
-                    for (var r = 0; r < rect; r += 4) {
-                      var numX = 0,
-                        numY = 0,
-                        numX2 = 0,
-                        numY2 = 0;
-                      numX = tempDataSet[j].dataSet.float("x00700022", r);
-                      numY = tempDataSet[j].dataSet.float("x00700022", r + 1);
-                      numX2 = tempDataSet[j].dataSet.float("x00700022", r + 2);
-                      numY2 = tempDataSet[j].dataSet.float("x00700022", r + 3);
-                      /*if (dcm.mark[DcmMarkLength].RotationAngle && dcm.mark[DcmMarkLength].RotationPoint) {
-                        [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
-                      }*/
-                      dcm.mark[DcmMarkLength].markX.push(parseFloat(numX));
-                      dcm.mark[DcmMarkLength].markY.push(parseFloat(numY));
-                      dcm.mark[DcmMarkLength].markX.push(parseFloat(numX2));
-                      dcm.mark[DcmMarkLength].markY.push(parseFloat(numY2));
-                    }
-                    patientmark.push(dcm);
-                    refreshMark(dcm);
-                  }
-                  if (tempDataSet[j].dataSet.string('x00700023') == 'ELLIPSE') {
-                    var dcm = {};
-                    dcm.sop = sop1;
-                    dcm.mark = [];
-                    dcm.mark.push({});
-                    var showname = 'ELLIPSE';
-                    dcm.showName = showname;
-                    dcm.hideName = dcm.showName;
-                    var DcmMarkLength = dcm.mark.length - 1;
-                    dcm.mark[DcmMarkLength].type = "ELLIPSE";
-                    dcm.mark[DcmMarkLength].markX = [];
-                    dcm.mark[DcmMarkLength].markY = [];
-                    var xTemp16 = tempDataSet[j].dataSet.string('x00700022');;
-                    var ablecheck = false;
-                    for (var k2 = 0; k2 < xTemp16.length; k2 += 4) {
-
-                      var output1 = xTemp16[k2].charCodeAt(0).toString(2) + "";
-                      var output2 = xTemp16[k2 + 1].charCodeAt(0).toString(2) + "";
-                      var output3 = xTemp16[k2 + 2].charCodeAt(0).toString(2) + "";
-                      var output4 = xTemp16[k2 + 3].charCodeAt(0).toString(2) + "";
-                      var data = [parseInt(output1, 2), parseInt(output2, 2), parseInt(output3, 2), parseInt(output4, 2)];
-                      var buf = new ArrayBuffer(4 /* * 4*/);
-                      var view = new DataView(buf);
-                      data.forEach(function (b, i) {
-                        view.setUint8(i, b, true);
-                      });
-                      var num = view.getFloat32(0, true);
-                      if (ablecheck == false) {
-                        dcm.mark[DcmMarkLength].markX.push(num);
-                      } else {
-                        dcm.mark[DcmMarkLength].markY.push(num);
-                      }
-                      ablecheck = !ablecheck;
-                    }
-                    patientmark.push(dcm);
-                    //console.log(PatientMark);
-                    refreshMark(dcm);
-                  }
-                }
-
-              }
-
-              try {
-                for (var i in dataSet.elements.x00700001.items) {
-                  var tempsop = dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items[0].dataSet.string('x00081155')
-                  if (tempsop == sop1) {
-                    tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
-
-                    try {
-                      GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[0].dataSet.string("x00700006")
-                    } catch (ex) { }
-                    POLYLINE_Function(tempDataSet, GSPS_Text);
-                    //break;
+                  if (tempDataSet == "") {
+                    return;
                   };
+                  for (var j in tempDataSet) {
+                    if (tempDataSet[j].dataSet.string('x00700023') == 'POLYLINE') {
+                      var dcm = {};
+                      dcm.sop = sop1;
+                      dcm.mark = [];
+                      dcm.mark.push({});
 
-                  if (tempsop != sop1) continue;
+                      var showname = 'POLYLINE';
+                      if (tempDataSet[j].dataSet.elements.x00700232) {
+                        var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
+                        var color = ConvertGraphicColor(ColorSequence.uint16('x00700251', 0), ColorSequence.uint16('x00700251', 1), ColorSequence.uint16('x00700251', 2));
+                        if (color) {
+                          dcm.color = color[0];
+                          showname = color[1];
+                        }
+                      }
+
+                      dcm.showName = showname;
+                      if (GSPS_Text != "" && GSPS_Text != undefined) {
+                        dcm.showName = GSPS_Text;
+                      };
+                      dcm.hideName = dcm.showName;
+                      var DcmMarkLength = dcm.mark.length - 1;
+                      dcm.mark[DcmMarkLength].type = "POLYLINE";
+                      dcm.mark[DcmMarkLength].markX = [];
+                      dcm.mark[DcmMarkLength].markY = [];
+                      dcm.mark[DcmMarkLength].RotationAngle = tempDataSet[j].dataSet.double('x00710230');
+                      dcm.mark[DcmMarkLength].RotationPoint = [tempDataSet[j].dataSet.float('x00710273', 0), tempDataSet[j].dataSet.float('x00710273', 1)];
+                      if (GSPS_Text != "" && GSPS_Text != undefined) {
+                        dcm.mark[DcmMarkLength].GSPS_Text = GSPS_Text;
+                      };
+                      var xTemp16 = tempDataSet[j].dataSet.string('x00700022');
+
+                      function getTag(tag) {
+                        var group = tag.substring(1, 5);
+                        var element = tag.substring(5, 9);
+                        var tagIndex = ("(" + group + "," + element + ")").toUpperCase();
+                        var attr = TAG_DICT[tagIndex];
+                        return attr;
+                      }
+                      var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
+                      for (var r = 0; r < rect; r += 2) {
+                        var GraphicData = getTag("x00700022");
+                        var numX = 0,
+                          numY = 0;
+                        if (GraphicData.vr == 'US') {
+                          numX = tempDataSet[j].dataSet.uint16("x00700022", r);
+                          numY = tempDataSet[j].dataSet.uint16("x00700022", r + 1);
+                        } else if (GraphicData.vr === 'SS') {
+                          numX = tempDataSet[j].dataSet.int16("x00700022", r);
+                          numY = tempDataSet[j].dataSet.int16("x00700022", r + 1);
+                        } else if (GraphicData.vr === 'UL') {
+                          numX = tempDataSet[j].dataSet.uint32("x00700022", r);
+                          numY = tempDataSet[j].dataSet.uint32("x00700022", r + 1);
+                        } else if (GraphicData.vr === 'SL') {
+                          numX = tempDataSet[j].dataSet.int32("x00700022", r);
+                          numY = tempDataSet[j].dataSet.int32("x00700022", r + 1);
+                        } else if (GraphicData.vr === 'FD') {
+                          numX = tempDataSet[j].dataSet.double("x00700022", r);
+                          numY = tempDataSet[j].dataSet.double("x00700022", r + 1);
+                        } else if (GraphicData.vr === 'FL') {
+                          numX = tempDataSet[j].dataSet.float("x00700022", r);
+                          numY = tempDataSet[j].dataSet.float("x00700022", r + 1);
+                        } else {
+                          numX = tempDataSet[j].dataSet.float("x00700022", r);
+                          numY = tempDataSet[j].dataSet.float("x00700022", r + 1);
+                        }
+                        if (dcm.mark[DcmMarkLength].RotationAngle && dcm.mark[DcmMarkLength].RotationPoint) {
+                          [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
+                        }
+                        dcm.mark[DcmMarkLength].markX.push(parseFloat(numX));
+                        dcm.mark[DcmMarkLength].markY.push(parseFloat(numY));
+                      }
+                      patientmark.push(dcm);
+                      refreshMark(dcm);
+                    }
+                    if (tempDataSet[j].dataSet.string('x00700023') == 'CIRCLE') {
+                      var dcm = {};
+                      dcm.sop = sop1;
+                      dcm.mark = [];
+                      dcm.mark.push({});
+                      var showname = 'CIRCLE';
+                      if (tempDataSet[j].dataSet.elements.x00700232) {
+                        var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
+                        var color = ConvertGraphicColor(ColorSequence.uint16('x00700251', 0), ColorSequence.uint16('x00700251', 1), ColorSequence.uint16('x00700251', 2));
+                        if (color) {
+                          dcm.color = color[0];
+                          showname = color[1];
+                        }
+                      }
+                      dcm.showName = showname;
+                      dcm.hideName = dcm.showName;
+                      var DcmMarkLength = dcm.mark.length - 1;
+                      dcm.mark[DcmMarkLength].type = "CIRCLE";
+                      dcm.mark[DcmMarkLength].markX = [];
+                      dcm.mark[DcmMarkLength].markY = [];
+                      var xTemp16 = tempDataSet[j].dataSet.string('x00700022');;
+                      var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
+                      for (var r = 0; r < rect; r += 4) {
+                        var numX = 0,
+                          numY = 0,
+                          numX2 = 0,
+                          numY2 = 0;
+                        numX = tempDataSet[j].dataSet.float("x00700022", r);
+                        numY = tempDataSet[j].dataSet.float("x00700022", r + 1);
+                        numX2 = tempDataSet[j].dataSet.float("x00700022", r + 2);
+                        numY2 = tempDataSet[j].dataSet.float("x00700022", r + 3);
+                        /*if (dcm.mark[DcmMarkLength].RotationAngle && dcm.mark[DcmMarkLength].RotationPoint) {
+                          [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
+                        }*/
+                        dcm.mark[DcmMarkLength].markX.push(parseFloat(numX));
+                        dcm.mark[DcmMarkLength].markY.push(parseFloat(numY));
+                        dcm.mark[DcmMarkLength].markX.push(parseFloat(numX2));
+                        dcm.mark[DcmMarkLength].markY.push(parseFloat(numY2));
+                      }
+                      patientmark.push(dcm);
+                      refreshMark(dcm);
+                    }
+                    if (tempDataSet[j].dataSet.string('x00700023') == 'ELLIPSE') {
+                      var dcm = {};
+                      dcm.sop = sop1;
+                      dcm.mark = [];
+                      dcm.mark.push({});
+                      var showname = 'ELLIPSE';
+                      dcm.showName = showname;
+                      dcm.hideName = dcm.showName;
+                      var DcmMarkLength = dcm.mark.length - 1;
+                      dcm.mark[DcmMarkLength].type = "ELLIPSE";
+                      dcm.mark[DcmMarkLength].markX = [];
+                      dcm.mark[DcmMarkLength].markY = [];
+                      var xTemp16 = tempDataSet[j].dataSet.string('x00700022');;
+                      var ablecheck = false;
+                      for (var k2 = 0; k2 < xTemp16.length; k2 += 4) {
+
+                        var output1 = xTemp16[k2].charCodeAt(0).toString(2) + "";
+                        var output2 = xTemp16[k2 + 1].charCodeAt(0).toString(2) + "";
+                        var output3 = xTemp16[k2 + 2].charCodeAt(0).toString(2) + "";
+                        var output4 = xTemp16[k2 + 3].charCodeAt(0).toString(2) + "";
+                        var data = [parseInt(output1, 2), parseInt(output2, 2), parseInt(output3, 2), parseInt(output4, 2)];
+                        var buf = new ArrayBuffer(4 /* * 4*/);
+                        var view = new DataView(buf);
+                        data.forEach(function (b, i) {
+                          view.setUint8(i, b, true);
+                        });
+                        var num = view.getFloat32(0, true);
+                        if (ablecheck == false) {
+                          dcm.mark[DcmMarkLength].markX.push(num);
+                        } else {
+                          dcm.mark[DcmMarkLength].markY.push(num);
+                        }
+                        ablecheck = !ablecheck;
+                      }
+                      patientmark.push(dcm);
+                      //console.log(PatientMark);
+                      refreshMark(dcm);
+                    }
+                  }
 
                 }
-              } catch (ex) {
-                for (var i in dataSet.elements.x00700001.items) {
-                  try {
-                    tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
 
-                    POLYLINE_Function(tempDataSet, GSPS_Text);
+                try {
+                  for (var i in dataSet.elements.x00700001.items) {
+                    var tempsop = dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items[0].dataSet.string('x00081155')
+                    if (tempsop == sop1) {
+                      tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
 
-                  } catch (ex) {
-                    continue;
+                      try {
+                        GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[0].dataSet.string("x00700006")
+                      } catch (ex) { }
+                      POLYLINE_Function(tempDataSet, GSPS_Text);
+                      //break;
+                    };
+
+                    if (tempsop != sop1) continue;
+
+                  }
+                } catch (ex) {
+                  for (var i in dataSet.elements.x00700001.items) {
+                    try {
+                      tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
+
+                      POLYLINE_Function(tempDataSet, GSPS_Text);
+
+                    } catch (ex) {
+                      continue;
+                    }
                   }
                 }
+
               }
-
-
 
               //  }
             }
