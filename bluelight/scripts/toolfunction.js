@@ -427,7 +427,10 @@ function checkMark(i, j, n) {
     return checkRtss;
 }
 
-function refreshMark(dcm) {
+function refreshMark(dcm,refresh) {
+    if(refresh==false) {
+        return;
+    };
     var index = SearchUid2Index(dcm.sop);
     if (!index) return;
     var i3 = index[0],
@@ -440,6 +443,7 @@ function refreshMark(dcm) {
         }
     }
     SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
+   
     for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(NowResize, null, null, null, i9);
 }
 

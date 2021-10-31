@@ -325,7 +325,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
     var viewportNum;
     if (viewportNum0 >= 0) viewportNum = viewportNum0;
     else viewportNum = viewportNumber;
-
+    if (GetViewport(viewportNum).openMark == false) return;
     var currX = 0,
         currY = 0;
     if (currX0 && currY0) {
@@ -679,6 +679,82 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         }
                         tempctx.restore();
                     }
+                    if (PatientMark[n].mark[m].type == "TEXT") {
+                        try {
+                            tempctx.save();
+                            tempctx.setTransform(1, 0, 0, 1, 0, 0);
+                            for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 1) {
+                                let checkRtss = 0;
+                                checkRtss = checkMark(i, j, n);
+                                if (checkRtss == 0) continue;
+
+                                if (getByid("WhiteSelect").selected == true) {
+                                    tempctx.strokeStyle = "#FFFFFF";
+                                    tempctx.fillStyle = "#FFFFFF";
+                                } else if (getByid("BlueSelect").selected == true) {
+                                    tempctx.strokeStyle = "#0000FF";
+                                    tempctx.fillStyle = "#0000FF";
+                                } else if (getByid("RedSelect").selected == true) {
+                                    tempctx.strokeStyle = "#FF0000";
+                                    tempctx.fillStyle = "#FF0000";
+                                } else {
+                                    tempctx.strokeStyle = "#FFFF00";
+                                    tempctx.fillStyle = "#FFFF00";
+                                }
+
+                                if (PatientMark[n].color) {
+                                    tempctx.strokeStyle = "" + PatientMark[n].color;
+                                    tempctx.fillStyle = "" + PatientMark[n].color;
+                                }
+
+                                var tempMark = PatientMark[n].mark[m];
+                                tempctx.beginPath();
+
+                                var x1 = tempMark.markX[o] * 1 - currX;
+                                // var x2 = tempMark.markX[0][o+1] * 1 - currX;
+                                // var y1 = tempMark.markY[0][o+1] * 1 - currY;
+                                var y1 = tempMark.markY[o + 1] * 1 - currY;
+                                //var w1 = tempMark.markX[o + 2];
+                                //var h1 = tempMark.markX[o + 3];
+                                var offsetX_Text = 0;
+                                var offsetY_Text = 0;
+                                var lines = tempMark.GSPS_Text.split('\n');
+                                for (var i2 = 0; i2 < lines.length; i2++) {
+                                    var offsetX_temp = x1 + (3 * 4 * lines[i2].length) > MarkCanvas.width ? (x1 + (3 * 4 * lines[i2].length)) - MarkCanvas.width : 0;
+                                    var offsetY_temp = y1 + (3 * 4 * lines[i2].length) > MarkCanvas.height ? (y1 + (3 * 4 * lines[i2].length)) - MarkCanvas.height : 0;
+                                    if (offsetX_temp > offsetX_Text) offsetX_Text = offsetX_temp;
+                                    if (offsetY_temp > offsetY_Text) offsetY_Text = offsetY_temp;
+                                }
+
+                                // console.log(offsetX_Text, tempMark.GSPS_Text);
+                                x1 -= offsetX_Text;
+                                y1 -= offsetY_Text;
+                                if (tempMark.GSPS_Text && o == 0) {
+
+                                    tempctx.font = "" + (3 * 4) + "px Arial";
+                                    //console.log(parseInt(tempctx.lineWidth));
+                                    // tempctx.font = "" + (parseInt(w1*h1)) + "px Arial";
+                                    tempctx.fillStyle = "red";
+                                    let tempAlpha = tempctx.globalAlpha;
+                                    tempctx.globalAlpha = 1.0;
+                                    //-(tempMark.GSPS_Text.length)
+                                    var lines = tempMark.GSPS_Text.split('\n');
+                                    for (var i2 = 0; i2 < lines.length; i2++) {
+                                        tempctx.fillText(lines[i2], x1, y1 - 7 - ((lines.length - 1) * 3 * 4) + (i2 * 3 * 4));
+                                        //console.log(lines[i2]);
+                                        // co
+                                    }
+                                    //tempctx.fillText("" + tempMark.GSPS_Text + "<br/>222", x1, y1 - 7);
+                                    tempctx.globalAlpha = tempAlpha;
+                                    // tempctx.fillText(tempMark.GSPS_Text, 10, 50);
+                                }
+                                tempctx.stroke();
+                                tempctx.closePath();
+                            }
+                            tempctx.restore();
+                        } catch (ex) { console.log(ex); }
+                        //console.log(0)
+                    }
                     if (PatientMark[n].mark[m].type == "POLYLINE") {
                         tempctx.save();
                         tempctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -740,10 +816,18 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                 tempctx.globalAlpha = tempAlpha;
                                 // tempctx.fillText(tempMark.GSPS_Text, 10, 50);
                             }
+                            let tempAlpha2 = tempctx.globalAlpha;
+                            tempctx.globalAlpha = 1.0;
                             tempctx.moveTo(x1, y1);
                             tempctx.lineTo(x2, y2);
                             tempctx.stroke();
-                            tempctx.closePath();
+                            tempctx.globalAlpha = tempAlpha2;
+                            if (tempMark.GraphicFilled && tempMark.GraphicFilled == 'Y') {
+                                tempctx.fillStyle = "#FFFF88";
+                                tempctx.fill();
+                                console.log(x1, y1, x2, y2)
+                            };
+                            tempctx.closePath(); ''
 
                             if (openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true && openWriteGSPS == true)) {
                                 if (tempMark.RotationAngle && tempMark.RotationPoint) {

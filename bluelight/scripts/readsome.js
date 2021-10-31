@@ -217,12 +217,27 @@ function readDicom(url, patientmark, openfile) {
                 var tempsop = ""
                 var tempDataSet = "";
                 var GSPS_Text = "";
-                function POLYLINE_Function(tempDataSet, GSPS_Text) {
-
+                function POLYLINE_Function(tempDataSet, GSPS_Text, g) {
+                  // console.log(j);
                   if (tempDataSet == "") {
                     return;
                   };
-                  for (var j in tempDataSet) {
+                  // for (var j in tempDataSet) {
+                  if (g != undefined) var tempDataSetLengthList = [g];
+                  else {
+                    var tempDataSetLengthList = tempDataSet;
+                    // console.log(tempDataSetLengthList.length);
+                  }
+                  for (var j1 = 0; j1 < tempDataSetLengthList.length; j1++) {
+                    var j = tempDataSetLengthList[j1];
+                    if (g != undefined) var j = tempDataSetLengthList[j1];
+                    else {
+                      var j = j1;
+                      //console.log(j);
+                    }
+                    //console.log(g+","+j); 
+                    // if (g)console.log(j,tempDataSet[j]);
+                    // {
                     if (tempDataSet[j].dataSet.string('x00700023') == 'POLYLINE') {
                       var dcm = {};
                       dcm.sop = sop1;
@@ -249,6 +264,8 @@ function readDicom(url, patientmark, openfile) {
                       dcm.mark[DcmMarkLength].markX = [];
                       dcm.mark[DcmMarkLength].markY = [];
                       dcm.mark[DcmMarkLength].RotationAngle = tempDataSet[j].dataSet.double('x00710230');
+                      dcm.mark[DcmMarkLength].GraphicFilled = tempDataSet[j].dataSet.string('x00700024');
+
                       dcm.mark[DcmMarkLength].RotationPoint = [tempDataSet[j].dataSet.float('x00710273', 0), tempDataSet[j].dataSet.float('x00710273', 1)];
                       if (GSPS_Text != "" && GSPS_Text != undefined) {
                         dcm.mark[DcmMarkLength].GSPS_Text = GSPS_Text;
@@ -296,8 +313,12 @@ function readDicom(url, patientmark, openfile) {
                         dcm.mark[DcmMarkLength].markY.push(parseFloat(numY));
                       }
                       patientmark.push(dcm);
-                      refreshMark(dcm);
+                      refreshMark(dcm, false);
+                      //if(dcm.mark[DcmMarkLength].GraphicFilled=='Y'){
+                      //console.log(dcm);
+                      // }
                     }
+
                     if (tempDataSet[j].dataSet.string('x00700023') == 'CIRCLE') {
                       var dcm = {};
                       dcm.sop = sop1;
@@ -318,6 +339,7 @@ function readDicom(url, patientmark, openfile) {
                       dcm.mark[DcmMarkLength].type = "CIRCLE";
                       dcm.mark[DcmMarkLength].markX = [];
                       dcm.mark[DcmMarkLength].markY = [];
+                      dcm.mark[DcmMarkLength].GraphicFilled = tempDataSet[j].dataSet.string('x00700024');
                       var xTemp16 = tempDataSet[j].dataSet.string('x00700022');;
                       var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
                       for (var r = 0; r < rect; r += 4) {
@@ -338,7 +360,70 @@ function readDicom(url, patientmark, openfile) {
                         dcm.mark[DcmMarkLength].markY.push(parseFloat(numY2));
                       }
                       patientmark.push(dcm);
-                      refreshMark(dcm);
+                      refreshMark(dcm, false);
+                    }
+                    if (tempDataSet[j].dataSet.string('x00700015') && tempDataSet[j].dataSet.string('x00700015') == 'Y') {
+                     // console.log('Y');
+
+                      var dcm = {};
+                      dcm.sop = sop1;
+                      dcm.mark = [];
+                      dcm.mark.push({});
+
+                      var showname = 'Anchor';
+                      if (tempDataSet[j].dataSet.elements.x00700232) {
+                        var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
+                        var color = ConvertGraphicColor(ColorSequence.uint16('x00700251', 0), ColorSequence.uint16('x00700251', 1), ColorSequence.uint16('x00700251', 2));
+                        if (color) {
+                          dcm.color = color[0];
+                          showname = color[1];
+                        }
+                      }
+
+                      dcm.showName = showname;
+                      if (GSPS_Text != "" && GSPS_Text != undefined) {
+                        dcm.showName = GSPS_Text;
+                      };
+                      dcm.hideName = dcm.showName;
+                      var DcmMarkLength = dcm.mark.length - 1;
+                      dcm.mark[DcmMarkLength].type = "POLYLINE";
+                      dcm.mark[DcmMarkLength].markX = [];
+                      dcm.mark[DcmMarkLength].markY = [];
+                      dcm.mark[DcmMarkLength].markX.push(tempDataSet[j].dataSet.float('x00700010', 0),tempDataSet[j].dataSet.float('x00700011', 0));
+                      dcm.mark[DcmMarkLength].markY.push(tempDataSet[j].dataSet.float('x00700010', 1),tempDataSet[j].dataSet.float('x00700011', 1));
+                      patientmark.push(dcm);
+                      refreshMark(dcm, false);
+                    }
+
+                    if (!tempDataSet[j].dataSet.string('x00700023') && GSPS_Text == "") {
+                      //var xTemp10 = [tempDataSet[j].dataSet.float('x00700010', 0), tempDataSet[j].dataSet.float('x00700010', 1)];
+                      //var yTemp10 = [tempDataSet[j].dataSet.float('x00700011', 0), tempDataSet[j].dataSet.float('x00700011', 1)];
+                      GSPS_Text = tempDataSet[j].dataSet.string("x00700006");
+                      //console.log(j+"   "+GSPS_Text);
+                      if (GSPS_Text != "") {
+                        //console.log(xTemp10+"  "+yTemp10+"   "+GSPS_Text);
+                        var dcm = {};
+                        dcm.sop = sop1;
+                        dcm.mark = [];
+                        dcm.mark.push({});
+                        var showname = 'TEXT';
+                        dcm.showName = showname;
+                        dcm.hideName = dcm.showName;
+                        var DcmMarkLength = dcm.mark.length - 1;
+                        dcm.mark[DcmMarkLength].type = "TEXT";
+                        dcm.mark[DcmMarkLength].markX = [];
+                        dcm.mark[DcmMarkLength].markY = [];
+                        if (GSPS_Text != "" && GSPS_Text != undefined) {
+                          GSPS_Text = ("" + GSPS_Text).replace('\r\n', '\n');
+                          dcm.mark[DcmMarkLength].GSPS_Text = GSPS_Text;
+                        };
+                        dcm.mark[DcmMarkLength].markX.push(tempDataSet[j].dataSet.float('x00700010', 0));
+                        dcm.mark[DcmMarkLength].markX.push(tempDataSet[j].dataSet.float('x00700011', 0));
+                        dcm.mark[DcmMarkLength].markY.push(tempDataSet[j].dataSet.float('x00700010', 1));
+                        dcm.mark[DcmMarkLength].markY.push(tempDataSet[j].dataSet.float('x00700011', 1));
+                        patientmark.push(dcm);
+                        refreshMark(dcm, false);
+                      }
                     }
                     if (tempDataSet[j].dataSet.string('x00700023') == 'ELLIPSE') {
                       var dcm = {};
@@ -352,6 +437,7 @@ function readDicom(url, patientmark, openfile) {
                       dcm.mark[DcmMarkLength].type = "ELLIPSE";
                       dcm.mark[DcmMarkLength].markX = [];
                       dcm.mark[DcmMarkLength].markY = [];
+                      dcm.mark[DcmMarkLength].GraphicFilled = tempDataSet[j].dataSet.string('x00700024');
                       var xTemp16 = tempDataSet[j].dataSet.string('x00700022');;
                       var ablecheck = false;
                       for (var k2 = 0; k2 < xTemp16.length; k2 += 4) {
@@ -376,7 +462,7 @@ function readDicom(url, patientmark, openfile) {
                       }
                       patientmark.push(dcm);
                       //console.log(PatientMark);
-                      refreshMark(dcm);
+                      refreshMark(dcm, false);
                     }
                   }
 
@@ -384,20 +470,36 @@ function readDicom(url, patientmark, openfile) {
 
                 try {
                   for (var i in dataSet.elements.x00700001.items) {
-                    var tempsop = dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items[0].dataSet.string('x00081155')
-                    if (tempsop == sop1) {
-                      tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
+                    for (var d1 = 0; d1 < dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items.length; d1++) {
+                      var tempsop = dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items[d1].dataSet.string('x00081155')
+                      if (tempsop == sop1) {
+                        tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
+                        // for (var g = 0; g < dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items.length; g++) {
+                        try {
+                          //GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[g].dataSet.string("x00700006");
+                          POLYLINE_Function(tempDataSet, "", undefined);
+                          // alert(i+"  "+ g);
+                        } catch (ex) { }
+                        // }
+                        try {
+                          for (var g = 0; g < dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items.length; g++) {
+                            try {
+                              GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[g].dataSet.string("x00700006");
+                              tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items;
+                              //console.log(g);
+                              POLYLINE_Function(tempDataSet, "", g);
+                              // alert(i+"  "+ g);
+                            } catch (ex) { }
+                          }
+                        } catch (ex) { }
 
-                      try {
-                        GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[0].dataSet.string("x00700006")
-                      } catch (ex) { }
-                      POLYLINE_Function(tempDataSet, GSPS_Text);
-                      //break;
-                    };
+                        //break;
+                      };
 
-                    if (tempsop != sop1) continue;
-
+                      if (tempsop != sop1) continue;
+                    }
                   }
+                  if (sop1) refreshMarkFromSop(sop1);
                 } catch (ex) {
                   for (var i in dataSet.elements.x00700001.items) {
                     try {
@@ -406,9 +508,11 @@ function readDicom(url, patientmark, openfile) {
                       POLYLINE_Function(tempDataSet, GSPS_Text);
 
                     } catch (ex) {
+                      console.log(GSPS_Text);
                       continue;
                     }
                   }
+                  if (sop1) refreshMarkFromSop(sop1);
                 }
 
               }
