@@ -379,7 +379,7 @@ function readConfigJson(url, readAllJson, readJson) {
     tempConfig.hostname = tempResponse["hostname"];
     tempConfig.https = tempResponse["enableHTTPS"] == true ? "https" : "http";
     tempConfig.PORT = tempResponse["PORT"];
-    tempConfig.WADOType = tempResponse["WADO-RS/RUI"];
+    tempConfig.WADOType = tempResponse["WADO-RS/URI"];
     if (tempConfig.WADOType == "URI") tempConfig.service = tempResponse["WADO-URI"];
     else if (tempConfig.WADOType == "RS") tempConfig.service = tempResponse["WADO-RS"];
     else tempConfig.service = tempResponse["WADO-URI"];
@@ -466,14 +466,14 @@ function readJson(url) {
               "/series/" + DicomResponse[i]["0020000E"].Value[0] +
               "/instances/" + DicomResponse[i]["00080018"].Value[0];
           }
-          //console.log(url);
+
           url = fitUrl(url);
           var uri = url;
           //如果包含標記，則載入標記
           if (DicomResponse[i]["00080016"]) { //&& getValue(DicomResponse[i]["00080016"]) == '1.2.840.10008.5.1.4.1.1.481.3') {
             try {
               readDicom(uri, PatientMark);
-            } catch (ex) { };
+            } catch (ex) { console.log(ex); };
           }
           try {
             //cornerstone的WADO請求需要加"wadouri"
@@ -536,6 +536,21 @@ function readJson(url) {
               else
                 virtualLoadImage(url, 0);
             }
+
+            try {
+              if (getValue(DicomResponse[i]["00080060"]) == 'PR' || getValue(DicomSeriesResponse[instance]["00080060"]) == 'PR') {
+                function load(time) {
+                  return new Promise((resolve) => setTimeout(resolve, time));
+                }
+                load(100).then(() => {
+                  //readXML(url);
+                  readDicom(url.replace("wadouri:", ""), PatientMark, true);
+                });
+              }
+            }
+            catch (ex) { console.log(ex); }
+
+
           } catch (ex) { console.log(ex); }
         }
 
