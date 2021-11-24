@@ -214,6 +214,14 @@ function initMPR() {
         GetViewport(3).removeEventListener("touchstart", touchstart3D, false);
         GetViewport(3).removeEventListener("touchmove", touchmove3D, false);
         GetViewport(3).removeEventListener("touchend", touchend3D, false);
+        GetViewport(0).removeEventListener("mousemove", Anatomical_SectionMouseMove0, false);
+        GetViewport(0).removeEventListener("mousedown", Anatomical_SectionMouseDown0, false);
+        GetViewport(0).removeEventListener("mouseup", Anatomical_SectionMouseMouseup0, false);
+        GetViewport(0).removeEventListener("wheel", Wheel, false);
+        GetViewport(1).removeEventListener("mousemove", Anatomical_SectionMouseMove, false);
+        GetViewport(1).removeEventListener("mousedown", Anatomical_SectionMouseDown, false);
+        GetViewport(1).removeEventListener("mouseup", Anatomical_SectionMouseMouseup, false);
+        GetViewport(1).removeEventListener("wheel", Wheel, false);
         cancelTools();
         openMouseTool = true;
         drawBorder(getByid("MouseOperation"));
@@ -300,6 +308,15 @@ function initMPR() {
         GetViewport(3).addEventListener("touchmove", touchmove3D, false);
         GetViewport(3).addEventListener("touchend", touchend3D, false);
         GetViewport(3).addEventListener("contextmenu", contextmenuF, false);
+
+        GetViewport(0).addEventListener("mousemove", Anatomical_SectionMouseMove0, false);
+        GetViewport(0).addEventListener("mousedown", Anatomical_SectionMouseDown0, false);
+        GetViewport(0).addEventListener("mouseup", Anatomical_SectionMouseMouseup0, false);
+        GetViewport(0).addEventListener("wheel", Wheel, false);
+        GetViewport(1).addEventListener("mousemove", Anatomical_SectionMouseMove, false);
+        GetViewport(1).addEventListener("mousedown", Anatomical_SectionMouseDown, false);
+        GetViewport(1).addEventListener("mouseup", Anatomical_SectionMouseMouseup, false);
+        GetViewport(1).addEventListener("wheel", Wheel, false);
         for (var ll = 0; ll < o3DListLength; ll++) {
             var elem = getByid("3DDiv" + ll);
             GetViewport(3).appendChild(elem);

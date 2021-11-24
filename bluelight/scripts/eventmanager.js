@@ -651,6 +651,89 @@ function Wheel(e) {
         Anatomical_Section2(nextInstanceNumber);
     }
 }
+Anatomical_SectionMouseMouseup0 = function (e) {
+    var currX = getCurrPoint(e)[0];
+    var currY = getCurrPoint(e)[1];
+    MouseDownCheck = false;
+    rightMouseDown = false;
+}
+Anatomical_SectionMouseMove0 = function (e) {
+    if (openMPR == true && openWindow != true && openChangeFile != true) {
+        if (MouseDownCheck == true) {
+            // viewportNumber = 0;
+            let angel2point = rotateCalculation(e);
+            currX11M = angel2point[1];
+            currY11M = angel2point[0];
+            o3DPointX = currX11M;
+            o3DPointY = currY11M;
+            AngelXY1 = [currX11M, 0];
+            AngelXY0 = [currX11M, GetViewport(0).imageHeight];
+            if (openMPR == true) {
+                var alt = GetViewport().alt;
+                var index = SearchUid2Index(alt);
+                var i = index[0],
+                    j = index[1],
+                    k = index[2];
+                var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
+                // Anatomical_Section(1);
+                Anatomical_Section2(Onum);
+            }
+            //console.log(currX11M, currY11M);
+            //  display3DLine(currX11M, 0, currX11M, GetViewport(0).imageHeight, "rgb(38,140,191)");
+            display3DLine(0, currY11M, GetViewport().imageWidth, currY11M, "rgb(221,53,119)");
+        }
+    }
+}
+Anatomical_SectionMouseDown0 = function (e) {
+    if (e.which == 1) MouseDownCheck = true;
+    else if (e.which == 3) rightMouseDown = true;
+    windowMouseX = GetmouseX(e);
+    windowMouseY = GetmouseY(e);
+    GetViewport().originalPointX = getCurrPoint(e)[0];
+    GetViewport().originalPointY = getCurrPoint(e)[1];
+};
+
+Anatomical_SectionMouseMouseup = function (e) {
+    var currX = getCurrPoint(e)[0];
+    var currY = getCurrPoint(e)[1];
+    MouseDownCheck = false;
+    rightMouseDown = false;
+}
+Anatomical_SectionMouseMove = function (e) {
+    if (openMPR == true && openWindow != true && openChangeFile != true) {
+        if (MouseDownCheck == true) {
+            // viewportNumber = 0;
+            let angel2point = rotateCalculation(e);
+            currX11M = angel2point[0];
+            currY11M = angel2point[1];
+            o3DPointX = currX11M;
+            o3DPointY = currY11M;
+            AngelXY0 = [currX11M, 0];
+            AngelXY1 = [currX11M, GetViewport(1).imageHeight];
+            if (openMPR == true) {
+                var alt = GetViewport().alt;
+                var index = SearchUid2Index(alt);
+                var i = index[0],
+                    j = index[1],
+                    k = index[2];
+                var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
+                Anatomical_Section(Onum,true);
+                // Anatomical_Section2(1);
+            }
+            //console.log(currX11M, currY11M);
+            display3DLine(currX11M, 0, currX11M, GetViewport().imageHeight, "rgb(38,140,191)");
+            //  display3DLine(0, currY11M, GetViewport(0).imageWidth, currY11M, "rgb(221,53,119)");
+        }
+    }
+}
+Anatomical_SectionMouseDown = function (e) {
+    if (e.which == 1) MouseDownCheck = true;
+    else if (e.which == 3) rightMouseDown = true;
+    windowMouseX = GetmouseX(e);
+    windowMouseY = GetmouseY(e);
+    GetViewport().originalPointX = getCurrPoint(e)[0];
+    GetViewport().originalPointY = getCurrPoint(e)[1];
+};
 
 function Mouseout(e) {
     magnifierDiv.style.display = "none";
@@ -658,32 +741,32 @@ function Mouseout(e) {
 
 interact('.LeftImg').draggable({
     onmove(event) {
-      dragalt = event.target.alt;
+        dragalt = event.target.alt;
     }
-  })
-  
-  interact('.MyDicomDiv').dropzone({
+})
+
+interact('.MyDicomDiv').dropzone({
     accept: '.LeftImg',
     ondropactivate: function (event) {
-      event.target.classList.add('drop-active')
+        event.target.classList.add('drop-active')
     },
     ondragenter: function (event) {
-      var draggableElement = event.relatedTarget
-      var dropzoneElement = event.target
-      dropzoneElement.classList.add('drop-target')
-      draggableElement.classList.add('can-drop')
+        var draggableElement = event.relatedTarget
+        var dropzoneElement = event.target
+        dropzoneElement.classList.add('drop-target')
+        draggableElement.classList.add('can-drop')
     },
     ondragleave: function (event) {
-      event.target.classList.remove('drop-target')
-      event.relatedTarget.classList.remove('can-drop')
-  
+        event.target.classList.remove('drop-target')
+        event.relatedTarget.classList.remove('can-drop')
+
     },
     ondrop: function (event) {
-      viewportNumber = parseInt(event.target.viewportNum);
-      PictureOnclick(dragalt);
+        viewportNumber = parseInt(event.target.viewportNum);
+        PictureOnclick(dragalt);
     },
     ondropdeactivate: function (event) {
-      event.target.classList.remove('drop-active')
-      event.target.classList.remove('drop-target')
+        event.target.classList.remove('drop-active')
+        event.target.classList.remove('drop-target')
     }
-  })
+})
