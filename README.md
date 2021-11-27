@@ -43,6 +43,7 @@
 * Magnifier, etc
 * Line and angle measurement
 * hide/display markups and annotations
+* Export image
 
 ### supported the display of the kinds of markups and annotations
 * GSPS: DICOM Graphic Annotation
@@ -64,7 +65,7 @@
 * DICOM Overlay
 * DICOM SEG (Segementation)
   - **Download as DCMTK DICOM-XML**: only launch BlueLight
-  - **Download as DIOCM SEG**: It is integrated with [Raccoon.net](https://github.com/cylab-tw/raccoon). Please put the BlightLight on Raccoon.  
+  - **Download as DIOCM SEG**: It is integrated with [Raccoon.net](https://github.com/cylab-tw/raccoon). Please put the BlightLight on Raccoon.
 * *Provide the function to convert the DICOM Overalys to a DICOM SEG object.*
 
 ## Supported library
@@ -75,12 +76,14 @@
   - <a href="https://github.com/cornerstonejs/cornerstoneWADOImageLoader">cornerstoneWADOImageLoader</a> for communicating with the DICOMWeb servers such as  <a href="https://www.orthanc-server.com">Orthanc</a> and <a href="https://www.dcm4che.org">Dcm4chee</a> 
   - <a href="https://www.npmjs.com/package/lodash">lodash</a> for decoding the multipart/related objects in WADO-RS response.
 
-# To Do List 
+# Roadmap
 * FHIR ImagingStudy Query/Retrieve Interface
 * Support the IHE Invoke Image Display (IID) Profile [RAD-106]
 * Display DICOM Whole Slide Imaging (WSI) implemented by DICOMWeb. Referenced standard: [DICOM WSI](http://dicom.nema.org/Dicom/DICOMWSI/)
+* Display DICOM Supplement 222 - Microscopy Bulk Simple Annotations Storage SOP Class. Referenced standard: [DICOM Sup 219](https://www.dicomstandard.org/News-dir/ftsup/docs/sups/sup222.pdf)
 * Display DICOM Supplement 219 - JSON Representation of DICOM Structured Reports. Referenced standard: [DICOM Sup 219](https://www.dicomstandard.org/News-dir/ftsup/docs/sups/Sup219.pdf)
 * Display DICOM Structured Report
+* Display DICOM Waveform - 12 Lead ECG Waveform
 
 # Special projects
 * **BlueLight-WSI**: :construction:
