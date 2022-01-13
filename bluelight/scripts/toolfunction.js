@@ -20,12 +20,12 @@ function CreateRandom() {
     var date = new Date();
     Uid += date.getFullYear() + "y" + (date.getMonth() + 1) + "m" + (date.getDate()) + "d";
     Uid += (date.getHours() + 1) + "h" + (date.getMinutes()) + "mm" +
-      (date.getSeconds()) + "ss" + (date.getMilliseconds()) + "mmm";
+        (date.getSeconds()) + "ss" + (date.getMilliseconds()) + "mmm";
 
     Uid += random(1, 999, 1) + "b";
     Uid += random(1, 999, 1) + "l";
     return Uid;
-  }
+}
 
 function random(min, max, step) {
     if (!step) step = 1;
@@ -40,6 +40,20 @@ function getCurrPoint(e) {
     var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().imageWidth / parseFloat(canvas.style.width)));
     var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().imageHeight / parseFloat(canvas.style.height)));
     return [currX, currY];
+}
+
+function VRscreenshot() {
+    var backgroundColor = GetViewport().style.backgroundColor;
+    GetViewport().style.backgroundColor = "black";
+    html2canvas(GetViewport()).then(function (canvas) {
+        //document.body.appendChild(canvas);
+        var a = document.createElement('a');
+        a.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+        a.download = 'image.png';
+        a.click();
+        delete canvas;
+    });
+    GetViewport().style.backgroundColor = backgroundColor;
 }
 
 function get3dCurrPoint(e) {
@@ -427,8 +441,8 @@ function checkMark(i, j, n) {
     return checkRtss;
 }
 
-function refreshMark(dcm,refresh) {
-    if(refresh==false) {
+function refreshMark(dcm, refresh) {
+    if (refresh == false) {
         return;
     };
     var index = SearchUid2Index(dcm.sop);
@@ -443,7 +457,7 @@ function refreshMark(dcm,refresh) {
         }
     }
     SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
-   
+
     for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(NowResize, null, null, null, i9);
 }
 

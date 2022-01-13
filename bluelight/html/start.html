@@ -53,7 +53,7 @@
   <script src="../scripts/newscript/rotate.js"></script>
   <script src="../scripts/newscript/measure.js"></script>
   <script src="../scripts/newscript/angel.js"></script>
-
+  <script  src="../scripts/external/other/html2canvas.min.js"></script>
   <script type="module">
     import { decodeImageFrame1 } from "../scripts/external/cornerstone/decode/decodeImageFrame.js";
     decodeImageFrame = decodeImageFrame1;
@@ -167,6 +167,7 @@
         <option id="AIMSelect">AIM</option>
       </select>
       <button id="ExportButton" sytle="">Export Image</button>
+      <button id="ExportButton2" sytle="">Export Dicom</button>
     </div>
 
     <div id="SplitViewportDiv" style="background-color:#4D000044;">
@@ -233,6 +234,7 @@
           id="3dZipText" size="3" value="50" /></label>
       <label style="color: #ffffff;display:none" id="3dPerspectiveLabel">perspective：<input type="text" id="3dPerspective"
           value="10000" /></label>
+        <img width="25" height="25" src="../image/icon/black/download.png" onclick="VRscreenshot();">
     </div>
     <font color="white" id="labelZoom">Zoom：</font><input type="text" id="textZoom" value="200" />
     <font color="white" id="labelPlay">fps：</font><input type="text" id="textPlay" value="10" />

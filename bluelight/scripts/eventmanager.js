@@ -7,7 +7,7 @@ var degerrY_2 = 0;
 //var o3dDirection = 1;
 var Direction_VR = 1;
 var rotateStep = 3;
-var rotateSpeed = 10;
+var rotateSpeed = 12;
 var zoomRatio3D = 1;
 var contextmenuF = function (e) {
     e.preventDefault();
@@ -104,9 +104,21 @@ var mouseupFocus3D = function (event) {
     Alpha3D();
 };
 
+var Timeout3d = false;
 var mousemove3D = function (e) {
     if (openCave == true) return;
+    if (Timeout3d == true) return;
+    
     if (openVR == true || openMPR == true) {
+        if (MouseDownCheck || rightMouseDown) {
+            var currX = get3dCurrPoint(e)[0];
+            var currY = get3dCurrPoint(e)[1];
+        }
+        Timeout3d = true;
+        setTimeout(function () {
+            Timeout3d = false;
+        }, 50);
+
         if (MouseDownCheck == true) {
             for (var ll = 0; ll < o3DListLength; ll++) {
                 var canvas1 = getByid("3DDiv" + ll).canvas();
@@ -129,10 +141,7 @@ var mousemove3D = function (e) {
             }
             var VrDistance = get3dDistance();
         }
-        if (MouseDownCheck || rightMouseDown) {
-            var currX = get3dCurrPoint(e)[0];
-            var currY = get3dCurrPoint(e)[1];
-        }
+        
         if (MouseDownCheck == true) {
             if (currX < GetViewport().originalPointX - rotateStep) {
                 degerrX += (GetViewport().originalPointX - currX) > rotateSpeed ? rotateSpeed * -1 : (GetViewport().originalPointX - currX) * -1;
@@ -368,6 +377,10 @@ var touchend3D = function (e, e2) {
 var Touchmove3D = function (e, e2) {
     if (openCave == true) return;
     if (openVR == true || openMPR == true) {
+        Timeout3d = true;
+        setTimeout(function () {
+            Timeout3d = false;
+        }, 50);
         for (var ll = 0; ll < o3DListLength; ll++) {
             var canvas1 = getByid("3DDiv" + ll).canvas();
             if (!parseInt(canvas1.style.width) >= 1) {
@@ -717,7 +730,7 @@ Anatomical_SectionMouseMove = function (e) {
                     j = index[1],
                     k = index[2];
                 var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-                Anatomical_Section(Onum,true);
+                Anatomical_Section(Onum, true);
                 // Anatomical_Section2(1);
             }
             //console.log(currX11M, currY11M);
