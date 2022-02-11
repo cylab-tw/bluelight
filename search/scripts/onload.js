@@ -78,7 +78,7 @@ function createTable() {
         PatientName_list.push(Patient.Study[i].Series[j].Sop[k].PatientName);
         Sex_list.push(Patient.Study[i].Series[j].Sop[k].Sex);
         BirthDate_list.push(Patient.Study[i].Series[j].Sop[k].BirthDate);
-        Modality_list.push(Patient.Study[i].Series[j].Sop[k].ModalitiesInStudy);
+
         AccessionNumber_list.push(Patient.Study[i].Series[j].Sop[k].AccessionNumber);
         //date = ("" + date).replace(/^(\d{4})(\d\d)(\d\d)$/, '$1/$2/$3');
         // time = ("" + time).replace(/^(\d{2})(\d\d)(\d\d)/, '$1:$2:$3');
@@ -93,6 +93,23 @@ function createTable() {
         for (var i2 = 0; i2 < Patient.Study[i].Series.length; i2++) {
           SopAmount1 += Patient.Study[i].Series[i2].SopAmount;
         }
+        var ModalityList1 = [];
+        for (var i2 = 0; i2 < Patient.Study[i].Series.length; i2++) {
+          for (var i3 = 0; i3 < Patient.Study[i].Series[i2].Sop.length; i3++) {
+            ModalityList1.push(Patient.Study[i].Series[i2].Sop[i3].ModalitiesInStudy);
+          }
+        }
+        ModalityList1 = ModalityList1.filter(function (element, index, arr) {
+          return arr.indexOf(element) === index;
+        });
+        var ModalityStr = "";
+        for (var m = 0; m < ModalityList1.length; m++) {
+          if (m != 0) ModalityStr += ",";
+          ModalityStr += ModalityList1[m];
+        }
+        Modality_list.push(ModalityStr);
+
+
         SopAmount_list.push(SopAmount1);
         StudyUID_list.push(Patient.Study[i].StudyUID);
         StudyObj_list.push(Patient.Study[i]);
@@ -115,7 +132,8 @@ function createTable() {
   var row0 = Table.insertRow(0);
   // row0.className = "table-primary ";
   row0.style.color = "#ffffff";
-  row0.style.backgroundColor = "#203852";
+  //row0.style.backgroundColor = "#203852";
+  row0.style.background = "linear-gradient(rgb(32, 56, 82), rgb(64, 82, 144), rgb(32, 56, 82))";//"linear-gradient(rgb(132, 156, 182,0.2), rgb(164, 202, 264,0.4), rgb(132, 156, 182,0.2))";
   var cells0 = row0.insertCell(0);
   cells0.innerHTML = "Patient ID";
   var cells1 = row0.insertCell(1);
@@ -188,29 +206,32 @@ function createTable() {
       Table.style.color = "#000000";
       Table.style.position = "absolute"
       Table.className = "table table-striped";
-      Table.style.backgroundColor="rgb(210,222,239)"
+      Table.style.backgroundColor = "rgb(210,222,239)"
       Table.setAttribute("border", 2);
-      Table.style.borderColor='black';
+      Table.style.borderColor = 'black';
+
 
       for (var c = 0; c < getClass("PatientRow").length; c++)getClass("PatientRow")[c].style.height = "";
       //
-      var row = Table.insertRow(0);
-      var cell = row.insertCell(0); cell.innerHTML = "<b>Open This Study </b><img src='../image/icon/goto.png'></img>";
-      cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
-      cell.onclick = function () { window.open(this.alt, '_blank'); }
-      row.insertCell(1).innerHTML = "StudyInstanceUID=" + this.Study.StudyUID;
-      row.className = "SecondRow2";
+      //var row = Table.insertRow(0);
+      // var cell = row.insertCell(0); cell.innerHTML = "<b>Open This Study </b><img src='../image/icon/goto.png'></img>";
+      // cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
+      // cell.onclick = function () { window.open(this.alt, '_blank'); }
+      // row.insertCell(1).innerHTML = "StudyInstanceUID=" + this.Study.StudyUID;
+      // row.className = "SecondRow2";
+      // row.style.whiteSpace="nowrap";
 
       var Table2 = document.createElement("table");
       Table2.id = "floatTable2";
       Table2.style.color = "#000000";
       Table2.style.position = "absolute"
       Table2.className = "table table-striped";
-      Table2.style.backgroundColor="rgb(255,242,204)"
+      Table2.style.backgroundColor = "rgb(255,242,204)"
       Table2.setAttribute("border", 2);
-      Table2.style.borderColor='black';
+      Table2.style.borderColor = 'black';
 
       var row0 = Table2.insertRow(0);
+      row0.style.background = "linear-gradient(rgb(32, 56, 82,0.1), rgb(64, 102, 164,0.7), rgb(32, 56, 82,0.1))";
       row0.insertCell(0).innerHTML = "<img src='../image/icon/x.png' onclick='hidefloatTable()'></img>";
       row0.insertCell(1).innerHTML = "Modality";
       row0.insertCell(2).innerHTML = "Series Description";
@@ -218,11 +239,25 @@ function createTable() {
       row0.insertCell(4).innerHTML = "#I";
       row0.style.color = "#FFFFFF";
       row0.style.backgroundColor = "#203852";
-     // row0.className = "SecondRow";
+
+      var row1 = Table2.insertRow(1);
+      var cell = row1.insertCell(0); cell.innerHTML = "<b>Open This Study </b><img src='../image/icon/goto.png'></img>";
+      cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
+      cell.onclick = function () { window.open(this.alt, '_blank'); }
+      var cell = row1.insertCell(1); cell.innerHTML = "StudyInstanceUID=" + this.Study.StudyUID;
+      row1.className = "SecondRow2";
+      row1.style.backgroundColor = "rgb(210,222,239)"
+      cell.colSpan = 4;
+      //row1.style.whiteSpace = "nowrap";
+      // row1.insertCell(2).innerHTML = "";
+      //row1.insertCell(3).innerHTML = "";
+      //row1.insertCell(4).innerHTML = "";
+      row1.style.whiteSpace = "nowrap";
+      // row0.className = "SecondRow";
       //row0.style.backgroundColor = "#d8dafe";
       //row0.className="Primary";
       for (var c = 0; c < this.Study.Series.length; c++) {
-        var row = Table2.insertRow(c + 1);
+        var row = Table2.insertRow(c + 2);
         var cell = row.insertCell(0); cell.innerHTML = "<b>Open This Series </b><img src='../image/icon/goto.png'></img>";
         cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
         cell.onclick = function () { window.open(this.alt, '_blank'); }
@@ -231,22 +266,24 @@ function createTable() {
         row.insertCell(3).innerHTML = undefined2null("" + this.Study.Series[c].Sop[0].SeriesNumber);;
         row.insertCell(4).innerHTML = "" + this.Study.Series[c].Sop.length;
         row.setAttribute("border", 3);
-        row.style.borderColor='black';
+        row.style.borderColor = 'black';
         row.className = "SecondRow";
       }
-      Body.appendChild(Table);
       Body.appendChild(Table2);
+      Body.appendChild(Table);
 
       try {
         getByid("floatTable").parentNode.replaceChild(Table, getByid("floatTable"));
         getByid("floatTable2").parentNode.replaceChild(Table2, getByid("floatTable2"));
       } catch (ex) { console.log(ex); }
 
-      Table2.style.marginLeft = (30) + 'px';// Table.style.marginLeft = (this.getClientRects()[0].x) - (getByid("myTable1").getClientRects()[0].x) +
-      Table.style.marginLeft = (30) + 'px';// 
-      Table2.style.marginTop = (this.getClientRects()[0].y) + (this.getClientRects()[0].height * 1) - (getByid("myTable1").getClientRects()[0].y) + 'px';
-      Table.style.marginTop = (parseInt(Table2.style.marginTop) -2) + (Table2.getClientRects()[0].height) + 'px';
-
+      Table.style.marginLeft = (30) + 'px';// Table.style.marginLeft = (this.getClientRects()[0].x) - (getByid("myTable1").getClientRects()[0].x) +
+      Table2.style.marginLeft = (30) + 'px';// 
+      Table.style.marginTop = (this.getClientRects()[0].y) + (this.getClientRects()[0].height * 1) + (Table2.getClientRects()[0].height) - (getByid("myTable1").getClientRects()[0].y) + 'px';
+      Table2.style.marginTop = (parseInt(Table.style.marginTop) - 0) - (Table2.getClientRects()[0].height) + 'px';
+      Table.style.marginTop = parseFloat(Table.style.marginTop) - (Table2.getClientRects()[0].height) + (this.getClientRects()[0].height * 1) + 'px';
+      Table.style.zIndex = "7";
+      Table2.style.zIndex = "6";
       this.style.height = (this.getClientRects()[0].height) * (this.Study.Series.length + 3) + (5) + "px";
       getByid("floatTable").style.display = getByid("floatTable2").style.display = "";
 
@@ -256,9 +293,9 @@ function createTable() {
         getByid("myTable1").parentNode.replaceChild(Table, getByid("myTable1"));
       } catch (ex) { console.log(ex); }
       window.scroll(0, scrollY);
-      getByid("myTable1").style.backgroundColor="rgba(127,127,127,0.7)";
-      getByid("floatTable2").style.width="calc(100% - 30px)";
-      getByid("floatTable").style.width="calc(100% - 30px)";
+      getByid("myTable1").style.backgroundColor = "rgba(127,127,127,0.7)";
+      getByid("floatTable2").style.width = "calc(100% - 30px)";
+      getByid("floatTable").style.width = "calc(100% - 30px)";
     };
     //}
   }

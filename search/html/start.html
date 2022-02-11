@@ -22,23 +22,39 @@
     background-color: #DFE7F2 !important;
     color: #000000
   }
+
   .SecondRow:hover {
     background-color: #fff282 !important;
     color: #000000
   }
+
   .SecondRow2:hover {
     background-color: #8ad4ff !important;
     color: #000000
   }
-  .size14{
+
+  /*
+  background: linear-gradient(rgba(32, 56, 82, 0.1), rgba(64, 102, 164, 0.1), rgba(32, 56, 82, 0.1));
+  .PatientRow td{
+    border-bottom-width:2px;
+    border-style: rgba(9,12,41);
+  }*/
+  .size14 {
     font-size: 14px;
   }
-  .SecondRow2 td, .SecondRow2 th{
-  border-color: black;
-  } 
-  .SecondRow td, .SecondRow th{
-  border-color: black;
+
+  .SecondRow2 td,
+  .SecondRow2 th {
+    border-color: black;
   }
+
+  .SecondRow td,
+  .SecondRow th {
+    border-color: black;
+  }
+  .center{
+  text-align: center;
+}
 </style>
 <script>
   function kerypressT(e) {
@@ -51,12 +67,12 @@
 
 <body style="background-color:#000000;color:#FFFFFF" onkeypress="kerypressT(event);">
   <div style="margin-top: 7px;">
-    
+
     　PatientID：<input type="text" style="width: 100px;height:28px;" name="lname" id="PatientIDText" value="*"
       class="size14 btn btn-dark text-left">
     PatientName：<input type="text" style="width: 100px;height:28px;" name="lname" id="PatientNameText"
       class="size14 btn btn-dark text-left">
-    StudyDate：<span onfocusout ="
+    StudyDate：<span onfocusout="
     setTimeout(function(){ 
       var obj1=document.activeElement;
     if(!(obj1===getByid('StudyDateText')||obj1===getByid('StudyDatedate1')||obj1===getByid('StudyDatedate2')||obj1===getByid('dateDiv')))
@@ -64,31 +80,32 @@
     setStudyDateByKeyPress();
   }, 200);
     ">
-   
-    <input type="text" name="lname" style="width: 160px;height:28px;" id="StudyDateText" class="size14 btn btn-dark text-left" onkeydown="setStudyDateByKeyPress()"  onfocus="
+
+      <input type="text" name="lname" style="width: 160px;height:28px;" id="StudyDateText"
+        class="size14 btn btn-dark text-left" onkeydown="setStudyDateByKeyPress()" onfocus="
     getByid('dateDiv').style.display='';
     getByid('dateDiv').style.marginLeft= (this.getClientRects()[0].x-80)+'px';getByid('dateBr').style.display='';
-    "> 
-     <div id="dateDiv" style="position:absolute;display:none;">
-        <input type="date" class="size14 btn btn-dark text-left" id="StudyDatedate1" name="date"  style="width: 150px;height:25px;" value="" onchange="setStudyDate()"> -
-        <input type="date" class="size14 btn btn-dark text-left" id="StudyDatedate2" name="date"  style="width: 150px;height:25px;" value="" onchange="setStudyDate()">
-    </div>
-  
-  </span>   Accession Number：<input type="text" name="lname" style="width: 220px;height:28px;" id="AccessionNumberText"
+    ">
+      <div id="dateDiv" style="position:absolute;display:none;">
+        <input type="date" class="size14 btn btn-dark text-left" id="StudyDatedate1" name="date"
+          style="width: 150px;height:25px;" value="" onchange="setStudyDate()"> -
+        <input type="date" class="size14 btn btn-dark text-left" id="StudyDatedate2" name="date"
+          style="width: 150px;height:25px;" value="" onchange="setStudyDate()">
+      </div>
+
+    </span> Accession Number：<input type="text" name="lname" style="width: 220px;height:28px;" id="AccessionNumberText"
       class="size14 btn btn-dark text-left">
     <br> <br id="dateBr" style="display:none;">
-    　Modality：&nbsp;<input type="text" name="lname" style="margin-top: 3px;width: 100px;height:28px;" id="ModalitiesInStudyText"
-      class="size14 btn btn-dark text-left">
-    　StudyUID：&nbsp;<input type="text" style="margin-top: 3px;width: 180px;height:28px;" name="lname" id="StudyInstanceUIDText"
-      class="size14 btn btn-dark text-left">
+    　Modality：&nbsp;<input type="text" name="lname" style="margin-top: 3px;width: 100px;height:28px;"
+      id="ModalitiesInStudyText" class="size14 btn btn-dark text-left">
+    　StudyUID：&nbsp;<input type="text" style="margin-top: 3px;width: 180px;height:28px;" name="lname"
+      id="StudyInstanceUIDText" class="size14 btn btn-dark text-left">
     <!--&nbsp;&nbsp;Password：<input type="password" name="lname" value="123" id="PasswordText" class="btn btn-dark text-left">-->
-    &nbsp;&nbsp;Limit：&nbsp;<input type="number" name="lname" style="margin-top: 3px;width: 80px;height:28px;" value="10" id="LimitInput"
-      data-decimals="2" class="size14 btn btn-dark text-left">
-    &nbsp;&nbsp;&nbsp;&nbsp;Offset：&nbsp;<input type="number" name="lname" style="margin-top: 3px;width: 80px;height:28px;" value="0"
-      id="OffsetInput" data-decimals="2" class="size14 btn btn-dark text-left">&nbsp;&nbsp;&nbsp;&nbsp;
 
-
-    <button type="button" id="searchButton" style="margin-top: 2px;" class="btn btn-dark" onclick="
+    <button type="button" id="searchButton" style="margin-top: 3px;" class="btn btn-secondary" onclick="
+    setTimeout(function(){
+    getByid('LimitInput2').value=getByid('LimitInput').value;
+    getByid('OffsetInput2').value=getByid('OffsetInput').value;
   //if(!PasswordCheck())return;
   getByid('loadingSpan').style.display='';
   if(getByid('floatTable'))getByid('floatTable').style.display='none';
@@ -120,27 +137,39 @@
     elem.parentElement.removeChild(elem);
   }
   readAllJson();
+}, 120);
   ">search</button>
   </div>
-  
-  <button class="previous btn btn-dark" onclick="
+  <div class="center">
+    <button class="previous btn btn-dark" onclick="
   getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)- parseInt(getByid('LimitInput').value);
   getByid('searchButton').click();
   ">&#8249;</button>
-  <button class="next btn btn-dark" onclick="
+    &nbsp;&nbsp;Limit：&nbsp;<input type="number" name="lname" style="margin-top: 3px;width: 80px;height:28px;"
+      value="10" id="LimitInput" data-decimals="2" class="size14 btn btn-dark text-left" onchange="getByid('LimitInput2').value=this.value">
+    &nbsp;&nbsp;&nbsp;&nbsp;Offset：&nbsp;<input type="number" name="lname"
+      style="margin-top: 3px;width: 80px;height:28px;" value="0" id="OffsetInput" data-decimals="2"
+      class="size14 btn btn-dark text-left" onchange="getByid('OffsetInput2').value=this.value">&nbsp;&nbsp;&nbsp;&nbsp;
+    <button class="next btn btn-dark" onclick="
   getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)+ parseInt(getByid('LimitInput').value);
   getByid('searchButton').click();
-  ">&#8250;</button><span id="loadingSpan">  Loading...</span>
+  ">&#8250;</button> </div><span id="loadingSpan"> Loading...</span>
   <div id="body"></div>
+  <div class="center">
   <button class="previous btn btn-dark" onclick="
   getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)- parseInt(getByid('LimitInput').value);
   getByid('searchButton').click();
   ">&#8249;</button>
+  &nbsp;&nbsp;Limit：&nbsp;<input type="number" name="lname" style="margin-top: 3px;width: 80px;height:28px;"
+  value="10" id="LimitInput2" data-decimals="2" class="size14 btn btn-dark text-left" onchange="getByid('LimitInput').value=this.value">
+&nbsp;&nbsp;&nbsp;&nbsp;Offset：&nbsp;<input type="number" name="lname"
+  style="margin-top: 3px;width: 80px;height:28px;" value="0" id="OffsetInput2" data-decimals="2"
+  class="size14 btn btn-dark text-left" onchange="getByid('OffsetInput').value=this.value">&nbsp;&nbsp;&nbsp;&nbsp;
   <button class="next btn btn-dark" onclick="
   getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)+ parseInt(getByid('LimitInput').value);
   getByid('searchButton').click();
-  ">&#8250;</button>
- <!--<header class="page-header" style="display:none">
+  ">&#8250;</button></div>
+  <!--<header class="page-header" style="display:none">
   </header>-->
 </body>
 
