@@ -12,22 +12,26 @@
     ],
     "RT": [
       {
-        "name": "Patient's Name:",
+        "name": "",
         "tag": "00100010"
       },
       {
-        "name": "Patient ID:",
+        "name": "",
         "tag": "00100020"
       }
       ,
       {
-        "name": "Patient Sex:",
+        "name": "",
         "tag": "00100040"
       }
       ,
       {
-        "name": "Patient Age:",
+        "name": "",
         "tag": "00101010"
+      },
+      {
+        "name": "",
+        "tag": "00081030"
       }
     ],
     "LB": {},

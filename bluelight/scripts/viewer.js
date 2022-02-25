@@ -331,7 +331,7 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
 
 
     if (image.data.string('x00080016') == '1.2.840.10008.5.1.4.1.1.66.4') {
-        loadDicomSeg(image, imageId);
+        loadDicomSeg(image, image.imageId);
         return;
     }
 
