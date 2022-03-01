@@ -313,6 +313,7 @@ function html_onload() {
 
   getByid("MarkButton").onclick = function () {
     GetViewport().openMark = !GetViewport().openMark;
+    for (var i = 0; i < Viewport_Total; i++) GetViewportMark(i).getContext("2d").clearRect(0, 0, GetViewport(i).imageWidth, GetViewport(i).imageHeight);
     for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
     changeMarkImg();
   }

@@ -108,7 +108,7 @@ var Timeout3d = false;
 var mousemove3D = function (e) {
     if (openCave == true) return;
     if (Timeout3d == true) return;
-    
+
     if (openVR == true || openMPR == true) {
         if (MouseDownCheck || rightMouseDown) {
             var currX = get3dCurrPoint(e)[0];
@@ -141,7 +141,7 @@ var mousemove3D = function (e) {
             }
             var VrDistance = get3dDistance();
         }
-        
+
         if (MouseDownCheck == true) {
             if (currX < GetViewport().originalPointX - rotateStep) {
                 degerrX += (GetViewport().originalPointX - currX) > rotateSpeed ? rotateSpeed * -1 : (GetViewport().originalPointX - currX) * -1;
@@ -622,6 +622,7 @@ function Wheel(e) {
                 k = index[2];
             var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
             var list = sortInstance(alt);
+            if (list.length <= 1) continue;
             if (e.deltaY < 0) {
                 for (var l = 0; l < list.length; l++) {
                     if (break1 == true) break;

@@ -379,35 +379,6 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
 
         tempctx.lineJoin = tempctx.lineCap = 'round';
 
-        var mat = tempctx.getTransform();
-        var checkTransform = false;
-        //標記套用image Orientation和image Position，之後將以反方向旋轉
-        if (CheckNull(GetViewport(viewportNum).imageOrientationX) == false && CheckNull(GetViewport(viewportNum).imageOrientationY) == false && CheckNull(GetViewport(viewportNum).imageOrientationZ) == false) {
-            tempctx.setTransform(new DOMMatrix(
-                [GetViewport(viewportNum).imageOrientationX, -GetViewport(viewportNum).imageOrientationX2, 0, GetViewport(viewportNum).imagePositionX * GetViewport(viewportNum).PixelSpacingX,
-                -GetViewport(viewportNum).imageOrientationY, GetViewport(viewportNum).imageOrientationY2, 0, GetViewport(viewportNum).imagePositionY * GetViewport(viewportNum).PixelSpacingY,
-                GetViewport(viewportNum).imageOrientationZ, GetViewport(viewportNum).imageOrientationZ2, 0, GetViewport(viewportNum).imagePositionZ,
-                    0, 0, 0, 1
-                ]));
-            checkTransform = true;
-        }
-        mat = tempctx.getTransform();
-        //標記支援翻轉
-        if (GetViewport(viewportNum).openHorizontalFlip == true && GetViewport(viewportNum).openVerticalFlip == true) {
-            tempctx.setTransform(mat.scaleSelf(-1, -1));
-            tempctx.setTransform(mat.translateSelf(-parseInt(GetViewport(viewportNum).imageWidth), parseInt(-GetViewport(viewportNum).imageHeight)));
-        } else if (GetViewport(viewportNum).openHorizontalFlip == true) {
-            tempctx.setTransform(mat.scaleSelf(-1, 1));
-            tempctx.setTransform(mat.translateSelf(-parseInt(GetViewport(viewportNum).imageWidth), 0));
-        } else if (GetViewport(viewportNum).openVerticalFlip == true) {
-            tempctx.setTransform(mat.scaleSelf(1, -1, 1));
-            tempctx.setTransform(mat.translateSelf(0, -parseInt(GetViewport(viewportNum).imageHeight)));
-        } else {
-            tempctx.setTransform(mat.scaleSelf(1, 1, 1));
-            tempctx.setTransform(mat.translateSelf(0, 0));
-        }
-        if (checkTransform) tempctx.setTransform(mat.invertSelf());
-
         tempctx.globalAlpha = alpha;
         var alt = GetViewport(viewportNum).alt;
         if (o3DElement) alt = o3DElement.alt;
@@ -484,65 +455,76 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         let checkRtss = 0;
                         checkRtss = checkMark(i, j, n);
                         if (checkRtss == 0) continue;
-
                         Css(MarkCanvas, 'zIndex', "8");
-                        var imgData2 = tempctx.getImageData(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
-                        var select_b = 255;
-                        var select_g = 0;
-                        var select_r = 0;
-                        var select_a = parseInt(255 * alpha);
+                        function mirrorImage(ctx, image, x = 0, y = 0, horizontal = false, vertical = false) {
+                            ctx.save();  // save the current canvas state
+                            ctx.setTransform(
+                                horizontal ? -1 : 1, 0, // set the direction of x axis
+                                0, vertical ? -1 : 1,   // set the direction of y axis
+                                x + (horizontal ? image.width : 0), // set the x origin
+                                y + (vertical ? image.height : 0)   // set the y origin
+                            );
+                            ctx.drawImage(image, 0, 0);
+                            ctx.restore(); // restore the state as it was when this function was called
+                        }
+                        mirrorImage(tempctx, PatientMark[n].mark[m].canvas, 0, 0, GetViewport(viewportNum).openHorizontalFlip, GetViewport(viewportNum).openVerticalFlip)
+                        // tempctx.drawImage(PatientMark[n].mark[m].canvas, 0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
+                        var globalCompositeOperation = tempctx.globalCompositeOperation;
                         if (getByid("BlueSelect").selected == true) {
-                            select_g = select_r = 0;
-                            select_b = 255;
+                            tempctx.globalCompositeOperation = "source-atop";
+                            tempctx.fillStyle = "blue";
+                            tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
                         } else if (getByid("RedSelect").selected == true) {
-                            select_g = select_b = 0;
-                            select_r = 255;
+                            tempctx.globalCompositeOperation = "source-atop";
+                            tempctx.fillStyle = "red";
+                            tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
                         } else if (getByid("WhiteSelect").selected == true) {
-                            select_r = select_g = select_b = 255;
+                            tempctx.globalCompositeOperation = "source-atop";
+                            tempctx.fillStyle = "white";
+                            tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
                         }
-                        if (GetViewport(viewportNum).openHorizontalFlip == true && GetViewport(viewportNum).openVerticalFlip == true) {
-                            for (var data = 0; data < imgData2.data.length; data += 4) {
-                                if (PatientMark[n].mark[m].pixelData[(PatientMark[n].mark[m].pixelData.length - 1) - data / 4] == 1) {
-                                    imgData2.data[data] += select_r;
-                                    imgData2.data[data + 1] += select_g;
-                                    imgData2.data[data + 2] += select_b;
-                                    imgData2.data[data + 3] += select_a;
-                                }
-                            }
-                        } else if (GetViewport(viewportNum).openVerticalFlip == true) {
-                            for (var dataH = 0; dataH < GetViewport(viewportNum).imageHeight; dataH += 1) {
-                                for (var dataW = 0; dataW < GetViewport(viewportNum).imageWidth * 4; dataW += 4) {
-                                    if (PatientMark[n].mark[m].pixelData[((GetViewport(viewportNum).imageHeight - dataH - 1) * GetViewport(viewportNum).imageWidth * 4 + dataW) / 4] == 1) {
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] += select_r;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] += select_g;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] += select_b;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] += select_a;
-                                    }
-                                }
-                            }
-                        } else if (GetViewport(viewportNum).openHorizontalFlip == true) {
-                            for (var dataH = 0; dataH < GetViewport(viewportNum).imageHeight; dataH += 1) {
-                                for (var dataW = 0; dataW < GetViewport(viewportNum).imageWidth * 4; dataW += 4) {
-                                    if (PatientMark[n].mark[m].pixelData[(dataH * GetViewport(viewportNum).imageWidth * 4 + (GetViewport(viewportNum).imageWidth * 4 - dataW - 4)) / 4] == 1) {
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW] += select_r;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 1] += select_g;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 2] += select_b;
-                                        imgData2.data[dataH * GetViewport(viewportNum).imageWidth * 4 + dataW + 3] += select_a;
-                                    }
-                                }
-                            }
-                        } else {
-                            for (var data = 0; data < imgData2.data.length; data += 4) {
-                                if (PatientMark[n].mark[m].pixelData[data / 4] == 1) {
-                                    imgData2.data[data] += select_r;
-                                    imgData2.data[data + 1] += select_g;
-                                    imgData2.data[data + 2] += select_b;
-                                    imgData2.data[data + 3] += select_a;
-                                }
-                            }
-                        }
-                        tempctx.putImageData(imgData2, 0, 0);
+                        tempctx.globalCompositeOperation = globalCompositeOperation;
+                        //tempctx.drawImage(canvas1.toDataURL(), 0, 0,GetViewport(0).imageWidth, GetViewport(0).imageHeight, 0, 0, GetViewport(0).imageWidth, GetViewport(0).imageHeight)
+                        //canvas1=(PatientMark[n].mark[m].canvas)
+                        // getImageData1=(PatientMark[n].mark[m].ctx.getImageData(0, 0,50, 50))
+                        tempctx.restore();
                     }
+                }
+            }
+        }
+
+        var mat = tempctx.getTransform();
+        var checkTransform = false;
+        //標記套用image Orientation和image Position，之後將以反方向旋轉
+        if (CheckNull(GetViewport(viewportNum).imageOrientationX) == false && CheckNull(GetViewport(viewportNum).imageOrientationY) == false && CheckNull(GetViewport(viewportNum).imageOrientationZ) == false) {
+            tempctx.setTransform(new DOMMatrix(
+                [GetViewport(viewportNum).imageOrientationX, -GetViewport(viewportNum).imageOrientationX2, 0, GetViewport(viewportNum).imagePositionX * GetViewport(viewportNum).PixelSpacingX,
+                -GetViewport(viewportNum).imageOrientationY, GetViewport(viewportNum).imageOrientationY2, 0, GetViewport(viewportNum).imagePositionY * GetViewport(viewportNum).PixelSpacingY,
+                GetViewport(viewportNum).imageOrientationZ, GetViewport(viewportNum).imageOrientationZ2, 0, GetViewport(viewportNum).imagePositionZ,
+                    0, 0, 0, 1
+                ]));
+            checkTransform = true;
+        }
+        mat = tempctx.getTransform();
+        //標記支援翻轉
+        if (GetViewport(viewportNum).openHorizontalFlip == true && GetViewport(viewportNum).openVerticalFlip == true) {
+            tempctx.setTransform(mat.scaleSelf(-1, -1));
+            tempctx.setTransform(mat.translateSelf(-parseInt(GetViewport(viewportNum).imageWidth), parseInt(-GetViewport(viewportNum).imageHeight)));
+        } else if (GetViewport(viewportNum).openHorizontalFlip == true) {
+            tempctx.setTransform(mat.scaleSelf(-1, 1));
+            tempctx.setTransform(mat.translateSelf(-parseInt(GetViewport(viewportNum).imageWidth), 0));
+        } else if (GetViewport(viewportNum).openVerticalFlip == true) {
+            tempctx.setTransform(mat.scaleSelf(1, -1, 1));
+            tempctx.setTransform(mat.translateSelf(0, -parseInt(GetViewport(viewportNum).imageHeight)));
+        } else {
+            tempctx.setTransform(mat.scaleSelf(1, 1, 1));
+            tempctx.setTransform(mat.translateSelf(0, 0));
+        }
+        if (checkTransform) tempctx.setTransform(mat.invertSelf());
+
+        for (var n = 0; n < PatientMark.length; n++) {
+            if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
+                for (var m = 0; m < PatientMark[n].mark.length; m++) {
                     if (PatientMark[n].mark[m].type == "XML_mark") {
                         tempctx.save();
                         tempctx.setTransform(1, 0, 0, 1, 0, 0);

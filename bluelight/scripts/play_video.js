@@ -12,17 +12,19 @@ function playVideo(dir) {
     if (Patient.Study[i].Series[j].Sop[k].SopUID == alt) {
         var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
         var list = sortInstance(alt);
-        for (var l = 0; l < list.length; l++) {
-            if (break1 == true) break;
-            if (list[l].InstanceNumber == Onum) {
-                if (l + 1 >= list.length) {
-                    loadAndViewImage(list[0].imageId, null, null, viewportNum);
+        if (!(list.length <= 1)) {
+            for (var l = 0; l < list.length; l++) {
+                if (break1 == true) break;
+                if (list[l].InstanceNumber == Onum) {
+                    if (l + 1 >= list.length) {
+                        loadAndViewImage(list[0].imageId, null, null, viewportNum);
+                        break1 = true;
+                        break;
+                    }
+                    loadAndViewImage(list[l + 1].imageId, null, null, viewportNum);
                     break1 = true;
                     break;
                 }
-                loadAndViewImage(list[l + 1].imageId, null, null, viewportNum);
-                break1 = true;
-                break;
             }
         }
     }

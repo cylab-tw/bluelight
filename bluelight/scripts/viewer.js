@@ -354,7 +354,7 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
 
         var _firstNumber = 0;
 
-        if ((image.invert != true && GetViewport(viewportNum).openInvert == true) || (image.invert == true && GetViewport(viewportNum).openInvert == false)) {
+        /*if ((image.invert != true && GetViewport(viewportNum).openInvert == true) || (image.invert == true && GetViewport(viewportNum).openInvert == false)) {
             if (image.color == true) {
                 for (var i = 0; i < imgData2.data.length; i += 4) {
                     _firstNumber = pixelData[i];
@@ -379,33 +379,48 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
                 }
             }
         }
-        else {
-            if (image.color == true) {
-                for (var i = 0; i < imgData2.data.length; i += 4) {
-                    _firstNumber = pixelData[i];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 0] = _firstNumber;
-                    _firstNumber = pixelData[i + 1];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 1] = _firstNumber;
-                    _firstNumber = pixelData[i + 2];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 2] = _firstNumber;
-                    imgData2.data[i + 3] = 255;
-                }
-            } else {
-                for (var i = 0; i < imgData2.data.length; i += 4) {
-                    _firstNumber = pixelData[i / 4];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 0] = _firstNumber
-                    imgData2.data[i + 1] = _firstNumber
-                    imgData2.data[i + 2] = _firstNumber
-                    imgData2.data[i + 3] = 255;
-                }
+        else {*/
+        if (image.color == true) {
+            for (var i = 0; i < imgData2.data.length; i += 4) {
+                _firstNumber = pixelData[i];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 0] = _firstNumber;
+                _firstNumber = pixelData[i + 1];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 1] = _firstNumber;
+                _firstNumber = pixelData[i + 2];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 2] = _firstNumber;
+                imgData2.data[i + 3] = 255;
+            }
+        } else {
+            for (var i = 0; i < imgData2.data.length; i += 4) {
+                _firstNumber = pixelData[i / 4];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 0] = _firstNumber
+                imgData2.data[i + 1] = _firstNumber
+                imgData2.data[i + 2] = _firstNumber
+                imgData2.data[i + 3] = 255;
             }
         }
+        // }
         ctx2.putImageData(imgData2, 0, 0);
-        if (GetViewport(viewportNum).openHorizontalFlip == true || GetViewport(viewportNum).openVerticalFlip == true) {
+        function mirrorImage(ctx, image, x = 0, y = 0, horizontal = false, vertical = false) {
+            ctx.save();  // save the current canvas state
+            ctx.setTransform(
+                horizontal ? -1 : 1, 0, // set the direction of x axis
+                0, vertical ? -1 : 1,   // set the direction of y axis
+                x + (horizontal ? image.width : 0), // set the x origin
+                y + (vertical ? image.height : 0)   // set the y origin
+            );
+            if (image.invert != true) ctx.filter = "invert";
+            ctx.drawImage(image, 0, 0);
+            ctx.restore(); // restore the state as it was when this function was called
+        }
+        if (image.invert != true || GetViewport(viewportNum).openHorizontalFlip == true || GetViewport(viewportNum).openVerticalFlip == true) {
+            mirrorImage(ctx2, DicomCanvas, 0, 0, GetViewport(viewportNum).openHorizontalFlip, GetViewport(viewportNum).openVerticalFlip);
+        }
+        /*if (GetViewport(viewportNum).openHorizontalFlip == true || GetViewport(viewportNum).openVerticalFlip == true) {
             var HorizontalFlip = GetViewport(viewportNum).openHorizontalFlip == true ? -1 : 1;
             var VerticalFlip = GetViewport(viewportNum).openVerticalFlip == true ? -1 : 1;
             var ctxWidth = HorizontalFlip == -1 ? image.width / 2 : 0;
@@ -415,7 +430,7 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
             ctx2.scale(HorizontalFlip, VerticalFlip);
             ctx2.drawImage(DicomCanvas, -ctxWidth, -ctxHeight, image.width, image.height);
             ctx2.restore();
-        }
+        }*/
     }
 
     if (!(ifNowAlt == true && element.windowWidthList != 0) || WindowOpen == false) {
@@ -557,8 +572,8 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
     labelRT[viewportNum].innerHTML = "";
     //依照dicom tags設定檔載入影像
     function htmlEntities(str) {
-        str=Null2Empty(str);
-        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace("\r\n","<br/>").replace("\n","<br/>");
+        str = Null2Empty(str);
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace("\r\n", "<br/>").replace("\n", "<br/>");
     }
     for (var i = 0; i < DicomTags.LT.name.length; i++)
         labelLT[viewportNum].innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";

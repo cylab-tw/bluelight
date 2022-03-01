@@ -130,8 +130,8 @@ function readDicom(url, patientmark, openfile) {
           if (ov < 10) ov_str = "0" + ov;
           if (!dataSet.elements['x600' + ov + '3000']) continue;
           try {
-            var pixelData = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements['x60' + ov_str + '3000'].dataOffset, dataSet.elements['x60' + ov_str + '3000'].length);
-            var tempPixeldata = new Uint8Array(pixelData.length * 8);
+            var pixelData = new Uint8ClampedArray(dataSet.byteArray.buffer, dataSet.elements['x60' + ov_str + '3000'].dataOffset, dataSet.elements['x60' + ov_str + '3000'].length);
+            var tempPixeldata = new Uint8ClampedArray(pixelData.length * 8);
             var tempi = 0;
             var tempnum = 0;
             for (var num of pixelData) {
@@ -166,6 +166,8 @@ function readDicom(url, patientmark, openfile) {
             dcm.study = dataSet.string('x0020000d');
             dcm.series = dataSet.string('x0020000e');
             dcm.sop = dataSet.string('x00080018');
+            dcm.height = dataSet.uint16('x600' + ov + '0010');
+            dcm.width = dataSet.uint16('x600' + ov + '0011');
             dcm.mark = [];
             dcm.showName = 'Overlay';
             dcm.hideName = dcm.showName + 'x60' + ov_str + '1500';
@@ -175,10 +177,23 @@ function readDicom(url, patientmark, openfile) {
             dcm.mark.push({});
             var DcmMarkLength = dcm.mark.length - 1;
             dcm.mark[DcmMarkLength].type = "Overlay";
-            dcm.mark[DcmMarkLength].pixelData = tempPixeldata.slice(0);;
+            dcm.mark[DcmMarkLength].pixelData = tempPixeldata.slice(0);
+            dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
+            dcm.mark[DcmMarkLength].canvas.width = dcm.width;
+            dcm.mark[DcmMarkLength].canvas.height = dcm.height;
+            dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
+            var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, dcm.width, dcm.height);
+            for(var i=0,j=0;i<pixelData.data.length;i+=4,j++)
+              if (dcm.mark[DcmMarkLength].pixelData[j] == 1) {
+                pixelData.data[i] = 0;
+                pixelData.data[i + 1] = 0;
+                pixelData.data[i + 2] = 255;
+                pixelData.data[i + 3] = 255;
+              }
+            dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
             patientmark.push(dcm);
             refreshMark(dcm);
-          } catch (ex) { }
+          } catch (ex) {  }
         }
         //   }
         ////暫時取消的功能
@@ -363,7 +378,7 @@ function readDicom(url, patientmark, openfile) {
                       refreshMark(dcm, false);
                     }
                     if (tempDataSet[j].dataSet.string('x00700015') && tempDataSet[j].dataSet.string('x00700015') == 'Y') {
-                     // console.log('Y');
+                      // console.log('Y');
 
                       var dcm = {};
                       dcm.sop = sop1;
@@ -389,8 +404,8 @@ function readDicom(url, patientmark, openfile) {
                       dcm.mark[DcmMarkLength].type = "POLYLINE";
                       dcm.mark[DcmMarkLength].markX = [];
                       dcm.mark[DcmMarkLength].markY = [];
-                      dcm.mark[DcmMarkLength].markX.push(tempDataSet[j].dataSet.float('x00700010', 0),tempDataSet[j].dataSet.float('x00700011', 0));
-                      dcm.mark[DcmMarkLength].markY.push(tempDataSet[j].dataSet.float('x00700010', 1),tempDataSet[j].dataSet.float('x00700011', 1));
+                      dcm.mark[DcmMarkLength].markX.push(tempDataSet[j].dataSet.float('x00700010', 0), tempDataSet[j].dataSet.float('x00700011', 0));
+                      dcm.mark[DcmMarkLength].markY.push(tempDataSet[j].dataSet.float('x00700010', 1), tempDataSet[j].dataSet.float('x00700011', 1));
                       patientmark.push(dcm);
                       refreshMark(dcm, false);
                     }
