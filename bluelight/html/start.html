@@ -9,7 +9,6 @@
   <meta content="no-cache" http-equiv="pragma">
   <meta content="0" http-equiv="expires">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-
   <link rel="stylesheet" type="text/css" href="../css/vr.css">
   <script src="../scripts/external/other/lodash.min.js"></script>
   <script src="../scripts/external/other/interact.js"></script>
@@ -53,12 +52,23 @@
   <script src="../scripts/newscript/rotate.js"></script>
   <script src="../scripts/newscript/measure.js"></script>
   <script src="../scripts/newscript/angel.js"></script>
-  <script  src="../scripts/external/other/html2canvas.min.js"></script>
+  <script src="../scripts/external/other/html2canvas.min.js"></script>
   <script type="module">
     import { decodeImageFrame1 } from "../scripts/external/cornerstone/decode/decodeImageFrame.js";
     decodeImageFrame = decodeImageFrame1;
   </script>
-
+  <style>
+  .img{
+    flex: 0 0 4.0%;
+    max-width: calc(min(4.0%,50px));
+    min-width:35px;
+    width:100%;
+    height:100%;
+  }
+  .innerLabel{
+    font-size: calc(0.4rem + 0.1*((5vw)));
+  }
+  </style>
 </head>
 
 <body style="background-color:#000000;" onmousewheel="/*return false;*/">

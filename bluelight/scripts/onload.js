@@ -184,7 +184,7 @@ function loadLdcmview() {
   while (getClass("labelWC").length < Viewport_Total) {
     count++;
     var labelWC1 = document.createElement("LABEL");
-    labelWC1.className = "labelWC";
+    labelWC1.className = "labelWC innerLabel";
     labelWC1.style = "position:absolute;left:115px;bottom:30px;color: white;z-index: 10;-webkit-user-select: none; ";
     GetViewport(count - 1).appendChild(labelWC1);
   }
@@ -192,7 +192,7 @@ function loadLdcmview() {
   while (getClass("labelLT").length < Viewport_Total) {
     count++;
     var labelLT1 = document.createElement("LABEL");
-    labelLT1.className = "labelLT";
+    labelLT1.className = "labelLT innerLabel";
     labelLT1.style = "position:absolute;left:115px;top:10px;color: white;z-index: 10;-webkit-user-select: none; ";
     GetViewport(count - 1).appendChild(labelLT1);
   }
@@ -200,7 +200,7 @@ function loadLdcmview() {
   while (getClass("labelRT").length < Viewport_Total) {
     count++;
     var labelRT1 = document.createElement("LABEL");
-    labelRT1.className = "labelRT";
+    labelRT1.className = "labelRT innerLabel";
     labelRT1.style = "position:absolute;right:20px;top:10px;color: white;z-index: 10;-webkit-user-select: none;text-align:right;";
     GetViewport(count - 1).appendChild(labelRT1);
   }
@@ -208,7 +208,7 @@ function loadLdcmview() {
   while (getClass("labelRB").length < Viewport_Total) {
     count++;
     var labelRB1 = document.createElement("LABEL");
-    labelRB1.className = "labelRB";
+    labelRB1.className = "labelRB innerLabel";
     labelRB1.style = "position:absolute;right:20px;bottom:20px;color: white;z-index: 10;-webkit-user-select: none;text-align:right;";
     GetViewport(count - 1).appendChild(labelRB1);
   }
@@ -216,7 +216,7 @@ function loadLdcmview() {
   while (getClass("labelXY").length < Viewport_Total) {
     count++;
     var labelXY1 = document.createElement("LABEL");
-    labelXY1.className = "labelXY";
+    labelXY1.className = "labelXY innerLabel";
     labelXY1.style = "position:absolute;left:115px;bottom:10px;color: white;z-index: 10;-webkit-user-select: none; ";
     labelXY1.innerText = "X: " + 0 + " Y: " + 0;
     GetViewport(count - 1).appendChild(labelXY1);

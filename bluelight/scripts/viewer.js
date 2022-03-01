@@ -130,6 +130,7 @@ function displayLefyCanvas(DicomCanvas, image, pixelData) {
 }
 //執行icon圖示的摺疊效果
 function EnterRWD() {
+
     //if (openPenDraw == true) return;
     //計算目前有幾個應被計算的icon在上方
     var count = 1;
@@ -142,8 +143,9 @@ function EnterRWD() {
         if (getClass("page-header")[0].childNodes[i].alt == "輸出標記") continue;
         if (getClass("page-header")[0].childNodes[i].alt == "3dDisplay") continue;
         if (getClass("page-header")[0].childNodes[i].alt == "3dCave") continue;
-        if (getClass("page-header")[0].childNodes[i].tagName == "IMG")
-            if (count * 50 >= iconWidth - 50 - 30) {
+        if (getClass("page-header")[0].childNodes[i].tagName == "IMG") {
+            if (count >= parseInt(iconWidth / document.querySelector('.img').offsetWidth) - 2) {
+
                 if (openRWD == true) { //如果折疊功能開啟中，隱藏應被隱藏的icon
                     getClass("page-header")[0].childNodes[i].style.display = "none";
                 } else {
@@ -154,6 +156,7 @@ function EnterRWD() {
             } else { //全部icon均顯示
                 getClass("page-header")[0].childNodes[i].style.display = "";
             }
+        }
     }
     //如果寬度足夠而沒有觸發折疊，摺疊的icon應該不顯示
     if (check == true) getByid("rwdImgTag").style.display = "";
@@ -553,10 +556,14 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
     labelLT[viewportNum].innerHTML = "";
     labelRT[viewportNum].innerHTML = "";
     //依照dicom tags設定檔載入影像
+    function htmlEntities(str) {
+        str=Null2Empty(str);
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace("\r\n","<br/>").replace("\n","<br/>");
+    }
     for (var i = 0; i < DicomTags.LT.name.length; i++)
-        labelLT[viewportNum].innerHTML += "" + DicomTags.LT.name[i] + " " + Null2Empty(image.data.string("x" + DicomTags.LT.tag[i])) + "<br>";
+        labelLT[viewportNum].innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
     for (var i = 0; i < DicomTags.RT.name.length; i++)
-        labelRT[viewportNum].innerHTML += "" + DicomTags.RT.name[i] + " " + Null2Empty(image.data.string("x" + DicomTags.RT.tag[i])) + "<br>";
+        labelRT[viewportNum].innerHTML += "" + DicomTags.RT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.RT.tag[i])) + "<br/>";
 
     //載入影像的原始長寬
     element.imageWidth = image.width;
