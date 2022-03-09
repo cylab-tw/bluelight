@@ -1,17 +1,17 @@
 
-function angel() {
-    if (BL_mode == 'angel') {
+function angle() {
+    if (BL_mode == 'angle') {
         DeleteMouseEvent();
-        //this.angel_=1;
+        //this.angle_=1;
         //cancelTools();
-        document.documentElement.onmousemove = displayAngelLabel;
-        document.documentElement.ontouchmove = displayAngelLabel;
-        openAngel = 0;
-        angel.angel_ = 1;
+        document.documentElement.onmousemove = displayAngleLabel;
+        document.documentElement.ontouchmove = displayAngleLabel;
+        openAngle = 0;
+        angle.angle_ = 1;
         set_BL_model.onchange1 = function () {
-            getByid("AngelLabel").style.display = "none";
+            getByid("AngleLabel").style.display = "none";
             displayMark();
-            angel.angel_ = false;
+            angle.angle_ = false;
             // document.documentElement.onmousemove = DivDraw;
             // document.documentElement.ontouchmove = DivDraw;
             set_BL_model.onchange1 = function () { return 0; };
@@ -25,16 +25,16 @@ function angel() {
             GetViewport().originalPointX = getCurrPoint(e)[0];
             GetViewport().originalPointY = getCurrPoint(e)[1];
 
-            if (angel.angel_ == 3) angel.angel_ = 1;
-            if (angel.angel_ == 2) getByid("AngelLabel").style.display = '';
+            if (angle.angle_ == 3) angle.angle_ = 1;
+            if (angle.angle_ == 2) getByid("AngleLabel").style.display = '';
 
-            if (angel.angel_ == 1) {
-                let angel2point = rotateCalculation(e);
-                AngelXY0 = angel2point;
-                AngelXY1 = angel2point;
+            if (angle.angle_ == 1) {
+                let angle2point = rotateCalculation(e);
+                AngleXY0 = angle2point;
+                AngleXY1 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
-                displayAngelRular();
+                displayAngleRular();
             }
         };
 
@@ -42,18 +42,18 @@ function angel() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             var labelXY = getClass('labelXY'); {
-                let angel2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
+                let angle2point = rotateCalculation(e);
+                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
             }
             if (rightMouseDown == true) {
                 scale_size(e, currX, currY);
             }
-            if (angel.angel_ == 2) {
-                let angel2point = rotateCalculation(e);
-                AngelXY2 = angel2point;
+            if (angle.angle_ == 2) {
+                let angle2point = rotateCalculation(e);
+                AngleXY2 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
-                displayAngelRular();
+                displayAngleRular();
                 return;
             }
 
@@ -70,12 +70,12 @@ function angel() {
             if (MouseDownCheck) {
                 windowMouseX = GetmouseX(e);
                 windowMouseY = GetmouseY(e);
-                if (angel.angel_ == 1) {
-                    let angel2point = rotateCalculation(e);
-                    AngelXY0 = angel2point;
+                if (angle.angle_ == 1) {
+                    let angle2point = rotateCalculation(e);
+                    AngleXY0 = angle2point;
                     for (var i = 0; i < Viewport_Total; i++)
                         displayMark(NowResize, null, null, null, i);
-                    displayAngelRular();
+                    displayAngleRular();
                     return;
                 }
             }
@@ -86,8 +86,8 @@ function angel() {
             if (openMouseTool == true && rightMouseDown == true)
                 displayMark(NowResize, null, null, null, viewportNumber);
             if (MouseDownCheck == true) {
-                if (angel.angel_ == 1) angel.angel_ = 2;
-                else if (angel.angel_ == 2) angel.angel_ = 3;
+                if (angle.angle_ == 1) angle.angle_ = 2;
+                else if (angle.angle_ == 2) angle.angle_ = 3;
             }
             MouseDownCheck = false;
             rightMouseDown = false;
@@ -108,18 +108,18 @@ function angel() {
                 GetViewport().originalPointX2 = getCurrPoint(e2)[0];
                 GetViewport().originalPointY2 = getCurrPoint(e2)[1];
             }
-            if (angel.angel_ == 3) angel.angel_ = 1;
-            if (angel.angel_ == 2) getByid("AngelLabel").style.display = '';
-            if (angel.angel_ == 1) {
-                let angel2point = rotateCalculation(e);
-                var currX11 = angel2point[0];
-                var currY11 = angel2point[1];
+            if (angle.angle_ == 3) angle.angle_ = 1;
+            if (angle.angle_ == 2) getByid("AngleLabel").style.display = '';
+            if (angle.angle_ == 1) {
+                let angle2point = rotateCalculation(e);
+                var currX11 = angle2point[0];
+                var currY11 = angle2point[1];
 
-                AngelXY0 = [currX11, currY11];
-                AngelXY1 = [currX11, currY11];
+                AngleXY0 = [currX11, currY11];
+                AngleXY1 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
-                displayAngelRular();
+                displayAngleRular();
             }
         }
         Touchmove = function (e, e2) {
@@ -133,32 +133,32 @@ function angel() {
             }
             var labelXY = getClass('labelXY');
             labelXY[viewportNumber].innerText = "X: " + Math.floor(currX) + " Y: " + Math.floor(currY);
-            if (angel.angel_ == 2) {
-                let angel2point = rotateCalculation(e);
-                var currX11 = angel2point[0];
-                var currY11 = angel2point[1];
-                AngelXY2 = [currX11, currY11];
+            if (angle.angle_ == 2) {
+                let angle2point = rotateCalculation(e);
+                var currX11 = angle2point[0];
+                var currY11 = angle2point[1];
+                AngleXY2 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
-                displayAngelRular();
+                displayAngleRular();
                 return;
             }
-            if (angel.angel_ == 1) {
+            if (angle.angle_ == 1) {
                 // MeasureXY = [getCurrPoint(e)[0], getCurrPoint(e)[1]];
-                let angel2point = rotateCalculation(e);
-                var currX11 = angel2point[0];
-                var currY11 = angel2point[1];
-                AngelXY0 = [currX11, currY11];
+                let angle2point = rotateCalculation(e);
+                var currX11 = angle2point[0];
+                var currY11 = angle2point[1];
+                AngleXY0 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
-                displayAngelRular();
+                displayAngleRular();
                 return;
             }
         }
         Touchend = function (e, e2) {
             if (TouchDownCheck == true) {
-                if (angel.angel_ == 1) angel.angel_ = 2;
-                else if (angel.angel_ == 2) angel.angel_ = 3;
+                if (angle.angle_ == 1) angle.angle_ = 2;
+                else if (angle.angle_ == 2) angle.angle_ = 3;
             }
             TouchDownCheck = false;
             rightTouchDown = false;
@@ -170,11 +170,11 @@ function angel() {
     }
 }
 
-function displayAngelRular() {
-    if (!angel.angel_) return;
+function displayAngleRular() {
+    if (!angle.angle_) return;
     if (parseInt(Math.sqrt(
-        Math.pow(AngelXY1[0] / GetViewport().PixelSpacingX - AngelXY0[0] / GetViewport().PixelSpacingX, 2) +
-        Math.pow(AngelXY1[1] / GetViewport().PixelSpacingY - AngelXY0[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
+        Math.pow(AngleXY1[0] / GetViewport().PixelSpacingX - AngleXY0[0] / GetViewport().PixelSpacingX, 2) +
+        Math.pow(AngleXY1[1] / GetViewport().PixelSpacingY - AngleXY0[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
 
     var MarkCanvas = GetViewportMark();
     var tempctx = MarkCanvas.getContext("2d");
@@ -190,48 +190,49 @@ function displayAngelRular() {
     tempctx.strokeStyle = "#00FF00";
     tempctx.fillStyle = "#00FF00";
 
-    tempctx.moveTo(AngelXY0[0], AngelXY0[1]);
-    tempctx.lineTo(AngelXY1[0], AngelXY1[1]);
+    tempctx.moveTo(AngleXY0[0], AngleXY0[1]);
+    tempctx.lineTo(AngleXY1[0], AngleXY1[1]);
     tempctx.stroke();
-    if (angel.angel_ == 2) {
-        tempctx.moveTo(AngelXY0[0], AngelXY0[1]);
-        tempctx.lineTo(AngelXY2[0], AngelXY2[1]);
+    if (angle.angle_ == 2) {
+        tempctx.moveTo(AngleXY0[0], AngleXY0[1]);
+        tempctx.lineTo(AngleXY2[0], AngleXY2[1]);
     }
     tempctx.stroke();
     tempctx.closePath();
     tempctx.beginPath();
     tempctx.strokeStyle = "#FF0000";
     tempctx.fillStyle = "#FF0000";
-    tempctx.arc(AngelXY0[0], AngelXY0[1], 3, 0, 2 * Math.PI);
+    tempctx.arc(AngleXY0[0], AngleXY0[1], 3, 0, 2 * Math.PI);
     tempctx.fill();
 
-    tempctx.arc(AngelXY1[0], AngelXY1[1], 3, 0, 2 * Math.PI);
+    tempctx.arc(AngleXY1[0], AngleXY1[1], 3, 0, 2 * Math.PI);
     tempctx.fill();
-    if (angel.angel_ == 2) {
+    if (angle.angle_ == 2) {
         tempctx.strokeStyle = "#FF0000";
         tempctx.fillStyle = "#FF0000";
-        tempctx.arc(AngelXY0[0], AngelXY0[1], 3, 0, 2 * Math.PI);
+        tempctx.arc(AngleXY0[0], AngleXY0[1], 3, 0, 2 * Math.PI);
         tempctx.fill();
-        tempctx.arc(AngelXY2[0], AngelXY2[1], 3, 0, 2 * Math.PI);
+        tempctx.arc(AngleXY2[0], AngleXY2[1], 3, 0, 2 * Math.PI);
         tempctx.fill();
     }
     tempctx.closePath();
-    //displayAngelLabel();
+    //displayAngleLabel();
 }
 
-function displayAngelLabel(e) {
+function displayAngleLabel(e) {
+    if (!angle.angle_) return;
     x_out = -parseInt(magnifierCanvas.style.width) / 2; // 與游標座標之水平距離
     y_out = -parseInt(magnifierCanvas.style.height) / 2; // 與游標座標之垂直距離
-    if (angel.angel_ >= 2) {
-        getByid("AngelLabel").style.display = '';
-        if (AngelXY2[0] > AngelXY0[0])
+    if (angle.angle_ >= 2) {
+        getByid("AngleLabel").style.display = '';
+        if (AngleXY2[0] > AngleXY0[0])
             x_out = 20; // 與游標座標之水平距離
         else x_out = -20;
-        if (AngelXY2[1] > AngelXY0[1])
+        if (AngleXY2[1] > AngleXY0[1])
             y_out = 20; // 與游標座標之水平距離
         else y_out = -20;
     } else {
-        getByid("AngelLabel").style.display = 'none';
+        getByid("AngleLabel").style.display = 'none';
     }
     if (document.body.scrollTop && document.body.scrollTop != 0) {
         dbst = document.body.scrollTop;
@@ -240,7 +241,7 @@ function displayAngelLabel(e) {
         dbst = document.getElementsByTagName("html")[0].scrollTop;
         dbsl = document.getElementsByTagName("html")[0].scrollLeft;
     }
-    dgs = document.getElementById("AngelLabel").style;
+    dgs = document.getElementById("AngleLabel").style;
     y = e.clientY;
     x = e.clientX;
     if (!y || !x) {
@@ -261,13 +262,13 @@ function displayAngelLabel(e) {
         const angle = Math.atan2(det, dot) / Math.PI * 180
         return (angle + 360) % 360
     }
-    var angle = getAngle({
-        x: AngelXY0[0] - AngelXY2[0],
-        y: AngelXY0[1] - AngelXY2[1],
+    var angle1 = getAngle({
+        x: AngleXY0[0] - AngleXY2[0],
+        y: AngleXY0[1] - AngleXY2[1],
     }, {
-        x: AngelXY0[0] - AngelXY1[0],
-        y: AngelXY0[1] - AngelXY1[1],
+        x: AngleXY0[0] - AngleXY1[0],
+        y: AngleXY0[1] - AngleXY1[1],
     });
-    if (angle > 180) angle = 360 - angle;
-    getByid("AngelLabel").innerText = parseInt(angle) + "°";
+    if (angle1 > 180) angle1 = 360 - angle1;
+    getByid("AngleLabel").innerText = parseInt(angle1) + "°";
 }

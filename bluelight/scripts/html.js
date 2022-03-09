@@ -292,17 +292,17 @@ function html_onload() {
     drawBorder(this);
   }
 
-  getByid("AngelRular").onclick = function () {
+  getByid("AngleRular").onclick = function () {
     if (imgInvalid(this)) return;
     //cancelTools();
-    set_BL_model('angel');
-    angel();
+    set_BL_model('angle');
+    angle();
     drawBorder(this);
   }
 
   getByid("playvideo").onclick = function () {
     if (imgInvalid(this)) return;
-    openAngel = 0;
+    openAngle = 0;
     drawBorder(this);
     GetViewport().openPlay = !GetViewport().openPlay;
     if (GetViewport().openPlay) {
@@ -601,7 +601,7 @@ function addEvent2SplitViewport() {
 
 function changeMarkImg() {
   getByid("MeasureLabel").style.display = "none";
-  getByid("AngelLabel").style.display = "none";
+  getByid("AngleLabel").style.display = "none";
   if (GetViewport().openMark == true) getByid("MarkButton").src = "../image/icon/black/fist0.png";
   else getByid("MarkButton").src = "../image/icon/black/fist1.png";
 }
@@ -620,7 +620,7 @@ function drawBorder(element) {
   Css(getByid("playvideo"), 'border', "");
   Css(getByid("zoom"), 'border', "");
   Css(getByid("b_Scroll"), 'border', "");
-  Css(getByid("AngelRular"), 'border', "");
+  Css(getByid("AngleRular"), 'border', "");
   Css(element, 'border', 3 + "px #FFFFFF solid");
   Css(element, 'borderRadius', "3px 3px 3px 3px");
 }

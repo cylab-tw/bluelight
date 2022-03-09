@@ -15,9 +15,9 @@ var canvas;
 var ctx;
 
 //存放量角器
-var AngelXY0 = [];
-var AngelXY1 = [];
-var AngelXY2 = [];
+var AngleXY0 = [];
+var AngleXY1 = [];
+var AngleXY2 = [];
 
 //表示按住了滑鼠左鍵
 var MouseDownCheck = false;
@@ -42,7 +42,7 @@ var WindowOpen = false;
 //暫時移除的功能
 var openPenDraw = false;
 //表示目前正在使用量角器工具
-var openAngel = 0;
+var openAngle = 0;
 //表示目前icon圖示的RWD收合功能為開啟狀態
 var openRWD = true;
 //3D VR模型的透明度百分比
@@ -189,7 +189,7 @@ let DeleteMouseEvent = function () {
       GetViewport(i).addEventListener("mousedown", thisF, false);
       GetViewport(i).addEventListener("wheel", Wheel, false);
     }
-  } catch (ex) { console.log(ex); }
+  } catch (ex) { }
 }
 
 let set_BL_model = function (string) {

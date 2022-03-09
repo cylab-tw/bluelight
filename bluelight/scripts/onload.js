@@ -229,24 +229,6 @@ function loadLdcmview() {
     GetViewport(count - 1).appendChild(DicomCanvas1);
   }
 
-  var DicomCanvas1 = document.createElement("CANVAS");
-  DicomCanvas1.className = "originDicomCanvas";
-  DicomCanvas1.id = "originDicomCanvas";
-  getByid("origindicomImage").appendChild(DicomCanvas1);
-
-  getByid("origindicomImage").canvas = function () {
-    if (this.getElementsByClassName("originDicomCanvas")[0])
-      return this.getElementsByClassName("originDicomCanvas")[0];
-    else
-      return null;
-  }
-  getByid("origindicomImage").ctx = function () {
-    if (this.getElementsByClassName("originDicomCanvas")[0])
-      return this.getElementsByClassName("originDicomCanvas")[0].getContext("2d");
-    else
-      return null;
-  }
-
   labelWC = getClass("labelWC");
   labelLT = getClass("labelLT");
   labelRT = getClass("labelRT");

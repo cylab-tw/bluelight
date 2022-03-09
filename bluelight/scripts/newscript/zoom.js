@@ -27,8 +27,8 @@ function zoom() {
             GetViewport().originalPointX = getCurrPoint(e)[0];
             GetViewport().originalPointY = getCurrPoint(e)[1];
             if (MouseDownCheck == true) magnifierDiv.style.display = "";
-            let angel2point = rotateCalculation(e);
-            magnifierIng(angel2point[0], angel2point[1]);
+            let angle2point = rotateCalculation(e);
+            magnifierIng(angle2point[0], angle2point[1]);
         };
 
 
@@ -37,8 +37,8 @@ function zoom() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             var labelXY = getClass('labelXY'); {
-                let angel2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
+                let angle2point = rotateCalculation(e);
+                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
             }
             if (rightMouseDown == true) {
                 scale_size(e, currX, currY);
@@ -55,8 +55,8 @@ function zoom() {
 
             if (MouseDownCheck) {
                 magnifierDiv.style.display = "";
-                let angel2point = rotateCalculation(e);
-                magnifierIng(angel2point[0], angel2point[1]);
+                let angle2point = rotateCalculation(e);
+                magnifierIng(angle2point[0], angle2point[1]);
 
                 windowMouseX = GetmouseX(e);
                 windowMouseY = GetmouseY(e);
@@ -98,9 +98,9 @@ function zoom() {
             //  if (openZoom == true && MouseDownCheck == true)
             {
                 magnifierDiv.style.display = "";
-                let angel2point = rotateCalculation(e);
-                var currX11 = angel2point[0];
-                var currY11 = angel2point[1];
+                let angle2point = rotateCalculation(e);
+                var currX11 = angle2point[0];
+                var currY11 = angle2point[1];
                 magnifierIng(currX11, currY11);
             }
         }
@@ -119,17 +119,17 @@ function zoom() {
             if (TouchDownCheck == true && rightTouchDown == false) {
                 if (/*openZoom == true && */rightTouchDown == false) {
                     magnifierDiv.style.display = "";
-                    let angel2point = rotateCalculation(e);
-                    var currX11 = angel2point[0];
-                    var currY11 = angel2point[1];
+                    let angle2point = rotateCalculation(e);
+                    var currX11 = angle2point[0];
+                    var currY11 = angle2point[1];
                     magnifierIng(currX11, currY11);
                 }
             }
         }
         Touchend = function (e, e2) {
             if (TouchDownCheck == true) {
-                if (openAngel == 1) openAngel = 2;
-                else if (openAngel == 2) openAngel = 3;
+                if (openAngle == 1) openAngle = 2;
+                else if (openAngle == 2) openAngle = 3;
             }
             TouchDownCheck = false;
             rightTouchDown = false;
@@ -160,7 +160,7 @@ function displayZoom(e) {
 
     y = e.clientY;
     x = e.clientX;
-    if (!y || !x) {
+    if (e.touches && (!y || !x)) {
         y = e.touches[0].clientY;
         x = e.touches[0].clientX;
     }

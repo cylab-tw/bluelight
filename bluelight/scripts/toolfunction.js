@@ -37,6 +37,7 @@ function random(min, max, step) {
 }
 
 function getCurrPoint(e) {
+    if (!canvas) return [0, 0];
     var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().imageWidth / parseFloat(canvas.style.width)));
     var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().imageHeight / parseFloat(canvas.style.height)));
     return [currX, currY];
@@ -319,6 +320,7 @@ function getNowInstance() {
 }
 
 function rotateCalculation(e) {
+    if (!canvas) return [0, 0];
     let cx = (GetViewport().imageWidth / 2);
     let cy = (GetViewport().imageHeight / 2);
     canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")";

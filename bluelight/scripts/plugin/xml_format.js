@@ -265,12 +265,12 @@ function writexml() {
 
   if (BL_mode == 'writexml') {
     DeleteMouseEvent();
-    //this.angel_=1;
+    //this.angle_=1;
     //cancelTools();
     /*set_BL_model.onchange1 = function () {
-        getByid("AngelLabel").style.display = "none";
+        getByid("AngleLabel").style.display = "none";
         displayMark();
-        angel.angel_ = false;
+        angle.angle_ = false;
        // document.documentElement.onmousemove = DivDraw;
        // document.documentElement.ontouchmove = DivDraw;
         set_BL_model.onchange1 = function () { return 0; };
@@ -291,8 +291,8 @@ function writexml() {
       var currX = getCurrPoint(e)[0];
       var currY = getCurrPoint(e)[1];
       var labelXY = getClass('labelXY'); {
-        let angel2point = rotateCalculation(e);
-        labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
+        let angle2point = rotateCalculation(e);
+        labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
       }
       if (rightMouseDown == true) {
         scale_size(e, currX, currY);
@@ -334,7 +334,7 @@ function writexml() {
           refreshMark(dcm);
           for (var i = 0; i < Viewport_Total; i++)
             displayMark(NowResize, null, null, null, i);
-          displayAngelRular();
+          displayAngleRular();
           PatientMark.splice(PatientMark.indexOf(dcm), 1);
         } else {
           if (xml_now_choose.value == "up") {
@@ -381,7 +381,7 @@ function writexml() {
         refreshMark(dcm);
         for (var i = 0; i < Viewport_Total; i++)
           displayMark(NowResize, null, null, null, i);
-        displayAngelRular();
+        displayAngleRular();
         //setXml_context();
       }
     }

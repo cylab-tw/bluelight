@@ -406,9 +406,9 @@ function writertss() {
             GetViewport().originalPointX = getCurrPoint(e)[0];
             GetViewport().originalPointY = getCurrPoint(e)[1];
             if (!rightMouseDown) {
-                var angel2point = rotateCalculation(e)
-                var currX11 = Math.floor(angel2point[0]);
-                var currY11 = Math.floor(angel2point[1]);
+                var angle2point = rotateCalculation(e)
+                var currX11 = Math.floor(angle2point[0]);
+                var currY11 = Math.floor(angle2point[1]);
                 var currX02 = currX11;
                 var currY02 = currY11;
 
@@ -443,8 +443,8 @@ function writertss() {
                 dcm.mark[DcmMarkLength].type = "RTSS";
                 dcm.mark[DcmMarkLength].markX = [];
                 dcm.mark[DcmMarkLength].markY = [];
-                dcm.mark[DcmMarkLength].markX.push(angel2point[0] - Math.abs(currX02 - angel2point[0]));
-                dcm.mark[DcmMarkLength].markY.push(angel2point[1] - Math.abs(currY02 - angel2point[1]));
+                dcm.mark[DcmMarkLength].markX.push(angle2point[0] - Math.abs(currX02 - angle2point[0]));
+                dcm.mark[DcmMarkLength].markY.push(angle2point[1] - Math.abs(currY02 - angle2point[1]));
                 PatientMark.push(dcm);
                 refreshMark(dcm);
                 RTSS_now_choose = dcm.mark[DcmMarkLength];
@@ -457,8 +457,8 @@ function writertss() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             var labelXY = getClass('labelXY'); {
-                let angel2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
+                let angle2point = rotateCalculation(e);
+                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
             }
             if (rightMouseDown == true) {
                 scale_size(e, currX, currY);
@@ -475,9 +475,9 @@ function writertss() {
                 displayRular(i);
             if (!rightMouseDown && RTSS_now_choose) {
                 let Uid = GetNowUid();
-                var angel2point = rotateCalculation(e)
-                var currX11 = Math.floor(angel2point[0]);
-                var currY11 = Math.floor(angel2point[1]);
+                var angle2point = rotateCalculation(e)
+                var currX11 = Math.floor(angle2point[0]);
+                var currY11 = Math.floor(angle2point[1]);
                 var currX02 = currX11;
                 var currY02 = currY11;
 
@@ -492,8 +492,8 @@ function writertss() {
                 currX02 = currX02 / GetViewport().PixelSpacingX + GetViewport().imagePositionX;
                 currY02 = currY02 / GetViewport().PixelSpacingY + GetViewport().imagePositionY;
                 // var DcmMarkLength = RTSS_now_choose.mark.length - 1;
-                RTSS_now_choose.markX.push(angel2point[0] - Math.abs(currX02 - angel2point[0]));
-                RTSS_now_choose.markY.push(angel2point[1] - Math.abs(currY02 - angel2point[1]));
+                RTSS_now_choose.markX.push(angle2point[0] - Math.abs(currX02 - angle2point[0]));
+                RTSS_now_choose.markY.push(angle2point[1] - Math.abs(currY02 - angle2point[1]));
                 //PatientMark.push(RTSS_now_choose);
                 refreshMark(Uid.sop);
                 for (var i = 0; i < Viewport_Total; i++)

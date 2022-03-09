@@ -25,9 +25,9 @@ function measure() {
             GetViewport().originalPointY = getCurrPoint(e)[1];
 
             getByid("MeasureLabel").style.display = '';
-            let angel2point = rotateCalculation(e);
-            MeasureXY = angel2point;
-            MeasureXY2 = angel2point;
+            let angle2point = rotateCalculation(e);
+            MeasureXY = angle2point;
+            MeasureXY2 = angle2point;
             for (var i = 0; i < Viewport_Total; i++)
                 displayMark(NowResize, null, null, null, i);
             displayMeasureRular();
@@ -37,8 +37,8 @@ function measure() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             var labelXY = getClass('labelXY'); {
-                let angel2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
+                let angle2point = rotateCalculation(e);
+                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
             }
             if (rightMouseDown == true) {
                 scale_size(e, currX, currY);
@@ -57,8 +57,8 @@ function measure() {
                 windowMouseX = GetmouseX(e);
                 windowMouseY = GetmouseY(e);
 
-                let angel2point = rotateCalculation(e);
-                MeasureXY2 = angel2point;
+                let angle2point = rotateCalculation(e);
+                MeasureXY2 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
                 displayMeasureRular();
@@ -100,18 +100,18 @@ function measure() {
             //if (openMeasure == true)
             {
                 getByid("MeasureLabel").style.display = '';
-                let angel2point = rotateCalculation(e);
-                MeasureXY = angel2point;
-                MeasureXY2 = angel2point;
+                let angle2point = rotateCalculation(e);
+                MeasureXY = angle2point;
+                MeasureXY2 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(NowResize, null, null, null, i);
                 displayMeasureRular();
             }
             //if (openMeasure == true)
             {
-                let angel2point = rotateCalculation(e);
-                var currX11 = angel2point[0];
-                var currY11 = angel2point[1];
+                let angle2point = rotateCalculation(e);
+                var currX11 = angle2point[0];
+                var currY11 = angle2point[1];
                 MeasureXY = [currX11, currY11];
                 MeasureXY2 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
@@ -135,9 +135,9 @@ function measure() {
                 // if (openMeasure == true) 
                 {
                     // MeasureXY = [getCurrPoint(e)[0], getCurrPoint(e)[1]];
-                    let angel2point = rotateCalculation(e);
-                    var currX11 = angel2point[0];
-                    var currY11 = angel2point[1];
+                    let angle2point = rotateCalculation(e);
+                    var currX11 = angle2point[0];
+                    var currY11 = angle2point[1];
                     MeasureXY2 = [currX11, currY11];
                     for (var i = 0; i < Viewport_Total; i++)
                         displayMark(NowResize, null, null, null, i);
@@ -148,8 +148,8 @@ function measure() {
         }
         Touchend = function (e, e2) {
             if (TouchDownCheck == true) {
-                if (openAngel == 1) openAngel = 2;
-                else if (openAngel == 2) openAngel = 3;
+                if (openAngle == 1) openAngle = 2;
+                else if (openAngle == 2) openAngle = 3;
             }
             TouchDownCheck = false;
             rightTouchDown = false;

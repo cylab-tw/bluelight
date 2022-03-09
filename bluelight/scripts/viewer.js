@@ -233,7 +233,7 @@ function wadorsLoader(url) {
                 loadAndViewImage("wadouri:" + url);
             })
             .catch(function (err) {
-                console.log(err);
+                //console.log(err);
             })
     }
     async function stowMultipartRelated(iData) {
@@ -326,7 +326,6 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
     var MarkCanvas = GetViewportMark(viewportNum);
     //if (viewportNum0 >= 0) MarkCanvas = GetViewportMark((viewportNum));
     //原始影像，通常被用於放大鏡的參考
-    var originelement = getByid("origindicomImage");
     labelLT = getClass("labelLT");
     labelRT = getClass("labelRT");
     labelRB = getClass("labelRB");
@@ -353,59 +352,24 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
         if (CheckNull(slope)) slope = 1;
 
         var _firstNumber = 0;
-
-        /*if ((image.invert != true && GetViewport(viewportNum).openInvert == true) || (image.invert == true && GetViewport(viewportNum).openInvert == false)) {
-            if (image.color == true) {
-                for (var i = 0; i < imgData2.data.length; i += 4) {
-                    _firstNumber = pixelData[i];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 0] = 255 - _firstNumber;
-                    _firstNumber = pixelData[i + 1];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 1] = 255 - _firstNumber;
-                    _firstNumber = pixelData[i + 2];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 2] = 255 - _firstNumber;
-                    imgData2.data[i + 3] = 255;
-                }
-            } else {
-                for (var i = 0; i < imgData2.data.length; i += 4) {
-                    _firstNumber = pixelData[i / 4];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 0] = 255 - _firstNumber
-                    imgData2.data[i + 1] = imgData2.data[i + 0]
-                    imgData2.data[i + 2] = imgData2.data[i + 0]
-                    imgData2.data[i + 3] = 255;
-                }
-            }
-        }
-        else {*/
         if (image.color == true) {
             for (var i = 0; i < imgData2.data.length; i += 4) {
-                _firstNumber = pixelData[i];
-                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 0] = _firstNumber;
-                _firstNumber = pixelData[i + 1];
-                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 1] = _firstNumber;
-                _firstNumber = pixelData[i + 2];
-                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 2] = _firstNumber;
+                imgData2.data[i + 0] = parseInt(((pixelData[i] * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 1] = parseInt(((pixelData[i + 1] * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 2] = parseInt(((pixelData[i + 2] * slope - low + intercept) / (high - low)) * 255);
                 imgData2.data[i + 3] = 255;
             }
         } else {
-            for (var i = 0; i < imgData2.data.length; i += 4) {
-                _firstNumber = pixelData[i / 4];
-                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 0] = _firstNumber
-                imgData2.data[i + 1] = _firstNumber
-                imgData2.data[i + 2] = _firstNumber
+            for (var i = 0, j = 0; i < imgData2.data.length; i += 4, j++) {
+                imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255);
                 imgData2.data[i + 3] = 255;
             }
         }
         // }
         ctx2.putImageData(imgData2, 0, 0);
-        function mirrorImage(ctx, image, x = 0, y = 0, horizontal = false, vertical = false) {
+
+        var invert=((image.invert != true && GetViewport(viewportNum).openInvert == true) || (image.invert == true && GetViewport(viewportNum).openInvert == false));
+        function mirrorImage(ctx, picture, x = 0, y = 0, horizontal = false, vertical = false) {
             ctx.save();  // save the current canvas state
             ctx.setTransform(
                 horizontal ? -1 : 1, 0, // set the direction of x axis
@@ -413,24 +377,13 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
                 x + (horizontal ? image.width : 0), // set the x origin
                 y + (vertical ? image.height : 0)   // set the y origin
             );
-            if (image.invert != true) ctx.filter = "invert";
-            ctx.drawImage(image, 0, 0);
+            if (invert == true) ctx.filter = "invert()";
+            ctx.drawImage(picture, 0, 0);
             ctx.restore(); // restore the state as it was when this function was called
         }
-        if (image.invert != true || GetViewport(viewportNum).openHorizontalFlip == true || GetViewport(viewportNum).openVerticalFlip == true) {
+        if (invert == true || GetViewport(viewportNum).openHorizontalFlip == true || GetViewport(viewportNum).openVerticalFlip == true) {
             mirrorImage(ctx2, DicomCanvas, 0, 0, GetViewport(viewportNum).openHorizontalFlip, GetViewport(viewportNum).openVerticalFlip);
         }
-        /*if (GetViewport(viewportNum).openHorizontalFlip == true || GetViewport(viewportNum).openVerticalFlip == true) {
-            var HorizontalFlip = GetViewport(viewportNum).openHorizontalFlip == true ? -1 : 1;
-            var VerticalFlip = GetViewport(viewportNum).openVerticalFlip == true ? -1 : 1;
-            var ctxWidth = HorizontalFlip == -1 ? image.width / 2 : 0;
-            var ctxHeight = VerticalFlip == -1 ? image.height / 2 : 0;
-            ctx2.save();
-            ctx2.translate(ctxWidth, ctxHeight);
-            ctx2.scale(HorizontalFlip, VerticalFlip);
-            ctx2.drawImage(DicomCanvas, -ctxWidth, -ctxHeight, image.width, image.height);
-            ctx2.restore();
-        }*/
     }
 
     if (!(ifNowAlt == true && element.windowWidthList != 0) || WindowOpen == false) {
@@ -439,8 +392,6 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
     }
 
     displayCanvas(getClass("DicomCanvas")[viewportNum]);
-    displayCanvas(getByid("originDicomCanvas"));
-    getByid("originDicomCanvas").style.display = "none";
 
     //StudyUID:x0020000d,Series UID:x0020000e,SOP UID:x00080018,
     //Instance Number:x00200013,影像檔編碼資料:imageId,PatientId:x00100020
@@ -584,9 +535,6 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
     element.imageWidth = image.width;
     element.imageHeight = image.height;
 
-    //設定原始影像的長寬
-    originelement.style = "position:absolute;left:100px;width:" + element.imageWidth + "px;height:" + element.imageHeight + "px;overflow:hidden;";
-
     //代表如果當前載入的這張是目前選擇的影像
     var ifNowAlt = false; //--*
     //如果現在載入的這張跟上次載入的不一樣
@@ -638,9 +586,6 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
     //渲染影像到viewport和原始影像
     // showTheImage(element, image, 'normal', ifNowAlt, viewportNum);
     // showTheImage(originelement, image, 'origin', null, viewportNum);
-
-    //隱藏原始影像
-    originelement.style.display = "none";
 
     //紀錄Window Level
     element.windowCenter = image.windowCenter;
@@ -739,7 +684,6 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
     var MarkCanvas = GetViewportMark(viewportNum);
     //if (viewportNum0 >= 0) MarkCanvas = GetViewportMark((viewportNum));
     //原始影像，通常被用於放大鏡的參考
-    var originelement = getByid("origindicomImage");
     labelLT = getClass("labelLT");
     labelRT = getClass("labelRT");
     labelRB = getClass("labelRB");
@@ -831,72 +775,39 @@ function parseDicomW(image, pixelData, viewportNum0, WindowLevelObj) {
         if (CheckNull(slope)) slope = 1;
 
         var _firstNumber = 0;
-        if ((image.invert != true && GetViewport(viewportNum).openInvert == true) || (image.invert == true && GetViewport(viewportNum).openInvert == false)) {
-            if (image.color == true) {
-                for (var i = 0; i < imgData2.data.length; i += 4) {
-                    _firstNumber = pixelData[i];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 0] = 255 - _firstNumber;
-                    _firstNumber = pixelData[i + 1];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 1] = 255 - _firstNumber;
-                    _firstNumber = pixelData[i + 2];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 2] = 255 - _firstNumber;
-                    imgData2.data[i + 3] = 255;
-                }
-            } else {
-                for (var i = 0; i < imgData2.data.length; i += 4) {
-                    _firstNumber = pixelData[i / 4];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 0] = 255 - _firstNumber
-                    imgData2.data[i + 1] = imgData2.data[i + 0]
-                    imgData2.data[i + 2] = imgData2.data[i + 0]
-                    imgData2.data[i + 3] = 255;
-                }
+        if (image.color == true) {
+            for (var i = 0; i < imgData2.data.length; i += 4) {
+                imgData2.data[i + 0] = parseInt(((pixelData[i] * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 1] = parseInt(((pixelData[i + 1] * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 2] = parseInt(((pixelData[i + 2] * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 3] = 255;
+            }
+        } else {
+            for (var i = 0, j = 0; i < imgData2.data.length; i += 4, j++) {
+                imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 3] = 255;
             }
         }
-        else {
-            if (image.color == true) {
-                for (var i = 0; i < imgData2.data.length; i += 4) {
-                    _firstNumber = pixelData[i];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 0] = _firstNumber;
-                    _firstNumber = pixelData[i + 1];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 1] = _firstNumber;
-                    _firstNumber = pixelData[i + 2];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 2] = _firstNumber;
-                    imgData2.data[i + 3] = 255;
-                }
-            } else {
-                for (var i = 0; i < imgData2.data.length; i += 4) {
-                    _firstNumber = pixelData[i / 4];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 0] = _firstNumber
-                    imgData2.data[i + 1] = _firstNumber
-                    imgData2.data[i + 2] = _firstNumber
-                    imgData2.data[i + 3] = 255;
-                }
-            }
-        }
+        // }
         ctx2.putImageData(imgData2, 0, 0);
-        if (GetViewport(viewportNum).openHorizontalFlip == true || GetViewport(viewportNum).openVerticalFlip == true) {
-            var HorizontalFlip = GetViewport(viewportNum).openHorizontalFlip == true ? -1 : 1;
-            var VerticalFlip = GetViewport(viewportNum).openVerticalFlip == true ? -1 : 1;
-            var ctxWidth = HorizontalFlip == -1 ? image.width / 2 : 0;
-            var ctxHeight = VerticalFlip == -1 ? image.height / 2 : 0;
-            ctx2.save();
-            ctx2.translate(ctxWidth, ctxHeight);
-            ctx2.scale(HorizontalFlip, VerticalFlip);
-            ctx2.drawImage(DicomCanvas, -ctxWidth, -ctxHeight, image.width, image.height);
-            ctx2.restore();
+        var invert=((image.invert != true && GetViewport(viewportNum).openInvert == true) || (image.invert == true && GetViewport(viewportNum).openInvert == false));
+        function mirrorImage(ctx2, picture, x = 0, y = 0, horizontal = false, vertical = false) {
+            ctx2.save();  // save the current canvas state
+            ctx2.setTransform(
+                horizontal ? -1 : 1, 0, // set the direction of x axis
+                0, vertical ? -1 : 1,   // set the direction of y axis
+                x + (horizontal ? image.width : 0), // set the x origin
+                y + (vertical ? image.height : 0)   // set the y origin
+            );
+            if (invert == true) ctx2.filter = "invert()";
+            ctx2.drawImage(picture, 0, 0);
+            ctx2.restore(); // restore the state as it was when this function was called
+        }
+        if (invert == true || GetViewport(viewportNum).openHorizontalFlip == true || GetViewport(viewportNum).openVerticalFlip == true) {
+            mirrorImage(ctx2, DicomCanvas, 0, 0, GetViewport(viewportNum).openHorizontalFlip, GetViewport(viewportNum).openVerticalFlip);
         }
     }
     displayCanvas(getClass("DicomCanvas")[viewportNum]);
-    displayCanvas(getByid("originDicomCanvas"));
-    getByid("originDicomCanvas").style.display = "none";
 
     element.imageWidth = image.width;
     element.imageHeight = image.height;
@@ -908,12 +819,6 @@ function parseDicomW(image, pixelData, viewportNum0, WindowLevelObj) {
     element.windowWidthList = windowwidth;
     element.windowCenterList = windowcenter;
     // showTheImage(element, image, 'windowLevel', null, viewportNum);
-    if (openOrigin == true) {
-        var originelement = getByid("origindicomImage");
-        originelement.style = "position:absolute;left:100px;width:" + element.imageWidth + "px;height:" + element.imageHeight + "px;overflow:hidden;";
-        // showTheImage(originelement, image, 'origin');
-        originelement.style.display = "none";
-    }
 
     var WandH = getFixSize(window.innerWidth, window.innerHeight, element);
     element.style = "position:absolute;left:100px;width:calc(100% - " + (100 + (bordersize * 2)) + "px);" + "height:" + WandH[1] + "px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;";
@@ -1050,7 +955,7 @@ function showTheImage(element, image, mode, ifNowAlt, viewportNum0) {
 //按下滑鼠或觸控要做的事情 --*
 function DivDraw(e) {
     //if (MouseDownCheck == false) getByid("MeasureLabel").style.display = "none";
-    if (openZoom == false && openMeasure == false && MouseDownCheck == false && openAngel == 0) return;
+    if (openZoom == false && openMeasure == false && MouseDownCheck == false && openAngle == 0) return;
     //magnifierDiv.style.display="none";
     // x_out = -magnifierWidth / 2; // 與游標座標之水平距離
     // y_out = -magnifierHeight / 2; // 與游標座標之垂直距離
@@ -1066,16 +971,16 @@ function DivDraw(e) {
             y_out = 20; // 與游標座標之水平距離
         else y_out = -20;
     }
-    if (openAngel >= 2) {
-        getByid("AngelLabel").style.display = '';
-        if (AngelXY2[0] > AngelXY0[0])
+    if (openAngle >= 2) {
+        getByid("AngleLabel").style.display = '';
+        if (AngleXY2[0] > AngleXY0[0])
             x_out = 20; // 與游標座標之水平距離
         else x_out = -20;
-        if (AngelXY2[1] > AngelXY0[1])
+        if (AngleXY2[1] > AngleXY0[1])
             y_out = 20; // 與游標座標之水平距離
         else y_out = -20;
     } else {
-        getByid("AngelLabel").style.display = 'none';
+        getByid("AngleLabel").style.display = 'none';
     }
 
     if (document.body.scrollTop && document.body.scrollTop != 0) {
@@ -1089,15 +994,15 @@ function DivDraw(e) {
         dgs = document.getElementById("magnifierDiv").style;
     else if (openMeasure)
         dgs = document.getElementById("MeasureLabel").style;
-    else /* if (openAngel==2)*/
-        dgs = document.getElementById("AngelLabel").style;
+    else /* if (openAngle==2)*/
+        dgs = document.getElementById("AngleLabel").style;
     y = e.clientY;
     x = e.clientX;
     if (!y || !x) {
         y = e.touches[0].clientY;
         x = e.touches[0].clientX;
     }
-    if (MouseDownCheck == true || TouchDownCheck == true || openAngel == 2) {
+    if (MouseDownCheck == true || TouchDownCheck == true || openAngle == 2) {
         dgs.top = y + dbst + y_out + "px";
         dgs.left = x + dbsl + x_out + "px";
     }
@@ -1106,7 +1011,7 @@ function DivDraw(e) {
             Math.pow(MeasureXY2[0] / GetViewport().PixelSpacingX - MeasureXY[0] / GetViewport().PixelSpacingX, 2) +
             Math.pow(MeasureXY2[1] / GetViewport().PixelSpacingY - MeasureXY[1] / GetViewport().PixelSpacingY, 2), 2)) +
             "mm";
-    } else if (openAngel == 2) {
+    } else if (openAngle == 2) {
         var getAngle = ({
             x: x1,
             y: y1
@@ -1119,15 +1024,15 @@ function DivDraw(e) {
             const angle = Math.atan2(det, dot) / Math.PI * 180
             return (angle + 360) % 360
         }
-        var angle = getAngle({
-            x: AngelXY0[0] - AngelXY2[0],
-            y: AngelXY0[1] - AngelXY2[1],
+        var angle1 = getAngle({
+            x: AngleXY0[0] - AngleXY2[0],
+            y: AngleXY0[1] - AngleXY2[1],
         }, {
-            x: AngelXY0[0] - AngelXY1[0],
-            y: AngelXY0[1] - AngelXY1[1],
+            x: AngleXY0[0] - AngleXY1[0],
+            y: AngleXY0[1] - AngleXY1[1],
         });
-        if (angle > 180) angle = 360 - angle;
-        getByid("AngelLabel").innerText = parseInt(angle) + "°";
+        if (angle1 > 180) angle1 = 360 - angle1;
+        getByid("AngleLabel").innerText = parseInt(angle1) + "°";
     }
     if (parseInt(getByid("MeasureLabel").innerText) <= 1) getByid("MeasureLabel").style.display = "none";
 }

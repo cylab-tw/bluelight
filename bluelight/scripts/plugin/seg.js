@@ -455,11 +455,11 @@ function writeSeg() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             var labelXY = getClass('labelXY'); {
-                let angel2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
+                let angle2point = rotateCalculation(e);
+                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
             }
             if (MouseDownCheck && !rightMouseDown && SEG_now_choose && openWindow != true) {
-                let angel2point = rotateCalculation(e);
+                let angle2point = rotateCalculation(e);
                 var rect = getByid("SegBrushSizeText").value;
                 rect = parseInt(rect);
                 if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
@@ -467,14 +467,14 @@ function writeSeg() {
                     for (var s = -rect; s < rect; s++) {
                         for (var s2 = -rect; s2 < rect; s2++) {
                             if ((s * s) + (s2 * s2) < rect * rect)
-                                SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageWidth + Math.floor(angel2point[0] + s2)] = 0;
+                                SEG_now_choose.pixelData[Math.floor(angle2point[1] + s) * GetViewport().imageWidth + Math.floor(angle2point[0] + s2)] = 0;
                         }
                     }
                 } else {
                     for (var s = -rect; s < rect; s++) {
                         for (var s2 = -rect; s2 < rect; s2++) {
                             if ((s * s) + (s2 * s2) < rect * rect)
-                                SEG_now_choose.pixelData[Math.floor(angel2point[1] + s) * GetViewport().imageWidth + Math.floor(angel2point[0] + s2)] = 1;
+                                SEG_now_choose.pixelData[Math.floor(angle2point[1] + s) * GetViewport().imageWidth + Math.floor(angle2point[0] + s2)] = 1;
                         }
                     }
                 }
@@ -488,13 +488,13 @@ function writeSeg() {
                 rect = parseInt(rect);
                 if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
                 refreshMarkFromSop(GetNowUid().sop);
-                let angel2point = rotateCalculation(e);
+                let angle2point = rotateCalculation(e);
                 var MarkCanvas = GetViewportMark();
                 var segCtx = MarkCanvas.getContext("2d");
                 segCtx.beginPath();
                 segCtx.strokeStyle = "#FFFF00";
                 segCtx.lineWidth = "3";
-                segCtx.arc(angel2point[0], angel2point[1], rect, 0, 2 * Math.PI);
+                segCtx.arc(angle2point[0], angle2point[1], rect, 0, 2 * Math.PI);
                 segCtx.stroke();
                 segCtx.closePath();
             }

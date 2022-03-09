@@ -675,13 +675,13 @@ Anatomical_SectionMouseMove0 = function (e) {
     if (openMPR == true && openWindow != true && openChangeFile != true) {
         if (MouseDownCheck == true) {
             // viewportNumber = 0;
-            let angel2point = rotateCalculation(e);
-            currX11M = angel2point[1];
-            currY11M = angel2point[0];
+            let angle2point = rotateCalculation(e);
+            currX11M = angle2point[1];
+            currY11M = angle2point[0];
             o3DPointX = currX11M;
             o3DPointY = currY11M;
-            AngelXY1 = [currX11M, 0];
-            AngelXY0 = [currX11M, GetViewport(0).imageHeight];
+            AngleXY1 = [currX11M, 0];
+            AngleXY0 = [currX11M, GetViewport(0).imageHeight];
             if (openMPR == true) {
                 var alt = GetViewport().alt;
                 var index = SearchUid2Index(alt);
@@ -717,13 +717,13 @@ Anatomical_SectionMouseMove = function (e) {
     if (openMPR == true && openWindow != true && openChangeFile != true) {
         if (MouseDownCheck == true) {
             // viewportNumber = 0;
-            let angel2point = rotateCalculation(e);
-            currX11M = angel2point[0];
-            currY11M = angel2point[1];
+            let angle2point = rotateCalculation(e);
+            currX11M = angle2point[0];
+            currY11M = angle2point[1];
             o3DPointX = currX11M;
             o3DPointY = currY11M;
-            AngelXY0 = [currX11M, 0];
-            AngelXY1 = [currX11M, GetViewport(1).imageHeight];
+            AngleXY0 = [currX11M, 0];
+            AngleXY1 = [currX11M, GetViewport(1).imageHeight];
             if (openMPR == true) {
                 var alt = GetViewport().alt;
                 var index = SearchUid2Index(alt);

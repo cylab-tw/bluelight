@@ -572,7 +572,7 @@ function display3DLine(x0, y0, x1, y1, color) {
     tempctx.moveTo(x0, y0);
     tempctx.lineTo(x1, y1);
     tempctx.stroke();
-    if (openAngel == 2) {
+    if (openAngle == 2) {
         tempctx.moveTo(x0, y0);
         tempctx.lineTo(x2, y2);
         tempctx.stroke();

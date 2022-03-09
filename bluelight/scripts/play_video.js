@@ -1,6 +1,6 @@
 function playVideo(dir) {
     getByid("MeasureLabel").style.display = "none";
-    getByid("AngelLabel").style.display = "none";
+    getByid("AngleLabel").style.display = "none";
     var viewportNum = dir;
     var alt = GetViewport(viewportNum).alt;
     var break1 = false;

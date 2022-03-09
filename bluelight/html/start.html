@@ -51,7 +51,7 @@
   <script src="../scripts/newscript/zoom.js"></script>
   <script src="../scripts/newscript/rotate.js"></script>
   <script src="../scripts/newscript/measure.js"></script>
-  <script src="../scripts/newscript/angel.js"></script>
+  <script src="../scripts/newscript/angle.js"></script>
   <script src="../scripts/external/other/html2canvas.min.js"></script>
   <script type="module">
     import { decodeImageFrame1 } from "../scripts/external/cornerstone/decode/decodeImageFrame.js";
@@ -86,7 +86,7 @@
     <img class="img" alt="色彩反轉" id="color_invert" src="../image/icon/black/b_InvertGrayscale.png" width="50" height="50">
     <img class="img" alt="連接" id="unlink" src="../image/icon/black/b_unlink translation synchronization.png" width="50" height="50">
     <img class="img" alt="測量" id="MeasureRular" src="../image/icon/black/b_DistanceMeasurement.png" width="50" height="50">
-    <img class="img" alt="角度" id="AngelRular" src="../image/icon/black/b_AngleMeasurement.png" width="50" height="50">
+    <img class="img" alt="角度" id="AngleRular" src="../image/icon/black/b_AngleMeasurement.png" width="50" height="50">
 
     <img class="img" alt="播放" id="playvideo" src="../image/icon/black/b_CinePlay.png" width="50" height="50">
     <img class="img VR MPR" alt="標記" id="MarkButton" src="../image/icon/black/fist0.png" width="50" height="50">
@@ -287,11 +287,10 @@
     <label id="MeasureLabel" style="display:none;color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none; ">
       0cm
     </label>
-    <label id="AngelLabel" style="display:none;color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none; ">
+    <label id="AngleLabel" style="display:none;color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none; ">
       0cm
     </label>
     <div id="magnifierDiv" style="z-index:40;position: absolute;pointer-events: none;"><canvas id="magnifierCanvas"></canvas></div>
-    <div id="origindicomImage" style="margin: auto;display: none;"></div>
 </body>
 
 </html>

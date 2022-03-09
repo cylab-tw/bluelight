@@ -89,13 +89,13 @@ function mouseTool() {
             if (openMPR == true && openWindow != true && openChangeFile != true) {
                 if (MouseDownCheck == true) {
                     viewportNumber = 2;
-                    let angel2point = rotateCalculation(e);
-                    currX11M = angel2point[0];
-                    currY11M = angel2point[1];
+                    let angle2point = rotateCalculation(e);
+                    currX11M = angle2point[0];
+                    currY11M = angle2point[1];
                     o3DPointX = currX11M;
                     o3DPointY = currY11M;
-                    AngelXY0 = [currX11M, 0];
-                    AngelXY1 = [currX11M, GetViewport().imageHeight];
+                    AngleXY0 = [currX11M, 0];
+                    AngleXY1 = [currX11M, GetViewport().imageHeight];
                     if (openMPR == true) {
                         Anatomical_Section();
                         Anatomical_Section2();
@@ -107,8 +107,8 @@ function mouseTool() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             var labelXY = getClass('labelXY'); {
-                let angel2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
+                let angle2point = rotateCalculation(e);
+                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
             }
             if (rightMouseDown == true) {
                 scale_size(e, currX, currY)
@@ -191,13 +191,13 @@ function mouseTool() {
             if (openMPR == true) {
                 if (TouchDownCheck == true) {
                     viewportNumber = 2;
-                    let angel2point = rotateCalculation(e);
-                    currX11M = angel2point[0];
-                    currY11M = angel2point[1];
+                    let angle2point = rotateCalculation(e);
+                    currX11M = angle2point[0];
+                    currY11M = angle2point[1];
                     o3DPointX = currX11M;
                     o3DPointY = currY11M;
-                    AngelXY0 = [currX11M, 0];
-                    AngelXY1 = [currX11M, GetViewport().imageHeight];
+                    AngleXY0 = [currX11M, 0];
+                    AngleXY1 = [currX11M, GetViewport().imageHeight];
                     if (openMPR == true) {
                         Anatomical_Section();
                         Anatomical_Section2();
@@ -318,8 +318,8 @@ function mouseTool() {
         }
         Touchend = function (e, e2) {
             if (TouchDownCheck == true) {
-                if (openAngel == 1) openAngel = 2;
-                else if (openAngel == 2) openAngel = 3;
+                if (openAngle == 1) openAngle = 2;
+                else if (openAngle == 2) openAngle = 3;
             }
             TouchDownCheck = false;
             rightTouchDown = false;

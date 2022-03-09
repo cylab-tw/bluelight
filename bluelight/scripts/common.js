@@ -4,12 +4,12 @@ function cancelTools() {
     openZoom = false;
     openMeasure = false;
     openRotate = false;
-    openAngel = 0;
+    openAngle = 0;
     textWC.style.display = "none";
     textWW.style.display = "none";
     magnifierDiv.style.display = "none";
     getByid("MeasureLabel").style.display = "none";
-    getByid("AngelLabel").style.display = "none";
+    getByid("AngleLabel").style.display = "none";
     getByid("WindowLevelDiv").style.display = "none";
     getByid("labelZoom").style.display = "none";
     getByid("labelPlay").style.display = "none";
@@ -230,11 +230,11 @@ function displayRular2(viewportNum0) {
     } catch (ex) { }
 }
 
-function displayAngelRular() {
-    if (!openAngel) return;
+function displayAngleRular() {
+    if (!openAngle) return;
     if (parseInt(Math.sqrt(
-        Math.pow(AngelXY1[0] / GetViewport().PixelSpacingX - AngelXY0[0] / GetViewport().PixelSpacingX, 2) +
-        Math.pow(AngelXY1[1] / GetViewport().PixelSpacingY - AngelXY0[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
+        Math.pow(AngleXY1[0] / GetViewport().PixelSpacingX - AngleXY0[0] / GetViewport().PixelSpacingX, 2) +
+        Math.pow(AngleXY1[1] / GetViewport().PixelSpacingY - AngleXY0[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
 
     var MarkCanvas = GetViewportMark();
     var tempctx = MarkCanvas.getContext("2d");
@@ -250,29 +250,29 @@ function displayAngelRular() {
     tempctx.strokeStyle = "#00FF00";
     tempctx.fillStyle = "#00FF00";
 
-    tempctx.moveTo(AngelXY0[0], AngelXY0[1]);
-    tempctx.lineTo(AngelXY1[0], AngelXY1[1]);
+    tempctx.moveTo(AngleXY0[0], AngleXY0[1]);
+    tempctx.lineTo(AngleXY1[0], AngleXY1[1]);
     tempctx.stroke();
-    if (openAngel == 2) {
-        tempctx.moveTo(AngelXY0[0], AngelXY0[1]);
-        tempctx.lineTo(AngelXY2[0], AngelXY2[1]);
+    if (openAngle == 2) {
+        tempctx.moveTo(AngleXY0[0], AngleXY0[1]);
+        tempctx.lineTo(AngleXY2[0], AngleXY2[1]);
     }
     tempctx.stroke();
     tempctx.closePath();
     tempctx.beginPath();
     tempctx.strokeStyle = "#FF0000";
     tempctx.fillStyle = "#FF0000";
-    tempctx.arc(AngelXY0[0], AngelXY0[1], 3, 0, 2 * Math.PI);
+    tempctx.arc(AngleXY0[0], AngleXY0[1], 3, 0, 2 * Math.PI);
     tempctx.fill();
 
-    tempctx.arc(AngelXY1[0], AngelXY1[1], 3, 0, 2 * Math.PI);
+    tempctx.arc(AngleXY1[0], AngleXY1[1], 3, 0, 2 * Math.PI);
     tempctx.fill();
-    if (openAngel == 2) {
+    if (openAngle == 2) {
         tempctx.strokeStyle = "#FF0000";
         tempctx.fillStyle = "#FF0000";
-        tempctx.arc(AngelXY0[0], AngelXY0[1], 3, 0, 2 * Math.PI);
+        tempctx.arc(AngleXY0[0], AngleXY0[1], 3, 0, 2 * Math.PI);
         tempctx.fill();
-        tempctx.arc(AngelXY2[0], AngelXY2[1], 3, 0, 2 * Math.PI);
+        tempctx.arc(AngleXY2[0], AngleXY2[1], 3, 0, 2 * Math.PI);
         tempctx.fill();
     }
     tempctx.closePath();
@@ -338,47 +338,53 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
         MarkCanvas = o3DElement.canvas();
     };
     var tempctx = MarkCanvas.getContext("2d");
-    if (magnifier && magnifier == true) {
-        MarkCanvas = document.getElementById("magnifierCanvas");
-        tempctx = magnifierCanvas.getContext("2d");
-    }
-    var originW = Css(MarkCanvas, 'width');
-    var originH = Css(MarkCanvas, 'height');
-    if (!magnifier && !o3DElement)
+    if (!o3DElement) {
+        MarkCanvas.style.width = GetViewport(viewportNum).canvas().style.width;
+        MarkCanvas.style.height = GetViewport(viewportNum).canvas().style.height;
         tempctx.clearRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
+    }
+    
+    //var originW = Css(MarkCanvas, 'width');
+    //var originH = Css(MarkCanvas, 'height');
     var sizeCheck = false;
-    if (size == false && (parseFloat(Css(MarkCanvas, 'width')) != GetViewport(viewportNum).imageWidth || parseFloat(Css(MarkCanvas, 'height')) != GetViewport(viewportNum).imageHeight)) {
+    // if (size == false && (parseFloat(Css(MarkCanvas, 'width')) != GetViewport(viewportNum).imageWidth || parseFloat(Css(MarkCanvas, 'height')) != GetViewport(viewportNum).imageHeight)) {
+    if (size == false) {
         sizeCheck = true;
-        MarkCanvas.width = GetViewport(viewportNum).imageWidth;
-        MarkCanvas.height = GetViewport(viewportNum).imageHeight;
-        Css(MarkCanvas, 'width', ToPx(GetViewport(viewportNum).imageWidth));
-        Css(MarkCanvas, 'height', ToPx(GetViewport(viewportNum).imageHeight));
-    }
-    if (size == "right") {
-        tempctx.resetTransform();
-    }
-    if (size == true) {
-        tempctx.resetTransform();
-        MarkCanvas.getContext("2d").scale(parseFloat(Css(MarkCanvas, 'width')) / GetViewport(viewportNum).imageWidth, parseFloat(Css(MarkCanvas, 'height')) / GetViewport(viewportNum).imageHeight);
+        if (!o3DElement) {
+            MarkCanvas.width = GetViewport(viewportNum).imageWidth;
+            MarkCanvas.height = GetViewport(viewportNum).imageHeight;
+        }
     }
 
     tempctx.lineWidth = "" + getMarkSize(MarkCanvas, sizeCheck); //((Math.abs(lineWid)) * 2 * lineSize);
-
     NowResize = false;
-    if (GetViewport(viewportNum).openMark == true) {
-        //注意：標記顏色選擇紅色跟自動都會先初始化為紅色
-        tempctx.strokeStyle = "#FF0000";
-        tempctx.fillStyle = "#FF0000";
+
+    function setMarkColor(tempctx, color) {
         if (getByid("WhiteSelect").selected == true) {
             tempctx.strokeStyle = "#FFFFFF";
             tempctx.fillStyle = "#FFFFFF";
         } else if (getByid("BlueSelect").selected == true) {
             tempctx.strokeStyle = "#0000FF";
             tempctx.fillStyle = "#0000FF";
+        } else if (getByid("RedSelect").selected == true) {
+            tempctx.strokeStyle = "#FF0000";
+            tempctx.fillStyle = "#FF0000";
+        } else {
+            if (color) {
+                tempctx.strokeStyle = color;
+                tempctx.fillStyle = color;
+            }
         }
+    }
+
+
+    if (GetViewport(viewportNum).openMark == true) {
+        //注意：標記顏色選擇紅色跟自動都會先初始化為紅色
+        tempctx.strokeStyle = "#FF0000";
+        tempctx.fillStyle = "#FF0000";
+        setMarkColor(tempctx);
 
         tempctx.lineJoin = tempctx.lineCap = 'round';
-
 
         var alt = GetViewport(viewportNum).alt;
         if (o3DElement) alt = o3DElement.alt;
@@ -426,9 +432,6 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
                         }
                         tempctx.globalCompositeOperation = globalCompositeOperation;
-                        //tempctx.drawImage(canvas1.toDataURL(), 0, 0,GetViewport(0).imageWidth, GetViewport(0).imageHeight, 0, 0, GetViewport(0).imageWidth, GetViewport(0).imageHeight)
-                        //canvas1=(PatientMark[n].mark[m].canvas)
-                        // getImageData1=(PatientMark[n].mark[m].ctx.getImageData(0, 0,50, 50))
                         tempctx.restore();
                     } else if (PatientMark[n].mark[m].type == "Overlay") {
                         let checkRtss = 0;
@@ -465,9 +468,6 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
                         }
                         tempctx.globalCompositeOperation = globalCompositeOperation;
-                        //tempctx.drawImage(canvas1.toDataURL(), 0, 0,GetViewport(0).imageWidth, GetViewport(0).imageHeight, 0, 0, GetViewport(0).imageWidth, GetViewport(0).imageHeight)
-                        //canvas1=(PatientMark[n].mark[m].canvas)
-                        // getImageData1=(PatientMark[n].mark[m].ctx.getImageData(0, 0,50, 50))
                         tempctx.restore();
                     }
                 }
@@ -651,19 +651,8 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                 checkRtss = checkMark(i, j, n);
                                 if (checkRtss == 0) continue;
 
-                                if (getByid("WhiteSelect").selected == true) {
-                                    tempctx.strokeStyle = "#FFFFFF";
-                                    tempctx.fillStyle = "#FFFFFF";
-                                } else if (getByid("BlueSelect").selected == true) {
-                                    tempctx.strokeStyle = "#0000FF";
-                                    tempctx.fillStyle = "#0000FF";
-                                } else if (getByid("RedSelect").selected == true) {
-                                    tempctx.strokeStyle = "#FF0000";
-                                    tempctx.fillStyle = "#FF0000";
-                                } else {
-                                    tempctx.strokeStyle = "#FFFF00";
-                                    tempctx.fillStyle = "#FFFF00";
-                                }
+
+                                setMarkColor(tempctx, "#FFFF00");
 
                                 if (PatientMark[n].color) {
                                     tempctx.strokeStyle = "" + PatientMark[n].color;
@@ -674,11 +663,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                 tempctx.beginPath();
 
                                 var x1 = tempMark.markX[o] * 1 - currX;
-                                // var x2 = tempMark.markX[0][o+1] * 1 - currX;
-                                // var y1 = tempMark.markY[0][o+1] * 1 - currY;
                                 var y1 = tempMark.markY[o + 1] * 1 - currY;
-                                //var w1 = tempMark.markX[o + 2];
-                                //var h1 = tempMark.markX[o + 3];
                                 var offsetX_Text = 0;
                                 var offsetY_Text = 0;
                                 var lines = tempMark.GSPS_Text.split('\n');
@@ -689,27 +674,19 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                     if (offsetY_temp > offsetY_Text) offsetY_Text = offsetY_temp;
                                 }
 
-                                // console.log(offsetX_Text, tempMark.GSPS_Text);
                                 x1 -= offsetX_Text;
                                 y1 -= offsetY_Text;
                                 if (tempMark.GSPS_Text && o == 0) {
 
                                     tempctx.font = "" + (3 * 4) + "px Arial";
-                                    //console.log(parseInt(tempctx.lineWidth));
-                                    // tempctx.font = "" + (parseInt(w1*h1)) + "px Arial";
                                     tempctx.fillStyle = "red";
                                     let tempAlpha = tempctx.globalAlpha;
                                     tempctx.globalAlpha = 1.0;
-                                    //-(tempMark.GSPS_Text.length)
                                     var lines = tempMark.GSPS_Text.split('\n');
                                     for (var i2 = 0; i2 < lines.length; i2++) {
                                         tempctx.fillText(lines[i2], x1, y1 - 7 - ((lines.length - 1) * 3 * 4) + (i2 * 3 * 4));
-                                        //console.log(lines[i2]);
-                                        // co
                                     }
-                                    //tempctx.fillText("" + tempMark.GSPS_Text + "<br/>222", x1, y1 - 7);
                                     tempctx.globalAlpha = tempAlpha;
-                                    // tempctx.fillText(tempMark.GSPS_Text, 10, 50);
                                 }
                                 tempctx.stroke();
                                 tempctx.closePath();
@@ -726,16 +703,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             checkRtss = checkMark(i, j, n);
                             if (checkRtss == 0) continue;
 
-                            if (getByid("WhiteSelect").selected == true) {
-                                tempctx.strokeStyle = "#FFFFFF";
-                                tempctx.fillStyle = "#FFFFFF";
-                            } else if (getByid("BlueSelect").selected == true) {
-                                tempctx.strokeStyle = "#0000FF";
-                                tempctx.fillStyle = "#0000FF";
-                            } else if (getByid("RedSelect").selected == true) {
-                                tempctx.strokeStyle = "#FF0000";
-                                tempctx.fillStyle = "#FF0000";
-                            }
+                            setMarkColor(tempctx);
 
                             if (PatientMark[n].color) {
                                 tempctx.strokeStyle = "" + PatientMark[n].color;
@@ -755,29 +723,13 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                 [x2, y2] = rotatePoint([x2, y2], tempMark.RotationAngle, tempMark.RotationPoint);
                             }
 
-                            if (magnifier && magnifier == true) {
-                                if (GetViewport(viewportNum).openHorizontalFlip == true) {
-                                    x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x2 = (tempMark.markX[o + 1] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x3 = (tempMark.markX[o + 2] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x4 = (tempMark.markX[o + 3] - GetViewport(viewportNum).imagePositionX) + currX;
-                                }
-                                if (GetViewport(viewportNum).openVerticalFlip == true) {
-                                    y1 = (tempMark.markY[o] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y2 = (tempMark.markY[o + 1] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y3 = (tempMark.markY[o + 2] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y4 = (tempMark.markY[o + 3] - GetViewport(viewportNum).imagePositionY) + currY;
-                                }
-                            }
                             if (tempMark.GSPS_Text && o == 0) {
                                 tempctx.font = "" + (parseInt(tempctx.lineWidth) * 4) + "px Arial";
                                 tempctx.fillStyle = "red";
                                 let tempAlpha = tempctx.globalAlpha;
                                 tempctx.globalAlpha = 1.0;
-                                //-(tempMark.GSPS_Text.length)
                                 tempctx.fillText("" + tempMark.GSPS_Text, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 7 : y2 - 7);
                                 tempctx.globalAlpha = tempAlpha;
-                                // tempctx.fillText(tempMark.GSPS_Text, 10, 50);
                             }
                             let tempAlpha2 = tempctx.globalAlpha;
                             tempctx.globalAlpha = 1.0;
@@ -799,8 +751,6 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                 }
                                 tempctx.lineWidth = "" + parseInt(tempctx.lineWidth) * 2;
                                 var fillstyle = tempctx.fillStyle;
-
-                                //tempctx.fillStyle = "#FF0000";
 
                                 if (Graphic_now_choose && Graphic_now_choose.mark == tempMark) tempctx.strokeStyle = getRGBFrom0xFF(tempctx.strokeStyle, false, true);
                                 tempctx.beginPath();
@@ -840,20 +790,6 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             var y3 = tempMark.markY[o + 2] * 1 - currY;
                             var x4 = tempMark.markX[o + 3] * 1 - currX;
                             var y4 = tempMark.markY[o + 3] * 1 - currY;
-                            if (magnifier && magnifier == true) {
-                                if (GetViewport(viewportNum).openHorizontalFlip == true) {
-                                    x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x2 = (tempMark.markX[o + 1] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x3 = (tempMark.markX[o + 2] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x4 = (tempMark.markX[o + 3] - GetViewport(viewportNum).imagePositionX) + currX;
-                                }
-                                if (GetViewport(viewportNum).openVerticalFlip == true) {
-                                    y1 = (tempMark.markY[o] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y2 = (tempMark.markY[o + 1] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y3 = (tempMark.markY[o + 2] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y4 = (tempMark.markY[o + 3] - GetViewport(viewportNum).imagePositionY) + currY;
-                                }
-                            }
 
                             tempctx.ellipse((x1 + x3) / 2, (y2 + y4) / 2, Math.abs(x1 - x3), Math.abs(y2 - y4), 0 * Math.PI / 180, 0, 2 * Math.PI);
                             tempctx.stroke();
@@ -870,16 +806,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             checkRtss = checkMark(i, j, n);
                             if (checkRtss == 0) continue;
 
-                            if (getByid("WhiteSelect").selected == true) {
-                                tempctx.strokeStyle = "#FFFFFF";
-                                tempctx.fillStyle = "#FFFFFF";
-                            } else if (getByid("BlueSelect").selected == true) {
-                                tempctx.strokeStyle = "#0000FF";
-                                tempctx.fillStyle = "#0000FF";
-                            } else if (getByid("RedSelect").selected == true) {
-                                tempctx.strokeStyle = "#FF0000";
-                                tempctx.fillStyle = "#FF0000";
-                            }
+                            setMarkColor(tempctx);
                             if (PatientMark[n].color) {
                                 tempctx.strokeStyle = "" + PatientMark[n].color;
                                 tempctx.fillStyle = "" + PatientMark[n].color;
@@ -892,16 +819,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             var y1 = tempMark.markY[o] * 1 - currY;
                             var x2 = tempMark.markX[o + 1] * 1 - currX;
                             var y2 = tempMark.markY[o + 1] * 1 - currY;
-                            if (magnifier && magnifier == true) {
-                                if (GetViewport(viewportNum).openHorizontalFlip == true) {
-                                    x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x2 = (tempMark.markX[o + 1] - GetViewport(viewportNum).imagePositionX) + currX;
-                                }
-                                if (GetViewport(viewportNum).openVerticalFlip == true) {
-                                    y1 = (tempMark.markY[o] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y2 = (tempMark.markY[o + 1] - GetViewport(viewportNum).imagePositionY) + currY;
-                                }
-                            }
+
                             tempctx.beginPath();
                             var temp_distance = getDistance(Math.abs(x1 - x2), Math.abs(y1 - y2)); //Math.abs(x1 - x2) > Math.abs(y1 - y2) ? Math.abs(x1 - x2) : Math.abs(y1 - y2);
                             tempctx.arc(x1, y1, temp_distance, 0, 2 * Math.PI);
@@ -922,16 +840,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             tempctx.strokeStyle = "" + PatientMark[n].color;
                             tempctx.fillStyle = "" + PatientMark[n].color;
                         }
-                        if (getByid("WhiteSelect").selected == true) {
-                            tempctx.strokeStyle = "#FFFFFF";
-                            tempctx.fillStyle = "#FFFFFF";
-                        } else if (getByid("BlueSelect").selected == true) {
-                            tempctx.strokeStyle = "#0000FF";
-                            tempctx.fillStyle = "#0000FF";
-                        } else if (getByid("RedSelect").selected == true) {
-                            tempctx.strokeStyle = "#FF0000";
-                            tempctx.fillStyle = "#FF0000";
-                        }
+                        setMarkColor(tempctx);
                         for (var o = 0; o < PatientMark[n].mark[m].markX.length; o++) {
                             var tempMark = PatientMark[n].mark[m];
                             tempctx.beginPath();
@@ -940,20 +849,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             o2 = o == tempMark.markX.length - 1 ? 0 : o + 1;
                             x2 = tempMark.markX[o2] - currX /* * GetViewport(viewportNum).PixelSpacingX*/;
                             y2 = tempMark.markY[o2] - currY /* * GetViewport(viewportNum).PixelSpacingY*/;
-                            if (magnifier && magnifier == true) {
-                                if (GetViewport(viewportNum).openHorizontalFlip == true) {
-                                    x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x2 = (tempMark.markX[o + 1] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x3 = (tempMark.markX[o + 2] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x4 = (tempMark.markX[o + 3] - GetViewport(viewportNum).imagePositionX) + currX;
-                                }
-                                if (GetViewport(viewportNum).openVerticalFlip == true) {
-                                    y1 = (tempMark.markY[o] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y2 = (tempMark.markY[o + 1] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y3 = (tempMark.markY[o + 2] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y4 = (tempMark.markY[o + 3] - GetViewport(viewportNum).imagePositionY) + currY;
-                                }
-                            }
+
                             tempctx.moveTo(x1, y1);
                             tempctx.lineTo(x2, y2);
                             tempctx.stroke();
@@ -973,16 +869,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             tempctx.strokeStyle = "" + PatientMark[n].color;
                             tempctx.fillStyle = "" + PatientMark[n].color;
                         }
-                        if (getByid("WhiteSelect").selected == true) {
-                            tempctx.strokeStyle = "#FFFFFF";
-                            tempctx.fillStyle = "#FFFFFF";
-                        } else if (getByid("BlueSelect").selected == true) {
-                            tempctx.strokeStyle = "#0000FF";
-                            tempctx.fillStyle = "#0000FF";
-                        } else if (getByid("RedSelect").selected == true) {
-                            tempctx.strokeStyle = "#FF0000";
-                            tempctx.fillStyle = "#FF0000";
-                        }
+                        setMarkColor(tempctx);
                         for (var o = 0; o < PatientMark[n].mark[m].markX.length; o++) {
                             var tempMark = PatientMark[n].mark[m];
                             tempctx.beginPath();
@@ -991,25 +878,16 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             var o2 = o == tempMark.markX.length - 1 ? 0 : o + 1;
                             var x2 = (tempMark.markX[o2] - GetViewport(viewportNum).imagePositionX) * GetViewport(viewportNum).PixelSpacingX - currX;
                             var y2 = (tempMark.markY[o2] - GetViewport(viewportNum).imagePositionY) * GetViewport(viewportNum).PixelSpacingY - currY;
-                            if (magnifier && magnifier == true) {
-                                if (GetViewport(viewportNum).openHorizontalFlip == true)
-                                    x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) * GetViewport(viewportNum).PixelSpacingX + currX;
-                                if (GetViewport(viewportNum).openVerticalFlip == true)
-                                    y1 = (tempMark.markY[o] - GetViewport(viewportNum).imagePositionY) * GetViewport(viewportNum).PixelSpacingY + currY;
-                                o2 = o == tempMark.markX.length - 1 ? 0 : o + 1;
-                                if (GetViewport(viewportNum).openHorizontalFlip == true)
-                                    x2 = (tempMark.markX[o2] - GetViewport(viewportNum).imagePositionX) * GetViewport(viewportNum).PixelSpacingX + currX;
-                                if (GetViewport(viewportNum).openVerticalFlip == true)
-                                    y2 = (tempMark.markY[o2] - GetViewport(viewportNum).imagePositionY) * GetViewport(viewportNum).PixelSpacingY + currY;
 
-                            }
                             x1 = Math.ceil(x1);
                             x2 = Math.ceil(x2);
                             y1 = Math.ceil(y1);
                             y2 = Math.ceil(y2);
                             tempctx.moveTo(x1, y1);
                             tempctx.lineTo(x2, y2);
+                            tempctx.globalAlpha = 1.0;
                             tempctx.stroke();
+                            tempctx.globalAlpha = alpha;
                             tempctx.closePath();
                         }
                         if (fill == true) {
@@ -1021,17 +899,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                                 var o2 = o == tempMark.markX.length - 1 ? 0 : o + 1;
                                 var x2 = (tempMark.markX[o2] - GetViewport(viewportNum).imagePositionX) * GetViewport(viewportNum).PixelSpacingX - currX;
                                 var y2 = (tempMark.markY[o2] - GetViewport(viewportNum).imagePositionY) * GetViewport(viewportNum).PixelSpacingY - currY;
-                                if (magnifier && magnifier == true) {
-                                    if (GetViewport(viewportNum).openHorizontalFlip == true)
-                                        x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) * GetViewport(viewportNum).PixelSpacingX + currX;
-                                    if (GetViewport(viewportNum).openVerticalFlip == true)
-                                        y1 = (tempMark.markY[o] - GetViewport(viewportNum).imagePositionY) * GetViewport(viewportNum).PixelSpacingY + currY;
-                                    o2 = o == tempMark.markX.length - 1 ? 0 : o + 1;
-                                    if (GetViewport(viewportNum).openHorizontalFlip == true)
-                                        x2 = (tempMark.markX[o2] - GetViewport(viewportNum).imagePositionX) * GetViewport(viewportNum).PixelSpacingX + currX;
-                                    if (GetViewport(viewportNum).openVerticalFlip == true)
-                                        y2 = (tempMark.markY[o2] - GetViewport(viewportNum).imagePositionY) * GetViewport(viewportNum).PixelSpacingY + currY;
-                                }
+
                                 x1 = Math.ceil(x1);
                                 x2 = Math.ceil(x2);
                                 y1 = Math.ceil(y1);
@@ -1057,31 +925,13 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             tempctx.strokeStyle = "" + PatientMark[n].color;
                             tempctx.fillStyle = "" + PatientMark[n].color;
                         }
-                        if (getByid("WhiteSelect").selected == true) {
-                            tempctx.strokeStyle = "#FFFFFF";
-                            tempctx.fillStyle = "#FFFFFF";
-                        } else if (getByid("BlueSelect").selected == true) {
-                            tempctx.strokeStyle = "#0000FF";
-                            tempctx.fillStyle = "#0000FF";
-                        } else if (getByid("RedSelect").selected == true) {
-                            tempctx.strokeStyle = "#FF0000";
-                            tempctx.fillStyle = "#FF0000";
-                        }
+                        setMarkColor(tempctx);
                         if (checkRtss == 0) continue;
                         if (PatientMark[n].color) {
                             tempctx.strokeStyle = "" + PatientMark[n].color;
                             tempctx.fillStyle = "" + PatientMark[n].color;
                         }
-                        if (getByid("WhiteSelect").selected == true) {
-                            tempctx.strokeStyle = "#FFFFFF";
-                            tempctx.fillStyle = "#FFFFFF";
-                        } else if (getByid("BlueSelect").selected == true) {
-                            tempctx.strokeStyle = "#0000FF";
-                            tempctx.fillStyle = "#0000FF";
-                        } else if (getByid("RedSelect").selected == true) {
-                            tempctx.strokeStyle = "#FF0000";
-                            tempctx.fillStyle = "#FF0000";
-                        }
+                        setMarkColor(tempctx);
                         for (var o = 0; o < PatientMark[n].mark[m].markX.length; o++) {
                             var tempMark = PatientMark[n].mark[m];
                             tempctx.beginPath();
@@ -1090,20 +940,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             var o2 = o == tempMark.markX.length - 1 ? 0 : o + 1;
                             var x2 = tempMark.markX[o2] - currX /* * GetViewport(viewportNum).PixelSpacingX*/;
                             var y2 = tempMark.markY[o2] - currY /* * GetViewport(viewportNum).PixelSpacingY*/;
-                            if (magnifier && magnifier == true) {
-                                if (GetViewport(viewportNum).openHorizontalFlip == true) {
-                                    x1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x2 = (tempMark.markX[o + 1] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x3 = (tempMark.markX[o + 2] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    x4 = (tempMark.markX[o + 3] - GetViewport(viewportNum).imagePositionX) + currX;
-                                }
-                                if (GetViewport(viewportNum).openVerticalFlip == true) {
-                                    y1 = (tempMark.markY[o] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y2 = (tempMark.markY[o + 1] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y3 = (tempMark.markY[o + 2] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    y4 = (tempMark.markY[o + 3] - GetViewport(viewportNum).imagePositionY) + currY;
-                                }
-                            }
+
                             tempctx.moveTo(x1, y1);
                             tempctx.lineTo(x2, y2);
                             tempctx.stroke();
@@ -1120,16 +957,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             tempctx.strokeStyle = "" + PatientMark[n].color;
                             tempctx.fillStyle = "" + PatientMark[n].color;
                         }
-                        if (getByid("WhiteSelect").selected == true) {
-                            tempctx.strokeStyle = "#FFFFFF";
-                            tempctx.fillStyle = "#FFFFFF";
-                        } else if (getByid("BlueSelect").selected == true) {
-                            tempctx.strokeStyle = "#0000FF";
-                            tempctx.fillStyle = "#0000FF";
-                        } else if (getByid("RedSelect").selected == true) {
-                            tempctx.strokeStyle = "#FF0000";
-                            tempctx.fillStyle = "#FF0000";
-                        }
+                        setMarkColor(tempctx);
                         for (var o = 0; o < PatientMark[n].mark[m].markX.length; o++) {
                             var tempMark = PatientMark[n].mark[m];
                             tempctx.beginPath();
@@ -1141,20 +969,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             var Y3 = tempMark.markY[o + 1] - currY;
                             var X4 = tempMark.markX[o + 3] - currX;
                             var Y4 = tempMark.markY[o + 3] - currY;
-                            if (magnifier && magnifier == true) {
-                                if (GetViewport(viewportNum).openHorizontalFlip == true) {
-                                    X1 = (tempMark.markX[o] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    X2 = (tempMark.markX[o + 1] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    X3 = (tempMark.markX[o + 2] - GetViewport(viewportNum).imagePositionX) + currX;
-                                    X4 = (tempMark.markX[o + 3] - GetViewport(viewportNum).imagePositionX) + currX;
-                                }
-                                if (GetViewport(viewportNum).openVerticalFlip == true) {
-                                    Y1 = (tempMark.markY[o] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    Y2 = (tempMark.markY[o + 1] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    Y3 = (tempMark.markY[o + 2] - GetViewport(viewportNum).imagePositionY) + currY;
-                                    Y4 = (tempMark.markY[o + 3] - GetViewport(viewportNum).imagePositionY) + currY;
-                                }
-                            }
+
                             var heightHalf = Math.sqrt(Math.pow((X1 - X3), 2) + Math.pow((Y1 - Y3), 2)) / 2;
                             var widthHalf = Math.sqrt(Math.pow((X2 - X4), 2) + Math.pow((Y2 - Y4), 2)) / 2;
                             tempctx.ellipse(X3, Y3, heightHalf, widthHalf, 0 * Math.PI / 180, 0, 2 * Math.PI);
@@ -1172,16 +987,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                             tempctx.strokeStyle = "" + PatientMark[n].color;
                             tempctx.fillStyle = "" + PatientMark[n].color;
                         }
-                        if (getByid("WhiteSelect").selected == true) {
-                            tempctx.strokeStyle = "#FFFFFF";
-                            tempctx.fillStyle = "#FFFFFF";
-                        } else if (getByid("BlueSelect").selected == true) {
-                            tempctx.strokeStyle = "#0000FF";
-                            tempctx.fillStyle = "#0000FF";
-                        } else if (getByid("RedSelect").selected == true) {
-                            tempctx.strokeStyle = "#FF0000";
-                            tempctx.fillStyle = "#FF0000";
-                        }
+                        setMarkColor(tempctx);
                         for (var o = 0; o < PatientMark[n].mark[m].markX.length; o++) {
                             var theta = 30;
                             var tempMark = PatientMark[n].mark[m];
@@ -1209,14 +1015,6 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
     tempctx.setTransform(1, 0, 0, 1, 0, 0);
     tempctx.scale(1, 1);
     tempctx.globalAlpha = 1.0;
-    if ((size == false) && (parseFloat(MarkCanvas.style.width) != originW || parseFloat(MarkCanvas.style.height) != originH)) {
-        MarkCanvas.style.width = originW;
-        MarkCanvas.style.height = originH;
-        if (viewportNum0 >= 0) displayMark("right", null, null, null, viewportNum0, o3DElement);
-        else displayMark("right");
-    }
-    if (size == true && viewportNum0 >= 0) displayMark(false, null, null, null, viewportNum0, o3DElement);
-    else if (size == true) displayMark(false);
 }
 
 function PictureOnclick(alt) {
@@ -1362,7 +1160,7 @@ function SetToLeft(alt, checki, patientid) {
         }
         li1.onchange = function () {
             getByid("MeasureLabel").style.display = "none";
-            getByid("AngelLabel").style.display = "none";
+            getByid("AngleLabel").style.display = "none";
             this.alt = this.alt == 'true' ? 'false' : 'true';
             for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i)
         };
@@ -1395,7 +1193,7 @@ function SetToLeft(alt, checki, patientid) {
 
 function SetWindowWL(openOrigin) {
     getByid("MeasureLabel").style.display = "none";
-    getByid("AngelLabel").style.display = "none";
+    getByid("AngleLabel").style.display = "none";
     if (openLink == true) {
         for (var z = 0; z < Viewport_Total; z++) {
             GetViewport(z).windowCenterList = parseInt(textWC.value);
@@ -1431,8 +1229,6 @@ function magnifierIng(currX, currY) {
     zoom /= 100;
     magnifierWidth = parseFloat(GetViewport().imageWidth / parseFloat(canvas.style.width)) * (magnifierWidth0 / zoom);
     magnifierHeight = parseFloat(GetViewport().imageHeight / parseFloat(canvas.style.height)) * (magnifierHeight0 / zoom);
-    var originCanvas = getByid("origindicomImage").canvas();
-    var tempOriginImgData = originCanvas.getContext('2d').getImageData(0, 0, parseFloat(getByid("origindicomImage").style.width), parseFloat(getByid("origindicomImage").style.height));
     var magnifierCanvas = document.getElementById("magnifierCanvas");
     var magnifierCtx = magnifierCanvas.getContext("2d");
     magnifierCanvas.width = magnifierWidth;
@@ -1441,44 +1237,18 @@ function magnifierIng(currX, currY) {
     magnifierCanvas.style.height = magnifierHeight0 + "px";
     magnifierCanvas.style.transform = "rotate(" + GetViewport().rotateValue + "deg)";
     magnifierCtx.clearRect(0, 0, magnifierWidth, magnifierHeight);
-    var dst = ctx.createImageData(magnifierWidth, magnifierHeight);
-    for (var y = 1; y < dst.height; y++) {
-        for (var x = 1; x < dst.width; x++) {
-            if ((Math.floor(currY) + y - magnifierHeight / 2) >= tempOriginImgData.height ||
-                Math.floor((currX - magnifierWidth / 2) + x) >= tempOriginImgData.width ||
-                (Math.floor(currY) + y - magnifierHeight / 2) < 0 ||
-                Math.floor((currX - magnifierWidth / 2) + x) < 0) {
-                dst.data[(y * dst.width * 4) + (x * 4)] = dst.data[(y * dst.width * 4) + (x * 4) + 1] = dst.data[(y * dst.width * 4) + (x * 4) + 2] = 0;
-                dst.data[(y * dst.width * 4) + (x * 4) + 3] = 255;
-            } else {
-                dst.data[(y * dst.width * 4) + (x * 4)] = tempOriginImgData.data[(((Math.floor((currY) + y - magnifierHeight / 2) * tempOriginImgData.width * 4) + (Math.floor((currX - magnifierWidth / 2) + x) * 4)))];
-                dst.data[(y * dst.width * 4) + (x * 4) + 1] = tempOriginImgData.data[(((Math.floor((currY) + y - magnifierHeight / 2) * tempOriginImgData.width * 4) + (Math.floor((currX - magnifierWidth / 2) + x) * 4))) + 1];
-                dst.data[(y * dst.width * 4) + (x * 4) + 2] = tempOriginImgData.data[(((Math.floor((currY) + y - magnifierHeight / 2) * tempOriginImgData.width * 4) + (Math.floor((currX - magnifierWidth / 2) + x) * 4))) + 2];
-                dst.data[(y * dst.width * 4) + (x * 4) + 3] = 255;
-            }
-        }
-    }
-    magnifierCtx.putImageData(dst, 0, 0);
 
     var currX11 = Math.floor(currX) - magnifierWidth / 2;
     var currY11 = Math.floor(currY) - magnifierHeight / 2;
     var currX02 = currX11;
     var currY02 = currY11;
-
-    if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
-        currX02 = (currX11 * GetViewport().imageOrientationX + currY11 * -GetViewport().imageOrientationY + 0);
-        currY02 = (currX11 * -GetViewport().imageOrientationX2 + currY11 * GetViewport().imageOrientationY2 + 0);
-        if ((GetViewport().openHorizontalFlip != GetViewport().openVerticalFlip)) {
-            currX02 = currX02 - (currX02 - currX11) * 2;
-            currY02 = currY02 - (currY02 - currY11) * 2;
-        }
-    }
-    displayMark('right', true, currX02, currY02);
+    magnifierCtx.drawImage(GetViewport().canvas(), currX02, currY02, magnifierWidth, magnifierHeight, 0, 0, magnifierWidth, magnifierHeight);
+    magnifierCtx.drawImage(GetViewportMark(), currX02, currY02, magnifierWidth, magnifierHeight, 0, 0, magnifierWidth, magnifierHeight);
 }
 
 function nextFrame(dir, frame) {
     getByid("MeasureLabel").style.display = "none";
-    getByid("AngelLabel").style.display = "none";
+    getByid("AngleLabel").style.display = "none";
     var dir0 = dir;
     if (openLink == true) {
         dir0 = 0;

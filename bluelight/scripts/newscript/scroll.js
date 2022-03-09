@@ -27,8 +27,8 @@ function scroll() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             var labelXY = getClass('labelXY'); {
-                let angel2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angel2point[0]) + " Y: " + parseInt(angel2point[1]);
+                let angle2point = rotateCalculation(e);
+                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
             }
             if (rightMouseDown == true) {
                 scale_size(e, currX, currY);
@@ -187,8 +187,8 @@ function scroll() {
         }
         Touchend = function (e, e2) {
             if (TouchDownCheck == true) {
-                if (openAngel == 1) openAngel = 2;
-                else if (openAngel == 2) openAngel = 3;
+                if (openAngle == 1) openAngle = 2;
+                else if (openAngle == 2) openAngle = 3;
             }
             TouchDownCheck = false;
             rightTouchDown = false;
