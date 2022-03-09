@@ -73,7 +73,12 @@ function html_onload() {
       } else {
         item.file(function (file) {
           var url = URL.createObjectURL(file);
-          loadAndViewImage('wadouri:' + url);
+
+          function basename(path) {
+            return path.split('.').reverse()[0];
+          }
+          if (basename(file.name) == "mht") wadorsLoader(url);
+          else loadAndViewImage('wadouri:' + url);
 
           function load(time) {
             return new Promise((resolve) => setTimeout(resolve, time));

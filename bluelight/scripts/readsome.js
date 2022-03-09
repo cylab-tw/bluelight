@@ -183,7 +183,7 @@ function readDicom(url, patientmark, openfile) {
             dcm.mark[DcmMarkLength].canvas.height = dcm.height;
             dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
             var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, dcm.width, dcm.height);
-            for(var i=0,j=0;i<pixelData.data.length;i+=4,j++)
+            for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
               if (dcm.mark[DcmMarkLength].pixelData[j] == 1) {
                 pixelData.data[i] = 0;
                 pixelData.data[i + 1] = 0;
@@ -193,7 +193,7 @@ function readDicom(url, patientmark, openfile) {
             dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
             patientmark.push(dcm);
             refreshMark(dcm);
-          } catch (ex) {  }
+          } catch (ex) { }
         }
         //   }
         ////暫時取消的功能
@@ -609,11 +609,27 @@ function loadDicomSeg(image, imageId) {
       dcm.mark[DcmMarkLength].pixelData = new Uint8Array(rect);
       for (var pix = 0; pix < rect; pix++)
         dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix];
+
+      dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
+      dcm.mark[DcmMarkLength].canvas.width = image.columns;
+      dcm.mark[DcmMarkLength].canvas.height = image.rows;
+      dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
+      var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, image.columns, image.rows);
+      for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
+        if (dcm.mark[DcmMarkLength].pixelData[j] != 0) {
+          pixelData.data[i] = 0;
+          pixelData.data[i + 1] = 0;
+          pixelData.data[i + 2] = 255;
+          pixelData.data[i + 3] = 255;
+        }
+      dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
+
       PatientMark.push(dcm);
       refreshMark(dcm);
     }
   } else {
     var NewpixelData = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length);
+    var sliceNum = image.data.elements.x52009230.items.length;
     for (var k = 0; k < image.data.elements.x52009230.items.length; k++) {
       var showname = 'SEG';
       var dcm = {};
@@ -627,15 +643,31 @@ function loadDicomSeg(image, imageId) {
       dcm.mark.push({});
       var DcmMarkLength = dcm.mark.length - 1;
       dcm.mark[DcmMarkLength].type = "SEG";
+
       dcm.mark[DcmMarkLength].pixelData = new Uint8Array(rect);
       if (NewpixelData.length == rect * image.data.elements.x52009230.items.length) {
         for (var pix = 0; pix < rect; pix++)
           dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix + rect * k];
       } else {
         for (var pix = 0; pix < rect; pix++)
-          dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix];
+          dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[parseInt(pix / (rect / (NewpixelData.length / sliceNum))) + (NewpixelData.length / sliceNum) * k];
       }
+
+      dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
+      dcm.mark[DcmMarkLength].canvas.width = image.columns;
+      dcm.mark[DcmMarkLength].canvas.height = image.rows;
+      dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
+      var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, image.columns, image.rows);
+      for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
+        if (dcm.mark[DcmMarkLength].pixelData[j] != 0) {
+          pixelData.data[i] = 0;
+          pixelData.data[i + 1] = 0;
+          pixelData.data[i + 2] = 255;
+          pixelData.data[i + 3] = 255;
+        }
+      dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
       PatientMark.push(dcm);
+
       refreshMark(dcm);
     }
   }

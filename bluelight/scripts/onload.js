@@ -362,9 +362,9 @@ function readConfigJson(url, readAllJson, readJson) {
 
     tempResponse = DicomResponse["DICOMWebServersConfig"][0];
     tempConfig = config.QIDO
-    tempConfig.hostname = tempResponse["hostname"];
-    tempConfig.https = tempResponse["enableHTTPS"] == true ? "https" : "http";
-    tempConfig.PORT = tempResponse["PORT"];
+    tempConfig.hostname = tempResponse["QIDO-hostname"];
+    tempConfig.https = tempResponse["QIDO-enableHTTPS"] == true ? "https" : "http";
+    tempConfig.PORT = tempResponse["QIDO-PORT"];
     tempConfig.service = tempResponse["QIDO"];
     tempConfig.contentType = tempResponse["contentType"];
     tempConfig.timeout = tempResponse["timeout"];
@@ -376,9 +376,9 @@ function readConfigJson(url, readAllJson, readJson) {
     config.WADO = {};
     tempConfig = config.WADO;
     tempResponse = DicomResponse["DICOMWebServersConfig"][0];
-    tempConfig.hostname = tempResponse["hostname"];
-    tempConfig.https = tempResponse["enableHTTPS"] == true ? "https" : "http";
-    tempConfig.PORT = tempResponse["PORT"];
+    tempConfig.hostname = tempResponse["WADO-hostname"];
+    tempConfig.https = tempResponse["WADO-enableHTTPS"] == true ? "https" : "http";
+    tempConfig.PORT = tempResponse["WADO-PORT"];
     tempConfig.WADOType = tempResponse["WADO-RS/URI"];
     if (tempConfig.WADOType == "URI") tempConfig.service = tempResponse["WADO-URI"];
     else if (tempConfig.WADOType == "RS") tempConfig.service = tempResponse["WADO-RS"];
