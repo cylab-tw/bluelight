@@ -343,7 +343,7 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
         MarkCanvas.style.height = GetViewport(viewportNum).canvas().style.height;
         tempctx.clearRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
     }
-    
+
     //var originW = Css(MarkCanvas, 'width');
     //var originH = Css(MarkCanvas, 'height');
     var sizeCheck = false;
@@ -358,7 +358,6 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
 
     tempctx.lineWidth = "" + getMarkSize(MarkCanvas, sizeCheck); //((Math.abs(lineWid)) * 2 * lineSize);
     NowResize = false;
-
     function setMarkColor(tempctx, color) {
         if (getByid("WhiteSelect").selected == true) {
             tempctx.strokeStyle = "#FFFFFF";
@@ -369,12 +368,31 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
         } else if (getByid("RedSelect").selected == true) {
             tempctx.strokeStyle = "#FF0000";
             tempctx.fillStyle = "#FF0000";
+        } else if (getByid("GreenSelect").selected == true) {
+            tempctx.strokeStyle = "#00FF00";
+            tempctx.fillStyle = "#00FF00";
+        } else if (getByid("YellowSelect").selected == true) {
+            tempctx.strokeStyle = "#FFFF00";
+            tempctx.fillStyle = "#FFFF00";
+        } else if (getByid("BrownSelect").selected == true) {
+            tempctx.strokeStyle = "#844200";
+            tempctx.fillStyle = "#844200";
+        } else if (getByid("OrangeSelect").selected == true) {
+            tempctx.strokeStyle = "#FFA500";
+            tempctx.fillStyle = "#FFA500";
+        } else if (getByid("PurpleSelect").selected == true) {
+            tempctx.strokeStyle = "#663399";
+            tempctx.fillStyle = "#663399";
         } else {
             if (color) {
                 tempctx.strokeStyle = color;
                 tempctx.fillStyle = color;
+                return true;
+            } else {
+                return false;
             }
         }
+        return true;
     }
 
 
@@ -418,19 +436,10 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         // tempctx.drawImage(PatientMark[n].mark[m].canvas, 0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
                         tempctx.globalAlpha = 1;
                         var globalCompositeOperation = tempctx.globalCompositeOperation;
-                        if (getByid("BlueSelect").selected == true) {
-                            tempctx.globalCompositeOperation = "source-in";
-                            tempctx.fillStyle = "blue";
-                            tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
-                        } else if (getByid("RedSelect").selected == true) {
-                            tempctx.globalCompositeOperation = "source-in";
-                            tempctx.fillStyle = "red";
-                            tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
-                        } else if (getByid("WhiteSelect").selected == true) {
-                            tempctx.globalCompositeOperation = "source-in";
-                            tempctx.fillStyle = "white";
-                            tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
-                        }
+
+                        tempctx.globalCompositeOperation = "source-in";
+                        if (setMarkColor(tempctx) == true) tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
+
                         tempctx.globalCompositeOperation = globalCompositeOperation;
                         tempctx.restore();
                     } else if (PatientMark[n].mark[m].type == "Overlay") {
@@ -454,19 +463,8 @@ function displayMark(size, magnifier, currX0, currY0, viewportNum0, o3DElement) 
                         // tempctx.drawImage(PatientMark[n].mark[m].canvas, 0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
                         tempctx.globalAlpha = 1;
                         var globalCompositeOperation = tempctx.globalCompositeOperation;
-                        if (getByid("BlueSelect").selected == true) {
-                            tempctx.globalCompositeOperation = "source-in";
-                            tempctx.fillStyle = "blue";
-                            tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
-                        } else if (getByid("RedSelect").selected == true) {
-                            tempctx.globalCompositeOperation = "source-in";
-                            tempctx.fillStyle = "red";
-                            tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
-                        } else if (getByid("WhiteSelect").selected == true) {
-                            tempctx.globalCompositeOperation = "source-in";
-                            tempctx.fillStyle = "white";
-                            tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
-                        }
+                        tempctx.globalCompositeOperation = "source-in";
+                        if (setMarkColor(tempctx) == true) tempctx.fillRect(0, 0, GetViewport(viewportNum).imageWidth, GetViewport(viewportNum).imageHeight);
                         tempctx.globalCompositeOperation = globalCompositeOperation;
                         tempctx.restore();
                     }

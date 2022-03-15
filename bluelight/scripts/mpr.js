@@ -659,66 +659,7 @@ function o3dWindowLevel() {
         })
 
     }
-    function displayCanvas(DicomCanvas, image, pixelData) {
-        DicomCanvas.width = image.width;
-        DicomCanvas.height = image.height
-        DicomCanvas.style.width = image.width + "px";
-        DicomCanvas.style.height = image.height + "px";
-        var ctx2 = DicomCanvas.getContext("2d");
-        var imgData2 = ctx2.createImageData(image.width, image.height);
-        var windowWidth = GetViewport().windowWidthList;
-        var windowCenter = GetViewport().windowCenterList;
-        if (getByid("o3DAngio").selected == true) {
-            windowWidth = 332;
-            windowCenter = 287;
-        } else if (getByid("o3DAirways").selected == true) {
-            //如果是肺氣管模型，使用對應的Window Level
-            windowWidth = 409;
-            windowCenter = -538;
-        }
-        var high = windowCenter + (windowWidth / 2);
-        var low = windowCenter - (windowWidth / 2);
-        var intercept = image.intercept;
-        if (CheckNull(intercept)) intercept = 0;
-        var slope = image.slope;
-        if (CheckNull(slope)) slope = 1;
-        var _firstNumber = 0;
-        if (image.color == true) {
-            for (var i = 0; i < imgData2.data.length; i += 4) {
-                _firstNumber = pixelData[i];
-                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 0] = _firstNumber;
-                _firstNumber = pixelData[i + 1];
-                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 1] = _firstNumber;
-                _firstNumber = pixelData[i + 2];
-                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 2] = _firstNumber;
-                imgData2.data[i + 3] = 255;
-            }
-        }
-        else if ((image.invert != true && GetViewport().openInvert == true) || (image.invert == true && GetViewport().openInvert == false)) {
-            for (var i = 0; i < imgData2.data.length; i += 4) {
-                _firstNumber = pixelData[i / 4];
-                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 0] = 255 - _firstNumber
-                imgData2.data[i + 1] = 255 - _firstNumber
-                imgData2.data[i + 2] = 255 - _firstNumber
-                imgData2.data[i + 3] = 255;
-            }
-        }
-        else {
-            for (var i = 0; i < imgData2.data.length; i += 4) {
-                _firstNumber = pixelData[i / 4];
-                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 0] = _firstNumber
-                imgData2.data[i + 1] = _firstNumber
-                imgData2.data[i + 2] = _firstNumber
-                imgData2.data[i + 3] = 255;
-            }
-        }
-        ctx2.putImageData(imgData2, 0, 0);
-    }
+    
     Thickness = 0;
     var big = 10000000000000000000;
     Thickness = -Thickness + big;

@@ -199,68 +199,6 @@ function initVR() {
             //   }
         }
 
-        function displayCanvas(DicomCanvas, image, pixelData) {
-            DicomCanvas.width = image.width;
-            DicomCanvas.height = image.height
-            DicomCanvas.style.width = image.width + "px";
-            DicomCanvas.style.height = image.height + "px";
-            var ctx2 = DicomCanvas.getContext("2d");
-            var imgData2 = ctx2.createImageData(image.width, image.height);
-            var windowWidth = image.windowWidth;
-            var windowCenter = image.windowCenter;
-            if (getByid("o3DAngio").selected == true) {
-                windowWidth = 332;
-                windowCenter = 287;
-            } else if (getByid("o3DAirways").selected == true) {
-                //如果是肺氣管模型，使用對應的Window Level
-                windowWidth = 409;
-                windowCenter = -538;
-            }
-            var high = windowCenter + (windowWidth / 2);
-            var low = windowCenter - (windowWidth / 2);
-            var intercept = image.intercept;
-            if (CheckNull(intercept)) intercept = 0;
-            var slope = image.slope;
-            if (CheckNull(slope)) slope = 1;
-
-            var _firstNumber = 0;
-            if (image.color == true) {
-                for (var i = 0; i < imgData2.data.length; i += 4) {
-                    _firstNumber = pixelData[i];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 0] = _firstNumber;
-                    _firstNumber = pixelData[i + 1];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 1] = _firstNumber;
-                    _firstNumber = pixelData[i + 2];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 2] = _firstNumber;
-                    imgData2.data[i + 3] = 255;
-                }
-            }
-            else if ((image.invert != true && GetViewport().openInvert == true) || (image.invert == true && GetViewport().openInvert == false)) {
-                for (var i = 0; i < imgData2.data.length; i += 4) {
-                    _firstNumber = pixelData[i / 4];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 0] = 255 - _firstNumber
-                    imgData2.data[i + 1] = 255 - _firstNumber
-                    imgData2.data[i + 2] = 255 - _firstNumber
-                    imgData2.data[i + 3] = 255;
-                }
-            }
-            else {
-                for (var i = 0; i < imgData2.data.length; i += 4) {
-                    _firstNumber = pixelData[i / 4];
-                    _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-                    imgData2.data[i + 0] = _firstNumber
-                    imgData2.data[i + 1] = _firstNumber
-                    imgData2.data[i + 2] = _firstNumber
-                    imgData2.data[i + 3] = 255;
-                }
-            }
-            ctx2.putImageData(imgData2, 0, 0);
-        }
-
         GetViewport(0).appendChild(OutSide3dDiv);
         getByid("OutSide3dDiv").parentNode.replaceChild(OutSide3dDiv, getByid("OutSide3dDiv"));
         if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected) {
@@ -333,6 +271,141 @@ function initVR() {
     }
 }
 
+function displayCanvas(DicomCanvas, image, pixelData) {
+    DicomCanvas.width = image.width;
+    DicomCanvas.height = image.height
+    DicomCanvas.style.width = image.width + "px";
+    DicomCanvas.style.height = image.height + "px";
+    var ctx2 = DicomCanvas.getContext("2d");
+    var imgData2 = ctx2.createImageData(image.width, image.height);
+    var windowWidth = GetViewport().windowWidthList;
+    var windowCenter = GetViewport().windowCenterList;
+    if (getByid("o3DAngio").selected == true) {
+        windowWidth = 332;
+        windowCenter = 287;
+    } else if (getByid("o3DAirways").selected == true) {
+        //如果是肺氣管模型，使用對應的Window Level
+        windowWidth = 409;
+        windowCenter = -538;
+    }
+    if (getByid("o3DcomCombine").selected == true) {
+         //如果是肺氣管模型，使用對應的Window Level
+         windowWidth = 409;
+         windowCenter = -538;
+         var high = windowCenter + (windowWidth / 2);
+         var low = windowCenter - (windowWidth / 2);
+         var intercept = image.intercept;
+         if (CheckNull(intercept)) intercept = 0;
+         var slope = image.slope;
+         if (CheckNull(slope)) slope = 1;
+         var _firstNumber = 0;
+
+         var tempcolor = 0;
+         if (image.color == true) {
+             for (var i = 0; i < imgData2.data.length; i += 4) {
+                 imgData2.data[i + 0] = parseInt(((pixelData[i] * slope - low + intercept) / (high - low)) * 255);
+                 imgData2.data[i + 1] = parseInt(((pixelData[i + 1] * slope - low + intercept) / (high - low)) * 255);
+                 imgData2.data[i + 2] = parseInt(((pixelData[i + 2] * slope - low + intercept) / (high - low)) * 255);
+
+                 tempcolor = 128 - Math.abs(128 - imgData2.data[i]);
+                 if (tempcolor > 25) {
+                     imgData2.data[i] = 93;
+                     imgData2.data[i + 1] = 238;
+                     imgData2.data[i + 2] = 238;
+                     imgData2.data[i + 3] = 255;
+                 } else {
+                     imgData2.data[i + 3] = 0;
+                 }
+             }
+         } else {
+             for (var i = 0, j = 0; i < imgData2.data.length; i += 4, j++) {
+                 imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255);
+                 tempcolor = 128 - Math.abs(128 - imgData2.data[i]);
+                 if (tempcolor > 25) {
+                     imgData2.data[i] = 93;
+                     imgData2.data[i + 1] = 238;
+                     imgData2.data[i + 2] = 238;
+                     imgData2.data[i + 3] = 255;
+                 } else {
+                     imgData2.data[i + 3] = 0;
+                 }
+             }
+         }
+
+         windowWidth = 332;
+         windowCenter = 287;
+         var high = windowCenter + (windowWidth / 2);
+         var low = windowCenter - (windowWidth / 2);
+         var intercept = image.intercept;
+         if (CheckNull(intercept)) intercept = 0;
+         var slope = image.slope;
+         if (CheckNull(slope)) slope = 1;
+         var _firstNumber = 0;
+
+         var tempcolor = 0;
+         if (image.color == true) {
+             for (var i = 0; i < imgData2.data.length; i += 4) {
+                 if (imgData2.data[i + 3] == 0) {
+                     imgData2.data[i + 0] = parseInt(((pixelData[i] * slope - low + intercept) / (high - low)) * 255);
+                     imgData2.data[i + 1] = parseInt(((pixelData[i + 1] * slope - low + intercept) / (high - low)) * 255);
+                     imgData2.data[i + 2] = parseInt(((pixelData[i + 2] * slope - low + intercept) / (high - low)) * 255);
+                     if (imgData2.data[i + 0] > 25) imgData2.data[i + 3] = 255;
+                 }
+             }
+         } else {
+             for (var i = 0,j=0; i < imgData2.data.length; i += 4,j++) {
+                 if (imgData2.data[i + 3] == 0) {
+                     imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255);
+                     if (imgData2.data[i + 0] > 25) imgData2.data[i + 3] = 255;
+                 }
+             }
+         }
+    } else {
+        var high = windowCenter + (windowWidth / 2);
+        var low = windowCenter - (windowWidth / 2);
+        var intercept = image.intercept;
+        if (CheckNull(intercept)) intercept = 0;
+        var slope = image.slope;
+        if (CheckNull(slope)) slope = 1;
+        var _firstNumber = 0;
+        if (image.color == true) {
+            for (var i = 0; i < imgData2.data.length; i += 4) {
+                _firstNumber = pixelData[i];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 0] = _firstNumber;
+                _firstNumber = pixelData[i + 1];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 1] = _firstNumber;
+                _firstNumber = pixelData[i + 2];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 2] = _firstNumber;
+                imgData2.data[i + 3] = 255;
+            }
+        }
+        else if ((image.invert != true && GetViewport().openInvert == true) || (image.invert == true && GetViewport().openInvert == false)) {
+            for (var i = 0; i < imgData2.data.length; i += 4) {
+                _firstNumber = pixelData[i / 4];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 0] = 255 - _firstNumber
+                imgData2.data[i + 1] = 255 - _firstNumber
+                imgData2.data[i + 2] = 255 - _firstNumber
+                imgData2.data[i + 3] = 255;
+            }
+        }
+        else {
+            for (var i = 0; i < imgData2.data.length; i += 4) {
+                _firstNumber = pixelData[i / 4];
+                _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 0] = _firstNumber
+                imgData2.data[i + 1] = _firstNumber
+                imgData2.data[i + 2] = _firstNumber
+                imgData2.data[i + 3] = 255;
+            }
+        } 
+    } 
+    ctx2.putImageData(imgData2, 0, 0);
+}
+
 var Uint8Canvas = [];
 
 function Alpha3D() {
@@ -397,6 +470,19 @@ function Alpha3D() {
                 imageBuffer[i + 3] = tempcolor <= 25 ? 0 : tempcolor;
 
             }
+        } else if (getByid("o3DcomCombine").selected == true && getByid("3dYellow").checked == true) {
+            for (let i = 0; i < imageBuffer.length; i += 4) {
+                if (imageBuffer[i] <= 25 && imageBuffer[i + 1] <= 25 && imageBuffer[i + 2] <= 25) {
+                    imageBuffer[i + 3] = 0;
+                } else if (imageBuffer[i] == 93 && imageBuffer[i + 1] == 238) {
+                    //pass
+                } else {
+                    imageBuffer[i] = rList[imageBuffer[i]];
+                    imageBuffer[i + 1] = gList[imageBuffer[i + 1]];
+                    imageBuffer[i + 2] = bList[imageBuffer[i + 2]];
+                    imageBuffer[i + 3] = (imageBuffer[i + 3] * o3DAlphaValue) / 100;
+                }
+            }
         } else if (getByid("3dYellow").checked == true) {
             if (getByid("3dSmooth").checked == true) {
                 for (let i = 0; i < imageBuffer.length; i += 4) {
@@ -439,7 +525,14 @@ function Alpha3D() {
             }
         }
         ctx1.putImageData(imageData, 0, 0);
-        displayMark(null, null, null, null, null, getByid("3DDiv" + ll));
+        var TempCanvas = document.createElement("CANVAS");
+        TempCanvas.canvas = function () { return this };
+        TempCanvas.alt = getByid("3DDiv" + ll).alt;
+        TempCanvas.width = canvas1.width;
+        TempCanvas.height = canvas1.height;
+        displayMark(null, null, null, null, null, TempCanvas);
+        ctx1.drawImage(TempCanvas, 0, 0);
+        delete TempCanvas;
     }
 
     if (o3Dcount == o3DListLength) {

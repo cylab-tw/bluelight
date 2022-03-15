@@ -587,89 +587,116 @@ function loadDicomSeg(image, imageId) {
   var ImageFrame = cornerstoneWADOImageLoader.getImageFrame(imageId);
   var rect = (image.rows * image.columns);
   if (dataSet.elements.x7fe00010.fragments) {
-    for (var i = 0; i < dataSet.elements.x7fe00010.fragments.length; i++) {
-      var pixeldata = new Uint8Array(dataSet.byteArray.buffer,
-        dataSet.elements.x7fe00010.fragments[i].position,
-        dataSet.elements.x7fe00010.fragments[i].length)
-      var NewpixelData = decodeImageFrame(ImageFrame, dataSet.string("x00020010"), pixeldata, {
-        usePDFJS: false
-      }).pixelData;
-      var showname = 'SEG';
-      var dcm = {};
-      dcm.study = image.data.string('x0020000d');
-      dcm.series = image.data.elements.x00081115.items[0].dataSet.string('x0020000e')
-      dcm.sop = image.data.elements.x52009230.items[i].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string("x00081155");
-      dcm.ImagePositionPatient = image.data.elements.x52009230.items[i].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
-      dcm.mark = [];
-      dcm.showName = showname;
-      dcm.hideName = dcm.showName;
-      dcm.mark.push({});
-      var DcmMarkLength = dcm.mark.length - 1;
-      dcm.mark[DcmMarkLength].type = "SEG";
-      dcm.mark[DcmMarkLength].pixelData = new Uint8Array(rect);
-      for (var pix = 0; pix < rect; pix++)
-        dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix];
+    function x52009229_or_30(x52009230, x52009229) {
+      try {
+        for (var i = 0; i < dataSet.elements.x7fe00010.fragments.length; i++) {
+          var pixeldata = new Uint8Array(dataSet.byteArray.buffer,
+            dataSet.elements.x7fe00010.fragments[i].position,
+            dataSet.elements.x7fe00010.fragments[i].length)
+          var NewpixelData = decodeImageFrame(ImageFrame, dataSet.string("x00020010"), pixeldata, {
+            usePDFJS: false
+          }).pixelData;
+          var showname = 'SEG';
+          var dcm = {};
+          dcm.study = image.data.string('x0020000d');
+          dcm.series = image.data.elements.x00081115.items[0].dataSet.string('x0020000e')
+          try {
+            dcm.sop = x52009230.items[i].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string("x00081155");
+          } catch (ex) {
+            dcm.sop = x52009229.items[i].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string("x00081155");
+          }try {
+            dcm.ImagePositionPatient = x52009230.items[i].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
+          } catch (ex) {
+            dcm.ImagePositionPatient = x52009229.items[i].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
+          }
+          dcm.mark = [];
+          dcm.showName = showname;
+          dcm.hideName = dcm.showName;
+          dcm.mark.push({});
+          var DcmMarkLength = dcm.mark.length - 1;
+          dcm.mark[DcmMarkLength].type = "SEG";
+          dcm.mark[DcmMarkLength].pixelData = new Uint8Array(rect);
+          for (var pix = 0; pix < rect; pix++)
+            dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix];
 
-      dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
-      dcm.mark[DcmMarkLength].canvas.width = image.columns;
-      dcm.mark[DcmMarkLength].canvas.height = image.rows;
-      dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
-      var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, image.columns, image.rows);
-      for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
-        if (dcm.mark[DcmMarkLength].pixelData[j] != 0) {
-          pixelData.data[i] = 0;
-          pixelData.data[i + 1] = 0;
-          pixelData.data[i + 2] = 255;
-          pixelData.data[i + 3] = 255;
+          dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
+          dcm.mark[DcmMarkLength].canvas.width = image.columns;
+          dcm.mark[DcmMarkLength].canvas.height = image.rows;
+          dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
+          var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, image.columns, image.rows);
+          for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
+            if (dcm.mark[DcmMarkLength].pixelData[j] != 0) {
+              pixelData.data[i] = 0;
+              pixelData.data[i + 1] = 0;
+              pixelData.data[i + 2] = 255;
+              pixelData.data[i + 3] = 255;
+            }
+          dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
+
+          PatientMark.push(dcm);
+          refreshMark(dcm);
         }
-      dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
-
-      PatientMark.push(dcm);
-      refreshMark(dcm);
+      } catch (ex) {
+      }
     }
+    x52009229_or_30(image.data.elements.x52009230, image.data.elements.x52009229);
   } else {
     var NewpixelData = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length);
-    var sliceNum = image.data.elements.x52009230.items.length;
-    for (var k = 0; k < image.data.elements.x52009230.items.length; k++) {
-      var showname = 'SEG';
-      var dcm = {};
-      dcm.study = image.data.string('x0020000d');
-      dcm.series = image.data.elements.x00081115.items[0].dataSet.string('x0020000e')
-      dcm.sop = image.data.elements.x52009230.items[k].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string("x00081155");
-      dcm.ImagePositionPatient = image.data.elements.x52009230.items[k].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
-      dcm.mark = [];
-      dcm.showName = showname;
-      dcm.hideName = dcm.showName;
-      dcm.mark.push({});
-      var DcmMarkLength = dcm.mark.length - 1;
-      dcm.mark[DcmMarkLength].type = "SEG";
 
-      dcm.mark[DcmMarkLength].pixelData = new Uint8Array(rect);
-      if (NewpixelData.length == rect * image.data.elements.x52009230.items.length) {
-        for (var pix = 0; pix < rect; pix++)
-          dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix + rect * k];
-      } else {
-        for (var pix = 0; pix < rect; pix++)
-          dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[parseInt(pix / (rect / (NewpixelData.length / sliceNum))) + (NewpixelData.length / sliceNum) * k];
-      }
+    function x52009229_or_30(x52009230, x52009229) {
+      try {
+        var sliceNum = x52009230.items.length;
+        for (var k = 0; k < x52009230.items.length; k++) {
+          var showname = 'SEG';
+          var dcm = {};
+          dcm.study = image.data.string('x0020000d');
+          dcm.series = image.data.elements.x00081115.items[0].dataSet.string('x0020000e')
+          try {
+            dcm.sop = x52009230.items[k].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string("x00081155");
+          } catch (ex) {
+            dcm.sop = x52009229.items[0].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[k].dataSet.string("x00081155");
+          }
+          try {
+            dcm.ImagePositionPatient = x52009230.items[k].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
+          } catch (ex) {
+            dcm.ImagePositionPatient = x52009229.items[k].dataSet.elements.x00209113.items[0].dataSet.string("x00200032");
+          }
+          dcm.mark = [];
+          dcm.showName = showname;
+          dcm.hideName = dcm.showName;
+          dcm.mark.push({});
+          var DcmMarkLength = dcm.mark.length - 1;
+          dcm.mark[DcmMarkLength].type = "SEG";
 
-      dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
-      dcm.mark[DcmMarkLength].canvas.width = image.columns;
-      dcm.mark[DcmMarkLength].canvas.height = image.rows;
-      dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
-      var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, image.columns, image.rows);
-      for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
-        if (dcm.mark[DcmMarkLength].pixelData[j] != 0) {
-          pixelData.data[i] = 0;
-          pixelData.data[i + 1] = 0;
-          pixelData.data[i + 2] = 255;
-          pixelData.data[i + 3] = 255;
+          dcm.mark[DcmMarkLength].pixelData = new Uint8Array(rect);
+          if (NewpixelData.length == rect * x52009230.items.length) {
+            for (var pix = 0; pix < rect; pix++)
+              dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix + rect * k];
+          } else {
+            for (var pix = 0; pix < rect; pix++)
+              dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[parseInt(pix / (rect / (NewpixelData.length / sliceNum))) + (NewpixelData.length / sliceNum) * k];
+          }
+
+          dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
+          dcm.mark[DcmMarkLength].canvas.width = image.columns;
+          dcm.mark[DcmMarkLength].canvas.height = image.rows;
+          dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
+          var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, image.columns, image.rows);
+          for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
+            if (dcm.mark[DcmMarkLength].pixelData[j] != 0) {
+              pixelData.data[i] = 0;
+              pixelData.data[i + 1] = 0;
+              pixelData.data[i + 2] = 255;
+              pixelData.data[i + 3] = 255;
+            }
+          dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
+          PatientMark.push(dcm);
+          refreshMark(dcm);
         }
-      dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
-      PatientMark.push(dcm);
-
-      refreshMark(dcm);
+      } catch (ex) {
+      }
     }
+    x52009229_or_30(image.data.elements.x52009230, image.data.elements.x52009229);
   }
 }
 
@@ -699,9 +726,9 @@ function loadUID(DICOM_obj) {
     Sop.image = image;
     Sop.pixelData = pixelData;
     getPatientbyImageID[imageId] = Sop;
-    Series.Sop.push(Sop);
-    Study.Series.push(Series);
-    Patient.Study.push(Study);
+    Series.Sop.push(Sop); Series.Sop[Sop.SopUID] = Sop;
+    Study.Series.push(Series); Study.Series[Series.SeriesUID] = Series;
+    Patient.Study.push(Study); Patient.Study[Study.StudyUID] = Study;
     Patient.StudyAmount += 1;
   } else {
     Hierarchy = 1;
@@ -722,8 +749,8 @@ function loadUID(DICOM_obj) {
       Sop.image = image;
       Sop.pixelData = pixelData;
       getPatientbyImageID[imageId] = Sop;
-      Series.Sop.push(Sop);
-      Patient.Study[NumberOfStudy].Series.push(Series);
+      Series.Sop.push(Sop); Series.Sop[Sop.SopUID] = Sop;
+      Patient.Study[NumberOfStudy].Series.push(Series); Patient.Study[NumberOfStudy].Series[Series.SeriesUID] = Series;
       Patient.Study[NumberOfStudy].SeriesAmount += 1;
     } else {
       Hierarchy = 2;
@@ -739,7 +766,7 @@ function loadUID(DICOM_obj) {
         Sop.imageId = imageId;
         Sop.image = image;
         Sop.pixelData = pixelData;
-        Patient.Study[NumberOfStudy].Series[isSeries].Sop.push(Sop);
+        Patient.Study[NumberOfStudy].Series[isSeries].Sop.push(Sop); Patient.Study[NumberOfStudy].Series[isSeries].Sop[Sop.SopUID] = Sop;
         Patient.Study[NumberOfStudy].Series[isSeries].SopAmount += 1;
         getPatientbyImageID[imageId] = Sop;
       } else {

@@ -168,6 +168,14 @@ function html_onload() {
     refreshMarkFromSop(GetNowUid().sop);
   }
 
+  getByid("ClearMarkupButton").onclick = function () {
+    PatientMark = [];
+    for (var i = 0; i < Viewport_Total; i++) {
+      var alt = GetViewport(i).alt;
+      loadAndViewImage(getImgaeIdFromSop(alt), null, null, i);
+    }
+  }
+
   getByid("ExportButton2").onclick = function () {
     var Export2dcm = function () {
       var link = document.createElement('a');
