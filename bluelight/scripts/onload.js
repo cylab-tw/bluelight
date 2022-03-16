@@ -473,7 +473,7 @@ function readJson(url) {
               };
               // if (ConfigLog.WADO.WADOType == "URI") loadUID(DICOM_obj);
               //預載入DICOM至Viewport
-              if (ConfigLog.WADO.WADOType == "URI") virtualLoadImage(url, 1);
+              if (ConfigLog.WADO.WADOType == "URI") loadAndViewImage(url, 1);
               else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
             }
           } catch (ex) { console.log(ex); }
@@ -514,9 +514,9 @@ function readJson(url) {
             if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
             else {
               if (Hierarchy == undefined)
-                virtualLoadImage(url, 1);
+                loadAndViewImage(url, 1);
               else
-                virtualLoadImage(url, 0);
+                loadAndViewImage(url, 0);
             }
 
             try {

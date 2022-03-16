@@ -93,40 +93,39 @@ function displayLefyCanvas(DicomCanvas, image, pixelData) {
     var slope = image.slope;
     if (CheckNull(slope)) slope = 1;
     var _firstNumber = 0;
+    var multiplication = 255 / ((high - low)) * slope;
+    var addition = (- low + intercept) / (high - low) * 255;
     if (image.color == true) {
-        for (var i = 0; i < imgData2.data.length; i += 4) {
-            _firstNumber = pixelData[i];
-            _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-            imgData2.data[i + 0] = _firstNumber;
-            _firstNumber = pixelData[i + 1];
-            _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-            imgData2.data[i + 1] = _firstNumber;
-            _firstNumber = pixelData[i + 2];
-            _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-            imgData2.data[i + 2] = _firstNumber;
-            imgData2.data[i + 3] = 255;
-        }
-    }
-    else if (image.invert == true) {
-        for (var i = 0; i < imgData2.data.length; i += 4) {
-            _firstNumber = pixelData[i / 4];
-            _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-            imgData2.data[i + 0] = 255 - _firstNumber
-            imgData2.data[i + 1] = imgData2.data[i + 0]
-            imgData2.data[i + 2] = imgData2.data[i + 0]
+        for (var i = imgData2.data.length; i >= 0; i -= 4) {
+            imgData2.data[i + 0] = pixelData[i] * multiplication + addition;
+            imgData2.data[i + 1] = pixelData[i + 1] * multiplication + addition;
+            imgData2.data[i + 2] = pixelData[i + 2] * multiplication + addition;
             imgData2.data[i + 3] = 255;
         }
     } else {
-        for (var i = 0; i < imgData2.data.length; i += 4) {
-            _firstNumber = pixelData[i / 4];
-            _firstNumber = parseInt(((_firstNumber * slope - low + intercept) / (high - low)) * 255);
-            imgData2.data[i + 0] = _firstNumber
-            imgData2.data[i + 1] = imgData2.data[i + 0]
-            imgData2.data[i + 2] = imgData2.data[i + 0]
+        for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
+            imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = pixelData[j] * multiplication + addition;
             imgData2.data[i + 3] = 255;
         }
     }
     ctx2.putImageData(imgData2, 0, 0);
+
+    var invert = (image.invert == true);
+    function mirrorImage(ctx, picture, x = 0, y = 0, horizontal = false, vertical = false) {
+        ctx.save();  // save the current canvas state
+        ctx.setTransform(
+            horizontal ? -1 : 1, 0, // set the direction of x axis
+            0, vertical ? -1 : 1,   // set the direction of y axis
+            x + (horizontal ? image.width : 0), // set the x origin
+            y + (vertical ? image.height : 0)   // set the y origin
+        );
+        if (invert == true) ctx.filter = "invert()";
+        ctx.drawImage(picture, 0, 0);
+        ctx.restore(); // restore the state as it was when this function was called
+    }
+    if (invert == true) {
+        mirrorImage(ctx2, DicomCanvas, 0, 0, GetViewport(viewportNum).openHorizontalFlip, GetViewport(viewportNum).openVerticalFlip);
+    }
 }
 //執行icon圖示的摺疊效果
 function EnterRWD() {
@@ -171,7 +170,7 @@ function virtualLoadImage(imageId, left) {
     textWW = getByid("textWW");
     labelWC = getClass("labelWC");
     try {
-        cornerstone.loadAndCacheImage(imageId, {
+        cornerstone.loadImage(imageId, {
             usePDFJS: true
         }).then(function (image) {
             //StudyUID:x0020000d,Series UID:x0020000e,SOP UID:x00080018,
@@ -352,23 +351,40 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
         if (CheckNull(slope)) slope = 1;
 
         var _firstNumber = 0;
+        /*
         if (image.color == true) {
-            for (var i = 0; i < imgData2.data.length; i += 4) {
+            for (var i = imgData2.data.length; i >=0 ; i -= 4) {
                 imgData2.data[i + 0] = parseInt(((pixelData[i] * slope - low + intercept) / (high - low)) * 255);
                 imgData2.data[i + 1] = parseInt(((pixelData[i + 1] * slope - low + intercept) / (high - low)) * 255);
                 imgData2.data[i + 2] = parseInt(((pixelData[i + 2] * slope - low + intercept) / (high - low)) * 255);
                 imgData2.data[i + 3] = 255;
             }
         } else {
-            for (var i = 0, j = 0; i < imgData2.data.length; i += 4, j++) {
+            for (var i = imgData2.data.length, j = imgData2.data.length/4; i>=0 ; i -= 4, j--) {
                 imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255);
+                imgData2.data[i + 3] = 255;
+            }
+        }
+        */
+        var multiplication = 255 / ((high - low)) * slope;
+        var addition = (- low + intercept) / (high - low) * 255;
+        if (image.color == true) {
+            for (var i = imgData2.data.length; i >= 0; i -= 4) {
+                imgData2.data[i + 0] = pixelData[i] * multiplication + addition;
+                imgData2.data[i + 1] = pixelData[i + 1] * multiplication + addition;
+                imgData2.data[i + 2] = pixelData[i + 2] * multiplication + addition;
+                imgData2.data[i + 3] = 255;
+            }
+        } else {
+            for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
+                imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = pixelData[j] * multiplication + addition;
                 imgData2.data[i + 3] = 255;
             }
         }
         // }
         ctx2.putImageData(imgData2, 0, 0);
 
-        var invert=((image.invert != true && GetViewport(viewportNum).openInvert == true) || (image.invert == true && GetViewport(viewportNum).openInvert == false));
+        var invert = ((image.invert != true && GetViewport(viewportNum).openInvert == true) || (image.invert == true && GetViewport(viewportNum).openInvert == false));
         function mirrorImage(ctx, picture, x = 0, y = 0, horizontal = false, vertical = false) {
             ctx.save();  // save the current canvas state
             ctx.setTransform(
@@ -692,7 +708,7 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
     if (!dicomData) {
 
         try {
-            cornerstone.loadAndCacheImage(imageId, {
+            cornerstone.loadImage(imageId, {
                 usePDFJS: true
             }).then(function (image) {
                 var DICOM_obj = {
@@ -775,22 +791,24 @@ function parseDicomW(image, pixelData, viewportNum0, WindowLevelObj) {
         if (CheckNull(slope)) slope = 1;
 
         var _firstNumber = 0;
+        var multiplication = 255 / ((high - low)) * slope;
+        var addition = (- low + intercept) / (high - low) * 255;
         if (image.color == true) {
-            for (var i = 0; i < imgData2.data.length; i += 4) {
-                imgData2.data[i + 0] = parseInt(((pixelData[i] * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 1] = parseInt(((pixelData[i + 1] * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 2] = parseInt(((pixelData[i + 2] * slope - low + intercept) / (high - low)) * 255);
+            for (var i = imgData2.data.length; i >= 0; i -= 4) {
+                imgData2.data[i + 0] = pixelData[i] * multiplication + addition;
+                imgData2.data[i + 1] = pixelData[i + 1] * multiplication + addition;
+                imgData2.data[i + 2] = pixelData[i + 2] * multiplication + addition;
                 imgData2.data[i + 3] = 255;
             }
         } else {
-            for (var i = 0, j = 0; i < imgData2.data.length; i += 4, j++) {
-                imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255);
+            for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
+                imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = pixelData[j] * multiplication + addition;
                 imgData2.data[i + 3] = 255;
             }
         }
         // }
         ctx2.putImageData(imgData2, 0, 0);
-        var invert=((image.invert != true && GetViewport(viewportNum).openInvert == true) || (image.invert == true && GetViewport(viewportNum).openInvert == false));
+        var invert = ((image.invert != true && GetViewport(viewportNum).openInvert == true) || (image.invert == true && GetViewport(viewportNum).openInvert == false));
         function mirrorImage(ctx2, picture, x = 0, y = 0, horizontal = false, vertical = false) {
             ctx2.save();  // save the current canvas state
             ctx2.setTransform(
@@ -876,7 +894,7 @@ function loadAndViewImageByWindowLevwl(imageId, windowcenter, windowwidth, openO
     }
     if (!dicomData) {
         try {
-            cornerstone.loadAndCacheImage(imageId, {
+            cornerstone.loadImage(imageId, {
                 usePDFJS: true
             }).then(function (image) {
                 var DICOM_obj = {
