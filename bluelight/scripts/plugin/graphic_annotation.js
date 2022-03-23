@@ -1,7 +1,7 @@
 window.addEventListener("load", function (event) {
 
     getByid("GspsTypeSelect").onchange = function () {
-        displayMark(NowResize, null, null, null, viewportNumber);
+        displayMark(viewportNumber);
     }
 
     getByid("writeGSPS").onclick = function () {
@@ -16,7 +16,7 @@ window.addEventListener("load", function (event) {
             writegsps();
         }
         else getByid('GspsStyleDiv').style.display = 'none';
-        displayMark(NowResize, null, null, null, viewportNumber);
+        displayMark(viewportNumber);
         if (openWriteGSPS == true) return;
         // else GSPS_now_choose = null;
 
@@ -466,7 +466,7 @@ function writegsps() {
                 var currX = getCurrPoint(e)[0];
                 var currY = getCurrPoint(e)[1];
                 if (Graphic_pounch(currX, currY) == true) {
-                    displayMark(NowResize, null, null, null, undefined);
+                    displayMark();
                 };
             }
         };
@@ -514,7 +514,7 @@ function writegsps() {
                 PatientMark.push(dcm);
                 refreshMark(dcm);
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayAngleRular();
                 PatientMark.splice(PatientMark.indexOf(dcm), 1);
             }
@@ -540,7 +540,7 @@ function writegsps() {
                 PatientMark.push(dcm);
                 refreshMark(dcm);
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayAngleRular();
                 PatientMark.splice(PatientMark.indexOf(dcm), 1);
             }
@@ -591,7 +591,7 @@ function writegsps() {
                     PatientMark.push(dcm);
                     refreshMark(dcm);
                     for (var i = 0; i < Viewport_Total; i++)
-                        displayMark(NowResize, null, null, null, i);
+                        displayMark(i);
                     displayAngleRular();
                     PatientMark.splice(PatientMark.indexOf(dcm), 1);
                 } else {
@@ -637,7 +637,7 @@ function writegsps() {
                     if (Graphic_now_choose.mark.RotationAngle >= 0)
                         Graphic_now_choose.mark.RotationPoint = getRotationPoint(Graphic_now_choose.mark, true);
                     //Graphic_now_choose.mark.RotationPoint = [Graphic_now_choose.middle[0], Graphic_now_choose.middle[1]];
-                    displayMark(NowResize, null, null, null, viewportNumber);
+                    displayMark(viewportNumber);
                 }
             }
         }
@@ -668,7 +668,7 @@ function writegsps() {
                 PatientMark.push(dcm);
                 refreshMark(dcm);
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayAngleRular();
                 Graphic_now_choose = {
                     reference: dcm
@@ -696,7 +696,7 @@ function writegsps() {
                 PatientMark.push(dcm);
                 refreshMark(dcm);
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayAngleRular();
                 Graphic_now_choose = {
                     reference: dcm
@@ -749,7 +749,7 @@ function writegsps() {
                 PatientMark.push(dcm);
                 Graphic_pounch(currX, (currY + GetViewport().originalPointY) / 2, dcm);
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayAngleRular();
                 //set_Graphic_context();
                 refreshMark(dcm);

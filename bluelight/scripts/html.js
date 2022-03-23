@@ -16,12 +16,12 @@ function html_onload() {
     var key = KeyboardKeys.which
     if ((openWriteGSPS || openWriteGraphic) && Graphic_now_choose && (key === 46 || key === 110)) {
       PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
-      displayMark(NowResize, null, null, null, viewportNumber);
+      displayMark(viewportNumber);
       Graphic_now_choose = null;
       refreshMarkFromSop(GetNowUid().sop);
     } else if ((openWriteXML) && xml_now_choose && (key === 46 || key === 110)) {
       PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
-      displayMark(NowResize, null, null, null, viewportNumber);
+      displayMark(viewportNumber);
       xml_now_choose = null;
       refreshMarkFromSop(GetNowUid().sop);
     } else if (openWriteRTSS == true && (key === 46 || key === 110)) {
@@ -33,7 +33,7 @@ function html_onload() {
         }
       }
       PatientMark.splice(PatientMark.indexOf(reference), 1);
-      displayMark(NowResize, null, null, null, viewportNumber);
+      displayMark(viewportNumber);
       xml_now_choose = null;
       refreshMarkFromSop(GetNowUid().sop);
     } else if (key === 33) {
@@ -271,14 +271,14 @@ function html_onload() {
     if (imgInvalid(this)) return;
     GetViewport().openHorizontalFlip = !GetViewport().openHorizontalFlip;
     SetWindowWL(true);
-    displayMark(NowResize, null, null, null, viewportNumber);
+    displayMark(viewportNumber);
   }
 
   getByid("vertical_flip").onclick = function () {
     if (imgInvalid(this)) return;
     GetViewport().openVerticalFlip = !GetViewport().openVerticalFlip;
     SetWindowWL(true);
-    displayMark(NowResize, null, null, null, viewportNumber);
+    displayMark(viewportNumber);
   }
   getByid("color_invert").onclick = function () {
     if (imgInvalid(this)) return;
@@ -327,7 +327,7 @@ function html_onload() {
   getByid("MarkButton").onclick = function () {
     GetViewport().openMark = !GetViewport().openMark;
     for (var i = 0; i < Viewport_Total; i++) GetViewportMark(i).getContext("2d").clearRect(0, 0, GetViewport(i).imageWidth, GetViewport(i).imageHeight);
-    for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
+    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
     changeMarkImg();
   }
 
@@ -416,11 +416,11 @@ function html_onload() {
   }
 
   getByid("markFillCheck").onclick = function () {
-    for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
+    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
   }
 
   getByid("MarkcolorSelect").onchange = function () {
-    for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
+    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
   }
 
   getByid("WindowLevelSelect").onchange = function () {
@@ -487,7 +487,7 @@ function html_onload() {
       xml_now_choose = null;
       //this.value = '';
       for (var i = 0; i < Viewport_Total; i++)
-        displayMark(NowResize, null, null, null, i);
+        displayMark(i);
     }
   }
 
@@ -496,7 +496,7 @@ function html_onload() {
     else if ((parseInt(getByid('markAlphaText').value) >= 100)) getByid('markAlphaText').value = 100;
     else if ((parseInt(getByid('markAlphaText').value) < 100));
     else getByid('markAlphaText').value = 100;
-    for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
+    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
   }
 
   getByid("markSizeText").onchange = function () {
@@ -504,7 +504,7 @@ function html_onload() {
     else if ((parseInt(getByid('markSizeText').value) >= 10)) getByid('markSizeText').value = 10;
     else if ((parseInt(getByid('markSizeText').value) < 10));
     else getByid('markSizeText').value = 1;
-    for (var i = 0; i < Viewport_Total; i++) displayMark(NowResize, null, null, null, i);
+    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
   }
 
   getByid("3dInsertText").onchange = function () {
@@ -512,7 +512,7 @@ function html_onload() {
     else if ((parseInt(getByid('3dInsertText').value) >= 5)) getByid('3dInsertText').value = 5;
     else if ((parseInt(getByid('3dInsertText').value) < 5));
     else getByid('3dInsertText').value = 1;
-    // for (var i = 0; i < Viewport_Total; i++)displayMark(NowResize, null, null, null, i);
+    // for (var i = 0; i < Viewport_Total; i++)displayMark(i);
   }
 
   getByid("3DskinText").onchange = function () {
@@ -520,14 +520,14 @@ function html_onload() {
     else if ((parseInt(getByid('3DskinText').value) >= 100)) getByid('3DskinText').value = 100;
     else if ((parseInt(getByid('3DskinText').value) < 100));
     else getByid('3DskinText').value = 0;
-    // for (var i = 0; i < Viewport_Total; i++)displayMark(NowResize, null, null, null, i);
+    // for (var i = 0; i < Viewport_Total; i++)displayMark(i);
   }
   getByid("3dShadow").onchange = function () {
     setVrLight();
   }
 
   getByid("3dStrengthen").onchange = function () {
-    if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected) {
+    if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected || getByid("o3DMinIP").selected) {
       if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
       // document.body.style.transformStyle = "preserve-3d";
     } else {

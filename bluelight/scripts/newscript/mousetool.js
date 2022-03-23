@@ -151,7 +151,7 @@ function mouseTool() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(NowResize, null, null, null, viewportNumber);
+                displayMark(viewportNumber);
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
@@ -306,7 +306,7 @@ function mouseTool() {
                         }
                     }
                     /* for (var i = 0; i < 4; i++)
-                       displayMark(NowResize, null, null, null, i);*/
+                       displayMark(i);*/
                     putLabel();
                     for (var i = 0; i < Viewport_Total; i++)
                         displayRular(i);

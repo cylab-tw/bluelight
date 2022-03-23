@@ -11,7 +11,7 @@ window.addEventListener("load", function (event) {
           writertss();
         }
         else getByid('RtssDiv').style.display = 'none';
-        displayMark(NowResize, null, null, null, viewportNumber);
+        displayMark(viewportNumber);
         if (openWriteRTSS == true) return;
         // else Graphic_now_choose = null;
     
@@ -449,7 +449,7 @@ function writertss() {
                 refreshMark(dcm);
                 RTSS_now_choose = dcm.mark[DcmMarkLength];
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
             }
         };
 
@@ -497,7 +497,7 @@ function writertss() {
                 //PatientMark.push(RTSS_now_choose);
                 refreshMark(Uid.sop);
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
             }
 
         }

@@ -329,11 +329,24 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
     labelRT = getClass("labelRT");
     labelRB = getClass("labelRB");
 
-
-
     if (image.data.string('x00080016') == '1.2.840.10008.5.1.4.1.1.66.4') {
         loadDicomSeg(image, image.imageId);
         return;
+    }
+
+    //代表如果當前載入的這張是目前選擇的影像
+    var ifNowAlt = false; //--*
+    //如果現在載入的這張跟上次載入的不一樣
+    if (NowAlt != image.data.string('x0020000e')) {
+        //重置滑鼠座標
+        element.newMousePointX = element.newMousePointY = 0;
+        NowAlt = image.data.string('x0020000e');
+        //重置縮放大小
+        GetViewport(viewportNum).NowCanvasSizeWidth = GetViewport(viewportNum).NowCanvasSizeHeight = null;
+    } else { //如果一樣
+        ifNowAlt = true;
+        if (element.newMousePointX == null)
+            element.newMousePointX = element.newMousePointY = 0;
     }
 
     function displayCanvas(DicomCanvas) {
@@ -551,20 +564,6 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
     element.imageWidth = image.width;
     element.imageHeight = image.height;
 
-    //代表如果當前載入的這張是目前選擇的影像
-    var ifNowAlt = false; //--*
-    //如果現在載入的這張跟上次載入的不一樣
-    if (NowAlt != image.data.string('x0020000e')) {
-        //重置滑鼠座標
-        element.newMousePointX = element.newMousePointY = 0;
-        NowAlt = image.data.string('x0020000e');
-        //重置縮放大小
-        GetViewport(viewportNum).NowCanvasSizeWidth = GetViewport(viewportNum).NowCanvasSizeHeight = null;
-    } else { //如果一樣
-        ifNowAlt = true;
-        if (element.newMousePointX == null)
-            element.newMousePointX = element.newMousePointY = 0;
-    }
     //表示目前的影像在左側的面板是否已經有了
     var checkleftCanvas = -1;
     //如果有，checkleftCanvas就指向該series
@@ -655,8 +654,8 @@ function parseDicom2(image, pixelData, currX1, currY1, viewportNum0) {
     //隱藏Table
     getByid("TableSelectNone").selected = true;
     //刷新介面並顯示標記
-    if (viewportNum0 >= 0) displayMark(NowResize, null, null, null, viewportNum);
-    else displayMark(NowResize);
+    if (viewportNum0 >= 0) displayMark(viewportNum);
+    else displayMark();
     displayRular(viewportNum);
     putLabel();
     displayAIM();
@@ -872,7 +871,7 @@ function parseDicomW(image, pixelData, viewportNum0, WindowLevelObj) {
     putLabel();
     for (var i = 0; i < Viewport_Total; i++) {
         displayRular(i);
-        displayMark(NowResize, null, null, null, i);
+        displayMark(i);
     }
     //隱藏Table
     getByid("TableSelectNone").selected = true;

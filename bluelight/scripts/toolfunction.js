@@ -460,7 +460,7 @@ function refreshMark(dcm, refresh) {
     }
     SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
 
-    for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(NowResize, null, null, null, i9);
+    for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(i9);
 }
 
 function refreshMarkFromSop(sop) {
@@ -476,7 +476,7 @@ function refreshMarkFromSop(sop) {
         }
     }
     SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
-    for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(NowResize, null, null, null, i9);
+    for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(i9);
 }
 
 function rotate3dVR(VrDistance) {
@@ -651,7 +651,7 @@ function dropTable(num) {
 
 function getMarkSize(MarkCanvas, sizeCheck) {
     var lineSize = parseFloat(getByid('markSizeText').value);
-    var lineWid = parseFloat(MarkCanvas.width) / parseFloat(Css(MarkCanvas, 'width'));
+    var lineWid = 2 * parseFloat(MarkCanvas.width) / parseFloat(Css(MarkCanvas, 'width'));
     if (sizeCheck == true && lineWid <= 0) {
         lineWid = parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width);
         if (lineWid <= 1.5) lineWid = 1.5;

@@ -33,7 +33,7 @@ function angle() {
                 AngleXY0 = angle2point;
                 AngleXY1 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayAngleRular();
             }
         };
@@ -52,7 +52,7 @@ function angle() {
                 let angle2point = rotateCalculation(e);
                 AngleXY2 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayAngleRular();
                 return;
             }
@@ -74,7 +74,7 @@ function angle() {
                     let angle2point = rotateCalculation(e);
                     AngleXY0 = angle2point;
                     for (var i = 0; i < Viewport_Total; i++)
-                        displayMark(NowResize, null, null, null, i);
+                        displayMark(i);
                     displayAngleRular();
                     return;
                 }
@@ -84,7 +84,7 @@ function angle() {
         }
         Mouseup = function (e) {
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(NowResize, null, null, null, viewportNumber);
+                displayMark(viewportNumber);
             if (MouseDownCheck == true) {
                 if (angle.angle_ == 1) angle.angle_ = 2;
                 else if (angle.angle_ == 2) angle.angle_ = 3;
@@ -118,7 +118,7 @@ function angle() {
                 AngleXY0 = [currX11, currY11];
                 AngleXY1 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayAngleRular();
             }
         }
@@ -139,7 +139,7 @@ function angle() {
                 var currY11 = angle2point[1];
                 AngleXY2 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayAngleRular();
                 return;
             }
@@ -150,7 +150,7 @@ function angle() {
                 var currY11 = angle2point[1];
                 AngleXY0 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayAngleRular();
                 return;
             }

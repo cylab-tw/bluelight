@@ -249,6 +249,8 @@ var mousemove3D = function (e) {
                 var div1 = getByid("3DDiv" + ll);
                 if (getByid("o3DMip").selected == true && openVR) {
                     div1.style.mixBlendMode = "lighten";
+                } else if (getByid("o3DMinIP").selected == true && openVR) {
+                    div1.style.mixBlendMode = "darken";
                 }
                 if (getByid("3dZipCheckbox").checked == true && parseInt(getByid("3dZipText").value) < o3DListLength) {
                     //if (ll > parseInt(getByid("3dZipText").value) / 2 && ll < o3DListLength - parseInt(getByid("3dZipText").value) / 2)
@@ -263,6 +265,8 @@ var mousemove3D = function (e) {
                 canvas2.style.transform = "translate3d(0,0,0)  rotateX(" + (-90) + "deg)";
                 if (getByid("o3DMip").selected == true && openVR) {
                     div2.style.mixBlendMode = "lighten";
+                } else if (getByid("o3DMinIP").selected == true && openVR) {
+                    div2.style.mixBlendMode = "darken";
                 }
             }
             for (var ll = 0; ll < o3d_3degree; ll++) {
@@ -271,6 +275,8 @@ var mousemove3D = function (e) {
                 canvas3.style.transform = "translate3d(0,0,0)  rotateY(" + (90 + 0) + "deg)";
                 if (getByid("o3DMip").selected == true && openVR) {
                     div3.style.mixBlendMode = "lighten";
+                } else if (getByid("o3DMinIP").selected == true && openVR) {
+                    div3.style.mixBlendMode = "darken";
                 }
             }
             GetViewport().originalPointX = currX;
@@ -280,7 +286,7 @@ var mousemove3D = function (e) {
 };
 
 var mousedown3D = function (e) {
-    if (getByid("3dStrengthenAuto").selected == true) {
+    if (getByid("3dStrengthenAuto").selected == true && !getByid("o3DMinIP").selected) {
         if (getByid("OutSide3dDiv")) {
             getByid("OutSide3dDiv").style.transformStyle = "";
         }
@@ -324,14 +330,14 @@ var mouseup3D = function (e) {
     MouseDownCheck = false;
     rightMouseDown = false;
 
-    if (getByid("3dStrengthenAuto").selected == true) {
+    if (getByid("3dStrengthenAuto").selected == true || getByid("o3DMinIP").selected) {
         if (getByid("OutSide3dDiv") && !openMPR) {
             getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
         }
     }
 };
 var touchstart3D = function (e) {
-    if (getByid("3dStrengthenAuto").selected == true) {
+    if (getByid("3dStrengthenAuto").selected == true && !getByid("o3DMinIP").selected) {
         if (getByid("OutSide3dDiv")) {
             getByid("OutSide3dDiv").style.transformStyle = "";
         }
@@ -367,7 +373,7 @@ var touchend3D = function (e, e2) {
     TouchDownCheck = false;
     rightTouchDown = false;
 
-    if (getByid("3dStrengthenAuto").selected == true) {
+    if (getByid("3dStrengthenAuto").selected == true || getByid("o3DMinIP").selected) {
         if (getByid("OutSide3dDiv") && !openMPR) {
             getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
         }
@@ -543,6 +549,8 @@ var Touchmove3D = function (e, e2) {
                 var div1 = getByid("3DDiv" + ll);
                 if (getByid("o3DMip").selected == true && openVR) {
                     div1.style.mixBlendMode = "lighten";
+                } else if (getByid("o3DMinIP").selected == true && openVR) {
+                    div1.style.mixBlendMode = "darken";
                 }
                 if (getByid("3dZipCheckbox").checked == true && parseInt(getByid("3dZipText").value) < o3DListLength) {
                     //if (ll > parseInt(getByid("3dZipText").value) / 2 && ll < o3DListLength - parseInt(getByid("3dZipText").value) / 2)
@@ -557,6 +565,8 @@ var Touchmove3D = function (e, e2) {
                 canvas2.style.transform = "rotateX(" + (-90) + "deg)";
                 if (getByid("o3DMip").selected == true && openVR) {
                     div2.style.mixBlendMode = "lighten";
+                } else if (getByid("o3DMinIP").selected == true && openVR) {
+                    div2.style.mixBlendMode = "darken";
                 }
             }
             for (var ll = 0; ll < o3d_3degree; ll++) {
@@ -565,6 +575,8 @@ var Touchmove3D = function (e, e2) {
                 canvas3.style.transform = "rotateY(" + (90 + 0) + "deg)";
                 if (getByid("o3DMip").selected == true && openVR) {
                     div3.style.mixBlendMode = "lighten";
+                } else if (getByid("o3DMinIP").selected == true && openVR) {
+                    div3.style.mixBlendMode = "darken";
                 }
             }
             GetViewport().originalPointX = currX;

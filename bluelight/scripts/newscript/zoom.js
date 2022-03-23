@@ -68,7 +68,7 @@ function zoom() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(NowResize, null, null, null, viewportNumber);
+                displayMark(viewportNumber);
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";

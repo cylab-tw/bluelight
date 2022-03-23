@@ -472,7 +472,7 @@ function initMPR() {
         GetViewport(3).appendChild(OutSide3dDiv);
         getByid("OutSide3dDiv").parentNode.replaceChild(OutSide3dDiv, getByid("OutSide3dDiv"));
         getByid("OutSide3dDiv").style.transformStyle = "";
-        /*if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected) {
+        /*if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected|| getByid("o3DMinIP").selected) {
             if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
         } else {
             if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "";
@@ -659,7 +659,7 @@ function o3dWindowLevel() {
         })
 
     }
-    
+
     Thickness = 0;
     var big = 10000000000000000000;
     Thickness = -Thickness + big;

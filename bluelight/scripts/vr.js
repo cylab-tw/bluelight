@@ -201,7 +201,7 @@ function initVR() {
 
         GetViewport(0).appendChild(OutSide3dDiv);
         getByid("OutSide3dDiv").parentNode.replaceChild(OutSide3dDiv, getByid("OutSide3dDiv"));
-        if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected) {
+        if (getByid("3dStrengthenAuto").selected == true || getByid("3dStrengthenAlways").selected || getByid("o3DMinIP").selected) {
             if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
         } else {
             if (getByid("OutSide3dDiv")) getByid("OutSide3dDiv").style.transformStyle = "";
@@ -288,7 +288,7 @@ function displayCanvas(DicomCanvas, image, pixelData) {
         windowWidth = 409;
         windowCenter = -538;
     }
-    if (getByid("o3DcomCombine").selected == true) {
+    if (getByid("o3DcomCombine").selected == true || getByid("o3DcomCombine2").selected == true) {
         //如果是肺氣管模型，使用對應的Window Level
         windowWidth = 409;
         windowCenter = -538;
@@ -334,8 +334,14 @@ function displayCanvas(DicomCanvas, image, pixelData) {
             }
         }
 
-        windowWidth = 332;
-        windowCenter = 287;
+        if (getByid("o3DcomCombine2").selected == true) {
+            windowWidth = 800;//332;
+            windowCenter = 600;//287;
+        } else if (getByid("o3DcomCombine").selected == true) {
+            windowWidth = 332;
+            windowCenter = 287;
+        }
+
         var high = windowCenter + (windowWidth / 2);
         var low = windowCenter - (windowWidth / 2);
         var intercept = image.intercept;
@@ -462,7 +468,21 @@ function Alpha3D() {
                 imageBuffer[i + 3] = tempcolor <= 25 ? 0 : tempcolor;
 
             }
-        } else if (getByid("o3DcomCombine").selected == true && getByid("3dYellow").checked == true) {
+        } else if (getByid("o3DcomCombine2").selected == true) {
+            for (let i = 0; i < imageBuffer.length; i += 4) {
+                if (imageBuffer[i] <= 25 && imageBuffer[i + 1] <= 25 && imageBuffer[i + 2] <= 25) {
+                    imageBuffer[i + 3] = 0;
+                } else if (imageBuffer[i] == 93 && imageBuffer[i + 1] == 238) {
+                    //pass
+                } else {
+                    // imageBuffer[i] = rList[imageBuffer[i]];
+                    // imageBuffer[i + 1] = gList[imageBuffer[i + 1]];
+                    //imageBuffer[i + 2] = bList[imageBuffer[i + 2]];
+                    // imageBuffer[i + 3] = (imageBuffer[i + 3] * o3DAlphaValue) / 100;
+                }
+            }
+        }
+        else if (getByid("o3DcomCombine").selected == true && getByid("3dYellow").checked == true) {
             for (let i = 0; i < imageBuffer.length; i += 4) {
                 if (imageBuffer[i] <= 25 && imageBuffer[i + 1] <= 25 && imageBuffer[i + 2] <= 25) {
                     imageBuffer[i + 3] = 0;
@@ -517,12 +537,16 @@ function Alpha3D() {
             }
         }
         ctx1.putImageData(imageData, 0, 0);
+    }
+    for (var ll = 0; ll < o3DListLength; ll++) {
+        var canvas1 = getByid("3DDiv" + ll).canvas();
+        var ctx1 = canvas1.getContext("2d");
         var TempCanvas = document.createElement("CANVAS");
         TempCanvas.canvas = function () { return this };
         TempCanvas.alt = getByid("3DDiv" + ll).alt;
         TempCanvas.width = canvas1.width;
         TempCanvas.height = canvas1.height;
-        displayMark(null, null, null, null, null, TempCanvas);
+        displayMark(null, TempCanvas);
         ctx1.drawImage(TempCanvas, 0, 0);
         delete TempCanvas;
     }
@@ -775,6 +799,8 @@ function Alpha3D() {
         }
         if (getByid("o3DMip").selected == true && openVR) {
             div1.style.mixBlendMode = "lighten";
+        } else if (getByid("o3DMinIP").selected == true && openVR) {
+            div1.style.mixBlendMode = "darken";
         }
     }
     //做定位到正確位置的動作
@@ -804,6 +830,8 @@ function Alpha3D() {
         canvas2.style.transform = "rotateY(" + (0 + 0) + "deg) rotateX(" + (-90) + "deg)";
         if (getByid("o3DMip").selected == true && openVR) {
             div2.style.mixBlendMode = "lighten";
+        } else if (getByid("o3DMinIP").selected == true && openVR) {
+            div2.style.mixBlendMode = "darken";
         }
     }
     for (var ll = 0; ll < o3d_3degree; ll++) {
@@ -812,6 +840,8 @@ function Alpha3D() {
         canvas3.style.transform = "rotateY(" + (90 + 0) + "deg) rotateX(" + (0 + 0) + "deg)";
         if (getByid("o3DMip").selected == true && openVR) {
             div3.style.mixBlendMode = "lighten";
+        } else if (getByid("o3DMinIP").selected == true && openVR) {
+            div3.style.mixBlendMode = "darken";
         }
     }
 
@@ -833,7 +863,7 @@ function Alpha3D() {
     }
     setVrLight();
     setTimeout(function () {
-        if (getByid("3dStrengthenAuto").selected == true) {
+        if (getByid("3dStrengthenAuto").selected == true || getByid("o3DMinIP").selected) {
             if (getByid("OutSide3dDiv") && !openMPR) {
                 getByid("OutSide3dDiv").style.transformStyle = "preserve-3d";
             }

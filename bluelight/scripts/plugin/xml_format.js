@@ -11,7 +11,7 @@ window.addEventListener("load", function(event) {
       writexml();
     }
     else getByid('xmlMarkName').style.display = 'none';
-    displayMark(NowResize, null, null, null, viewportNumber);
+    displayMark(viewportNumber);
     if (openWriteXML == true) return;
     else xml_now_choose = null;
 
@@ -215,7 +215,7 @@ function deleteXml() {
     PatientMark.splice(PatientMark.indexOf(list), 1);
   }
   refreshMarkFromSop(Patient.Study[i].Series[j].Sop[k].SopUID);
-  displayMark(NowResize, null, null, null, undefined);
+  displayMark();
 }
 
 function importXml(url) {
@@ -284,7 +284,7 @@ function writexml() {
       windowMouseY = GetmouseY(e);
       GetViewport().originalPointX = getCurrPoint(e)[0];
       GetViewport().originalPointY = getCurrPoint(e)[1];
-      if (xml_pounch(currX, currY) == true) displayMark(NowResize, null, null, null, undefined);
+      if (xml_pounch(currX, currY) == true) displayMark();
     };
 
     Mousemove = function (e) {
@@ -333,7 +333,7 @@ function writexml() {
           PatientMark.push(dcm);
           refreshMark(dcm);
           for (var i = 0; i < Viewport_Total; i++)
-            displayMark(NowResize, null, null, null, i);
+            displayMark(i);
           displayAngleRular();
           PatientMark.splice(PatientMark.indexOf(dcm), 1);
         } else {
@@ -348,7 +348,7 @@ function writexml() {
           }
           //setXml_context();
           for (var i = 0; i < Viewport_Total; i++)
-            displayMark(NowResize, null, null, null, i);
+            displayMark(i);
 
         }
       }
@@ -380,7 +380,7 @@ function writexml() {
         PatientMark.push(dcm);
         refreshMark(dcm);
         for (var i = 0; i < Viewport_Total; i++)
-          displayMark(NowResize, null, null, null, i);
+          displayMark(i);
         displayAngleRular();
         //setXml_context();
       }

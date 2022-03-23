@@ -13,7 +13,7 @@ window.addEventListener("load", function (event) {
           writeSeg();
         }
         else getByid('SegStyleDiv').style.display = 'none';
-        displayMark(NowResize, null, null, null, viewportNumber);
+        displayMark(viewportNumber);
     
         if (openWriteSEG == true) return;
         // else Graphic_now_choose = null;
@@ -447,7 +447,7 @@ function writeSeg() {
                     SEG_now_choose = dcm.mark[DcmMarkLength];
                 }
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
             }
         };
 
@@ -481,7 +481,7 @@ function writeSeg() {
                 let Uid = GetNowUid();
                 refreshMark(Uid.sop);
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
             }
             if (!rightMouseDown && openWindow != true) {
                 var rect = getByid("SegBrushSizeText").value;
@@ -504,7 +504,7 @@ function writeSeg() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(NowResize, null, null, null, viewportNumber);
+                displayMark(viewportNumber);
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";

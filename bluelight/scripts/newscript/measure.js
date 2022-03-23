@@ -29,7 +29,7 @@ function measure() {
             MeasureXY = angle2point;
             MeasureXY2 = angle2point;
             for (var i = 0; i < Viewport_Total; i++)
-                displayMark(NowResize, null, null, null, i);
+                displayMark(i);
             displayMeasureRular();
         };
 
@@ -60,7 +60,7 @@ function measure() {
                 let angle2point = rotateCalculation(e);
                 MeasureXY2 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayMeasureRular();
                 return;
             }
@@ -71,7 +71,7 @@ function measure() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(NowResize, null, null, null, viewportNumber);
+                displayMark(viewportNumber);
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
@@ -104,7 +104,7 @@ function measure() {
                 MeasureXY = angle2point;
                 MeasureXY2 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayMeasureRular();
             }
             //if (openMeasure == true)
@@ -115,7 +115,7 @@ function measure() {
                 MeasureXY = [currX11, currY11];
                 MeasureXY2 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(NowResize, null, null, null, i);
+                    displayMark(i);
                 displayMeasureRular();
             }
         }
@@ -140,7 +140,7 @@ function measure() {
                     var currY11 = angle2point[1];
                     MeasureXY2 = [currX11, currY11];
                     for (var i = 0; i < Viewport_Total; i++)
-                        displayMark(NowResize, null, null, null, i);
+                        displayMark(i);
                     displayMeasureRular();
                     return;
                 }
