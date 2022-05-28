@@ -180,7 +180,19 @@ function getStudyObj(DicomStudyResponse, SeriesUrl, row) {
     if (obj == undefined) return undefined;
     else if (obj.Value == undefined) return undefined;
     else if (obj.Value[0] == undefined) return undefined;
-    else return obj.Value[0];
+    else {
+      if (obj.Value.length == 1) {
+        return obj.Value[0];
+      }
+      else {
+        var str = "";
+        for (l = 0; l < obj.Value.length; l++) {
+          str += obj.Value[l];
+          if (l != obj.Value.length - 1) str += ",";
+        }
+        return str;
+      };
+    }
   }
   const SerchState1 = SerchState;
   let SeriesRequest = new XMLHttpRequest();
@@ -256,7 +268,19 @@ function readJson(url) {
         if (obj == undefined) return undefined;
         else if (obj.Value == undefined) return undefined;
         else if (obj.Value[0] == undefined) return undefined;
-        else return obj.Value[0];
+        else {
+          if (obj.Value.length == 1) {
+            return obj.Value[0];
+          }
+          else {
+            var str = "";
+            for (l = 0; l < obj.Value.length; l++) {
+              str += obj.Value[l];
+              if (l != obj.Value.length - 1) str += ",";
+            }
+            return str;
+          };
+        }
       }
 
       var DICOM_obj = {
