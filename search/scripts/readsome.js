@@ -175,6 +175,56 @@ function readConfigJson(url, onLosdSerch) {
   }
 }
 
+function getStudyObj(DicomStudyResponse, SeriesUrl, row) {
+  function checkValue(obj) {
+    if (obj == undefined) return undefined;
+    else if (obj.Value == undefined) return undefined;
+    else if (obj.Value[0] == undefined) return undefined;
+    else return obj.Value[0];
+  }
+  const SerchState1 = SerchState;
+  let SeriesRequest = new XMLHttpRequest();
+  SeriesRequest.open('GET', SeriesUrl);
+  SeriesRequest.responseType = 'json';
+  //發送以Series為單位的請求
+  SeriesRequest.send();
+  onloadList = [];
+  onloadList.push(0);
+  SeriesRequest.onload = function () {
+    onloadList.pop();
+    let DicomSeriesResponse = SeriesRequest.response;
+    for (let instance = 0; instance < DicomSeriesResponse.length; instance++) {
+      let InstanceUrl = ""
+      if (ConfigLog.WADO.enableRetrieveURI == true) {
+        InstanceUrl = SeriesUrl + DicomSeriesResponse[instance]["0020000E"].Value[0] + "/instances/";
+      } else {
+        InstanceUrl = DicomSeriesResponse[instance]["00081190"].Value[0] + "/instances";
+      }
+      var DICOM_obj = {
+        study: checkValue(DicomStudyResponse["0020000D"]),
+        series: checkValue(DicomSeriesResponse[instance]["0020000E"]),
+        //sop: checkValue(DicomResponse[i]["00080018"]),
+        //instance: checkValue(DicomResponse[i]["00200013"]),
+        //imageId: url,
+        patientId: checkValue(DicomStudyResponse["00100020"]),
+        StudyDate: checkValue(DicomStudyResponse["00080020"]),
+        Modality: checkValue(DicomSeriesResponse[instance]["00080060"]),
+        PatientName: checkValue(DicomStudyResponse["00100010"]) == undefined ? undefined : checkValue(DicomStudyResponse["00100010"])["Alphabetic"],
+        AccessionNumber: checkValue(DicomStudyResponse["00080050"]),
+        Sex: checkValue(DicomSeriesResponse[instance]["00100040"]),
+        BirthDate: checkValue(DicomSeriesResponse[instance]["00100030"]),
+        StudyTime: checkValue(DicomSeriesResponse[instance]["00080030"]),
+        StudyDescription: checkValue(DicomSeriesResponse[instance]["00081030"]),
+        SeriesDescription: checkValue(DicomSeriesResponse[instance]["0008103E"]),
+        SeriesNumber: checkValue(DicomSeriesResponse[instance]["00200011"]),
+        SeriesI: checkValue(DicomSeriesResponse[instance]["00201209"])
+      };
+      ifStudy = loadUID(DICOM_obj);
+      row.click();
+    }
+  }
+}
+
 function readJson(url) {
   let onloadList = [];
   const SerchState1 = SerchState;
@@ -189,7 +239,6 @@ function readJson(url) {
   request.onload = function () {
     onloadList.pop();
     var DicomStudyResponse = request.response;
-    //console.log(DicomStudyResponse);
     if (DicomStudyResponse && DicomStudyResponse.length == 0)
       getByid("loadingSpan").style.display = "none";
 
@@ -202,120 +251,38 @@ function readJson(url) {
       }
       if (ConfigLog.WADO.https == "https") SeriesUrl = SeriesUrl.replace("http:", "https:");
       SeriesUrl = fitUrl(SeriesUrl);
-      //SeriesUrl.replace("https", "");
-      //SeriesUrl.replace("http", "");
-      let SeriesRequest = new XMLHttpRequest();
-      SeriesRequest.open('GET', SeriesUrl);
-      SeriesRequest.responseType = 'json';
-      //發送以Series為單位的請求
-      SeriesRequest.send();
-      onloadList.push(0);
-      SeriesRequest.onload = function () {
-        onloadList.pop();
-        let DicomSeriesResponse = SeriesRequest.response;
-        for (let instance = 0; instance < DicomSeriesResponse.length; instance++) {
-          let InstanceUrl = ""
-          if (ConfigLog.WADO.enableRetrieveURI == true) {
-            InstanceUrl = SeriesUrl + DicomSeriesResponse[instance]["0020000E"].Value[0] + "/instances/";
-          } else {
-            InstanceUrl = DicomSeriesResponse[instance]["00081190"].Value[0] + "/instances";
-          }
-          if (ConfigLog.WADO.includefield == true) InstanceUrl += "?includefield=all";
-          if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
-          //InstanceUrl.replace("https", "");
-          //InstanceUrl.replace("http", "");
-          InstanceUrl = fitUrl(InstanceUrl);
-          let InstanceRequest = new XMLHttpRequest();
-          InstanceRequest.open('GET', InstanceUrl);
-          InstanceRequest.responseType = 'json';
-          //發送以Instance為單位的請求
-          InstanceRequest.send();
-          onloadList.push(0);
-          InstanceRequest.onload = function () {
-            onloadList.pop();
-            if (SerchState1 != SerchState) return;
-            var DicomResponse = InstanceRequest.response;
-            var min = 1000000000;
-            for (var i = 0; i < DicomResponse.length; i++) {
-              try {
-                if (DicomResponse[i]["00200013"].Value[0] < min) min = DicomResponse[i]["00200013"].Value[0];
-              } catch (ex) { };
-            }
-            function checkValue(obj) {
-              if (obj == undefined) return undefined;
-              else if (obj.Value == undefined) return undefined;
-              else if (obj.Value[0] == undefined) return undefined;
-              else return obj.Value[0];
-            }
-            for (var i = 0; i < DicomResponse.length; i++) {
-              var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "/?requestType=WADO&" +
-                "studyUID=" + DicomStudyResponse[series]["0020000D"].Value[0] +
-                "&seriesUID=" + DicomSeriesResponse[instance]["0020000E"].Value[0] +
-                "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
-                "&contentType=" + "application/dicom";
-              url = fitUrl(url);
-              var uri = url;
-              try {
-                url = "wadouri:" + url;
-                if (checkValue(DicomResponse[i]["00200013"]) == min) {
-                  var DICOM_obj = {
-                    study: checkValue(DicomStudyResponse[series]["0020000D"]),
-                    series: checkValue(DicomSeriesResponse[instance]["0020000E"]),
-                    sop: checkValue(DicomResponse[i]["00080018"]),
-                    instance: checkValue(DicomResponse[i]["00200013"]),
-                    imageId: url,
-                    patientId: checkValue(DicomStudyResponse[series]["00100020"]),
-                    StudyDate: checkValue(DicomStudyResponse[series]["00080020"]),
-                    Modality: checkValue(DicomSeriesResponse[instance]["00080060"]),
-                    PatientName: checkValue(DicomStudyResponse[series]["00100010"]) == undefined ? undefined : checkValue(DicomStudyResponse[series]["00100010"])["Alphabetic"],
-                    AccessionNumber: checkValue(DicomStudyResponse[series]["00080050"]),
-                    Sex: checkValue(DicomResponse[i]["00100040"]),
-                    BirthDate: checkValue(DicomResponse[i]["00100030"]),
-                    StudyTime: checkValue(DicomResponse[i]["00080030"]),
-                    StudyDescription: checkValue(DicomResponse[i]["00081030"]),
-                    SeriesDescription: checkValue(DicomSeriesResponse[instance]["0008103E"]),
-                    SeriesNumber: checkValue(DicomSeriesResponse[instance]["00200011"])
-                  };
-                  loadUID(DICOM_obj);
 
-                }
-              } catch (ex) { }
-            }
-
-            for (var i = 0; i < DicomResponse.length; i++) {
-              var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "/?requestType=WADO&" +
-                "studyUID=" + DicomStudyResponse[series]["0020000D"].Value[0] +
-                "&seriesUID=" + DicomSeriesResponse[instance]["0020000E"].Value[0] +
-                "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
-                "&contentType=" + "application/dicom";
-              url = fitUrl(url);
-              try {
-                url = "wadouri:" + url;
-                var DICOM_obj = {
-                  study: checkValue(DicomStudyResponse[series]["0020000D"]),
-                  series: checkValue(DicomSeriesResponse[instance]["0020000E"]),
-                  sop: checkValue(DicomResponse[i]["00080018"]),
-                  instance: checkValue(DicomResponse[i]["00200013"]),
-                  imageId: url,
-                  patientId: checkValue(DicomStudyResponse[series]["00100020"]),
-                  StudyDate: checkValue(DicomStudyResponse[series]["00080020"]),
-                  Modality: checkValue(DicomSeriesResponse[instance]["00080060"]),
-                  PatientName: checkValue(DicomStudyResponse[series]["00100010"]) == undefined ? undefined : checkValue(DicomStudyResponse[series]["00100010"])["Alphabetic"],
-                  AccessionNumber: checkValue(DicomStudyResponse[series]["00080050"]),
-                  Sex: checkValue(DicomResponse[i]["00100040"]),
-                  BirthDate: checkValue(DicomResponse[i]["00100030"]),
-                  StudyTime: checkValue(DicomResponse[i]["00080030"]),
-                  StudyDescription: checkValue(DicomResponse[i]["00081030"]),
-                  SeriesDescription: checkValue(DicomSeriesResponse[instance]["0008103E"]),
-                  SeriesNumber: checkValue(DicomSeriesResponse[instance]["00200011"])
-                };
-                ifStudy = loadUID(DICOM_obj);
-              } catch (ex) { }
-            }
-            if (onloadList.length == 0) createTable(); 
-          }
-        }
+      function checkValue(obj) {
+        if (obj == undefined) return undefined;
+        else if (obj.Value == undefined) return undefined;
+        else if (obj.Value[0] == undefined) return undefined;
+        else return obj.Value[0];
       }
+
+      var DICOM_obj = {
+        study: checkValue(DicomStudyResponse[series]["0020000D"]),
+        //series: checkValue(DicomSeriesResponse[instance]["0020000E"]),
+        // sop: checkValue(DicomResponse[i]["00080018"]),
+        // instance: checkValue(DicomResponse[i]["00200013"]),
+        // imageId: url,
+        patientId: checkValue(DicomStudyResponse[series]["00100020"]),
+        StudyDate: checkValue(DicomStudyResponse[series]["00080020"]),
+        Modality: checkValue(DicomStudyResponse[series]["00080061"]),
+        PatientName: checkValue(DicomStudyResponse[series]["00100010"]) == undefined ? undefined : checkValue(DicomStudyResponse[series]["00100010"])["Alphabetic"],
+        AccessionNumber: checkValue(DicomStudyResponse[series]["00080050"]),
+        Sex: checkValue(DicomStudyResponse[series]["00100040"]),
+        BirthDate: checkValue(DicomStudyResponse[series]["00100030"]),
+        StudyTime: checkValue(DicomStudyResponse[series]["00080030"]),
+        StudyDescription: checkValue(DicomStudyResponse[series]["00081030"]),
+        SeriesUrl: SeriesUrl,//.replace("https", "").replace("http", "")
+        DicomStudyResponse: DicomStudyResponse[series],
+        S: checkValue(DicomStudyResponse[series]["00201206"]),
+        I: checkValue(DicomStudyResponse[series]["00201208"])
+        // SeriesDescription: checkValue(DicomSeriesResponse[instance]["0008103E"]),
+        // SeriesNumber: checkValue(DicomSeriesResponse[instance]["00200011"])
+      };
+      loadUID(DICOM_obj);
+      if (onloadList.length == 0) createTable();
     }
   }
 }
@@ -326,6 +293,8 @@ function loadUID(DICOM_obj) {
   var StudyDate = DICOM_obj.StudyDate, Sex = DICOM_obj.Sex, BirthDate = DICOM_obj.BirthDate, StudyTime = DICOM_obj.StudyTime, StudyDescription = DICOM_obj.StudyDescription;
   var AccessionNumber = DICOM_obj.AccessionNumber, PatientName = DICOM_obj.PatientName, ModalitiesInStudy = DICOM_obj.Modality;
   var SeriesDescription = DICOM_obj.SeriesDescription, SeriesNumber = DICOM_obj.SeriesNumber;
+  var SeriesUrl = DICOM_obj.SeriesUrl, DicomStudyResponse = DICOM_obj.DicomStudyResponse;
+  var S = DICOM_obj.S, I = DICOM_obj.I, SeriesI = DICOM_obj.SeriesI;
   var ifSeries = 0;
   var isStudy = -1;
   for (var i = 0; i < Patient.StudyAmount; i++) {
@@ -337,10 +306,15 @@ function loadUID(DICOM_obj) {
     Study.StudyUID = study;
     Study.SeriesAmount = 1;
     Study.Series = [];
+    Study.SeriesUrl = SeriesUrl;
+    Study.DicomStudyResponse = DicomStudyResponse;
+    Study.S = S;
+    Study.I = I;
     var Series = {};
     Series.SeriesUID = series;
     Series.SopAmount = 1;
     Series.Sop = [];
+    Series.I = SeriesI;
     var Sop = {};
     Sop.InstanceNumber = instance;
     Sop.SopUID = sop;
@@ -371,6 +345,7 @@ function loadUID(DICOM_obj) {
       Series.SeriesUID = series;
       Series.SopAmount = 1;
       Series.Sop = [];
+      Series.I = SeriesI;
       var Sop = {};
       Sop.InstanceNumber = instance;
       Sop.SopUID = sop;

@@ -66,6 +66,8 @@ function createTable() {
   var StudyDescription_list = [];
   var SeriesAmount_list = [];
   var SopAmount_list = [];
+  var S_list = [];
+  var I_list = [];
 
   var StudyUID_list = [];
   var StudyObj_list = [];
@@ -88,6 +90,8 @@ function createTable() {
           StudyTime_list.push(("" + Patient.Study[i].Series[j].Sop[k].StudyTime).replace(/^(\d{2})(\d\d)(\d\d)/, '$1:$2:$3').substr(0, 8));
         StudyDescription_list.push(Patient.Study[i].Series[j].Sop[k].StudyDescription);
 
+        S_list.push(Patient.Study[i].S);
+        I_list.push(Patient.Study[i].I);
         SeriesAmount_list.push(Patient.Study[i].SeriesAmount);
         var SopAmount1 = 0;
         for (var i2 = 0; i2 < Patient.Study[i].Series.length; i2++) {
@@ -184,9 +188,9 @@ function createTable() {
     cells = row.insertCell(8);
     cells.innerHTML = undefined2null("" + StudyDescription_list[i - 1]);
     cells = row.insertCell(9);
-    cells.innerHTML = undefined2null("" + SeriesAmount_list[i - 1]);
+    cells.innerHTML = undefined2null("" + S_list[i - 1]);
     cells = row.insertCell(10);
-    cells.innerHTML = undefined2null("" + SopAmount_list[i - 1]);
+    cells.innerHTML = undefined2null("" + I_list[i - 1]);
 
     row.Study = StudyObj_list[i - 1];
     var str = "";
@@ -198,6 +202,11 @@ function createTable() {
 
     row.alt = ConfigLog.QIDO.target + '?' + str;
     row.onclick = function () {
+
+      if (this.Study.SeriesUrl != "") {
+        getStudyObj(this.Study.DicomStudyResponse, this.Study.SeriesUrl, this);
+        this.Study.SeriesUrl = "";
+      }
       let scrollY = window.scrollY;
       //window.open(this.alt, '_blank');
       var Body = document.getElementById("body");
@@ -256,18 +265,38 @@ function createTable() {
       // row0.className = "SecondRow";
       //row0.style.backgroundColor = "#d8dafe";
       //row0.className="Primary";
+      var Series_c_count = 0;
       for (var c = 0; c < this.Study.Series.length; c++) {
-        var row = Table2.insertRow(c + 2);
+        if (this.Study.Series[c].SeriesUID == undefined) {
+          if (this.Study.Series.length == 1) {
+            var row = Table2.insertRow(Series_c_count + 2);
+            var cell = row.insertCell(0); cell.innerHTML = undefined2null("" + "loading...");;//"<b>Open This Series </b><img src='../image/icon/goto.png'></img>";
+            cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+            //cell.onclick = function () { window.open(this.alt, '_blank'); }
+            row.insertCell(1).innerHTML = undefined2null("" + "loading...");//"SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+            row.insertCell(2).innerHTML = undefined2null("" + "loading...");
+            row.insertCell(3).innerHTML = undefined2null("" + "loading...");
+            row.insertCell(4).innerHTML = "" + "loading...";//this.Study.Series[c].Sop.length;
+            row.setAttribute("border", 3);
+            row.style.borderColor = 'black';
+            row.className = "SecondRow";
+            Series_c_count++;
+            break;
+          }
+          continue;
+        };
+        var row = Table2.insertRow(Series_c_count + 2);
         var cell = row.insertCell(0); cell.innerHTML = "<b>Open This Series </b><img src='../image/icon/goto.png'></img>";
         cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
         cell.onclick = function () { window.open(this.alt, '_blank'); }
         row.insertCell(1).innerHTML = undefined2null("" + this.Study.Series[c].Sop[0].ModalitiesInStudy);//"SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
         row.insertCell(2).innerHTML = undefined2null("" + this.Study.Series[c].Sop[0].SeriesDescription);
         row.insertCell(3).innerHTML = undefined2null("" + this.Study.Series[c].Sop[0].SeriesNumber);;
-        row.insertCell(4).innerHTML = "" + this.Study.Series[c].Sop.length;
+        row.insertCell(4).innerHTML = "" + undefined2null("" + this.Study.Series[c].I);;//this.Study.Series[c].Sop.length;
         row.setAttribute("border", 3);
         row.style.borderColor = 'black';
         row.className = "SecondRow";
+        Series_c_count++;
       }
       Body.appendChild(Table2);
       Body.appendChild(Table);
@@ -284,7 +313,7 @@ function createTable() {
       Table.style.marginTop = parseFloat(Table.style.marginTop) - (Table2.getClientRects()[0].height) + (this.getClientRects()[0].height * 1) + 'px';
       Table.style.zIndex = "7";
       Table2.style.zIndex = "6";
-      this.style.height = (this.getClientRects()[0].height) * (this.Study.Series.length + 3) + (5) + "px";
+      this.style.height = (this.getClientRects()[0].height) * (Series_c_count + 3) + (5) + "px";
       getByid("floatTable").style.display = getByid("floatTable2").style.display = "";
 
       var Table = getByid("myTable1");
