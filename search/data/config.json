@@ -14,7 +14,11 @@
             "enableRetrieveURI": false,
             "includefield": false,
             "target": "../../bluelight/html/start.html",
-            "token": ""
+            "target-SM": "../../bluelight/html/start.html",
+            "token": {
+                "apikey":"",
+                "bearer":""
+            }
         },
         {
             "AETitle": "ldcmPACS",
@@ -30,7 +34,11 @@
             "enableRetrieveURI": false,
             "includefield": false,
             "target": "../../bluelight/html/start.html",
-            "token": ""
+            "target-SM": ".../../bluelight/html/start.html",
+            "token": {
+                "apikey":"",
+                "bearer":""
+            }
         }
     ],
     "//_thumnail_witdth": "縮圖寬度",

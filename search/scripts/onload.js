@@ -68,7 +68,6 @@ function createTable() {
   var SopAmount_list = [];
   var S_list = [];
   var I_list = [];
-
   var StudyUID_list = [];
   var StudyObj_list = [];
   for (var i = 0; i < Patient.StudyAmount; i++) {
@@ -89,7 +88,6 @@ function createTable() {
         if (Patient.Study[i].Series[j].Sop[k].StudyTime != undefined)
           StudyTime_list.push(("" + Patient.Study[i].Series[j].Sop[k].StudyTime).replace(/^(\d{2})(\d\d)(\d\d)/, '$1:$2:$3').substr(0, 8));
         StudyDescription_list.push(Patient.Study[i].Series[j].Sop[k].StudyDescription);
-
         S_list.push(Patient.Study[i].S);
         I_list.push(Patient.Study[i].I);
         SeriesAmount_list.push(Patient.Study[i].SeriesAmount);
@@ -199,8 +197,11 @@ function createTable() {
     str += "StudyInstanceUID=" + Null2Empty(encodeURI(StudyUID_list[i - 1]));
     //str += "&PatientName=" + Null2Empty(encodeURI(PatientName_list[i - 1]));
     //str += "&ModalitiesInStudy=" + Null2Empty(encodeURI(Modality_list[i - 1]));
-
-    row.alt = ConfigLog.QIDO.target + '?' + str;
+    row.Modality = Modality_list[i - 1];
+    if (!Modality_list[i - 1].includes("SM"))
+      row.alt = ConfigLog.QIDO.target + '?' + str;
+    else
+      row.alt = ConfigLog.QIDO.targetSM + '?' + str;
     row.onclick = function () {
 
       if (this.Study.SeriesUrl != "") {
@@ -251,7 +252,11 @@ function createTable() {
 
       var row1 = Table2.insertRow(1);
       var cell = row1.insertCell(0); cell.innerHTML = "<b>Open This Study </b><img src='../image/icon/goto.png'></img>";
-      cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
+      if (!this.Modality.includes("SM"))
+        cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
+      else
+        cell.alt = ConfigLog.QIDO.targetSM + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
+
       cell.onclick = function () { window.open(this.alt, '_blank'); }
       var cell = row1.insertCell(1); cell.innerHTML = "StudyInstanceUID=" + this.Study.StudyUID;
       row1.className = "SecondRow2";
@@ -271,7 +276,11 @@ function createTable() {
           if (this.Study.Series.length == 1) {
             var row = Table2.insertRow(Series_c_count + 2);
             var cell = row.insertCell(0); cell.innerHTML = undefined2null("" + "loading...");;//"<b>Open This Series </b><img src='../image/icon/goto.png'></img>";
-            cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+            if (!this.Modality.includes("SM"))
+              cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+            else
+              cell.alt = ConfigLog.QIDO.targetSM + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+
             //cell.onclick = function () { window.open(this.alt, '_blank'); }
             row.insertCell(1).innerHTML = undefined2null("" + "loading...");//"SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
             row.insertCell(2).innerHTML = undefined2null("" + "loading...");
@@ -287,7 +296,11 @@ function createTable() {
         };
         var row = Table2.insertRow(Series_c_count + 2);
         var cell = row.insertCell(0); cell.innerHTML = "<b>Open This Series </b><img src='../image/icon/goto.png'></img>";
-        cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+        if (!this.Modality.includes("SM"))
+          cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+        else
+          cell.alt = ConfigLog.QIDO.targetSM + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+
         cell.onclick = function () { window.open(this.alt, '_blank'); }
         row.insertCell(1).innerHTML = undefined2null("" + this.Study.Series[c].Sop[0].ModalitiesInStudy);//"SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
         row.insertCell(2).innerHTML = undefined2null("" + this.Study.Series[c].Sop[0].SeriesDescription);

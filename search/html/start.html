@@ -68,13 +68,10 @@
 </script>
 
 <body style="background-color:#000000;color:#FFFFFF" onkeypress="kerypressT(event);">
-  
+  <div style="margin-top: 7px;">
+    <!--&nbsp;&nbsp;Password:<input type="password" name="lname" value="123" id="PasswordText" class="btn btn-dark text-left">-->
 
-</body>
-<div style="margin-top: 7px;">
-  <!--&nbsp;&nbsp;Password:<input type="password" name="lname" value="123" id="PasswordText" class="btn btn-dark text-left">-->
-
-  <button type="button" id="searchButton" style="margin-top: 3px;" class="w-100 btn btn-secondary" onclick="
+    <button type="button" id="searchButton" style="margin-top: 3px;" class="w-100 btn btn-secondary" onclick="
     setTimeout(function(){
     getByid('LimitInput2').value=getByid('LimitInput').value;
     getByid('OffsetInput2').value=getByid('OffsetInput').value;
@@ -111,96 +108,99 @@
   readAllJson();
 }, 120);
   ">search</button>
-</div>
-<div class="row">
-  <div class="col-sm-12">
-    <div class="row">
-      <div class="col-xs-4 col-sm-4">
-        PatientID:<input type="text" name="lname" id="PatientIDText" value="*"
-          class="form-control size14 btn btn-dark text-left">
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="row">
+        <div class="col-xs-4 col-sm-4">
+          PatientID:<input type="text" name="lname" id="PatientIDText" value="*"
+            class="form-control size14 btn btn-dark text-left">
+
+        </div>
+        <div class="col-xs-4 col-sm-4">
+          PatientName:<input type="text" name="lname" id="PatientNameText"
+            class="form-control size14 btn btn-dark text-left">
+        </div>
+        <div class="col-xs-4 col-sm-4">
+          StudyUID:&nbsp;<input type="text" name="lname" id="StudyInstanceUIDText"
+            class="form-control size14 btn btn-dark text-left">
+        </div>
 
       </div>
-      <div class="col-xs-4 col-sm-4">
-        PatientName:<input type="text" name="lname" id="PatientNameText"
-          class="form-control size14 btn btn-dark text-left">
-      </div>
-      <div class="col-xs-4 col-sm-4">
-        StudyUID:&nbsp;<input type="text" name="lname" id="StudyInstanceUIDText"
-          class="form-control size14 btn btn-dark text-left">
-      </div>
-          
     </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-sm-12 ">
-    <div class="row">
-      <div class="col-xs-4 col-sm-4">
-        Accession Number:<input type="text" name="lname" id="AccessionNumberText"
-          class="form-control size14 btn btn-dark text-left">
-      </div>
-      <div class="col-xs-4 col-sm-4">
-        Modality:&nbsp;<input type="text" name="lname" id="ModalitiesInStudyText"
-          class="form-control size14 btn btn-dark text-left">
-      </div>
-      <div class="col-xs-4 col-sm-4">
-        StudyDate:<span onfocusout="
+  <div class="row">
+    <div class="col-sm-12 ">
+      <div class="row">
+        <div class="col-xs-4 col-sm-4">
+          Accession Number:<input type="text" name="lname" id="AccessionNumberText"
+            class="form-control size14 btn btn-dark text-left">
+        </div>
+        <div class="col-xs-4 col-sm-4">
+          Modality:&nbsp;<input type="text" name="lname" id="ModalitiesInStudyText"
+            class="form-control size14 btn btn-dark text-left">
+        </div>
+        <div class="col-xs-4 col-sm-4">
+          StudyDate:<span onfocusout="
   setTimeout(function(){ 
     var obj1=document.activeElement;
   if(!(obj1===getByid('StudyDateText')||obj1===getByid('StudyDatedate1')||obj1===getByid('StudyDatedate2')||obj1===getByid('dateDiv')))
   {getByid('dateDiv').style.display='none';getByid('dateBr').style.display='none';}
   setStudyDateByKeyPress();
-    }, 200);   "> <input type="text" name="lname" id="StudyDateText"
-          class="form-control size14 btn btn-dark text-left" onkeydown="setStudyDateByKeyPress()" onfocus="
+    }, 200);   "> <input type="text" name="lname" id="StudyDateText" class="form-control size14 btn btn-dark text-left"
+              onkeydown="setStudyDateByKeyPress()" onfocus="
     getByid('dateDiv').style.display='';
         getByid('dateBr').style.display='';
         getByid('dateDiv').style.zIndex = '100';
-      "><div id="dateDiv" style="position:absolute;display:none;">
-        <input type="date" class="size14 btn btn-secondary text-right" id="StudyDatedate1" name="date"
-          style="width: 150px;height:25px;" value="" onchange="setStudyDate()"> -
-        <input type="date" class="size14 btn btn-secondary text-right" id="StudyDatedate2" name="date"
-          style="width: 150px;height:25px;" value="" onchange="setStudyDate()">
-      </div></span>
-        
+      ">
+            <div id="dateDiv" style="position:absolute;display:none;">
+              <input type="date" class="size14 btn btn-secondary text-right" id="StudyDatedate1" name="date"
+                style="width: 150px;height:25px;" value="" onchange="setStudyDate()"> -
+              <input type="date" class="size14 btn btn-secondary text-right" id="StudyDatedate2" name="date"
+                style="width: 150px;height:25px;" value="" onchange="setStudyDate()">
+            </div>
+          </span>
+
+        </div>
+        <br> <br id="dateBr" style="display:none;">
       </div>
-      <br> <br id="dateBr" style="display:none;">
     </div>
   </div>
-</div>
-<div class="center">
-  <button class="previous btn btn-dark" onclick="
+  <div class="center">
+    <button class="previous btn btn-dark" onclick="
   getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)- parseInt(getByid('LimitInput').value);
   getByid('searchButton').click();
   ">&#8249;</button>
-  &nbsp;&nbsp;Limit:&nbsp;<input type="number" name="lname" style="margin-top: 3px;width: 80px;height:28px;" value="10"
-    id="LimitInput" data-decimals="2" class="size14 btn btn-dark text-left"
-    onchange="getByid('LimitInput2').value=this.value">
-  &nbsp;&nbsp;&nbsp;&nbsp;Offset:&nbsp;<input type="number" name="lname"
-    style="margin-top: 3px;width: 80px;height:28px;" value="0" id="OffsetInput" data-decimals="2"
-    class="size14 btn btn-dark text-left" onchange="getByid('OffsetInput2').value=this.value">&nbsp;&nbsp;&nbsp;&nbsp;
-  <button class="next btn btn-dark" onclick="
+    &nbsp;&nbsp;Limit:&nbsp;<input type="number" name="lname" style="margin-top: 3px;width: 80px;height:28px;"
+      value="10" id="LimitInput" data-decimals="2" class="size14 btn btn-dark text-left"
+      onchange="getByid('LimitInput2').value=this.value">
+    &nbsp;&nbsp;&nbsp;&nbsp;Offset:&nbsp;<input type="number" name="lname"
+      style="margin-top: 3px;width: 80px;height:28px;" value="0" id="OffsetInput" data-decimals="2"
+      class="size14 btn btn-dark text-left" onchange="getByid('OffsetInput2').value=this.value">&nbsp;&nbsp;&nbsp;&nbsp;
+    <button class="next btn btn-dark" onclick="
   getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)+ parseInt(getByid('LimitInput').value);
   getByid('searchButton').click();
   ">&#8250;</button>
-</div><div class="center"><span id="loadingSpan"  class="center"> Loading...</span></div>
-<div id="body"></div>
-<div class="center">
-  <button class="previous btn btn-dark" onclick="
+  </div>
+  <div class="center"><span id="loadingSpan" class="center"> Loading...</span></div>
+  <div id="body"></div>
+  <div class="center">
+    <button class="previous btn btn-dark" onclick="
   getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)- parseInt(getByid('LimitInput').value);
   getByid('searchButton').click();
   ">&#8249;</button>
-  &nbsp;&nbsp;Limit:&nbsp;<input type="number" name="lname" style="margin-top: 3px;width: 80px;height:28px;" value="10"
-    id="LimitInput2" data-decimals="2" class="size14 btn btn-dark text-left"
-    onchange="getByid('LimitInput').value=this.value">
-  &nbsp;&nbsp;&nbsp;&nbsp;Offset:&nbsp;<input type="number" name="lname"
-    style="margin-top: 3px;width: 80px;height:28px;" value="0" id="OffsetInput2" data-decimals="2"
-    class="size14 btn btn-dark text-left" onchange="getByid('OffsetInput').value=this.value">&nbsp;&nbsp;&nbsp;&nbsp;
-  <button class="next btn btn-dark" onclick="
+    &nbsp;&nbsp;Limit:&nbsp;<input type="number" name="lname" style="margin-top: 3px;width: 80px;height:28px;"
+      value="10" id="LimitInput2" data-decimals="2" class="size14 btn btn-dark text-left"
+      onchange="getByid('LimitInput').value=this.value">
+    &nbsp;&nbsp;&nbsp;&nbsp;Offset:&nbsp;<input type="number" name="lname"
+      style="margin-top: 3px;width: 80px;height:28px;" value="0" id="OffsetInput2" data-decimals="2"
+      class="size14 btn btn-dark text-left" onchange="getByid('OffsetInput').value=this.value">&nbsp;&nbsp;&nbsp;&nbsp;
+    <button class="next btn btn-dark" onclick="
   getByid('OffsetInput').value= parseInt(getByid('OffsetInput').value)+ parseInt(getByid('LimitInput').value);
   getByid('searchButton').click();
   ">&#8250;</button>
-</div>
-<!--<header class="page-header" style="display:none">
+  </div>
+  <!--<header class="page-header" style="display:none">
   </header>-->
 </body>
 

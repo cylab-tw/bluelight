@@ -352,6 +352,7 @@ function readConfigJson(url, readAllJson, readJson) {
     tempConfig.timeout = tempResponse["timeout"];
     tempConfig.charset = tempResponse["charset"];
     tempConfig.includefield = tempResponse["includefield"];
+    tempConfig.token = tempResponse["token"];
     //tempConfig.enableXml2Dcm=tempResponse["enableXml2Dcm"];
     //tempConfig.Xml2DcmUrl=tempResponse["Xml2DcmUrl"];
 
@@ -368,6 +369,7 @@ function readConfigJson(url, readAllJson, readJson) {
     tempConfig.contentType = tempResponse["contentType"];
     tempConfig.timeout = tempResponse["timeout"];
     tempConfig.includefield = tempResponse["includefield"];
+    tempConfig.token = tempResponse["token"];
 
     //tempConfig.enableXml2Dcm=tempResponse["enableXml2Dcm"];
     //tempConfig.Xml2DcmUrl=tempResponse["Xml2DcmUrl"];
@@ -382,6 +384,7 @@ function readConfigJson(url, readAllJson, readJson) {
     tempConfig.contentType = tempResponse["contentType"];
     tempConfig.timeout = tempResponse["timeout"];
     tempConfig.includefield = tempResponse["includefield"];
+    tempConfig.token = tempResponse["token"];
     //tempConfig.enableXml2Dcm=tempResponse["enableXml2Dcm"];
     //tempConfig.Xml2DcmUrl=tempResponse["Xml2DcmUrl"];
 
@@ -389,6 +392,7 @@ function readConfigJson(url, readAllJson, readJson) {
     tempConfig = config.Xml2Dcm;
     tempConfig.enableXml2Dcm = tempResponse["enableXml2Dcm"];
     tempConfig.Xml2DcmUrl = tempResponse["Xml2DcmUrl"];
+    tempConfig.token = tempResponse["token"];
 
     Object.assign(ConfigLog, config);
     configOnload = true;
@@ -408,6 +412,13 @@ function readJson(url) {
   let SeriesRequest = new XMLHttpRequest();
   SeriesRequest.open('GET', url);
   SeriesRequest.responseType = 'json';
+  var wadoToken = ConfigLog.WADO.token;
+  for (var to = 0; to < Object.keys(wadoToken).length; to++) {
+    if (wadoToken[Object.keys(wadoToken)[to]] != "") {
+      SeriesRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
+    }
+  }
+
   //發送以Series為單位的請求
   SeriesRequest.send();
   SeriesRequest.onload = function () {
@@ -420,6 +431,13 @@ function readJson(url) {
       InstanceRequest.open('GET', InstanceUrl);
       InstanceRequest.responseType = 'json';
       //發送以Instance為單位的請求
+      var wadoToken = ConfigLog.WADO.token;
+      for (var to = 0; to < Object.keys(wadoToken).length; to++) {
+        if (wadoToken[Object.keys(wadoToken)[to]] != "") {
+          InstanceRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
+        }
+      }
+
       InstanceRequest.send();
       InstanceRequest.onload = function () {
         let DicomResponse = InstanceRequest.response;

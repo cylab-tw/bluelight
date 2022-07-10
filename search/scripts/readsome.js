@@ -140,7 +140,9 @@ function readConfigJson(url, onLosdSerch) {
     tempConfig.charset = tempDicomResponse["charset"];
     tempConfig.includefield = tempDicomResponse["includefield"];
     tempConfig.target = tempDicomResponse["target"];
+    tempConfig.targetSM = tempDicomResponse["target-SM"];
     tempConfig.enableRetrieveURI = tempDicomResponse["enableRetrieveURI"];
+    tempConfig.token = tempDicomResponse["token"];
 
     config.WADO = {};
     tempConfig = config.WADO;
@@ -153,7 +155,9 @@ function readConfigJson(url, onLosdSerch) {
     tempConfig.timeout = tempDicomResponse["timeout"];
     tempConfig.includefield = tempDicomResponse["includefield"];
     tempConfig.target = tempDicomResponse["target"];
+    tempConfig.targetSM = tempDicomResponse["target-SM"];
     tempConfig.enableRetrieveURI = tempDicomResponse["enableRetrieveURI"];
+    tempConfig.token = tempDicomResponse["token"];
 
     config.STOW = {};
     tempConfig = config.STOW;
@@ -166,7 +170,9 @@ function readConfigJson(url, onLosdSerch) {
     tempConfig.timeout = tempDicomResponse["timeout"];
     tempConfig.includefield = tempDicomResponse["includefield"];
     tempConfig.target = tempDicomResponse["target"];
+    tempConfig.targetSM = tempDicomResponse["target-SM"];
     tempConfig.enableRetrieveURI = tempDicomResponse["enableRetrieveURI"];
+    tempConfig.token = tempDicomResponse["token"];
 
     ConfigLog = config;
     configOnload = true;
@@ -197,6 +203,12 @@ function getStudyObj(DicomStudyResponse, SeriesUrl, row) {
   const SerchState1 = SerchState;
   let SeriesRequest = new XMLHttpRequest();
   SeriesRequest.open('GET', SeriesUrl);
+  var wadoToken = ConfigLog.WADO.token;
+  for (var to = 0; to < Object.keys(wadoToken).length; to++) {
+    if (wadoToken[Object.keys(wadoToken)[to]] != "") {
+      SeriesRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
+    }
+  }
   SeriesRequest.responseType = 'json';
   //發送以Series為單位的請求
   SeriesRequest.send();
@@ -245,6 +257,12 @@ function readJson(url) {
   originWADOUrl = originWADOUrl.replace("?", "");
   var request = new XMLHttpRequest();
   request.open('GET', requestURL);
+  var wadoToken = ConfigLog.WADO.token;
+  for (var to = 0; to < Object.keys(wadoToken).length; to++) {
+    if (wadoToken[Object.keys(wadoToken)[to]] != "") {
+      request.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
+    }
+  }
   request.responseType = 'json';
   request.send();
   onloadList.push(0);

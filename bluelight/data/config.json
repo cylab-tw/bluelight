@@ -21,7 +21,10 @@
             "enableXml2Dcm":false,
             "Xml2DcmUrl":"/upload",
             "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
-            "token": ""
+            "token": {
+                "apikey":"",
+                "bearer":""
+            }
         },
         {
             "AETitle": "ldcmPACS",
@@ -44,7 +47,10 @@
             "enableXml2Dcm":false,
             "Xml2DcmUrl":"/upload",
             "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
-            "token": ""
+            "token": {
+                "apikey":"",
+                "bearer":""
+            }
         }
     ],
     "//_thumnail_witdth": "縮圖寬度",
