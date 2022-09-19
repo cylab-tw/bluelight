@@ -79,9 +79,6 @@
 # Roadmap
 * FHIR ImagingStudy Query/Retrieve Interface
 * Support the IHE Invoke Image Display (IID) Profile [RAD-106]
-* Display DICOM Whole Slide Imaging (WSI) implemented by DICOMWeb. Referenced standard: [DICOM WSI](http://dicom.nema.org/Dicom/DICOMWSI/)
-* Display DICOM Supplement 222 - Microscopy Bulk Simple Annotations Storage SOP Class. Referenced standard: [DICOM Sup 219](https://www.dicomstandard.org/News-dir/ftsup/docs/sups/sup222.pdf)
-* Display DICOM Supplement 219 - JSON Representation of DICOM Structured Reports. Referenced standard: [DICOM Sup 219](https://www.dicomstandard.org/News-dir/ftsup/docs/sups/Sup219.pdf)
 * Display DICOM Structured Report
 * Display DICOM Waveform - 12 Lead ECG Waveform
 
