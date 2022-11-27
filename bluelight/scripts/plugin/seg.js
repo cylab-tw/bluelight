@@ -7,54 +7,54 @@ window.addEventListener("load", function (event) {
         img2darkByClass("SEG", !openWriteSEG);
         this.src = openWriteSEG == true ? '../image/icon/black/seg_on.png' : '../image/icon/black/seg_off.png';
         if (openWriteSEG == true) {
-          getByid("overlay2seg").style.display = "";
-          getByid('SegStyleDiv').style.display = 'flex';
-          set_BL_model('writeSeg');
-          writeSeg();
+            getByid("overlay2seg").style.display = "";
+            getByid('SegStyleDiv').style.display = 'flex';
+            set_BL_model('writeSeg');
+            writeSeg();
         }
         else getByid('SegStyleDiv').style.display = 'none';
         displayMark(viewportNumber);
-    
+
         if (openWriteSEG == true) return;
         // else Graphic_now_choose = null;
-    
+
         function download(text, name, type) {
-          let a = document.createElement('a');
-          let file = new Blob([text], {
-            type: type
-          });
-          a.href = window.URL.createObjectURL(file);
-          //a.style.display = '';
-          a.download = name;
-          a.click();
+            let a = document.createElement('a');
+            let file = new Blob([text], {
+                type: type
+            });
+            a.href = window.URL.createObjectURL(file);
+            //a.style.display = '';
+            a.download = name;
+            a.click();
         }
         function download2(text, name, type) {
-          let a = document.createElement('a');
-          let file = new File([text], name + ".xml", {
-            type: type
-          });
-          var xhr = new XMLHttpRequest();
-    
-          xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
-          xhr.setRequestHeader("enctype", "multipart/form-data");
-          // define new form
-          var formData = new FormData();
-          formData.append("files", file);
-          xhr.send(formData);
-          xhr.onload = function () {
-            if (xhr.status == 200) {
-              let data = JSON.parse(xhr.responseText);
-              for (let url of data) {
-                window.open(url);
-              }
+            let a = document.createElement('a');
+            let file = new File([text], name + ".xml", {
+                type: type
+            });
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+            xhr.setRequestHeader("enctype", "multipart/form-data");
+            // define new form
+            var formData = new FormData();
+            formData.append("files", file);
+            xhr.send(formData);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    let data = JSON.parse(xhr.responseText);
+                    for (let url of data) {
+                        window.open(url);
+                    }
+                }
             }
-          }
         }
         set_SEG_context();
         if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_SEG_context()), "" + CreateRandom(), 'text/plain');
         else download(String(get_SEG_context()), 'filename_SEG.xml', 'text/plain');
         getByid('MouseOperation').click();
-      }
+    }
 });
 
 var SEG_format =
@@ -441,7 +441,26 @@ function writeSeg() {
                     dcm.sop = Uid.sop;
                     var DcmMarkLength = dcm.mark.length - 1;
                     dcm.mark[DcmMarkLength].type = "SEG";
-                    dcm.mark[DcmMarkLength].pixelData = new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
+                    dcm.mark[DcmMarkLength].pixelData = new Uint8ClampedArray(GetViewport().imageWidth * GetViewport().imageHeight);
+                    if (!dcm.mark[DcmMarkLength].canvas) {
+                        dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
+                        dcm.mark[DcmMarkLength].canvas.width = GetViewport().imageWidth;
+                        dcm.mark[DcmMarkLength].canvas.height = GetViewport().imageHeight;
+                        dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
+
+                        var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, dcm.mark[DcmMarkLength].canvas.width, dcm.mark[DcmMarkLength].canvas.height);
+                       
+                        for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
+                            if (dcm.mark[DcmMarkLength].pixelData[j] != 0) {
+                                pixelData.data[i] = 0;
+                                pixelData.data[i + 1] = 0;
+                                pixelData.data[i + 2] = 255;
+                                pixelData.data[i + 3] = 255;
+                            }
+                        }    
+                        dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
+                    }
+                    
                     PatientMark.push(dcm);
                     refreshMark(dcm);
                     SEG_now_choose = dcm.mark[DcmMarkLength];
@@ -478,6 +497,17 @@ function writeSeg() {
                         }
                     }
                 }
+                var pixelData = SEG_now_choose.ctx.getImageData(0, 0, GetViewport().imageWidth, GetViewport().imageHeight);
+                for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
+                    if (SEG_now_choose.pixelData[j] != 0) {
+                        pixelData.data[i] = 0;
+                        pixelData.data[i + 1] = 0;
+                        pixelData.data[i + 2] = 255;
+                        pixelData.data[i + 3] = 255;
+                    }
+                }    
+
+                SEG_now_choose.ctx.putImageData(pixelData, 0, 0);
                 let Uid = GetNowUid();
                 refreshMark(Uid.sop);
                 for (var i = 0; i < Viewport_Total; i++)

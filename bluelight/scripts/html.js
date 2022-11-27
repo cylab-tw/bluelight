@@ -150,11 +150,7 @@ function html_onload() {
               function jsonDeepClone(obj) {
                 return JSON.parse(JSON.stringify(obj));
               }
-              dcm.mark[DcmMarkLength].pixelData = new Uint8Array(PatientMark[n].mark[m].pixelData.length)
-              for (var p = 0; p < dcm.mark[DcmMarkLength].pixelData.length; p++)
-                dcm.mark[DcmMarkLength].pixelData[p] = PatientMark[n].mark[m].pixelData[p];
-              //dcm.mark[DcmMarkLength].pixelData = PatientMark[n].mark[m].pixelData.concat(cm.mark[DcmMarkLength].pixelData);//)jsonDeepClone(PatientMark[n].mark[m].pixelData);// new Uint8Array(GetViewport().imageWidth * GetViewport().imageHeight);
-              //PatientMark[n].mark[m].type = "null";
+              dcm.mark[DcmMarkLength].canvas= PatientMark[n].mark[m].canvas;
               PatientMark.push(dcm);
               refreshMark(dcm);
               SEG_now_choose = dcm.mark[DcmMarkLength];

@@ -621,7 +621,7 @@ function loadDicomSeg(image, imageId) {
           dcm.mark.push({});
           var DcmMarkLength = dcm.mark.length - 1;
           dcm.mark[DcmMarkLength].type = "SEG";
-          dcm.mark[DcmMarkLength].pixelData = new Uint8Array(rect);
+          dcm.mark[DcmMarkLength].pixelData = new Uint8ClampedArray(rect);
           for (var pix = 0; pix < rect; pix++)
             dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix];
 
@@ -674,7 +674,7 @@ function loadDicomSeg(image, imageId) {
           var DcmMarkLength = dcm.mark.length - 1;
           dcm.mark[DcmMarkLength].type = "SEG";
 
-          dcm.mark[DcmMarkLength].pixelData = new Uint8Array(rect);
+          dcm.mark[DcmMarkLength].pixelData = new Uint8ClampedArray(rect);
           if (NewpixelData.length == rect * x52009230.items.length) {
             for (var pix = 0; pix < rect; pix++)
               dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix + rect * k];
