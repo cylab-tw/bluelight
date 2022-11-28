@@ -449,7 +449,7 @@ function writeSeg() {
                         dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
 
                         var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, dcm.mark[DcmMarkLength].canvas.width, dcm.mark[DcmMarkLength].canvas.height);
-                       
+
                         for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
                             if (dcm.mark[DcmMarkLength].pixelData[j] != 0) {
                                 pixelData.data[i] = 0;
@@ -457,13 +457,15 @@ function writeSeg() {
                                 pixelData.data[i + 2] = 255;
                                 pixelData.data[i + 3] = 255;
                             }
-                        }    
+                        }
                         dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
                     }
-                    
+                    let angle2point = rotateCalculation(e);    
                     PatientMark.push(dcm);
                     refreshMark(dcm);
                     SEG_now_choose = dcm.mark[DcmMarkLength];
+                    setSEG2PixelData(angle2point);
+                    refreshMark(dcm);
                 }
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
@@ -479,35 +481,8 @@ function writeSeg() {
             }
             if (MouseDownCheck && !rightMouseDown && SEG_now_choose && openWindow != true) {
                 let angle2point = rotateCalculation(e);
-                var rect = getByid("SegBrushSizeText").value;
-                rect = parseInt(rect);
-                if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
-                if (KeyCode_ctrl == true) {
-                    for (var s = -rect; s < rect; s++) {
-                        for (var s2 = -rect; s2 < rect; s2++) {
-                            if ((s * s) + (s2 * s2) < rect * rect)
-                                SEG_now_choose.pixelData[Math.floor(angle2point[1] + s) * GetViewport().imageWidth + Math.floor(angle2point[0] + s2)] = 0;
-                        }
-                    }
-                } else {
-                    for (var s = -rect; s < rect; s++) {
-                        for (var s2 = -rect; s2 < rect; s2++) {
-                            if ((s * s) + (s2 * s2) < rect * rect)
-                                SEG_now_choose.pixelData[Math.floor(angle2point[1] + s) * GetViewport().imageWidth + Math.floor(angle2point[0] + s2)] = 1;
-                        }
-                    }
-                }
-                var pixelData = SEG_now_choose.ctx.getImageData(0, 0, GetViewport().imageWidth, GetViewport().imageHeight);
-                for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
-                    if (SEG_now_choose.pixelData[j] != 0) {
-                        pixelData.data[i] = 0;
-                        pixelData.data[i + 1] = 0;
-                        pixelData.data[i + 2] = 255;
-                        pixelData.data[i + 3] = 255;
-                    }
-                }    
+                setSEG2PixelData(angle2point);
 
-                SEG_now_choose.ctx.putImageData(pixelData, 0, 0);
                 let Uid = GetNowUid();
                 refreshMark(Uid.sop);
                 for (var i = 0; i < Viewport_Total; i++)
@@ -547,15 +522,41 @@ function writeSeg() {
         AddMouseEvent();
         return;
     }
-
-
-
-
-
-
-
-
-
 }
 
+function setSEG2PixelData(angle2point){
+    var rect = getByid("SegBrushSizeText").value;
+    rect = parseInt(rect);
+    if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
 
+    var pixelData = SEG_now_choose.ctx.getImageData(parseInt(angle2point[0]) -rect, parseInt(angle2point[1]) -rect,  rect * 2, rect * 2);
+    var p = 0;
+    if (KeyCode_ctrl == true) {
+        for (var s = -rect; s < rect; s++) {
+            for (var s2 = -rect; s2 < rect; s2++) {
+                if ((s * s) + (s2 * s2) < rect * rect) {
+                    SEG_now_choose.pixelData[Math.floor(angle2point[1] + s) * GetViewport().imageWidth + Math.floor(angle2point[0] + s2)] = 0;
+                    pixelData.data[p] = 0;
+                    pixelData.data[p + 1] = 0;
+                    pixelData.data[p + 2] = 0;
+                    pixelData.data[p + 3] = 0;
+                }
+                p+=4;
+            }
+        }
+    } else {
+        for (var s = -rect; s < rect; s++) {
+            for (var s2 = -rect; s2 < rect; s2++) {
+                if ((s * s) + (s2 * s2) < rect * rect) {
+                    SEG_now_choose.pixelData[Math.floor(angle2point[1] + s) * GetViewport().imageWidth + Math.floor(angle2point[0] + s2)] = 1;
+                    pixelData.data[p] = 0;
+                    pixelData.data[p + 1] = 0;
+                    pixelData.data[p + 2] = 255;
+                    pixelData.data[p + 3] = 255;
+                }
+                p+=4;
+            }
+        }
+    }
+    SEG_now_choose.ctx.putImageData(pixelData, parseInt(angle2point[0])-rect, parseInt(angle2point[1])-rect);
+}
