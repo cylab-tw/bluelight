@@ -1,10 +1,13 @@
-window.onload = function () {
-  //執行RWD
-  EnterRWD();
-  //初始化參數
-  loadLdcmview();
-  //初始化HTML元素事件
-  html_onload();
+window.onload = async function () {
+  let authResult = await auth();
+  if(authResult == true) {
+    //執行RWD
+    EnterRWD();
+    //初始化參數
+    loadLdcmview();
+    //初始化HTML元素事件
+    html_onload();
+  }
 }
 
 function loadLdcmview() {
