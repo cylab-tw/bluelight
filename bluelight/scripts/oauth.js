@@ -4,31 +4,35 @@ var keycloakAPI = "";
  * Login Auth Check
  */
 async function auth() {
-
     OAuthConfig = await loadOAuthConfig("../data/configOAuth.json");
-    let theToken = getCookie("access_token");
-    let searchParams = new URL(window.location.href).searchParams;
-    let authCode = searchParams.get("code");
-    let session_state = searchParams.get("session_state");
-    let thePort = OAuthConfig.port != "" ? `:${OAuthConfig.port}` : "";
-    keycloakAPI = `${OAuthConfig.http}://${OAuthConfig.hostname}${thePort}/realms`;
+    if (OAuthConfig.enabled) {
+        let theToken = getCookie("access_token");
+        let searchParams = new URL(window.location.href).searchParams;
+        let authCode = searchParams.get("code");
+        let session_state = searchParams.get("session_state");
+        let thePort = OAuthConfig.port != "" ? `:${OAuthConfig.port}` : "";
+        keycloakAPI = `${OAuthConfig.http}://${OAuthConfig.hostname}${thePort}/realms`;
 
-    // No token but have auth code (usually when it's login complete and is redirecting back).
-    if (theToken == "" && authCode != null) {
-        theToken = await requestToken(authCode, session_state);
+        // No token but have auth code (usually when it's login complete and is redirecting back).
+        if (theToken == "" && authCode != null) {
+            theToken = await requestToken(authCode, session_state);
+        }
+        // Have token so let's see if it's vaild or not.
+        let tokenVaild = await isTokenVaild(theToken);
+        if (tokenVaild) {
+            return true;
+        }
+        // No token or token is not vaild, redirect to keycloak login page and put current url in the Callback URL parameter.
+        else {
+            let redirectUri = removeURLParameter(window.location.href, "code");
+            redirectUri = removeURLParameter(redirectUri, "session_state");
+            let loginPage = `${keycloakAPI}${OAuthConfig.endpoints.auth}?client_id=${OAuthConfig.client_id}&grant_type=authorization_code&response_type=code&redirect_uri=${redirectUri}`;
+            window.location.href = loginPage;
+            return false;
+        }
     }
-    // Have token so let's see if it's vaild or not.
-    let tokenVaild = await isTokenVaild(theToken);
-    if (tokenVaild) {
-        return true;
-    }
-    // No token or token is not vaild, redirect to keycloak login page and put current url in the Callback URL parameter.
     else {
-        let redirectUri = removeURLParameter(window.location.href, "code");
-        redirectUri = removeURLParameter(redirectUri, "session_state");
-        let loginPage = `${keycloakAPI}${OAuthConfig.endpoints.auth}?client_id=${OAuthConfig.client_id}&grant_type=authorization_code&response_type=code&redirect_uri=${redirectUri}`;
-        window.location.href = loginPage;
-        return false;
+        return true;
     }
 }
 
