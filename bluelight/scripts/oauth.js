@@ -1,5 +1,10 @@
 var OAuthConfig = {};
 var keycloakAPI = "";
+
+window.addEventListener("load", function(event) {
+    auth();
+});
+
 /**
  * Login Auth Check
  */

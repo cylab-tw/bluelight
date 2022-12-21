@@ -1,12 +1,9 @@
 window.onload = async function () {
   //setInterval(function () { createTable() }, 1000);
-  let authResult = await auth();
   function onLosdSerch() {
     getByid("searchButton").onclick();
   }
-  if(authResult == true) {
-    loadLdcmview(onLosdSerch);
-  }
+  loadLdcmview(onLosdSerch);
 }
 
 function PasswordCheck() {
