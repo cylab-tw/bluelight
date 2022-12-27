@@ -30,6 +30,7 @@ function loadLdcmview() {
   getByid("GraphicStyleDiv").style.display = "none";
   getByid("GspsStyleDiv").style.display = "none";
   getByid("SegStyleDiv").style.display = "none";
+  getByid("TagStyleDiv").style.display = "none";
   labelPadding = 5;
 
   //設定放大鏡長寬
@@ -240,6 +241,7 @@ function loadLdcmview() {
   //載入config檔的設定
   readDicomTags("../data/dicomTags.json");
   readConfigJson("../data/config.json", readAllJson, readJson);
+  readImageTags("../data/imageTags.json");
 
   //設定icon邊框
   drawBorder(getByid("MouseOperation"));
@@ -398,6 +400,59 @@ function readConfigJson(url, readAllJson, readJson) {
     configOnload = true;
 
     readAllJson(readJson);
+  }
+}
+
+function readImageTags(url) {
+  let request = new XMLHttpRequest();
+  request.open('GET', url);
+  request.responseType = 'json';
+  request.send();
+  request.onload = function () {
+    let response = Object.entries(request.response['medicalSpecialty']);
+
+    response.forEach(medicalSpecialityObject => {
+      let [key, value] = medicalSpecialityObject;
+
+      let medicalSpecialtyName = value['name'];
+      let selectField = document.getElementById("medicalSpecialtyTag");
+      let opt = document.createElement('option');
+      opt.id = medicalSpecialtyName;
+      opt.textContent = medicalSpecialtyName;
+      selectField.appendChild(opt);
+
+      let tagDiv = document.getElementById("TagStyleDiv");
+      let diseasesDiv = document.createElement('div');
+      diseasesDiv.id = medicalSpecialtyName;
+      diseasesDiv.style.color = "white";
+      tagDiv.appendChild(diseasesDiv);
+
+      let diseases = Object.entries(value['diseases']);
+      diseases.forEach(diseaseObject => {
+        let [diseaseKey, diseaseValue] = diseaseObject;
+        let span = document.createElement("span");
+        let diseaseName = diseaseValue['name'];
+        span.id = "diseaseTagSpan";
+        span.textContent = "Disease：" + diseaseName + " ";
+        diseasesDiv.appendChild(span);
+
+        let select = document.createElement('select');
+        select.id = "diseaseSelectorTag" + diseaseName.replace(/ /g, "");
+
+        let selectDiseaseTagNumber = document.querySelectorAll('[id^=diseaseSelectorTag]').length
+        if (selectDiseaseTagNumber > 0) {
+          diseasesDiv.hidden = true;
+        }
+        diseasesDiv.appendChild(select);
+
+        diseaseValue['tags'].forEach(tag => {
+          let opt = document.createElement('option');
+          opt.id = tag;
+          opt.textContent = tag;
+          select.appendChild(opt);
+        });
+      });
+    });
   }
 }
 

@@ -36,6 +36,7 @@
   <script src="../scripts/plugin/graphic_annotation.js"></script>
   <script src="../scripts/plugin/rtss.js"></script>
   <script src="../scripts/plugin/seg.js"></script>
+  <script src="../scripts/plugin/tag.js"></script>
   <script src="../scripts/viewer.js"></script>
   <script src="../scripts/common.js"></script>
   <script src="../scripts/other.js"></script>
@@ -105,6 +106,8 @@
     <img class="img GSPS" alt="writeGSPS" id="writeGSPS" src="../image/icon/black/gsps_off.png" width="50" height="50">
     <img class="img RTSS" alt="writeRTSS" id="writeRTSS" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">
     <img class="img SEG" alt="writeSEG" id="writeSEG" src="../image/icon/black/seg_off.png" width="50" height="50">
+    <img class="img TAG" alt="writeTAG" id="writeTAG" src="../image/icon/black/tag_off.png" width="50" height="50">
+
 
     <img class="img PEN" alt="輸出標記" id="openPenfile" src="../image/icon/black/openPenfile.png" style="display:none;" width="50" height="50">
     <img class="img VR MPR XML PEN" alt="RWD" id="rwdImgTag" src="../image/icon/black/b_CineTools.png" style="display:none;" width="50"
@@ -135,6 +138,11 @@
         <option id="GspsPOLYLINE" selected="selected">Rectangle</option>
         <option id="GspsCIRCLE">Circle</option>
         <option id="GspsLINE">Line</option>
+      </select>
+    </div>
+    <div id="TagStyleDiv" style="background-color:#30306044;">
+      <span style="color: white;" id="medicalSpecialtyTagSpan">Medical specialty：</span>
+      <select id="medicalSpecialtyTag">
       </select>
     </div>
     <div id="GraphicStyleDiv" style="background-color:#30306044;">

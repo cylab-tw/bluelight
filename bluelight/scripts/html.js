@@ -650,6 +650,9 @@ function imgInvalid(element) {
   } else if (openWriteRTSS) {
     if (element.classList.contains("RTSS")) return false;
     else return true;
+  } else if (openWriteTAG){
+    if (element.classList.contains("TAG")) return false;
+    else return true;
   }
   /*else if (openPenDraw) {//暫時移除的功能
      if (element.classList.contains("PEN")) return false;
