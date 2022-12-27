@@ -30,6 +30,7 @@ function loadLdcmview() {
   getByid("GraphicStyleDiv").style.display = "none";
   getByid("GspsStyleDiv").style.display = "none";
   getByid("SegStyleDiv").style.display = "none";
+  getByid("TAGStyleDiv").style.display = "none";
   labelPadding = 5;
 
   //設定放大鏡長寬
