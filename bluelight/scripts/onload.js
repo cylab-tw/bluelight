@@ -20,16 +20,9 @@ function loadLdcmview() {
   getByid("labelPlay").style.display = "none";
   getByid("textPlay").style.display = "none";
   getByid("textZoom").style.display = "none";
-  getByid("3dDisplay").style.display = "none";
-  getByid("VR_setup").style.display = "none";
   getByid("SplitViewportDiv").style.display = "none";
   getByid('MarkStyleDiv').style.display = 'none';
-  getByid("3dCave").style.display = "none";
-  getByid("mprLightLabel").style.display = "none";
-  getByid("xmlMarkName").style.display = "none";
   getByid("GraphicStyleDiv").style.display = "none";
-  getByid("GspsStyleDiv").style.display = "none";
-  getByid("SegStyleDiv").style.display = "none";
   labelPadding = 5;
 
   //設定放大鏡長寬
@@ -557,5 +550,4 @@ function readJson(url) {
       }
     }
   }
-
 }

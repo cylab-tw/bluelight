@@ -1,59 +1,134 @@
-window.addEventListener("load", function (event) {
-    getByid("writeRTSS").onclick = function () {
-        if (imgInvalid(this)) return;
-        cancelTools();
-        openWriteRTSS = !openWriteRTSS;
-        img2darkByClass("RTSS", !openWriteRTSS);
-        this.src = openWriteRTSS == true ? '../image/icon/black/rtssdraw_ON.png' : '../image/icon/black/rtssdraw_OFF.png';
-        if (openWriteRTSS == true) {
-          getByid('RtssDiv').style.display = 'flex';
-          set_BL_model('writertss');
-          writertss();
-        }
-        else getByid('RtssDiv').style.display = 'none';
-        displayMark(viewportNumber);
-        if (openWriteRTSS == true) return;
-        // else Graphic_now_choose = null;
-    
-        function download(text, name, type) {
-          let a = document.createElement('a');
-          let file = new Blob([text], {
-            type: type
-          });
-          a.href = window.URL.createObjectURL(file);
-          //a.style.display = '';
-          a.download = name;
-          a.click();
-        }
-        function download2(text, name, type) {
-          let a = document.createElement('a');
-          let file = new File([text], name + ".xml", {
-            type: type
-          });
-          var xhr = new XMLHttpRequest();
-    
-          xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
-          xhr.setRequestHeader("enctype", "multipart/form-data");
-          // define new form
-          var formData = new FormData();
-          formData.append("files", file);
-          xhr.send(formData);
-          xhr.onload = function () {
-            if (xhr.status == 200) {
-              let data = JSON.parse(xhr.responseText);
-              for (let url of data) {
-                window.open(url);
-              }
+//代表RTSS標記模式為開啟狀態
+var openWriteRTSS = false;
+
+function loadWriteRTSS() {
+    var span = document.createElement("SPAN")
+    span.innerHTML =
+        ` <img class="img RTSS" alt="writeRTSS" id="writeRTSS" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">`;
+    getByid("icon-list").appendChild(span);
+
+    var span = document.createElement("SPAN")
+    span.innerHTML =
+        `<div id="RtssDiv"
+    style="background-color:#30306044;display:none;float:right;display: none;flex-direction: column;position: absolute;right:15px;top:100px;z-index: 20;"
+    width="100">
+    <div style="background-color:#889292;">
+      <font color="white">Color：</font>
+      <select id="RTSScolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
+        <option class="RTSSColorSelectOption" id="RTSSBlackSelect" style="color: #000000;font-weight:bold;">Black
+        </option>
+        <option class="RTSSColorSelectOption" id="RTSSBlueSelect" style="color: #0000FF;font-weight:bold;"
+          selected="selected">Blue</option>
+        <option class="RTSSColorSelectOption" id="RTSSCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan
+        </option>
+        <option class="RTSSColorSelectOption" id="RTSSGreenSelect" style="color: #00FF00;font-weight:bold;">Green
+        </option>
+        <option class="RTSSColorSelectOption" id="RTSSMagentaSelect" style="color: #FF00FF;font-weight:bold;">
+          Magenta</option>
+        <option class="RTSSColorSelectOption" id="RTSSRedSelect" style="color: #FF0000;font-weight:bold;">Red
+        </option>
+        <option class="RTSSColorSelectOption" id="RTSSYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow
+        </option>
+        <option class="RTSSColorSelectOption" id="RTSSWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White
+        </option>
+      </select>
+      <br />
+      <font color="white">ROIName：</font><input type="text" id="textROIName" value="ROIName" size="8" />
+    </div>
+    <br />
+    <font color="white">StructureSetLabel：</font><input type="text" id="textStructureSetLabel" value="STRUCTURE SET"
+      size="15" />
+    <font color="white">StructureSetName：</font><input type="text" id="textStructureSetName"
+      value="StructureSetName" size="14" />
+    <font color="white">StructureSetDescription：</font><input type="text" id="textStructureSetDescription"
+      value="RT:" size="8" />
+    <font color="white">ObservationNumber：</font><input type="text" id="textObservationNumber" value="1" size="2" />
+    <font color="white">ReferencedROINumber：</font><input type="text" id="textReferencedROINumber" value="1"
+      size="2" />
+    <font color="white">RTROIInterpretedType：</font><input type="text" id="textRTROIInterpretedType" value="ORGAN"
+      size="8" />
+  </div>`
+    getByid("form-group").appendChild(span);
+    getByid("RtssDiv").style.display = "none";
+}
+loadWriteRTSS();
+
+function getColorFromRGB(str) {
+    return str.split("(")[1].split(")")[0].split(",");
+}
+
+window.addEventListener('keydown', (KeyboardKeys) => {
+    var key = KeyboardKeys.which
+    if (openWriteRTSS == true && (key === 46 || key === 110)) {
+        var reference;
+        for (var m = 0; m < PatientMark.length; m++) {
+            if (PatientMark[m].showName == getByid('textROIName').value) {
+                reference = PatientMark[m];
+                break;
             }
-          }
         }
-        set_RTSS_context();
-        if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_RTSS_context()), "" + CreateRandom(), 'text/plain');
-        else download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
-        //download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
-        getByid('MouseOperation').click();
-      }
+        PatientMark.splice(PatientMark.indexOf(reference), 1);
+        displayMark();
+
+        refreshMarkFromSop(GetNowUid().sop);
+    }
 });
+
+getByid("writeRTSS").onclick = function () {
+    if (this.enable == false) return;
+    cancelTools();
+    openWriteRTSS = !openWriteRTSS;
+    img2darkByClass("RTSS", !openWriteRTSS);
+    openLeftImgClick = !openWriteRTSS;
+    this.src = openWriteRTSS == true ? '../image/icon/black/rtssdraw_ON.png' : '../image/icon/black/rtssdraw_OFF.png';
+    if (openWriteRTSS == true) {
+        getByid('RtssDiv').style.display = 'flex';
+        set_BL_model('writertss');
+        writertss();
+    }
+    else getByid('RtssDiv').style.display = 'none';
+    displayMark();
+    if (openWriteRTSS == true) return;
+    // else Graphic_now_choose = null;
+
+    function download(text, name, type) {
+        let a = document.createElement('a');
+        let file = new Blob([text], {
+            type: type
+        });
+        a.href = window.URL.createObjectURL(file);
+        //a.style.display = '';
+        a.download = name;
+        a.click();
+    }
+    function download2(text, name, type) {
+        let a = document.createElement('a');
+        let file = new File([text], name + ".xml", {
+            type: type
+        });
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+        xhr.setRequestHeader("enctype", "multipart/form-data");
+        // define new form
+        var formData = new FormData();
+        formData.append("files", file);
+        xhr.send(formData);
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                let data = JSON.parse(xhr.responseText);
+                for (let url of data) {
+                    window.open(url);
+                }
+            }
+        }
+    }
+    set_RTSS_context();
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_RTSS_context()), "" + CreateRandom(), 'text/plain');
+    else download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
+    //download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
+    getByid('MouseOperation').click();
+}
 
 var RTSS_format =
     `<?xml version="1.0" encoding="UTF-8"?>
@@ -183,7 +258,7 @@ var temp_xml_format = "";
 
 function RTSS_pounch(currX, currY, dcm) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
-    let index = SearchUid2Index(GetViewport().alt);
+    let index = SearchUid2Index(GetViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -274,7 +349,8 @@ function set_RTSS_context() {
     let tail6_list = "";
     let tail2_list = "";
     let tail4_list = ";"
-    let index = SearchUid2Index(GetViewport().alt);
+    var viewport = GetViewport();
+    let index = SearchUid2Index(viewport.sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -333,29 +409,29 @@ function set_RTSS_context() {
         var createSopUid = CreateUid("sop");
         var createSeriesUid = CreateUid("series");
         for (var c = 0; c < 5; c++) {
-            temp = setTag(temp, "StudyDate", GetViewport().StudyDate, true);
-            temp = setTag(temp, "StudyTime", GetViewport().StudyTime, true);
+            temp = setTag(temp, "StudyDate", viewport.StudyDate, true);
+            temp = setTag(temp, "StudyTime", viewport.StudyTime, true);
             temp = setTag(temp, "StudyInstanceUID", Patient.Study[i].StudyUID, true);
             temp = setTag(temp, "SeriesInstanceUID", createSeriesUid, true);
             temp = setTag(temp, "SOPInstanceUID", createSopUid, true);
-            temp = setTag(temp, "PatientID", GetViewport().PatientID, true);
-            temp = setTag(temp, "PatientName", GetViewport().PatientName, true);
+            temp = setTag(temp, "PatientID", viewport.PatientID, true);
+            temp = setTag(temp, "PatientName", viewport.PatientName, true);
             temp = setTag(temp, "ReferencedSOPInstanceUID", PatientMark[n].sop, true);
             temp = setTag(temp, "ReferencedSeriesInstanceUID", Patient.Study[i].Series[j].SeriesUID, true);
             temp = setTag(temp, "ReferencedStudyInstanceUID", Patient.Study[i].StudyUID, true);
-            temp = setTag(temp, "AccessionNumber", GetViewport().AccessionNumber, true);
-            temp = setTag(temp, "StudyDescription", GetViewport().StudyDescription, true);
-            temp = setTag(temp, "StudyID", GetViewport().StudyID, true);
+            temp = setTag(temp, "AccessionNumber", viewport.AccessionNumber, true);
+            temp = setTag(temp, "StudyDescription", viewport.StudyDescription, true);
+            temp = setTag(temp, "StudyID", viewport.StudyID, true);
 
-            temp = setTag(temp, "ModalitiesInStudy", GetViewport().ModalitiesInStudy, true);
-            temp = setTag(temp, "Manufacturer", GetViewport().Manufacture, true);
-            temp = setTag(temp, "InstitutionName", GetViewport().InstitutionName, true);
-            temp = setTag(temp, "InstitutionAddress", GetViewport().InstitutionAddress, true);
-            temp = setTag(temp, "ReferringPhysicianName", GetViewport().ReferringPhysicianName, true);
-            temp = setTag(temp, "StationName", GetViewport().StationName, true);
-            temp = setTag(temp, "SeriesDescription", GetViewport().SeriesDescription, true);
-            temp = setTag(temp, "SeriesNumber", "" + GetViewport().SeriesNumber + "01", true);
-            temp = setTag(temp, "RequestingPhysician", "" + GetViewport().RequestingPhysician, true);
+            temp = setTag(temp, "ModalitiesInStudy", viewport.ModalitiesInStudy, true);
+            temp = setTag(temp, "Manufacturer", viewport.Manufacture, true);
+            temp = setTag(temp, "InstitutionName", viewport.InstitutionName, true);
+            temp = setTag(temp, "InstitutionAddress", viewport.InstitutionAddress, true);
+            temp = setTag(temp, "ReferringPhysicianName", viewport.ReferringPhysicianName, true);
+            temp = setTag(temp, "StationName", viewport.StationName, true);
+            temp = setTag(temp, "SeriesDescription", viewport.SeriesDescription, true);
+            temp = setTag(temp, "SeriesNumber", "" + viewport.SeriesNumber + "01", true);
+            temp = setTag(temp, "RequestingPhysician", "" + viewport.RequestingPhysician, true);
 
             temp = setTag(temp, "StructureSetLabel", getByid('textStructureSetLabel').value, true);
             temp = setTag(temp, "StructureSetName", getByid('textStructureSetName').value, true);
@@ -401,10 +477,11 @@ function writertss() {
             else if (e.which == 3) rightMouseDown = true;
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
+            var viewport = GetViewport();
             windowMouseX = GetmouseX(e);
             windowMouseY = GetmouseY(e);
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            viewport.originalPointX = getCurrPoint(e)[0];
+            viewport.originalPointY = getCurrPoint(e)[1];
             if (!rightMouseDown) {
                 var angle2point = rotateCalculation(e)
                 var currX11 = Math.floor(angle2point[0]);
@@ -412,16 +489,16 @@ function writertss() {
                 var currX02 = currX11;
                 var currY02 = currY11;
 
-                if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
-                    currX02 = (currX11 * GetViewport().imageOrientationX + currY11 * -GetViewport().imageOrientationY + 0);
-                    currY02 = (currX11 * -GetViewport().imageOrientationX2 + currY11 * GetViewport().imageOrientationY2 + 0);
-                    if ((GetViewport().openHorizontalFlip != GetViewport().openVerticalFlip)) {
+                if (viewport.imageOrientationX && viewport.imageOrientationY && viewport.imageOrientationZ) {
+                    currX02 = (currX11 * viewport.imageOrientationX + currY11 * -viewport.imageOrientationY + 0);
+                    currY02 = (currX11 * -viewport.imageOrientationX2 + currY11 * viewport.imageOrientationY2 + 0);
+                    if ((viewport.openHorizontalFlip != viewport.openVerticalFlip)) {
                         currX02 = currX02 - (currX02 - currX11) * 2;
                         currY02 = currY02 - (currY02 - currY11) * 2;
                     }
                 }
-                currX02 = currX02 / GetViewport().PixelSpacingX + GetViewport().imagePositionX;
-                currY02 = currY02 / GetViewport().PixelSpacingY + GetViewport().imagePositionY;
+                currX02 = currX02 / viewport.PixelSpacingX + viewport.imagePositionX;
+                currY02 = currY02 / viewport.PixelSpacingY + viewport.imagePositionY;
                 let Uid = GetNowUid();
                 var dcm = {};
                 dcm.study = Uid.study;
@@ -433,7 +510,7 @@ function writertss() {
                     }
                 }
 
-                dcm.imagePositionZ = GetViewport().imagePositionZ;
+                dcm.imagePositionZ = viewport.imagePositionZ;
                 dcm.mark = [];
                 dcm.showName = getByid('textROIName').value; //"" + getByid("xmlMarkNameText").value;
                 dcm.hideName = dcm.showName;
@@ -456,6 +533,7 @@ function writertss() {
         Mousemove = function (e) {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
+            var viewport = GetViewport();
             var labelXY = getClass('labelXY'); {
                 let angle2point = rotateCalculation(e);
                 labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
@@ -466,8 +544,8 @@ function writertss() {
 
             if (openLink == true) {
                 for (var i = 0; i < Viewport_Total; i++) {
-                    GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-                    GetViewport(i).newMousePointY = GetViewport().newMousePointY;
+                    GetViewport(i).newMousePointX = viewport.newMousePointX;
+                    GetViewport(i).newMousePointY = viewport.newMousePointY;
                 }
             }
             putLabel();
@@ -481,16 +559,16 @@ function writertss() {
                 var currX02 = currX11;
                 var currY02 = currY11;
 
-                if (GetViewport().imageOrientationX && GetViewport().imageOrientationY && GetViewport().imageOrientationZ) {
-                    currX02 = (currX11 * GetViewport().imageOrientationX + currY11 * -GetViewport().imageOrientationY + 0);
-                    currY02 = (currX11 * -GetViewport().imageOrientationX2 + currY11 * GetViewport().imageOrientationY2 + 0);
-                    if ((GetViewport().openHorizontalFlip != GetViewport().openVerticalFlip)) {
+                if (viewport.imageOrientationX && viewport.imageOrientationY && viewport.imageOrientationZ) {
+                    currX02 = (currX11 * viewport.imageOrientationX + currY11 * -viewport.imageOrientationY + 0);
+                    currY02 = (currX11 * -viewport.imageOrientationX2 + currY11 * viewport.imageOrientationY2 + 0);
+                    if ((viewport.openHorizontalFlip != viewport.openVerticalFlip)) {
                         currX02 = currX02 - (currX02 - currX11) * 2;
                         currY02 = currY02 - (currY02 - currY11) * 2;
                     }
                 }
-                currX02 = currX02 / GetViewport().PixelSpacingX + GetViewport().imagePositionX;
-                currY02 = currY02 / GetViewport().PixelSpacingY + GetViewport().imagePositionY;
+                currX02 = currX02 / viewport.PixelSpacingX + viewport.imagePositionX;
+                currY02 = currY02 / viewport.PixelSpacingY + viewport.imagePositionY;
                 // var DcmMarkLength = RTSS_now_choose.mark.length - 1;
                 RTSS_now_choose.markX.push(angle2point[0] - Math.abs(currX02 - angle2point[0]));
                 RTSS_now_choose.markY.push(angle2point[1] - Math.abs(currY02 - angle2point[1]));

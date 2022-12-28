@@ -21,8 +21,6 @@ function scroll() {
             GetViewport().originalPointY = getCurrPoint(e)[1];
         };
 
-
-
         Mousemove = function (e) {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
@@ -48,14 +46,14 @@ function scroll() {
                 windowMouseY = GetmouseY(e);
 
                 var nextInstanceNumber = -1;
-                var alt = GetViewport().alt;
-                let index = SearchUid2Index(alt);
+                var sop = GetViewport().sop;
+                let index = SearchUid2Index(sop);
                 // if (!index) continue;
                 let i = index[0],
                     j = index[1],
                     k = index[2];
                 var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-                var list = sortInstance(alt);
+                var list = sortInstance(sop);
                 if (!(list.length <= 1)) {
                     var l = 0;
                     for (l = 0; l < list.length; l++) {
@@ -95,7 +93,7 @@ function scroll() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(viewportNumber);
+                displayMark();
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
@@ -106,7 +104,7 @@ function scroll() {
             }
         }
         Touchstart = function (e, e2) {
-            if (openVR == true) return;
+
             if (!e2) TouchDownCheck = true;
             else rightTouchDown = true;
             windowMouseX = GetmouseX(e);
@@ -124,7 +122,7 @@ function scroll() {
         }
         Touchmove = function (e, e2) {
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
-            if (openVR == true) return;
+
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (e2) {
@@ -137,14 +135,14 @@ function scroll() {
                 //if (openChangeFile == true) 
                 {
                     var nextInstanceNumber = -1;
-                    var alt = GetViewport().alt;
-                    let index = SearchUid2Index(alt);
+                    var sop = GetViewport().sop;
+                    let index = SearchUid2Index(sop);
                     // if (!index) continue;
                     let i = index[0],
                         j = index[1],
                         k = index[2];
                     var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-                    var list = sortInstance(alt);
+                    var list = sortInstance(sop);
                     for (l = 0; l < list.length; l++) {
                         if (list[l].InstanceNumber == Onum) {
                             break;
@@ -175,10 +173,6 @@ function scroll() {
                     }
                     GetViewport().originalPointX = currX;
                     GetViewport().originalPointY = currY;
-                    if (openMPR == true && nextInstanceNumber > -1) {
-                        Anatomical_Section(nextInstanceNumber);
-                        Anatomical_Section2(nextInstanceNumber);
-                    }
                 }
             }
             // putLabel();
@@ -192,7 +186,7 @@ function scroll() {
             }
             TouchDownCheck = false;
             rightTouchDown = false;
-            if (openVR == true) return;
+
             magnifierDiv.style.display = "none";
             displayMeasureRular();
         }

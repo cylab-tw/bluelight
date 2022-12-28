@@ -2,16 +2,16 @@ function playVideo(dir) {
     getByid("MeasureLabel").style.display = "none";
     getByid("AngleLabel").style.display = "none";
     var viewportNum = dir;
-    var alt = GetViewport(viewportNum).alt;
+    var sop = GetViewport(viewportNum).sop;
     var break1 = false;
-    let index = SearchUid2Index(alt);
+    let index = SearchUid2Index(sop);
     if (!index) return;
     let i = index[0],
         j = index[1],
         k = index[2];
-    if (Patient.Study[i].Series[j].Sop[k].SopUID == alt) {
+    if (Patient.Study[i].Series[j].Sop[k].SopUID == sop) {
         var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-        var list = sortInstance(alt);
+        var list = sortInstance(sop);
         if (!(list.length <= 1)) {
             for (var l = 0; l < list.length; l++) {
                 if (break1 == true) break;

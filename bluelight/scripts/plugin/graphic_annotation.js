@@ -1,65 +1,160 @@
-window.addEventListener("load", function (event) {
+//代表GSPS標記模式為開啟狀態
+var openWriteGSPS = false;
 
-    getByid("GspsTypeSelect").onchange = function () {
-        displayMark(viewportNumber);
+function loadWriteGraphic() {
+    var span = document.createElement("SPAN")
+    span.innerHTML =
+        `<img class="img GSPS" alt="writeGSPS" id="writeGSPS" src="../image/icon/black/gsps_off.png" width="50" height="50">`;
+    getByid("icon-list").appendChild(span);
+
+    var span = document.createElement("SPAN")
+    span.innerHTML =
+        `<div id="GspsStyleDiv" style="background-color:#30306044;">
+        <select id="GSPScolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
+          <option id="GSPSBlackSelect" style="color: #000000;font-weight:bold;">Black</option>
+          <option id="GSPSBlueSelect" style="color: #0000FF;font-weight:bold;" selected="selected">Blue</option>
+          <option id="GSPSBrownSelect" style="color: #A52A2A;font-weight:bold;">Brown</option>
+          <option id="GSPSCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan</option>
+          <option id="GSPSGreenSelect" style="color: #00FF00;font-weight:bold;">Green</option>
+          <option id="GSPSMagentaSelect" style="color: #FF00FF;font-weight:bold;">Magenta</option>
+          <option id="GSPSOrangeSelect" style="color: #FFA500;font-weight:bold;">Orange</option>
+          <option id="GSPSPurpleSelect" style="color: #663399;font-weight:bold;">Purple</option>
+          <option id="GSPSRedSelect" style="color: #FF0000;font-weight:bold;">Red</option>
+          <option id="GSPSYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow</option>
+          <option id="GSPSWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White</option>
+        </select>
+        <font color="white">Name：</font><input type="text" id="GspsName" value="T1" size="8" />
+        <select id="GspsTypeSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
+          <option id="GspsPOLYLINE" selected="selected">Rectangle</option>
+          <option id="GspsCIRCLE">Circle</option>
+          <option id="GspsLINE">Line</option>
+        </select>
+      </div>`
+    getByid("page-header").appendChild(span);
+    getByid("GspsStyleDiv").style.display = "none";
+}
+loadWriteGraphic();
+
+window.addEventListener('keydown', (KeyboardKeys) => {
+    var key = KeyboardKeys.which
+    if ((openWriteGSPS || openWriteGraphic) && Graphic_now_choose && (key === 46 || key === 110)) {
+        PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
+        displayMark();
+        Graphic_now_choose = null;
+        refreshMarkFromSop(GetNowUid().sop);
     }
+});
 
-    getByid("writeGSPS").onclick = function () {
-        if (imgInvalid(this)) return;
-        cancelTools();
-        openWriteGSPS = !openWriteGSPS;
-        img2darkByClass("GSPS", !openWriteGSPS);
-        this.src = openWriteGSPS == true ? '../image/icon/black/gsps_on.png' : '../image/icon/black/gsps_off.png';
-        if (openWriteGSPS == true) {
-            getByid('GspsStyleDiv').style.display = '';
-            set_BL_model('writegsps');
-            writegsps();
-        }
-        else getByid('GspsStyleDiv').style.display = 'none';
-        displayMark(viewportNumber);
-        if (openWriteGSPS == true) return;
-        // else GSPS_now_choose = null;
+function GetGraphicColor() {
+    //if (getByid("Graphicselected").selected) return "#0000FF";
+    if (getByid("GraphicBlackSelect").selected) return "#000000";
+    else if (getByid("GraphicBlueSelect").selected) return "#0000FF";
+    else if (getByid("GraphicBrownSelect").selected) return "#844200";
+    else if (getByid("GraphicCyanSelect").selected) return "#00FFFF";
+    else if (getByid("GraphicGreenSelect").selected) return "#00FF00";
+    else if (getByid("GraphicMagentaSelect").selected) return "#FF00FF";
+    else if (getByid("GraphicOrangeSelect").selected) return "#FFA500";
+    else if (getByid("GraphicPurpleSelect").selected) return "#663399";
+    else if (getByid("GraphicRedSelect").selected) return "#FF0000";
+    else if (getByid("GraphicYellowSelect").selected) return "#FFFF00";
+    else if (getByid("GraphicWhiteSelect").selected) return "#FFFFFF";
+    else return "#0000FF";
+}
 
-        function download(text, name, type) {
-            let a = document.createElement('a');
-            let file = new Blob([text], {
-                type: type
-            });
-            a.href = window.URL.createObjectURL(file);
-            //a.style.display = '';
-            a.download = name;
-            a.click();
-        }
-        function download2(text, name, type) {
-            let a = document.createElement('a');
-            let file = new File([text], name + ".xml", {
-                type: type
-            });
-            var xhr = new XMLHttpRequest();
+function GetGSPSColor() {
+    //if (getByid("Graphicselected").selected) return "#0000FF";
+    if (getByid("GSPSBlackSelect").selected) return "#000000";
+    else if (getByid("GSPSBlueSelect").selected) return "#0000FF";
+    else if (getByid("GSPSBrownSelect").selected) return "#844200";
+    else if (getByid("GSPSCyanSelect").selected) return "#00FFFF";
+    else if (getByid("GSPSGreenSelect").selected) return "#00FF00";
+    else if (getByid("GSPSMagentaSelect").selected) return "#FF00FF";
+    else if (getByid("GSPSOrangeSelect").selected) return "#FFA500";
+    else if (getByid("GSPSPurpleSelect").selected) return "#663399";
+    else if (getByid("GSPSRedSelect").selected) return "#FF0000";
+    else if (getByid("GSPSYellowSelect").selected) return "#FFFF00";
+    else if (getByid("GSPSWhiteSelect").selected) return "#FFFFFF";
+    else return "#0000FF";
+}
 
-            xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
-            xhr.setRequestHeader("enctype", "multipart/form-data");
-            // define new form
-            var formData = new FormData();
-            formData.append("files", file);
-            xhr.send(formData);
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    let data = JSON.parse(xhr.responseText);
-                    for (let url of data) {
-                        window.open(url);
-                    }
+function GetGraphicName() {
+    //if (getByid("Graphicselected").selected) return "T8";
+    if (getByid("GraphicBlackSelect").selected) return "T7";
+    else if (getByid("GraphicBlueSelect").selected) return "T8";
+    else if (getByid("GraphicBrownSelect").selected) return "T9";
+    else if (getByid("GraphicCyanSelect").selected) return "T10";
+    else if (getByid("GraphicGreenSelect").selected) return "T11";
+    else if (getByid("GraphicMagentaSelect").selected) return "T12";
+    else if (getByid("GraphicOrangeSelect").selected) return "L1";
+    else if (getByid("GraphicPurpleSelect").selected) return "L2";
+    else if (getByid("GraphicRedSelect").selected) return "L3";
+    else if (getByid("GraphicYellowSelect").selected) return "L4";
+    else if (getByid("GraphicWhiteSelect").selected) return "L5";
+    else return "T8";
+}
+
+
+getByid("GspsTypeSelect").onchange = function () {
+    displayMark();
+}
+
+getByid("writeGSPS").onclick = function () {
+    if (this.enable == false) return;
+    cancelTools();
+    openWriteGSPS = !openWriteGSPS;
+    img2darkByClass("GSPS", !openWriteGSPS);
+    openLeftImgClick = !openWriteGSPS;
+    this.src = openWriteGSPS == true ? '../image/icon/black/gsps_on.png' : '../image/icon/black/gsps_off.png';
+    if (openWriteGSPS == true) {
+        getByid('GspsStyleDiv').style.display = '';
+        set_BL_model('writegsps');
+        writegsps();
+    }
+    else getByid('GspsStyleDiv').style.display = 'none';
+    displayMark();
+    if (openWriteGSPS == true) return;
+    // else GSPS_now_choose = null;
+
+    function download(text, name, type) {
+        let a = document.createElement('a');
+        let file = new Blob([text], {
+            type: type
+        });
+        a.href = window.URL.createObjectURL(file);
+        //a.style.display = '';
+        a.download = name;
+        a.click();
+    }
+    function download2(text, name, type) {
+        let a = document.createElement('a');
+        let file = new File([text], name + ".xml", {
+            type: type
+        });
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+        xhr.setRequestHeader("enctype", "multipart/form-data");
+        // define new form
+        var formData = new FormData();
+        formData.append("files", file);
+        xhr.send(formData);
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                let data = JSON.parse(xhr.responseText);
+                for (let url of data) {
+                    window.open(url);
                 }
             }
         }
-        set_GSPS_context();
-        if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_Graphic_context()), "" + CreateRandom(), 'text/plain');
-        else download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
-        //download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
-
-        getByid('MouseOperation').click();
     }
-});
+    set_GSPS_context();
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_Graphic_context()), "" + CreateRandom(), 'text/plain');
+    else download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
+    //download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
+
+    getByid('MouseOperation').click();
+}
+
 
 var Graphic_Annotation_format =
     `<?xml version="1.0" encoding="UTF-8"?>
@@ -156,7 +251,7 @@ var temp_xml_format = "";
 
 function Graphic_pounch(currX, currY, dcm) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
-    let index = SearchUid2Index(GetViewport().alt);
+    let index = SearchUid2Index(GetViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -245,7 +340,7 @@ function set_Graphic_context() {
     Graphic_format_object_list = []
     let temp = ""
     let tail_list = "";
-    let index = SearchUid2Index(GetViewport().alt);
+    let index = SearchUid2Index(GetViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -342,7 +437,7 @@ function set_GSPS_context() {
     Graphic_format_object_list = []
     let temp = ""
     let tail_list = "";
-    let index = SearchUid2Index(GetViewport().alt);
+    let index = SearchUid2Index(GetViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -637,7 +732,7 @@ function writegsps() {
                     if (Graphic_now_choose.mark.RotationAngle >= 0)
                         Graphic_now_choose.mark.RotationPoint = getRotationPoint(Graphic_now_choose.mark, true);
                     //Graphic_now_choose.mark.RotationPoint = [Graphic_now_choose.middle[0], Graphic_now_choose.middle[1]];
-                    displayMark(viewportNumber);
+                    displayMark();
                 }
             }
         }
@@ -758,3 +853,73 @@ function writegsps() {
     }
     AddMouseEvent();
 }
+
+function drawPOLYLINE_Write(obj) {
+    var canvas = obj.canvas, mark = obj.mark;
+    if (mark.type != "POLYLINE") return;
+    var ctx = canvas.getContext("2d");
+    ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
+    setMarkColor(ctx);
+    if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
+
+    for (var o = 0; o < mark.markX.length; o += 1) {
+        ctx.beginPath();
+
+        var x1 = mark.markX[o] * 1;
+        var y1 = mark.markY[o] * 1;
+        var x2 = mark.markX[o + 1] * 1;
+        var y2 = mark.markY[o + 1] * 1;
+
+        if (mark.RotationAngle && mark.RotationPoint) {
+            [x1, y1] = rotatePoint([x1, y1], mark.RotationAngle, mark.RotationPoint);
+            [x2, y2] = rotatePoint([x2, y2], mark.RotationAngle, mark.RotationPoint);
+        }
+
+        if (mark.GSPS_Text && o == 0) {
+            ctx.font = "" + (parseInt(ctx.lineWidth) * 4) + "px Arial";
+            ctx.fillStyle = "red";
+            var tempAlpha = ctx.globalAlpha;
+            ctx.globalAlpha = 1.0;
+            ctx.fillText("" + mark.GSPS_Text, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 7 : y2 - 7);
+            ctx.globalAlpha = tempAlpha;
+        }
+        var tempAlpha2 = ctx.globalAlpha;
+        ctx.globalAlpha = 1.0;
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+        ctx.globalAlpha = tempAlpha2;
+        if (mark.GraphicFilled && mark.GraphicFilled == 'Y') {
+            ctx.fillStyle = "#FFFF88";
+            ctx.fill();
+            console.log(x1, y1, x2, y2)
+        };
+        ctx.closePath();
+
+        if (openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true && openWriteGSPS == true)) {
+            if (mark.RotationAngle && mark.RotationPoint) {
+                [x1, y1] = rotatePoint([x1, y1], -mark.RotationAngle, mark.RotationPoint);
+                [x2, y2] = rotatePoint([x2, y2], -mark.RotationAngle, mark.RotationPoint);
+            }
+            ctx.lineWidth = "" + parseInt(ctx.lineWidth) * 2;
+            var fillstyle = ctx.fillStyle;
+
+            if (Graphic_now_choose && Graphic_now_choose.mark == mark) ctx.strokeStyle = getRGBFrom0xFF(ctx.strokeStyle, false, true);
+            ctx.beginPath();
+            ctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.closePath();
+
+            for (var fil = 0; fil < 2; fil++) {
+                ctx.fillStyle = fillstyle;
+                ctx.beginPath();
+                ctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.closePath();
+            }
+            ctx.lineWidth = "" + parseInt(ctx.lineWidth) / 2;
+        }
+    }
+}
+
+PLUGIN.PushMarkList(drawPOLYLINE_Write);

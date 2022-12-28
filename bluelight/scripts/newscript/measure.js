@@ -71,7 +71,7 @@ function measure() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(viewportNumber);
+                displayMark();
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
@@ -82,7 +82,7 @@ function measure() {
             }
         }
         Touchstart = function (e, e2) {
-            if (openVR == true) return;
+
             if (!e2) TouchDownCheck = true;
             else rightTouchDown = true;
             windowMouseX = GetmouseX(e);
@@ -121,7 +121,7 @@ function measure() {
         }
         Touchmove = function (e, e2) {
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
-            if (openVR == true) return;
+
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (e2) {
@@ -153,7 +153,7 @@ function measure() {
             }
             TouchDownCheck = false;
             rightTouchDown = false;
-            if (openVR == true) return;
+
             magnifierDiv.style.display = "none";
             displayMeasureRular();
         }

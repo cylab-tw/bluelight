@@ -1,61 +1,130 @@
-window.addEventListener("load", function (event) {
+//代表SEG標記模式為開啟狀態
+var openWriteSEG = false;
 
-    getByid("writeSEG").onclick = function () {
-        if (imgInvalid(this)) return;
-        cancelTools();
-        openWriteSEG = !openWriteSEG;
-        img2darkByClass("SEG", !openWriteSEG);
-        this.src = openWriteSEG == true ? '../image/icon/black/seg_on.png' : '../image/icon/black/seg_off.png';
-        if (openWriteSEG == true) {
-            getByid("overlay2seg").style.display = "";
-            getByid('SegStyleDiv').style.display = 'flex';
-            set_BL_model('writeSeg');
-            writeSeg();
+function loadWriteSEG() {
+  var span = document.createElement("SPAN")
+  span.innerHTML =
+    `<img class="img SEG" alt="writeSEG" id="writeSEG" src="../image/icon/black/seg_off.png" width="50" height="50">`;
+  getByid("icon-list").appendChild(span);
+
+  var span = document.createElement("SPAN")
+  span.innerHTML =
+    `<div id="SegStyleDiv" style="background-color:#30306044;">
+    <font color="white">ManufacturerModelName：</font><input type="text" id="SegManufacturerModelName"
+      value="ModelName" size="8" />
+    <font color="white">SeriesDescription：</font><input type="text" id="SegSeriesDescription" value="Research"
+      size="8" />
+    <font color="white">SegmentLabel</font><input type="text" id="SegSegmentLabel" value="SegmentLabel" size="8" />
+    <font color="white">Brush Size</font><input type="text" id="SegBrushSizeText" value="10" size="2" />
+    &nbsp;&nbsp;<button id="overlay2seg" sytle="">OverLay to Seg</button>
+  </div>`
+  getByid("page-header").appendChild(span);
+  getByid("SegStyleDiv").style.display = "none";
+}
+loadWriteSEG();
+
+
+getByid("overlay2seg").onclick = function () {
+    getByid("overlay2seg").style.display = "none";
+    var sop = GetViewport().sop;
+    //if (o3DElement) sop = o3DElement.sop;
+    let index = SearchUid2Index(sop);
+    if (!index) return;
+    let i = index[0],
+      j = index[1],
+      k = index[2];
+    for (var n = 0; n < PatientMark.length; n++) {
+      if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
+        for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
+          for (var m = 0; m < PatientMark[n].mark.length; m++) {
+            if (PatientMark[n].mark[m].type == "Overlay" && PatientMark[n].sop == Patient.Study[i].Series[j].Sop[l].SopUID) {
+              let Uid = GetNowUid();
+              var dcm = {};
+              dcm.study = Uid.study;
+              dcm.series = Uid.sreies;
+
+              dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
+              dcm.mark = [];
+              dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
+              dcm.hideName = dcm.showName;
+              dcm.mark.push({});
+              dcm.sop = Patient.Study[i].Series[j].Sop[l].SopUID;
+              var DcmMarkLength = dcm.mark.length - 1;
+              dcm.mark[DcmMarkLength].type = "SEG";
+              function jsonDeepClone(obj) {
+                return JSON.parse(JSON.stringify(obj));
+              }
+              dcm.mark[DcmMarkLength].canvas= PatientMark[n].mark[m].canvas;
+              PatientMark.push(dcm);
+              refreshMark(dcm);
+              SEG_now_choose = dcm.mark[DcmMarkLength];
+
+              // PatientMark.splice(PatientMark.indexOf(temp_overlay), 1);
+            }
+          }
         }
-        else getByid('SegStyleDiv').style.display = 'none';
-        displayMark(viewportNumber);
+      }
+    }
+    refreshMarkFromSop(GetNowUid().sop);
+  }
 
-        if (openWriteSEG == true) return;
-        // else Graphic_now_choose = null;
+getByid("writeSEG").onclick = function () {
+    if (this.enable == false) return;
+    cancelTools();
+    openWriteSEG = !openWriteSEG;
+    img2darkByClass("SEG", !openWriteSEG);
+    openLeftImgClick = !openWriteSEG;
+    this.src = openWriteSEG == true ? '../image/icon/black/seg_on.png' : '../image/icon/black/seg_off.png';
+    if (openWriteSEG == true) {
+        getByid("overlay2seg").style.display = "";
+        getByid('SegStyleDiv').style.display = 'flex';
+        set_BL_model('writeSeg');
+        writeSeg();
+    }
+    else getByid('SegStyleDiv').style.display = 'none';
+    displayMark();
 
-        function download(text, name, type) {
-            let a = document.createElement('a');
-            let file = new Blob([text], {
-                type: type
-            });
-            a.href = window.URL.createObjectURL(file);
-            //a.style.display = '';
-            a.download = name;
-            a.click();
-        }
-        function download2(text, name, type) {
-            let a = document.createElement('a');
-            let file = new File([text], name + ".xml", {
-                type: type
-            });
-            var xhr = new XMLHttpRequest();
+    if (openWriteSEG == true) return;
+    // else Graphic_now_choose = null;
 
-            xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
-            xhr.setRequestHeader("enctype", "multipart/form-data");
-            // define new form
-            var formData = new FormData();
-            formData.append("files", file);
-            xhr.send(formData);
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    let data = JSON.parse(xhr.responseText);
-                    for (let url of data) {
-                        window.open(url);
-                    }
+    function download(text, name, type) {
+        let a = document.createElement('a');
+        let file = new Blob([text], {
+            type: type
+        });
+        a.href = window.URL.createObjectURL(file);
+        //a.style.display = '';
+        a.download = name;
+        a.click();
+    }
+    function download2(text, name, type) {
+        let a = document.createElement('a');
+        let file = new File([text], name + ".xml", {
+            type: type
+        });
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+        xhr.setRequestHeader("enctype", "multipart/form-data");
+        // define new form
+        var formData = new FormData();
+        formData.append("files", file);
+        xhr.send(formData);
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                let data = JSON.parse(xhr.responseText);
+                for (let url of data) {
+                    window.open(url);
                 }
             }
         }
-        set_SEG_context();
-        if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_SEG_context()), "" + CreateRandom(), 'text/plain');
-        else download(String(get_SEG_context()), 'filename_SEG.xml', 'text/plain');
-        getByid('MouseOperation').click();
     }
-});
+    set_SEG_context();
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_SEG_context()), "" + CreateRandom(), 'text/plain');
+    else download(String(get_SEG_context()), 'filename_SEG.xml', 'text/plain');
+    getByid('MouseOperation').click();
+}
+
 
 var SEG_format =
     `<?xml version="1.0" encoding="UTF-8"?>
@@ -247,7 +316,7 @@ function set_SEG_context() {
     let temp = ""
     let tail4_list = "";
     let tail2_list = "";
-    let index = SearchUid2Index(GetViewport().alt);
+    let index = SearchUid2Index(GetViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -409,8 +478,8 @@ function writeSeg() {
             GetViewport().originalPointX = getCurrPoint(e)[0];
             GetViewport().originalPointY = getCurrPoint(e)[1];
             if (openWindow != true) {
-                var alt = GetViewport().alt;
-                var index_Seg = SearchUid2Index(alt);
+                var sop = GetViewport().sop;
+                var index_Seg = SearchUid2Index(sop);
                 if (!index_Seg) return;
                 let i_s = index_Seg[0],
                     j_s = index_Seg[1],
@@ -460,7 +529,7 @@ function writeSeg() {
                         }
                         dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
                     }
-                    let angle2point = rotateCalculation(e);    
+                    let angle2point = rotateCalculation(e);
                     PatientMark.push(dcm);
                     refreshMark(dcm);
                     SEG_now_choose = dcm.mark[DcmMarkLength];
@@ -509,7 +578,7 @@ function writeSeg() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(viewportNumber);
+                displayMark();
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
@@ -524,12 +593,12 @@ function writeSeg() {
     }
 }
 
-function setSEG2PixelData(angle2point){
+function setSEG2PixelData(angle2point) {
     var rect = getByid("SegBrushSizeText").value;
     rect = parseInt(rect);
     if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
 
-    var pixelData = SEG_now_choose.ctx.getImageData(parseInt(angle2point[0]) -rect, parseInt(angle2point[1]) -rect,  rect * 2, rect * 2);
+    var pixelData = SEG_now_choose.ctx.getImageData(parseInt(angle2point[0]) - rect, parseInt(angle2point[1]) - rect, rect * 2, rect * 2);
     var p = 0;
     if (KeyCode_ctrl == true) {
         for (var s = -rect; s < rect; s++) {
@@ -541,7 +610,7 @@ function setSEG2PixelData(angle2point){
                     pixelData.data[p + 2] = 0;
                     pixelData.data[p + 3] = 0;
                 }
-                p+=4;
+                p += 4;
             }
         }
     } else {
@@ -554,9 +623,9 @@ function setSEG2PixelData(angle2point){
                     pixelData.data[p + 2] = 255;
                     pixelData.data[p + 3] = 255;
                 }
-                p+=4;
+                p += 4;
             }
         }
     }
-    SEG_now_choose.ctx.putImageData(pixelData, parseInt(angle2point[0])-rect, parseInt(angle2point[1])-rect);
+    SEG_now_choose.ctx.putImageData(pixelData, parseInt(angle2point[0]) - rect, parseInt(angle2point[1]) - rect);
 }

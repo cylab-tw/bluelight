@@ -9,7 +9,10 @@
   <meta content="no-cache" http-equiv="pragma">
   <meta content="0" http-equiv="expires">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  
   <link rel="stylesheet" type="text/css" href="../css/vr.css">
+  <link rel="icon" href="../image/icon/title/bluelight.png" type="image/x-icon" />
+
   <script src="../scripts/external/other/lodash.min.js"></script>
   <script src="../scripts/external/other/interact.js"></script>
 
@@ -22,20 +25,14 @@
   <script src="../scripts/external/threejs/cornerstoneWADOImageLoaderWebWorker.min.js"></script>
   <script src="../scripts/external/threejs/cornerstoneWADOImageLoaderCodecs.js"></script>
   <script src="../scripts/external/threejs/convolveTask.js"></script>
-
   <script src="../scripts/toolfunction.js"></script>
   <script src="../scripts/variable.js"></script>
-  <!--<script src="../scripts/touchoperate.js"></script>
-  <script src="../scripts/mouseoperate.js"></script>-->
+  <script src="../scripts/mark.js"></script>
+
   <script src="../scripts/eventmanager.js"></script>
 
-  <script src="../scripts/mpr.js"></script>
-  <script src="../scripts/vr.js"></script>
+  <script src="../scripts/plugin/table.js"></script>
 
-  <script src="../scripts/plugin/xml_format.js"></script>
-  <script src="../scripts/plugin/graphic_annotation.js"></script>
-  <script src="../scripts/plugin/rtss.js"></script>
-  <script src="../scripts/plugin/seg.js"></script>
   <script src="../scripts/viewer.js"></script>
   <script src="../scripts/common.js"></script>
   <script src="../scripts/other.js"></script>
@@ -52,97 +49,70 @@
   <script src="../scripts/newscript/rotate.js"></script>
   <script src="../scripts/newscript/measure.js"></script>
   <script src="../scripts/newscript/angle.js"></script>
+  <script src="../scripts/plugin/plugin.js"></script>
   <script src="../scripts/external/other/html2canvas.min.js"></script>
   <script type="module">
     import { decodeImageFrame1 } from "../scripts/external/cornerstone/decode/decodeImageFrame.js";
     decodeImageFrame = decodeImageFrame1;
   </script>
   <style>
-  .img{
-    flex: 0 0 4.0%;
-    max-width: calc(min(4.0%,50px));
-    min-width:35px;
-    width:100%;
-    height:100%;
-  }
-  .innerLabel{
-    font-size: calc(0.4rem + 0.1*((5vw)));
-  }
+    .img {
+      flex: 0 0 4.0%;
+      max-width: calc(min(4.0%, 50px));
+      min-width: 35px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .innerLabel {
+      font-size: calc(0.4rem + 0.1*((5vw)));
+    }
   </style>
 </head>
 
 <body style="background-color:#000000;" onmousewheel="/*return false;*/">
-  <header class="page-header">
-    <img class="img" type="file" alt="開檔" id="openFile" src="../image/icon/black/openfile.png" width="50" height="50">
-    <img class="img VR MPR SEG" alt="平移與縮放" id="MouseOperation" src="../image/icon/black/b_Pan.png" width="50" height="50">
-    <img class="img MPR" alt="b_Scroll" id="b_Scroll" src="../image/icon/black/b_Scroll.png" width="50" height="50">
+  <header class="page-header" id="page-header">
+    <span id="icon-list">
+      <span id="openFile_span"><img class="img" type="file" alt="開檔" id="openFile"
+          src="../image/icon/black/openfile.png" width="50" height="50"></span>
+      <span id="MouseOperation_span"><img class="img VR MPR SEG" alt="平移與縮放" id="MouseOperation"
+          src="../image/icon/black/b_Pan.png" width="50" height="50"></span>
+      <span id="b_Scroll_span"><img class="img MPR" alt="b_Scroll" id="b_Scroll" src="../image/icon/black/b_Scroll.png"
+          width="50" height="50"></span>
+      <span id="annotation1_span"><img class="img" alt="分隔" id="annotation1"
+          src="../image/icon/black/b_LayoutWithinViewport.png" width="50" height="50"></span>
+      <span id="MouseRotate_span"><img class="img MPR" alt="旋轉" id="MouseRotate"
+          src="../image/icon/black/b_Rotate 90 degrees clockwise.png" width="50" height="50"></span>
+      <span id="WindowRevision_span"><img class="img VR MPR SEG" alt="Window Level" id="WindowRevision"
+          src="../image/icon/black/b_Window.png" width="50" height="50"></span>
+      <span id="zoom_span"><img class="img" alt="放大鏡" id="zoom" src="../image/icon/black/b_Zoom.png" width="50"
+          height="50"></span>
+      <span id="horizontal_flip_span"><img class="img" alt="水平翻轉" id="horizontal_flip"
+          src="../image/icon/black/b_FlipHorizontally.png" width="50" height="50"></span>
+      <span id="vertical_flip_span"><img class="img" alt="垂直翻轉" id="vertical_flip" src="../image/icon/black/b_垂直翻轉.png"
+          width="50" height="50"></span>
+      <span id="color_invert_span"><img class="img" alt="色彩反轉" id="color_invert"
+          src="../image/icon/black/b_InvertGrayscale.png" width="50" height="50"></span>
+      <span id="unlink_span"><img class="img" alt="連接" id="unlink"
+          src="../image/icon/black/b_unlink translation synchronization.png" width="50" height="50"></span>
+      <span id="MeasureRular_span"><img class="img" alt="測量" id="MeasureRular"
+          src="../image/icon/black/b_DistanceMeasurement.png" width="50" height="50"></span>
+      <span id="AngleRular_span"><img class="img" alt="角度" id="AngleRular"
+          src="../image/icon/black/b_AngleMeasurement.png" width="50" height="50"></span>
+      <span id="playvideo_span"><img class="img" alt="播放" id="playvideo" src="../image/icon/black/b_CinePlay.png"
+          width="50" height="50"></span>
+      <span id="MarkButton_span"><img class="img VR MPR" alt="標記" id="MarkButton" src="../image/icon/black/fist0.png"
+          width="50" height="50"></span>
+      <span id="annotation_span"><img class="img" alt="標籤" id="annotation" src="../image/icon/black/b_Annotation.png"
+          width="50" height="50"></span>
+      <span id="MarkupImg_span"><img class="img VR MPR" alt="AIM" id="MarkupImg"
+          src="../image/icon/black/b_ShowReport.png" width="50" height="50"></span>
+    </span>
+    <span id="rwdImgTag_span"> <img class="img VR MPR XML PEN" alt="RWD" id="rwdImgTag"
+        src="../image/icon/black/b_CineTools.png" style="display:none;" width="50" height="50"></span>
 
-    <img class="img" alt="分隔" id="annotation1" src="../image/icon/black/b_LayoutWithinViewport.png" width="50" height="50">
-    <img class="img MPR" alt="旋轉" id="MouseRotate" src="../image/icon/black/b_Rotate 90 degrees clockwise.png" width="50" height="50">
-    <img class="img VR MPR SEG" alt="Window Level" id="WindowRevision" src="../image/icon/black/b_Window.png" width="50" height="50">
-    <img class="img" alt="放大鏡" id="zoom" src="../image/icon/black/b_Zoom.png" width="50" height="50">
-    <img class="img" alt="水平翻轉" id="horizontal_flip" src="../image/icon/black/b_FlipHorizontally.png" width="50" height="50">
-    <img class="img" alt="垂直翻轉" id="vertical_flip" src="../image/icon/black/b_垂直翻轉.png" width="50" height="50">
-    <img class="img" alt="色彩反轉" id="color_invert" src="../image/icon/black/b_InvertGrayscale.png" width="50" height="50">
-    <img class="img" alt="連接" id="unlink" src="../image/icon/black/b_unlink translation synchronization.png" width="50" height="50">
-    <img class="img" alt="測量" id="MeasureRular" src="../image/icon/black/b_DistanceMeasurement.png" width="50" height="50">
-    <img class="img" alt="角度" id="AngleRular" src="../image/icon/black/b_AngleMeasurement.png" width="50" height="50">
-
-    <img class="img" alt="播放" id="playvideo" src="../image/icon/black/b_CinePlay.png" width="50" height="50">
-    <img class="img VR MPR" alt="標記" id="MarkButton" src="../image/icon/black/fist0.png" width="50" height="50">
-    <img class="img" alt="標籤" id="annotation" src="../image/icon/black/b_Annotation.png" width="50" height="50">
-    <img class="img VR MPR" alt="AIM" id="MarkupImg" src="../image/icon/black/b_ShowReport.png" width="50" height="50">
-
-    <img class="img MPR" alt="3d" id="ImgMPR" src="../image/icon/black/b_AdvancedMode_off.png" width="50" height="50">
-    <img class="img VR" alt="3d" id="ImgVR" src="../image/icon/black/b_3D_off.png" width="50" height="50">
-
-    <img class="img VR MPR" alt="3dDisplay" id="3dDisplay" src="../image/icon/black/b_DisplayReset.png" style="display:none;" width="50"
-      height="50">
-    <img class="img VR" alt="3dCave" id="3dCave" src="../image/icon/black/b_Cross-hair_OFF.png" style="display:none;" width="50"
-      height="50">
-    <!--<img class="img GRA" alt="writeGraphic" id="writeGraphic" src="../image/icon/black/GraphicDraw_OFF.png" width="50" height="50">-->
-    <img class="img XML" alt="writeXML" id="writeXML" src="../image/icon/black/xml_off.png" width="50" height="50">
-    <img class="img GSPS" alt="writeGSPS" id="writeGSPS" src="../image/icon/black/gsps_off.png" width="50" height="50">
-    <img class="img RTSS" alt="writeRTSS" id="writeRTSS" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">
-    <img class="img SEG" alt="writeSEG" id="writeSEG" src="../image/icon/black/seg_off.png" width="50" height="50">
-
-    <img class="img PEN" alt="輸出標記" id="openPenfile" src="../image/icon/black/openPenfile.png" style="display:none;" width="50" height="50">
-    <img class="img VR MPR XML PEN" alt="RWD" id="rwdImgTag" src="../image/icon/black/b_CineTools.png" style="display:none;" width="50"
-      height="50">
-    <div id="SegStyleDiv" style="background-color:#30306044;">
-        <font color="white">ManufacturerModelName：</font><input type="text" id="SegManufacturerModelName" value="ModelName" size="8" />
-        <font color="white">SeriesDescription：</font><input type="text" id="SegSeriesDescription" value="Research" size="8" />
-        <font color="white">SegmentLabel</font><input type="text" id="SegSegmentLabel" value="SegmentLabel" size="8" />
-        <font color="white">Brush Size</font><input type="text" id="SegBrushSizeText" value="10" size="2" />
-        &nbsp;&nbsp;<button id="overlay2seg" sytle="">OverLay to Seg</button>
-    </div>
-    <div id="GspsStyleDiv" style="background-color:#30306044;">
-      <select id="GSPScolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
-        <option id="GSPSBlackSelect" style="color: #000000;font-weight:bold;">Black</option>
-        <option id="GSPSBlueSelect" style="color: #0000FF;font-weight:bold;" selected="selected">Blue</option>
-        <option id="GSPSBrownSelect" style="color: #A52A2A;font-weight:bold;">Brown</option>
-        <option id="GSPSCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan</option>
-        <option id="GSPSGreenSelect" style="color: #00FF00;font-weight:bold;">Green</option>
-        <option id="GSPSMagentaSelect" style="color: #FF00FF;font-weight:bold;">Magenta</option>
-        <option id="GSPSOrangeSelect" style="color: #FFA500;font-weight:bold;">Orange</option>
-        <option id="GSPSPurpleSelect" style="color: #663399;font-weight:bold;">Purple</option>
-        <option id="GSPSRedSelect" style="color: #FF0000;font-weight:bold;">Red</option>
-        <option id="GSPSYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow</option>
-        <option id="GSPSWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White</option>
-      </select>
-      <font color="white">Name：</font><input type="text" id="GspsName" value="T1" size="8" />
-      <select id="GspsTypeSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
-        <option id="GspsPOLYLINE" selected="selected">Rectangle</option>
-        <option id="GspsCIRCLE">Circle</option>
-        <option id="GspsLINE">Line</option>
-      </select>
-    </div>
     <div id="GraphicStyleDiv" style="background-color:#30306044;">
       <label style="color: #ffffff;" id="GraphicColorLabel">Color：</label>
-      <!--<select id="writeMarkSelect">
-        <option id="GraphicMarkSelect" selected="selected">POLYLINE</option>
-        <option id="RTSSMarkSelect">RTSS</option>
-      </select>-->
       <select id="GraphiccolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
         <!--<option id="Graphicselected" selected="selected">Auto</option>-->
         <option id="GraphicBlackSelect" style="color: #000000;font-weight:bold;">Black(T7)</option>
@@ -171,7 +141,8 @@
         <option id="OrangeSelect">Orange</option>
         <option id="PurpleSelect">Purple</option>
       </select>
-      <label style="color: #ffffff;" id="markAlphaLabel">Alpha<input type="text" id="markAlphaText" value="35" /></label>
+      <label style="color: #ffffff;" id="markAlphaLabel">Alpha<input type="text" id="markAlphaText"
+          value="35" /></label>
       <label style="color: #ffffff;" id="markSizeLabel">Size<input type="text" id="markSizeText" value="0.45" /></label>
       <label style="color: #ffffff;" id="markFillLabel">Fill<input type="checkbox" checked="true" name="markFillLabel"
           id="markFillCheck"></label>
@@ -187,119 +158,53 @@
     </div>
 
     <div id="SplitViewportDiv" style="background-color:#4D000044;">
-      <font color="white">1x1:<input type="radio" class="split_radio" name="split_radio" id="radio_1x1" checked="true" />　</font>
+      <font color="white">1x1:<input type="radio" class="split_radio" name="split_radio" id="radio_1x1"
+          checked="true" />　</font>
       <font color="white">1x2:<input type="radio" class="split_radio" name="split_radio" id="radio_1x2" />　</font>
       <font color="white">2x1:<input type="radio" class="split_radio" name="split_radio" id="radio_2x1" />　</font>
       <font color="white">2x2:<input type="radio" class="split_radio" name="split_radio" id="radio_2x2" />　</font>
       <font color="white">3x3:<input type="radio" class="split_radio" name="split_radio" id="radio_3x3" />　</font>
       <font color="white">4x4:<input type="radio" class="split_radio" name="split_radio" id="radio_4x4" />　</font>
     </div>
-
-    <div id="WindowLevelDiv" style="background-color:#33666644;">
-      <font color="white" id="myWC">WC：</font><input type="text" id="textWC" value="520" />
-      <font color="white" id="myWW">WW：</font><input type="text" id="textWW" value="50" />
-      <select id="WindowLevelSelect">
-        <option id="WindowDefault" selected="selected">Default</option>
-        <option id="WindowCustom">Custom</option>
-        <option class="WindowSelect" id="WindowAbdomen" wc="60" ww="400">Abdomen(60,400)</option>
-        <option class="WindowSelect" id="WindowAngio" wc="300" ww="600">Angio(300,600)</option>
-        <option class="WindowSelect" id="WindowBone" wc="300" ww="1500">Bone(300,1500)</option>
-        <option class="WindowSelect" id="WindowBrain" wc="40" ww="80">Brain(40,80)</option>
-        <option class="WindowSelect" id="WindowChest" wc="40" ww="400">Chest(40,400)</option>
-        <option class="WindowSelect" id="WindowLungs" wc="-400" ww="1500">Lungs(-400,1500)</option>
-      </select>
-    </div>
-    <div id="VR_setup" style="background-color:#84420044;">
-      <label style="color: #ffffff;" id="o3dPresetLabel">Preset：</label>
-      <select id="o3DStyle">
-        <option selected="selected">Auto</option>
-        <option id="o3DAngio">Angio</option>
-        <option id="o3DAirways">Airways</option>
-        <option id="o3DcomCombine">Combine</option>
-        <option id="o3DcomCombine2">Combine2</option>
-        <option id="o3DMip">MIP</option>
-        <option id="o3DMinIP">MinIP</option>
-      </select>
-      <font color="white" id="o3dAlphaValueLabel">Alpha：</font><input type="text" id="o3dAlphaValueText" size="3" value="100" />
-      <label style="color: #ffffff;" id="smoothLabel">Smooth<input type="checkbox" name="3dSmooth" id="3dSmooth"></label>
-      <label style="color: #ffffff;" id="yellowColorLabel">Color<input type="checkbox" name="3dYellow" id="3dYellow"></label>
-      <label style="color: #ffffff;" id="3dShadowLabel">shadow
-        <!--<input type="checkbox" name="3dShadow" id="3dShadow">-->
-        <select name="3dShadow" id="3dShadow">
-          <option id="3dShadow_0">None</option>
-          <option id="3dShadow_05">0.005</option>
-          <option id="3dShadow_1">0.01</option>
-          <option id="3dShadow_2">0.02</option>
-          <option id="3dShadow_3" selected="selected">0.03</option>
-          <option id="3dShadow_4">0.04</option>
-          <option id="3dShadow_5">0.05</option>
-          <option id="3dShadow_6">0.06</option>
-          <option id="3dShadow_7">0.07</option>
-          <option id="3dShadow_8">0.08</option>
-          <option id="3dShadow_12">0.12</option>
+    <span id="WindowLevelDiv_span" >
+      <div id="WindowLevelDiv" style="background-color:#33666644;">
+        <font color="white" id="myWC">WC：</font><input type="text" id="textWC" value="520" />
+        <font color="white" id="myWW">WW：</font><input type="text" id="textWW" value="50" />
+        <select id="WindowLevelSelect">
+          <option id="WindowDefault" selected="selected">Default</option>
+          <option id="WindowCustom">Custom</option>
+          <option class="WindowSelect" id="WindowAbdomen" wc="60" ww="400">Abdomen(60,400)</option>
+          <option class="WindowSelect" id="WindowAngio" wc="300" ww="600">Angio(300,600)</option>
+          <option class="WindowSelect" id="WindowBone" wc="300" ww="1500">Bone(300,1500)</option>
+          <option class="WindowSelect" id="WindowBrain" wc="40" ww="80">Brain(40,80)</option>
+          <option class="WindowSelect" id="WindowChest" wc="40" ww="400">Chest(40,400)</option>
+          <option class="WindowSelect" id="WindowLungs" wc="-400" ww="1500">Lungs(-400,1500)</option>
         </select>
-      </label>
-      <label style="color: #ffffff;display:none" id="3dInsertLabel">Insert(hide)：<input type="text" id="3dInsertText" size="1"
-          value="0" /></label>
-      <label style="color: #ffffff;" id="3Dskin">Skin：<input type="text" id="3DskinText" size="3" value="25" /></label>
-      <label style="color: #ffffff;" id="3dStrengthenLabel">3D Strengthen：
-        <select id="3dStrengthen">
-          <option selected="selected" id="3dStrengthenAuto">Auto</option>
-          <option id="3dStrengthenAlways">Always</option>
-          <option id="3dStrengthenNone">None</option>
-        </select>
-      </label>
-      <label style="color: #ffffff;" id="3dZipLabel">3D Zip：<input type="checkbox" checked="true" id="3dZipCheckbox"><input type="text"
-          id="3dZipText" size="3" value="50" /></label>
-      <label style="color: #ffffff;display:none" id="3dPerspectiveLabel">perspective：<input type="text" id="3dPerspective"
-          value="10000" /></label>
-        <img width="25" height="25" src="../image/icon/black/download.png" onclick="VRscreenshot();">
-    </div>
+      </div>
+    </span>
     <font color="white" id="labelZoom">Zoom：</font><input type="text" id="textZoom" value="200" />
     <font color="white" id="labelPlay">fps：</font><input type="text" id="textPlay" value="10" />
-    <label style="color: #ffffff;" id="xmlMarkName">name<input type="text" id="xmlMarkNameText" value="noName" /></label>
-    <label style="color: #ffffff;" id="mprLightLabel">position<input type="checkbox" checked="true" name="mprLight" id="mprLight"></label>
+
     <input type="file" id="myfile" multiple="multiple" style='display:none'>
   </header>
-  <div class="form-group">
+  <div class="form-group" id="form-group">
     <label class="control-label col-sm-1" for="wadoURL">URL</label>
     <div class="container">
-      <div id="LeftPicture" style="overflow-y: scroll;display: flex;flex-direction: column;position: absolute;z-index: 9;height:100%-50px;"
+      <div id="LeftPicture"
+        style="overflow-y: scroll;display: flex;flex-direction: column;position: absolute;z-index: 9;height:100%-50px;"
         width="100">
       </div>
-   
-    <div id="RtssDiv" style="background-color:#30306044;display:none;float:right;display: none;flex-direction: column;position: absolute;right:15px;top:100px;z-index: 20;" width="100">
-      <div style="background-color:#889292;">
-      <font color="white">Color：</font>
-      <select id="RTSScolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
-        <option class="RTSSColorSelectOption" id="RTSSBlackSelect" style="color: #000000;font-weight:bold;">Black</option>
-        <option class="RTSSColorSelectOption" id="RTSSBlueSelect" style="color: #0000FF;font-weight:bold;" selected="selected">Blue</option>
-        <option class="RTSSColorSelectOption" id="RTSSCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan</option>
-        <option class="RTSSColorSelectOption" id="RTSSGreenSelect" style="color: #00FF00;font-weight:bold;">Green</option>
-        <option class="RTSSColorSelectOption" id="RTSSMagentaSelect" style="color: #FF00FF;font-weight:bold;">Magenta</option>
-        <option class="RTSSColorSelectOption" id="RTSSRedSelect" style="color: #FF0000;font-weight:bold;">Red</option>
-        <option class="RTSSColorSelectOption" id="RTSSYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow</option>
-        <option class="RTSSColorSelectOption" id="RTSSWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White</option>
-      </select>
-      <br/>
-      <font color="white" >ROIName：</font><input type="text" id="textROIName" value="ROIName" size="8" />
-      </div>
-      <br/>
-      <font color="white">StructureSetLabel：</font><input type="text" id="textStructureSetLabel" value="STRUCTURE SET" size="15" />
-      <font color="white">StructureSetName：</font><input type="text" id="textStructureSetName" value="StructureSetName" size="14" />
-      <font color="white">StructureSetDescription：</font><input type="text" id="textStructureSetDescription" value="RT:" size="8" />
-      <font color="white">ObservationNumber：</font><input type="text" id="textObservationNumber" value="1" size="2" />
-      <font color="white">ReferencedROINumber：</font><input type="text" id="textReferencedROINumber" value="1" size="2" />
-      <font color="white">RTROIInterpretedType：</font><input type="text" id="textRTROIInterpretedType" value="ORGAN" size="8" />
     </div>
-     </div>
-    <label id="MeasureLabel" style="display:none;color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none; ">
+    <label id="MeasureLabel"
+      style="display:none;color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none; ">
       0cm
     </label>
-    <label id="AngleLabel" style="display:none;color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none; ">
+    <label id="AngleLabel"
+      style="display:none;color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none; ">
       0cm
     </label>
-    <div id="magnifierDiv" style="z-index:40;position: absolute;pointer-events: none;"><canvas id="magnifierCanvas"></canvas></div>
+    <div id="magnifierDiv" style="z-index:40;position: absolute;pointer-events: none;"><canvas
+        id="magnifierCanvas"></canvas></div>
 </body>
 
 </html>

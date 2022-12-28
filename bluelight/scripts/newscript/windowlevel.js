@@ -13,7 +13,6 @@ function windowlevel() {
             getByid('WindowLevelDiv').style.display = 'none';
             set_BL_model.onchange1 = function () { return 0; };
         }
-        if (openVR || openMPR) return;
 
         SetTable();
         Mousedown = function (e) {
@@ -54,7 +53,7 @@ function windowlevel() {
                 //GetViewport().newMousePointY += MouseY - windowMouseY;
                 //setTransform();
 
-                if (openWindow == true && !openVR) {
+                if (openWindow == true) {
                     getByid("WindowCustom").selected = true;
                     if (Math.abs(currY - GetViewport().originalPointY) > Math.abs(currX - GetViewport().originalPointX)) {
                         if (currY < GetViewport().originalPointY - 3)
@@ -89,7 +88,7 @@ function windowlevel() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(viewportNumber);
+                displayMark();
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
@@ -100,7 +99,7 @@ function windowlevel() {
             }
         }
         Touchstart = function (e, e2) {
-            if (openVR == true) return;
+
             if (!e2) TouchDownCheck = true;
             else rightTouchDown = true;
             windowMouseX = GetmouseX(e);
@@ -118,7 +117,7 @@ function windowlevel() {
         }
         Touchmove = function (e, e2) {
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
-            if (openVR == true) return;
+
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (e2) {
@@ -167,7 +166,7 @@ function windowlevel() {
             }
             TouchDownCheck = false;
             rightTouchDown = false;
-            if (openVR == true) return;
+
             magnifierDiv.style.display = "none";
             displayMeasureRular();
         }

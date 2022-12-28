@@ -84,7 +84,7 @@ function angle() {
         }
         Mouseup = function (e) {
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(viewportNumber);
+                displayMark();
             if (MouseDownCheck == true) {
                 if (angle.angle_ == 1) angle.angle_ = 2;
                 else if (angle.angle_ == 2) angle.angle_ = 3;
@@ -93,7 +93,7 @@ function angle() {
             rightMouseDown = false;
         }
         Touchstart = function (e, e2) {
-            if (openVR == true) return;
+
             if (!e2) TouchDownCheck = true;
             else rightTouchDown = true;
             windowMouseX = GetmouseX(e);
@@ -124,7 +124,7 @@ function angle() {
         }
         Touchmove = function (e, e2) {
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
-            if (openVR == true) return;
+
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (e2) {
@@ -162,7 +162,7 @@ function angle() {
             }
             TouchDownCheck = false;
             rightTouchDown = false;
-            if (openVR == true) return;
+
             magnifierDiv.style.display = "none";
             displayMeasureRular();
         }

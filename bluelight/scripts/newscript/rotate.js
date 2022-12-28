@@ -64,8 +64,8 @@ function rotate() {
                 if (openLink == true) {
                     for (var i = 0; i < Viewport_Total; i++) {
                         try {
-                            GetViewportMark((i)).style.width = GetViewport(i).canvas().style.width = GetViewport().canvas().style.width;
-                            GetViewportMark((i)).style.height = GetViewport(i).canvas().style.height = GetViewport().canvas().style.height;
+                            GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = GetViewport().canvas().style.width;
+                            GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = GetViewport().canvas().style.height;
                             setTransform(i);
                             GetViewport(i).newMousePointX = GetViewport().newMousePointX;
                             GetViewport(i).newMousePointX = GetViewport().newMousePointX;
@@ -83,7 +83,7 @@ function rotate() {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(viewportNumber);
+                displayMark();
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
@@ -94,7 +94,7 @@ function rotate() {
             }
         }
         Touchstart = function (e, e2) {
-            if (openVR == true) return;
+
             if (!e2) TouchDownCheck = true;
             else rightTouchDown = true;
             windowMouseX = GetmouseX(e);
@@ -111,8 +111,9 @@ function rotate() {
             }
         }
         Touchmove = function (e, e2) {
+            var viewport = GetViewport(), canvas = viewport.canvas();
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
-            if (openVR == true) return;
+
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (e2) {
@@ -144,8 +145,8 @@ function rotate() {
                     ) {
                         var tempWidth = parseFloat(canvas.style.width);
                         var tempHeight = parseFloat(canvas.style.height)
-                        var canvasW = GetViewportMark(viewportNumber).style.width = canvas.style.width = tempWidth * 1.05 + "px";
-                        var cnavsH = GetViewportMark(viewportNumber).style.height = canvas.style.height = tempHeight * 1.05 + "px";
+                        var canvasW = GetViewportMark().style.width = canvas.style.width = tempWidth * 1.05 + "px";
+                        var cnavsH = GetViewportMark().style.height = canvas.style.height = tempHeight * 1.05 + "px";
                         if (currX > parseFloat(canvasW) / 2)
                             GetViewport().newMousePointX -= Math.abs(tempWidth - (parseFloat(canvasW))) / 2;
                         else
@@ -160,8 +161,8 @@ function rotate() {
                         Math.abs(GetmouseX(e2) - GetmouseX(e)) + 2 < Math.abs(windowMouseX - windowMouseX2) - 2) {
                         var tempWidth = parseFloat(canvas.style.width);
                         var tempHeight = parseFloat(canvas.style.height)
-                        var canvasW = GetViewportMark(viewportNumber).style.width = canvas.style.width = tempWidth / 1.05 + "px";
-                        var cnavsH = GetViewportMark(viewportNumber).style.height = canvas.style.height = tempHeight / 1.05 + "px";
+                        var canvasW = GetViewportMark().style.width = canvas.style.width = tempWidth / 1.05 + "px";
+                        var cnavsH = GetViewportMark().style.height = canvas.style.height = tempHeight / 1.05 + "px";
                         if (currX > parseFloat(canvasW) / 2)
                             GetViewport().newMousePointX += Math.abs(tempWidth - (parseFloat(canvasW))) / 2;
                         else
@@ -216,7 +217,7 @@ function rotate() {
                     }
                 }
             }
-            if (/*(openMouseTool == true || openRotate == true) && */rightTouchDown == false && openChangeFile == false && openMPR == false) {
+            if (/*(openMouseTool == true || openRotate == true) && */rightTouchDown == false && openChangeFile == false) {
                 var MouseX = GetmouseX(e);
                 var MouseY = GetmouseY(e);
                 GetViewport().newMousePointX += MouseX - windowMouseX;
@@ -250,7 +251,7 @@ function rotate() {
             }
             TouchDownCheck = false;
             rightTouchDown = false;
-            if (openVR == true) return;
+
             magnifierDiv.style.display = "none";
             displayMeasureRular();
         }
