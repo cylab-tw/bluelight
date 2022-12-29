@@ -241,6 +241,7 @@ function loadLdcmview() {
   //載入config檔的設定
   readDicomTags("../data/dicomTags.json");
   readConfigJson("../data/config.json", readAllJson, readJson);
+  readImageTags("../data/imageTags.json");
 
   //設定icon邊框
   drawBorder(getByid("MouseOperation"));
@@ -399,6 +400,35 @@ function readConfigJson(url, readAllJson, readJson) {
     configOnload = true;
 
     readAllJson(readJson);
+  }
+}
+
+function readImageTags(url){
+  let request = new XMLHttpRequest();
+  request.open('GET', url);
+  request.responseType = 'json';
+  request.send();
+  request.onload = function () {
+    let response = Object.entries(request.response);
+
+    //@TODO Evaluate the possibility of select medical speciality
+    response.forEach(medicalSpeciality => {
+      let [key, value] = medicalSpeciality;
+      let span = document.getElementById("TAGSpan");
+      let spanText = span.textContent;
+      span.textContent = spanText.replace("IMAGE_TAG_PLACEHOLDER",key);
+      let subtypes = Object.entries(value);
+
+      subtypes.forEach(subtype => {
+        let [subKey, subValue] = subtype;
+        let selectField = document.getElementById("selectTag");
+        let opt = document.createElement('option');
+        opt.id= subKey;
+        opt.textContent = subValue;
+        selectField.appendChild(opt);
+      });
+
+    });
   }
 }
 
