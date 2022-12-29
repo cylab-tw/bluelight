@@ -1,8 +1,7 @@
 {
   "Diabetic retinopathy": {
-    "1": "Retino-1",
-    "2": "Cancer-2",
-    "3": "Cancer-3",
-    "4": "Cancer-4"
+    "1": "Grade-1",
+    "2": "Grade-2",
+    "3": "Grade-3"
   }
 }
