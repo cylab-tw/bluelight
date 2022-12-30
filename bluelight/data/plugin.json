@@ -5,6 +5,7 @@
        {"path":"../scripts/plugin/xml_format.js", "name": "xml_format", "disableCatch": "true"},
        {"path":"../scripts/plugin/graphic_annotation.js", "name": "graphic_annotation", "disableCatch": "true"},
        {"path":"../scripts/plugin/rtss.js", "name": "rtss", "disableCatch": "true"},
-       {"path":"../scripts/plugin/seg.js", "name": "seg", "disableCatch": "true"}
+       {"path":"../scripts/plugin/seg.js", "name": "seg", "disableCatch": "true"},
+       {"path":"../scripts/plugin/oauth.js", "name": "oauth", "disableCatch": "true"}
     ]
 }
