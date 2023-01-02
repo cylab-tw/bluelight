@@ -33,9 +33,10 @@ async function auth() {
             }
             if(OAuthConfig.tokenInRequest == true)
             {
-                ConfigLog.QIDO.token = "Bearer " + theToken;
-                ConfigLog.WADO.token = "Bearer " + theToken;
-                ConfigLog.STOW.token = "Bearer " + theToken;
+                ConfigLog.QIDO.token.Authorization = "Bearer " + theToken;
+                ConfigLog.WADO.token.Authorization = "Bearer " + theToken;
+                ConfigLog.STOW.token.Authorization = "Bearer " + theToken;
+                readAllJson(readJson);
             }
             console.log(ConfigLog);
             return true;

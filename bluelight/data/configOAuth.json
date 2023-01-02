@@ -10,5 +10,5 @@
         "validation":"realms/TestRealm/protocol/openid-connect/userinfo", 
         "token":"realms/TestRealm/protocol/openid-connect/token" 
     },
-    "tokenInRequest":false
+    "tokenInRequest":true
 }
