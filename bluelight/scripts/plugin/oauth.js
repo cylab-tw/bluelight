@@ -16,7 +16,7 @@ async function auth() {
         let authCode = searchParams.get("code");
         let session_state = searchParams.get("session_state");
         let thePort = OAuthConfig.port != "" ? `:${OAuthConfig.port}` : "";
-        keycloakAPI = `${OAuthConfig.http}://${OAuthConfig.hostname}${thePort}/realms`;
+        keycloakAPI = `${OAuthConfig.http}://${OAuthConfig.hostname}${thePort}/`;
 
         // No token but have auth code (usually when it's login complete and is redirecting back).
         if (theToken == "" && authCode != null) {
@@ -25,10 +25,24 @@ async function auth() {
         // Have token so let's see if it's vaild or not.
         let tokenVaild = await isTokenVaild(theToken);
         if (tokenVaild) {
+            if(window.location.href.indexOf(`code=`) != -1)
+            {
+                let originalUrl = removeURLParameter(window.location.href, "code");
+                originalUrl = removeURLParameter(originalUrl, "session_state");
+                window.location.href = originalUrl;
+            }
+            if(OAuthConfig.tokenInRequest == true)
+            {
+                ConfigLog.QIDO.token = "Bearer " + theToken;
+                ConfigLog.WADO.token = "Bearer " + theToken;
+                ConfigLog.STOW.token = "Bearer " + theToken;
+            }
+            console.log(ConfigLog);
             return true;
         }
         // No token or token is not vaild, redirect to keycloak login page and put current url in the Callback URL parameter.
         else {
+            setCookie("access_token","",7);
             let redirectUri = removeURLParameter(window.location.href, "code");
             redirectUri = removeURLParameter(redirectUri, "session_state");
             let loginPage = `${keycloakAPI}${OAuthConfig.endpoints.auth}?client_id=${OAuthConfig.client_id}&grant_type=authorization_code&response_type=code&redirect_uri=${redirectUri}`;
@@ -53,6 +67,19 @@ function getCookie(name) {
     else {
         return "";
     }
+}
+
+/**
+ * Set a cookie.
+ */
+function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
 }
 
 /**
@@ -103,6 +130,7 @@ function requestToken(code, session_state) {
         request.onload = function () {
             let result = request.response;
             responseToken = result.access_token;
+            setCookie("access_token",responseToken,7);
             resolve(responseToken);
         }
     });

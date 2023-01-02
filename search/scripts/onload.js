@@ -2,6 +2,7 @@ window.onload = function () {
   //setInterval(function () { createTable() }, 1000);
   function onLosdSerch() {
     getByid("searchButton").onclick();
+    auth();
   }
   loadLdcmview(onLosdSerch);
 }
