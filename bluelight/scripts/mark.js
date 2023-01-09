@@ -205,8 +205,8 @@ function drawTEXT(canvas, mark, viewport) {
             var offsetY_Text = 0;
             var lines = mark.GSPS_Text.split('\n');
             for (var i2 = 0; i2 < lines.length; i2++) {
-                var offsetX_temp = x1 + (3 * 4 * lines[i2].length) > MarkCanvas.width ? (x1 + (3 * 4 * lines[i2].length)) - MarkCanvas.width : 0;
-                var offsetY_temp = y1 + (3 * 4 * lines[i2].length) > MarkCanvas.height ? (y1 + (3 * 4 * lines[i2].length)) - MarkCanvas.height : 0;
+                var offsetX_temp = x1 + (3 * 4 * lines[i2].length) > canvas.width ? (x1 + (3 * 4 * lines[i2].length)) - canvas.width : 0;
+                var offsetY_temp = y1 + (3 * 4 * lines[i2].length) > canvas.height ? (y1 + (3 * 4 * lines[i2].length)) - canvas.height : 0;
                 if (offsetX_temp > offsetX_Text) offsetX_Text = offsetX_temp;
                 if (offsetY_temp > offsetY_Text) offsetY_Text = offsetY_temp;
             }

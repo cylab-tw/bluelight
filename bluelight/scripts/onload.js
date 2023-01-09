@@ -305,9 +305,23 @@ function readDicomTags(url) {
   }
 }
 
+function operateQueryString(queryString) {
+  var TAG_LIST = [];
+  var NewQueryString = "";
+  for (var key in TAG_DICT) { TAG_LIST.push(TAG_DICT[key]["name"]) };
+  for (var i = 0; i < queryString.split("&").length; i++) {
+    if (TAG_LIST.includes(queryString.split("&")[i].split("=")[0])) {
+      if (i != 0) NewQueryString += "&";
+      NewQueryString += queryString.split("&")[i];
+    }
+  }
+  return NewQueryString;
+}
+
 function readAllJson(readJson) {
   //整合QIDO-RS的URL並發送至伺服器
   var queryString = ("" + location.search).replace("?", "");
+  queryString = operateQueryString(queryString);
   if (queryString.length > 0) {
     var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/series" + "?" + queryString + "";
     url = fitUrl(url);
@@ -546,7 +560,6 @@ function readJson(url) {
 
           } catch (ex) { console.log(ex); }
         }
-
       }
     }
   }
