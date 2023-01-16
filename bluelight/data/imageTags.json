@@ -1,7 +1,36 @@
 {
-  "Diabetic retinopathy": {
-    "1": "Grade-1",
-    "2": "Grade-2",
-    "3": "Grade-3"
-  }
+  "medicalSpecialty": [
+    {
+      "ophthalmology": {
+        "name": "Ophthalmology",
+        "diseases": [
+          {
+            "name": "Diabetic retinopathy",
+            "tags": [
+              "0 - Not feasible",
+              "1 - Not RD",
+              "2 - Mild NPDR",
+              "3 - Moderate NPDR",
+              "4 - Severe NPDR",
+              "5 - PDR"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "anatomicalPathology": {
+        "name": "Anatomical Pathology",
+        "diseases": [
+          {
+            "name": "Prostate cancer",
+            "tags": [
+              "0 - Not carcinoma",
+              "1 - Carcinoma"
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }
