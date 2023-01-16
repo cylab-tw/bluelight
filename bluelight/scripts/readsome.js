@@ -259,13 +259,14 @@ function readDicom(url, patientmark, openfile) {
                     //console.log(g+","+j); 
                     // if (g)console.log(j,tempDataSet[j]);
                     // {
-                    if (tempDataSet[j].dataSet.string('x00700023') == 'POLYLINE') {
+                    if (tempDataSet[j].dataSet.string('x00700023') == 'POLYLINE' ||
+                      tempDataSet[j].dataSet.string('x00700023') == 'INTERPOLATED') {
                       var dcm = {};
                       dcm.sop = sop1;
                       dcm.mark = [];
                       dcm.mark.push({});
 
-                      var showname = 'POLYLINE';
+                      var showname = "" + tempDataSet[j].dataSet.string('x00700023');
                       if (tempDataSet[j].dataSet.elements.x00700232) {
                         var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
                         var color = ConvertGraphicColor(ColorSequence.uint16('x00700251', 0), ColorSequence.uint16('x00700251', 1), ColorSequence.uint16('x00700251', 2));
@@ -281,7 +282,7 @@ function readDicom(url, patientmark, openfile) {
                       };
                       dcm.hideName = dcm.showName;
                       var DcmMarkLength = dcm.mark.length - 1;
-                      dcm.mark[DcmMarkLength].type = "POLYLINE";
+                      dcm.mark[DcmMarkLength].type = tempDataSet[j].dataSet.string('x00700023');//"POLYLINE";
                       dcm.mark[DcmMarkLength].markX = [];
                       dcm.mark[DcmMarkLength].markY = [];
                       dcm.mark[DcmMarkLength].RotationAngle = tempDataSet[j].dataSet.double('x00710230');
@@ -559,9 +560,7 @@ function readDicom(url, patientmark, openfile) {
 
                 dcm.color = color;
                 dcm.mark = [];
-                if (tvList[i]) {
-                  dcm.showName = tvList[i];
-                }
+                if (tvList[i]) dcm.showName = tvList[i];
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
                 //dcm.SliceLocation=dataSet.string('x00201041');

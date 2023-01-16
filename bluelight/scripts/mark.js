@@ -296,6 +296,48 @@ function drawPOLYLINE(canvas, mark, viewport) {
     }
 }
 
+function drawINTERPOLATED(canvas, mark, viewport) {
+    var ctx = canvas.getContext("2d");
+    ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
+    setMarkColor(ctx);
+    if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
+
+    var middleX = (mark.markX[0] + mark.markX[2]) / 2;
+    var middleY = (mark.markY[0] + mark.markY[2]) / 2;
+
+    for (var o = 0; o < mark.markX.length-1; o += 1) {
+        ctx.beginPath();
+        var x1 = mark.markX[o] * 1;
+        var y1 = mark.markY[o] * 1;
+        var x2 = mark.markX[o + 1] * 1;
+        var y2 = mark.markY[o + 1] * 1;
+
+        if (mark.RotationAngle && mark.RotationPoint) {
+            [x1, y1] = rotatePoint([x1, y1], mark.RotationAngle, mark.RotationPoint);
+            [x2, y2] = rotatePoint([x2, y2], mark.RotationAngle, mark.RotationPoint);
+        }
+
+        var tempAlpha2 = ctx.globalAlpha;
+        ctx.globalAlpha = 1.0;
+        var dist = Math.sqrt(Math.pow((x1 - middleX), 2) + Math.pow((y1 - middleY), 2));
+        var angle1 = (180/Math.PI) * Math.atan2(x1 - middleX, y1 + middleY)
+        var angle2 = (180/Math.PI) * Math.atan2(x2 - middleX, y2 + middleY)
+        ctx.arc(middleX, middleY, dist, (2 * Math.PI)/angle1, (2 * Math.PI)/angle2);
+        ctx.stroke();
+        ctx.globalAlpha = tempAlpha2;
+        ctx.closePath();
+
+        if (mark.GSPS_Text && o == 0) {
+            ctx.font = "" + (parseInt(ctx.lineWidth) * 4) + "px Arial";
+            ctx.fillStyle = "red";
+            var tempAlpha = ctx.globalAlpha;
+            ctx.globalAlpha = 1.0;
+            ctx.fillText("" + mark.GSPS_Text, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 7 : y2 - 7);
+            ctx.globalAlpha = tempAlpha;
+        }
+    }
+}
+
 function drawELLIPSE(canvas, mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
@@ -519,7 +561,7 @@ function displayMark(viewportNum0) {
     ctx.strokeStyle = ctx.fillStyle = "#FF0000";
     ctx.lineJoin = ctx.lineCap = 'round';
     ctx.lineWidth = "" + getMarkSize(MarkCanvas, false);
-    setMarkColor(ctx);               
+    setMarkColor(ctx);
     try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
 
     for (var n = 0; n < PatientMark.length; n++) {
@@ -543,6 +585,7 @@ function displayMark(viewportNum0) {
                 if (mark.type == "XML_mark") drawXML_mark(MarkCanvas, mark, PatientMark[n].showName);
                 else if (mark.type == "TEXT") drawTEXT(MarkCanvas, mark, viewport);
                 else if (mark.type == "POLYLINE") drawPOLYLINE(MarkCanvas, mark, viewport);
+                else if (mark.type == "INTERPOLATED") drawINTERPOLATED(MarkCanvas, mark, viewport);
                 else if (mark.type == "ELLIPSE") drawELLIPSE(MarkCanvas, mark, viewport);
                 else if (mark.type == "CIRCLE") drawCIRCLE(MarkCanvas, mark, viewport);
                 else if (mark.type == "TwoDimensionPolyline") drawTwoDimensionPolyline(MarkCanvas, mark, viewport);
@@ -563,10 +606,10 @@ function displayMark(viewportNum0) {
             }
         }
     }
-  
+
     for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) { 
-            for (var m = 0; m < PatientMark[n].mark.length; m++) { 
+        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
+            for (var m = 0; m < PatientMark[n].mark.length; m++) {
                 if (checkMark(i, j, n) == 0) continue;
                 var mark = PatientMark[n].mark[m];
                 mark.parent = PatientMark[n];
