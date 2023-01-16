@@ -30,7 +30,7 @@ function loadLdcmview() {
   getByid("GraphicStyleDiv").style.display = "none";
   getByid("GspsStyleDiv").style.display = "none";
   getByid("SegStyleDiv").style.display = "none";
-  getByid("TAGStyleDiv").style.display = "none";
+  getByid("TagStyleDiv").style.display = "none";
   labelPadding = 5;
 
   //設定放大鏡長寬
@@ -403,31 +403,50 @@ function readConfigJson(url, readAllJson, readJson) {
   }
 }
 
-function readImageTags(url){
+function readImageTags(url) {
   let request = new XMLHttpRequest();
   request.open('GET', url);
   request.responseType = 'json';
   request.send();
   request.onload = function () {
-    let response = Object.entries(request.response);
+    let response = Object.entries(request.response['medicalSpecialty']);
 
-    //@TODO Evaluate the possibility of select medical speciality
-    response.forEach(medicalSpeciality => {
-      let [key, value] = medicalSpeciality;
-      let span = document.getElementById("TAGSpan");
-      let spanText = span.textContent;
-      span.textContent = spanText.replace("IMAGE_TAG_PLACEHOLDER",key);
-      let subtypes = Object.entries(value);
+    response.forEach(medicalSpecialityObject => {
+      let [key, value] = medicalSpecialityObject;
 
-      subtypes.forEach(subtype => {
-        let [subKey, subValue] = subtype;
-        let selectField = document.getElementById("selectTag");
-        let opt = document.createElement('option');
-        opt.id= subKey;
-        opt.textContent = subValue;
-        selectField.appendChild(opt);
+      let medicalSpecialityName = value['name'];
+      let selectField = document.getElementById("medicalSpecialtyTag");
+      let opt = document.createElement('option');
+      opt.id = medicalSpecialityName;
+      opt.textContent = medicalSpecialityName;
+      selectField.appendChild(opt);
+
+      let diseases = Object.entries(value['diseases']);
+      diseases.forEach(diseaseObject => {
+        let [diseaseKey, diseaseValue] = diseaseObject;
+
+        let span = document.getElementById("diseaseTagSpan");
+        let spanText = span.textContent;
+        let diseaseName = diseaseValue['name'];
+        span.textContent = spanText.replace("IMAGE_TAG_PLACEHOLDER", diseaseValue['name']);
+
+        let tagDiv = document.getElementById("TagStyleDiv");
+        let select = document.createElement('select');
+        select.id = "diseaseSelectorTag" + diseaseName.replace(/ /g, "");
+
+        let selectDiseaseTagNumber = document.querySelectorAll('[id^=diseaseSelectorTag]').length
+        if (selectDiseaseTagNumber > 0) {
+          select.hidden = true;
+        }
+        tagDiv.appendChild(select);
+
+        diseaseValue['tags'].forEach(tag => {
+          let opt = document.createElement('option');
+          opt.id = tag;
+          opt.textContent = tag;
+          select.appendChild(opt);
+        });
       });
-
     });
   }
 }

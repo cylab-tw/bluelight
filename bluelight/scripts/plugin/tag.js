@@ -7,10 +7,10 @@ window.addEventListener("load", function (event) {
         img2darkByClass("TAG", !openWriteTAG);
         this.src = openWriteTAG == true ? '../image/icon/black/tag_on.png' : '../image/icon/black/tag_off.png';
         if (openWriteTAG == true) {
-            getByid('TAGStyleDiv').style.display = '';
+            getByid('TagStyleDiv').style.display = '';
             set_BL_model('writeTAG');
         }
-        else getByid('TAGStyleDiv').style.display = 'none';
+        else getByid('TagStyleDiv').style.display = 'none';
         displayMark(viewportNumber);
         if (openWriteTAG == true) return;
         function download(text, name, type) {
