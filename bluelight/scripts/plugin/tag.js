@@ -1,5 +1,18 @@
 window.addEventListener("load", function (event) {
 
+    getByid("medicalSpecialtyTag").onchange = function () {
+
+        let disabledDiseaseDiv = document.getElementById("TagStyleDiv").querySelectorAll("div");
+        disabledDiseaseDiv.forEach((elem) => {
+            elem.hidden = true;
+        });
+
+        let enabledDiseaseDiv = document.querySelectorAll("div[id='" + this.value + "']");
+        enabledDiseaseDiv.forEach((elem) => {
+            elem.hidden = false;
+        });
+    }
+
     getByid("writeTAG").onclick = function () {
         if (imgInvalid(this)) return;
         cancelTools();
@@ -9,10 +22,10 @@ window.addEventListener("load", function (event) {
         if (openWriteTAG == true) {
             getByid('TagStyleDiv').style.display = '';
             set_BL_model('writeTAG');
-        }
-        else getByid('TagStyleDiv').style.display = 'none';
+        } else getByid('TagStyleDiv').style.display = 'none';
         displayMark(viewportNumber);
         if (openWriteTAG == true) return;
+
         function download(text, name, type) {
             let a = document.createElement('a');
             let file = new Blob([text], {
@@ -22,6 +35,7 @@ window.addEventListener("load", function (event) {
             a.download = name;
             a.click();
         }
+
         function download2(text, name, type) {
             let a = document.createElement('a');
             let file = new File([text], name + ".xml", {
@@ -44,6 +58,7 @@ window.addEventListener("load", function (event) {
                 }
             }
         }
+
         set_TAG_context();
         if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) {
             download2(String(get_TAG_context()), "" + CreateRandom(), 'text/plain');
@@ -74,6 +89,7 @@ var TAG_format_object_list = [];
 function set_TAG_context() {
     TAG_format_object_list = []
     let temp = "" + TAG_format;
+
     function setTag(temp, replace, str, len) {
         str = Null2Empty(str);
         str = "" + str;
@@ -83,7 +99,8 @@ function set_TAG_context() {
         if (len == true) temp = temp.replace("___" + replace + "(len)___", length);
         return temp;
     }
-    temp = setTag(temp,"ImageTag",getByid('selectTag').value,true)
+
+    temp = setTag(temp, "ImageTag", getByid('selectTag').value, true)
     TAG_format_object_list.push(temp);
 }
 

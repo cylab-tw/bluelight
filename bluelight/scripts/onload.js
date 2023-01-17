@@ -414,31 +414,37 @@ function readImageTags(url) {
     response.forEach(medicalSpecialityObject => {
       let [key, value] = medicalSpecialityObject;
 
-      let medicalSpecialityName = value['name'];
+      let medicalSpecialtyName = value['name'];
       let selectField = document.getElementById("medicalSpecialtyTag");
       let opt = document.createElement('option');
-      opt.id = medicalSpecialityName;
-      opt.textContent = medicalSpecialityName;
+      opt.id = medicalSpecialtyName;
+      opt.textContent = medicalSpecialtyName;
       selectField.appendChild(opt);
+
+      let tagDiv = document.getElementById("TagStyleDiv");
+      let diseasesDiv = document.createElement('div');
+      //@TODO Generate camel case ids
+      diseasesDiv.id = medicalSpecialtyName;
+      diseasesDiv.style.color = "white";
+      tagDiv.appendChild(diseasesDiv);
 
       let diseases = Object.entries(value['diseases']);
       diseases.forEach(diseaseObject => {
         let [diseaseKey, diseaseValue] = diseaseObject;
-
-        let span = document.getElementById("diseaseTagSpan");
-        let spanText = span.textContent;
+        let span = document.createElement("diseaseTagSpan");
         let diseaseName = diseaseValue['name'];
-        span.textContent = spanText.replace("IMAGE_TAG_PLACEHOLDER", diseaseValue['name']);
+        span.textContent = "Disease：" + diseaseName + " ";
+        // span.textContent = spanText.replace("IMAGE_TAG_PLACEHOLDER", diseaseValue['name']);
+        diseasesDiv.appendChild(span);
 
-        let tagDiv = document.getElementById("TagStyleDiv");
         let select = document.createElement('select');
         select.id = "diseaseSelectorTag" + diseaseName.replace(/ /g, "");
 
         let selectDiseaseTagNumber = document.querySelectorAll('[id^=diseaseSelectorTag]').length
         if (selectDiseaseTagNumber > 0) {
-          select.hidden = true;
+          diseasesDiv.hidden = true;
         }
-        tagDiv.appendChild(select);
+        diseasesDiv.appendChild(select);
 
         diseaseValue['tags'].forEach(tag => {
           let opt = document.createElement('option');
