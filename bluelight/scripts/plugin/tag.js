@@ -2,7 +2,8 @@ window.addEventListener("load", function (event) {
 
     getByid("medicalSpecialtyTag").onchange = function () {
 
-        let disabledDiseaseDiv = document.querySelectorAll("[id='TagStyleDiv'] > div");
+        let disabledDiseaseDiv = document.getElementById("TagStyleDiv").querySelectorAll("div");
+        // let disabledDiseaseDiv = document.querySelectorAll("[id^=diseaseSelectorTag]");
         disabledDiseaseDiv.forEach((elem) => {
             elem.hidden = true;
         });
@@ -90,6 +91,8 @@ function set_TAG_context() {
     TAG_format_object_list = []
     let temp = "" + TAG_format;
 
+    console.log("HOLITA")
+
     function setTag(temp, replace, str, len) {
         str = Null2Empty(str);
         str = "" + str;
@@ -100,7 +103,19 @@ function set_TAG_context() {
         return temp;
     }
 
-    temp = setTag(temp, "ImageTag", getByid('selectTag').value, true)
+
+    let selectedTag;
+    let disabledDiseaseDivs = document.getElementById("TagStyleDiv").querySelectorAll("div");
+
+    disabledDiseaseDivs.forEach((elem) => {
+        if (elem.hidden === true) {
+            //TODO Currently supported just only one disease
+            let selector = elem.querySelectorAll("[id^=diseaseSelectorTag]")[0];
+            selectedTag = selector.value;
+        }
+    });
+
+    temp = setTag(temp, "ImageTag", selectedTag, true)
     TAG_format_object_list.push(temp);
 }
 
