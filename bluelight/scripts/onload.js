@@ -431,8 +431,9 @@ function readImageTags(url) {
       let diseases = Object.entries(value['diseases']);
       diseases.forEach(diseaseObject => {
         let [diseaseKey, diseaseValue] = diseaseObject;
-        let span = document.createElement("diseaseTagSpan");
+        let span = document.createElement("span");
         let diseaseName = diseaseValue['name'];
+        span.id = "diseaseTagSpan";
         span.textContent = "Disease：" + diseaseName + " ";
         // span.textContent = spanText.replace("IMAGE_TAG_PLACEHOLDER", diseaseValue['name']);
         diseasesDiv.appendChild(span);
