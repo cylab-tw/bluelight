@@ -2,7 +2,7 @@ window.addEventListener("load", function (event) {
 
     getByid("medicalSpecialtyTag").onchange = function () {
 
-        let disabledDiseaseDiv = document.getElementById("TagStyleDiv").querySelectorAll("div");
+        let disabledDiseaseDiv = document.querySelectorAll("[id='TagStyleDiv'] > div");
         disabledDiseaseDiv.forEach((elem) => {
             elem.hidden = true;
         });
