@@ -423,7 +423,6 @@ function readImageTags(url) {
 
       let tagDiv = document.getElementById("TagStyleDiv");
       let diseasesDiv = document.createElement('div');
-      //@TODO Generate camel case ids
       diseasesDiv.id = medicalSpecialtyName;
       diseasesDiv.style.color = "white";
       tagDiv.appendChild(diseasesDiv);
