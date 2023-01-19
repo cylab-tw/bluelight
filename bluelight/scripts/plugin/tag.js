@@ -59,12 +59,18 @@ window.addEventListener("load", function (event) {
                 }
             }
         }
+        let index = SearchUid2Index(GetViewport().alt);
+        let i = index[0],
+            j = index[1],
+            k = index[2];
+        let sopUID = Patient.Study[i].Series[j].Sop[k].SopUID;
 
-        set_TAG_context();
+        set_TAG_context(index);
+
         if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) {
             download2(String(get_TAG_context()), "" + CreateRandom(), 'text/plain');
         } else {
-            download(String(get_TAG_context()), 'filename_TAG.xml', 'text/plain');
+            download(String(get_TAG_context()), sopUID + ".xml", 'text/plain');
         }
 
         getByid('MouseOperation').click();
@@ -79,7 +85,10 @@ var TAG_format =
         </meta-header>
         <data-set xfer="1.2.840.10008.1.2.1" name="Little Endian Explicit">
             <element tag="0004,1430" vr="CS" vm="1" len="6" name="DirectoryRecordType">IMAGE</element>
-            <element tag="0041,1100" vr="TM" vm="1" len="14" name="ImageTag">___ImageTag___</element>
+            <element tag="0008,0018" vr="UI" vm="1" len="___SOPInstanceUID(len)___" name="SOPInstanceUID">___SOPInstanceUID___</element>
+            <element tag="0020,0013" vr="IS" vm="1" len="___InstanceNumber(len)___" name="InstanceNumber">___InstanceNumber___</element>
+            <element tag="0020,000d" vr="UI" vm="1" len="___StudyInstanceUID(len)___" name="StudyInstanceUID">___StudyInstanceUID___</element>
+            <element name="ImageTag">___ImageTag___</element>
         </data-set>
     </file-format>
     `;
@@ -87,11 +96,12 @@ var TAG_format =
 
 var TAG_format_object_list = [];
 
-function set_TAG_context() {
+function set_TAG_context(index) {
     TAG_format_object_list = []
     let temp = "" + TAG_format;
-
-    console.log("HOLITA")
+    let i = index[0],
+        j = index[1],
+        k = index[2];
 
     function setTag(temp, replace, str, len) {
         str = Null2Empty(str);
@@ -103,18 +113,20 @@ function set_TAG_context() {
         return temp;
     }
 
-
     let selectedTag;
     let disabledDiseaseDivs = document.getElementById("TagStyleDiv").querySelectorAll("div");
 
     disabledDiseaseDivs.forEach((elem) => {
-        if (elem.hidden === true) {
+        if (elem.hidden === false) {
             //TODO Currently supported just only one disease
             let selector = elem.querySelectorAll("[id^=diseaseSelectorTag]")[0];
             selectedTag = selector.value;
         }
     });
-
+    let sopDcm = Patient.Study[i].Series[j].Sop[k];
+    temp = setTag(temp, "SOPInstanceUID", sopDcm.SopUID, true);
+    temp = setTag(temp, "InstanceNumber", sopDcm.InstanceNumber, true);
+    temp = setTag(temp, "StudyInstanceUID", Patient.Study[i].StudyUID, true);
     temp = setTag(temp, "ImageTag", selectedTag, true)
     TAG_format_object_list.push(temp);
 }
