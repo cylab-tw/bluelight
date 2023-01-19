@@ -435,7 +435,6 @@ function readImageTags(url) {
         let diseaseName = diseaseValue['name'];
         span.id = "diseaseTagSpan";
         span.textContent = "Disease：" + diseaseName + " ";
-        // span.textContent = spanText.replace("IMAGE_TAG_PLACEHOLDER", diseaseValue['name']);
         diseasesDiv.appendChild(span);
 
         let select = document.createElement('select');

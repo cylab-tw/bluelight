@@ -3,7 +3,6 @@ window.addEventListener("load", function (event) {
     getByid("medicalSpecialtyTag").onchange = function () {
 
         let disabledDiseaseDiv = document.getElementById("TagStyleDiv").querySelectorAll("div");
-        // let disabledDiseaseDiv = document.querySelectorAll("[id^=diseaseSelectorTag]");
         disabledDiseaseDiv.forEach((elem) => {
             elem.hidden = true;
         });
@@ -46,7 +45,6 @@ window.addEventListener("load", function (event) {
 
             xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
             xhr.setRequestHeader("enctype", "multipart/form-data");
-            // define new form
             var formData = new FormData();
             formData.append("files", file);
             xhr.send(formData);
