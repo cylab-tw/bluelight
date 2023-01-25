@@ -172,6 +172,8 @@ function PictureOnclick(series) {
     if (!openLeftImgClick) return;
     WindowOpen = false;
     cancelTools();
+    GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
+    GetViewport().newMousePointX = GetViewport().newMousePointY = GetViewport().rotateValue = 0;
     //drawBorder(getByid("MouseOperation"));
     //NowSeries = '';
     let index = SearchUid2IndexBySeries(series);

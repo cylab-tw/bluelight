@@ -474,7 +474,7 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
   //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
 
   //載入其餘所有影像
-  for (var i = 0; i < DicomResponse.length; i++) {
+  function loadDicom(i) {
     if (ConfigLog.WADO.WADOType == "URI") {
       var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
         "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
@@ -500,22 +500,15 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
         imageId: url,
         patientId: getValue(DicomResponse[i]["00100020"])
       };
-      if (ConfigLog.WADO.WADOType == "URI") var Hierarchy = SearchUid2IndexBySeries(getValue(DicomResponse[i]["0020000E"]));//loadUID(DICOM_obj);
-      //var Hierarchy = 0;
       //預載入DICOM至Viewport
       if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
-      else {
-        if (Hierarchy == undefined)
-          loadAndViewImage(url, 1);
-        else
-          loadAndViewImage(url, 0);
-      }
+      else loadAndViewImage(url);
 
       try {
         if (getValue(DicomResponse[i]["00080060"]) == 'PR' || getValue(SeriesResponse[instance]["00080060"]) == 'PR') {
-          function load(time) {
-            return new Promise((resolve) => setTimeout(resolve, time));
-          }
+
+          function load(time) { return new Promise((resolve) => setTimeout(resolve, time)); }
+
           load(100).then(() => {
             //readXML(url);
             readDicom(url.replace("wadouri:", ""), PatientMark, true);
@@ -525,8 +518,12 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
       catch (ex) { console.log(ex); }
     } catch (ex) { console.log(ex); }
   }
+  function wait(time) { return new Promise((resolve) => setTimeout(resolve, time)); }
+  for (var i = 0; i < DicomResponse.length; i++) {
+    const i_ = i;
+    wait(parseInt(i_ / 50) * 2000).then(() => { loadDicom(i_); });
+  }
 }
-
 function getJsonBySeriesRequest(SeriesRequest) {
   let SeriesResponse = SeriesRequest.response, InstanceUrl = "";
   for (let instance = 0; instance < SeriesResponse.length; instance++) {
