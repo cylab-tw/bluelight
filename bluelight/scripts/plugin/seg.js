@@ -120,7 +120,7 @@ getByid("writeSEG").onclick = function () {
         }
     }
     set_SEG_context();
-    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_SEG_context()), "" + CreateRandom(), 'text/plain');
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_SEG_context()), "" + CreateSecurePassword(), 'text/plain');
     else download(String(get_SEG_context()), 'filename_SEG.xml', 'text/plain');
     getByid('MouseOperation').click();
 }

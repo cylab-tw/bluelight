@@ -148,7 +148,7 @@ getByid("writeGSPS").onclick = function () {
         }
     }
     set_GSPS_context();
-    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_Graphic_context()), "" + CreateRandom(), 'text/plain');
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_Graphic_context()), "" + CreateSecurePassword(), 'text/plain');
     else download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
     //download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
 

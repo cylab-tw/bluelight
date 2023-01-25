@@ -4,27 +4,36 @@ function CreateUid(UidClass) {
     Uid += date.getFullYear() + "." + (date.getMonth() + 1) + "." + (date.getDate()) + ".";
     Uid += (date.getHours() + 1) + "." + (date.getMinutes()) + "." +
         (date.getSeconds()) + "." + (date.getMilliseconds()) + ".";
-    Uid += random(1, 99999, 1) + ".";
-    Uid += random(1, 99, 1) + ".";
-    Uid += random(1, 9999, 1) + ".";
-    if (UidClass == 0 || UidClass == 'study') Uid += random(1, 2, 1);
-    else if (UidClass == 1 || UidClass == 'series') Uid += random(3, 4, 1);
-    else if (UidClass == 2 || UidClass == 'sop') Uid += random(5, 6, 1);
-    else Uid += random(7, 8, 1);
+    Uid += securePassword(1, 99999, 1) + ".";
+    Uid += securePassword(1, 99, 1) + ".";
+    Uid += securePassword(1, 9999, 1) + ".";
+    if (UidClass == 0 || UidClass == 'study') Uid += securePassword(1, 2, 1);
+    else if (UidClass == 1 || UidClass == 'series') Uid += securePassword(3, 4, 1);
+    else if (UidClass == 2 || UidClass == 'sop') Uid += securePassword(5, 6, 1);
+    else Uid += securePassword(7, 8, 1);
     if (Uid.length % 2 != 0) Uid += 0;
     return Uid;
 }
 
-function CreateRandom() {
+function CreateSecurePassword() {
     var Uid = "xml_";
     var date = new Date();
     Uid += date.getFullYear() + "y" + (date.getMonth() + 1) + "m" + (date.getDate()) + "d";
     Uid += (date.getHours() + 1) + "h" + (date.getMinutes()) + "mm" +
         (date.getSeconds()) + "ss" + (date.getMilliseconds()) + "mmm";
 
-    Uid += random(1, 999, 1) + "b";
-    Uid += random(1, 999, 1) + "l";
+    Uid += securePassword(1, 999, 1) + "b";
+    Uid += securePassword(1, 999, 1) + "l";
     return Uid;
+}
+
+function securePassword(min, max, step) {
+    if (!step) step = 1;
+    var len = ((max - min) / step) + 1;
+    var number = Math.floor((window.crypto.getRandomValues(new Uint32Array(1))[0]/(4294967295)) * (len)) * step + min;
+    if (number < min) number = min;
+    if (number > max) number = max;
+    return number;
 }
 
 function random(min, max, step) {

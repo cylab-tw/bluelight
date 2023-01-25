@@ -124,7 +124,7 @@ getByid("writeRTSS").onclick = function () {
         }
     }
     set_RTSS_context();
-    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_RTSS_context()), "" + CreateRandom(), 'text/plain');
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_RTSS_context()), "" + CreateSecurePassword(), 'text/plain');
     else download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
     //download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
     getByid('MouseOperation').click();
