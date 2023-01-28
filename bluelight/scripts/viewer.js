@@ -152,7 +152,7 @@ function displayLefyCanvas(DicomCanvas, image, pixelData) {
         ctx.restore(); // restore the state as it was when this function was called
     }
     if (invert == true) {
-        mirrorImage(ctx2, DicomCanvas, 0, 0, GetViewport(viewportNum).openHorizontalFlip, GetViewport(viewportNum).openVerticalFlip);
+        mirrorImage(ctx2, DicomCanvas, 0, 0, GetViewport().openHorizontalFlip, GetViewport().openVerticalFlip);
     }
 }
 //執行icon圖示的摺疊效果
