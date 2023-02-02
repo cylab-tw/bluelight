@@ -11,7 +11,6 @@ PLUGIN.loadScript = function (path, name, scriptType) {
 
 function getPluginScriptType(plugin) {
     if (Object.prototype.hasOwnProperty.call(plugin, "scriptType")) {
-        console.log(plugin.scriptType);
         return plugin.scriptType;
     }
     return "text/javascript";
