@@ -7,6 +7,19 @@ MARKER.drawMark = function (obj) {
     }
 }
 
+function compatibleMark(mark) {
+    if (!mark.point) {
+        mark.point = [];
+        if (mark.markX && mark.markY) {
+            var len = mark.markX.length >= mark.markY.length ? mark.markX.length : mark.markY.length;
+            for (var o = 0; o < len; o++) {
+                mark.point.push([mark.markX[o], mark.markY[o]]);
+            }
+        }
+    }
+    return mark;
+}
+
 function getColorFrom16(r, g, b, bit) {
     if (bit == 16) {
         r = parseInt(r / 256);
@@ -305,7 +318,7 @@ function drawINTERPOLATED(canvas, mark, viewport) {
     var middleX = (mark.markX[0] + mark.markX[2]) / 2;
     var middleY = (mark.markY[0] + mark.markY[2]) / 2;
 
-    for (var o = 0; o < mark.markX.length-1; o += 1) {
+    for (var o = 0; o < mark.markX.length - 1; o += 1) {
         ctx.beginPath();
         var x1 = mark.markX[o] * 1;
         var y1 = mark.markY[o] * 1;
@@ -320,9 +333,9 @@ function drawINTERPOLATED(canvas, mark, viewport) {
         var tempAlpha2 = ctx.globalAlpha;
         ctx.globalAlpha = 1.0;
         var dist = Math.sqrt(Math.pow((x1 - middleX), 2) + Math.pow((y1 - middleY), 2));
-        var angle1 = (180/Math.PI) * Math.atan2(x1 - middleX, y1 + middleY)
-        var angle2 = (180/Math.PI) * Math.atan2(x2 - middleX, y2 + middleY)
-        ctx.arc(middleX, middleY, dist, (2 * Math.PI)/angle1, (2 * Math.PI)/angle2);
+        var angle1 = (180 / Math.PI) * Math.atan2(x1 - middleX, y1 + middleY)
+        var angle2 = (180 / Math.PI) * Math.atan2(x2 - middleX, y2 + middleY)
+        ctx.arc(middleX, middleY, dist, (2 * Math.PI) / angle1, (2 * Math.PI) / angle2);
         ctx.stroke();
         ctx.globalAlpha = tempAlpha2;
         ctx.closePath();
@@ -564,6 +577,15 @@ function displayMark(viewportNum0) {
     setMarkColor(ctx);
     try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
 
+    //compatibleMark
+    for (var n = 0; n < PatientMark.length; n++) {
+        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
+            for (var m = 0; m < PatientMark[n].mark.length; m++) {
+                if (!PatientMark[n].mark.point) PatientMark[n].mark = compatibleMark(PatientMark[n].mark);
+            }
+        }
+    }
+
     for (var n = 0; n < PatientMark.length; n++) {
         if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
             for (var m = 0; m < PatientMark[n].mark.length; m++) {
@@ -573,7 +595,7 @@ function displayMark(viewportNum0) {
                 if (mark.type == "SEG") drawSEG(MarkCanvas, mark, viewport);
                 else if (mark.type == "Overlay") drawOverLay(MarkCanvas, mark, viewport);
             }
-        }
+        } else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
     }
 
     for (var n = 0; n < PatientMark.length; n++) {
@@ -592,7 +614,7 @@ function displayMark(viewportNum0) {
                 else if (mark.type == "TwoDimensionMultiPoint") drawTwoDimensionMultiPoint(MarkCanvas, mark, viewport);
                 else if (mark.type == "TwoDimensionEllipse") drawTwoDimensionEllipse(MarkCanvas, mark, viewport);
             }
-        }
+        } else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
     }
 
     for (var n = 0; n < PatientMark.length; n++) {
@@ -604,7 +626,7 @@ function displayMark(viewportNum0) {
                 if (mark.type == "RTSS") drawRTSS(MarkCanvas, mark, viewport);
                 else if (mark.type == "TextAnnotationEntity") drawTextAnnotationEntity(MarkCanvas, mark, viewport);
             }
-        }
+        } else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
     }
 
     for (var n = 0; n < PatientMark.length; n++) {
@@ -615,6 +637,6 @@ function displayMark(viewportNum0) {
                 mark.parent = PatientMark[n];
                 MARKER.drawMark({ "canvas": MarkCanvas, "mark": mark, "showName": PatientMark[n].showName });//MarkCanvas, mark, viewport
             }
-        }
+        } else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
     }
 }

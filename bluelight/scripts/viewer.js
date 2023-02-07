@@ -106,6 +106,7 @@ window.onresize = function () {
     } catch (ex) { }
     EnterRWD();
 }
+
 function displayLefyCanvas(DicomCanvas, image, pixelData) {
     DicomCanvas.width = image.width;
     DicomCanvas.height = image.height
@@ -192,49 +193,6 @@ function EnterRWD() {
     SetTable();
 }
 
-function virtualLoadImage(imageId, left) {
-    //left==1代表為該series首張影像，為零代表非首張影像，為-1代表為使用local端載入
-    textWC = getByid("textWC");
-    textWW = getByid("textWW");
-    labelWC = getClass("labelWC");
-    try {
-        cornerstone.loadImage(imageId, {
-            usePDFJS: true
-        }).then(function (image) {
-            //StudyUID:x0020000d,Series UID:x0020000e,SOP UID:x00080018,
-            //Instance Number:x00200013,影像檔編碼資料:imageId,PatientId:x00100020
-            var pixelData = image.getPixelData();
-            var DICOM_obj = {
-                study: image.data.string('x0020000d'),
-                series: image.data.string('x0020000e'),
-                sop: image.data.string('x00080018'),
-                instance: image.data.string('x00200013'),
-                imageId: imageId,
-                image: image,
-                pixelData: pixelData,
-                patientId: image.data.string('x00100020')
-            };
-
-            var Hierarchy = loadUID(DICOM_obj);
-            //NowSeries = image.data.string('x0020000e');
-            //DisplaySeriesCount(null);
-            //如果為使用local端開啟並且為初次載入，顯示影像
-            if (left != -1 && (Hierarchy == 0 || Hierarchy == 1)) left = 7;
-            //如果為首張，顯示影像
-            if (left == 7) {
-                var newView = SetToLeft(image.data.string('x0020000e'), undefined, image.data.string('x00100020'));
-                //showTheImage(newView, image, 'leftCanvas');
-                leftCanvasStudy.push(image.data.string('x0020000e'));
-                var NewCanvas = document.createElement("CANVAS");
-                NewCanvas.className = "LeftCanvas";
-                newView.appendChild(NewCanvas);
-                displayLefyCanvas(NewCanvas, image, pixelData);
-                loadAndViewImage(imageId);
-            }
-            return image.data.string('x0020000e');
-        }, function (err) { });
-    } catch (err) { }
-}
 function wadorsLoader(url) {
     var data = [];
 
@@ -612,11 +570,11 @@ function parseDicom(image, pixelData, viewportNum0) {
     //刷新介面並顯示標記
     if (viewportNum0 >= 0) displayMark(viewportNum);
     else displayMark();
-    displayRular(viewportNum);
+    displayRuler(viewportNum);
     putLabel();
     displayAIM();
     for (var i = 0; i < Viewport_Total; i++)
-        displayRular(i);
+        displayRuler(i);
 }
 //imageId:影像編碼資料，currX,currY:放大鏡座標，viewportNum0傳入的Viewport是第幾個
 function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
@@ -696,126 +654,6 @@ function initNewCanvas(newCanvas) {
     //GetViewport((viewportNumber )).addEventListener("wheel", wheelF, false); --*
 }
 
-function parseDicomW(image, pixelData, viewportNum0, WindowLevelObj) {
-    var windowcenter = WindowLevelObj.windowcenter;
-    var windowwidth = WindowLevelObj.windowwidth;
-    var openOrigin = WindowLevelObj.openOrigin;
-    var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
-
-    var element = GetViewport(viewportNum);
-
-    function displayCanvas(DicomCanvas) {
-        DicomCanvas.width = image.width;
-        DicomCanvas.height = image.height
-        var ctx2 = DicomCanvas.getContext("2d");
-        var imgData2 = ctx2.createImageData(image.width, image.height);
-        var high = WindowLevelObj.windowcenter + (windowwidth / 2);
-        var low = WindowLevelObj.windowcenter - (windowwidth / 2);
-        var intercept = image.intercept;
-        if (CheckNull(intercept)) intercept = 0;
-        var slope = image.slope;
-        if (CheckNull(slope)) slope = 1;
-
-        var multiplication = 255 / ((high - low)) * slope;
-        var addition = (- low + intercept) / (high - low) * 255;
-        if (image.color == true) {
-            for (var i = imgData2.data.length; i >= 0; i -= 4) {
-                imgData2.data[i + 0] = pixelData[i] * multiplication + addition;
-                imgData2.data[i + 1] = pixelData[i + 1] * multiplication + addition;
-                imgData2.data[i + 2] = pixelData[i + 2] * multiplication + addition;
-                imgData2.data[i + 3] = 255;
-            }
-        } else {
-            for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
-                imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = pixelData[j] * multiplication + addition;
-                imgData2.data[i + 3] = 255;
-            }
-        }
-
-        ctx2.putImageData(imgData2, 0, 0);
-        var invert = ((image.invert != true && element.openInvert == true) || (image.invert == true && element.openInvert == false));
-        function mirrorImage(ctx2, picture, x = 0, y = 0, horizontal = false, vertical = false) {
-            ctx2.save();  // save the current canvas state
-            ctx2.setTransform(
-                horizontal ? -1 : 1, 0, // set the direction of x axis
-                0, vertical ? -1 : 1,   // set the direction of y axis
-                x + (horizontal ? image.width : 0), // set the x origin
-                y + (vertical ? image.height : 0)   // set the y origin
-            );
-            if (invert == true) ctx2.filter = "invert()";
-            ctx2.drawImage(picture, 0, 0);
-            ctx2.restore(); // restore the state as it was when this function was called
-        }
-        if (invert == true || element.openHorizontalFlip == true || element.openVerticalFlip == true) {
-            mirrorImage(ctx2, DicomCanvas, 0, 0, element.openHorizontalFlip, element.openVerticalFlip);
-        }
-    }
-    displayCanvas(getClass("DicomCanvas")[viewportNum]);
-
-    element.imageWidth = image.width;
-    element.imageHeight = image.height;
-
-    var HandW = getViewprtStretchSize(element.imageWidth, element.imageHeight, element);
-    element.style = "position:block;left:100px;width:" + element.imageWidth + "px;height:" + element.imageHeight + "px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;";
-    element.sop = element.SOPInstanceUID;
-
-    element.windowWidthList = windowwidth;
-    element.windowCenterList = windowcenter;
-    // showTheImage(element, image, 'windowLevel', null, viewportNum);
-
-    var WandH = getFixSize(window.innerWidth, window.innerHeight, element);
-    element.style = "position:absolute;left:100px;width:calc(100% - " + (100 + (bordersize * 2)) + "px);" + "height:" + WandH[1] + "px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;";
-    element.sop = element.SOPInstanceUID;
-    SetTable();
-    GetViewport().style.backgroundColor = "rgb(10,6,6)";
-    GetViewport().style.border = bordersize + "px #FFC3FF groove";
-
-    var MainCanvas = element.canvas();
-    var MarkCanvas = GetViewportMark((viewportNum));
-    MainCanvas.style = "width:" + HandW[0] + "px;height:" + HandW[1] + "px;" + "display:block;position:absolute;top:50%;left:50%";
-    MainCanvas.style.margin = "-" + (HandW[1] / 2) + "px 0 0 -" + (HandW[0] / 2) + "px";
-    Css(MainCanvas, 'zIndex', "6");
-    MarkCanvas.style = MainCanvas.style.cssText;
-    Css(MarkCanvas, 'zIndex', "8");
-    Css(MarkCanvas, 'pointerEvents', "none");
-    // initNewCanvas(MainCanvas);
-    if ((viewportNum0 >= 0)) {
-        for (var i = 0; i < Viewport_Total; i++)
-            displayWindowLevel(i);
-    } else {
-        displayWindowLevel();
-    }
-    if (!(isNaN(element.NowCanvasSizeHeight) || isNaN(element.NowCanvasSizeWidth))) {
-        Css(MainCanvas, 'width', Fpx(element.NowCanvasSizeWidth));
-        Css(MainCanvas, 'height', Fpx(element.NowCanvasSizeHeight));
-        Css(MarkCanvas, 'width', Fpx(element.NowCanvasSizeWidth));
-        Css(MarkCanvas, 'height', Fpx(element.NowCanvasSizeHeight));
-    }
-    setTransform(viewportNum);
-    //MainCanvas.style.transform = "translate(" + ToPx(element.newMousePointX) + "," + ToPx(element.newMousePointY) + ")rotate(" + element.rotateValue + "deg)";
-    //MarkCanvas.style.transform = "translate(" + ToPx(element.newMousePointX) + "," + ToPx(element.newMousePointY) + ")rotate(" + element.rotateValue + "deg)";
-
-    putLabel();
-    for (var i = 0; i < Viewport_Total; i++) {
-        displayRular(i);
-        displayMark(i);
-    }
-    //隱藏Table
-    getByid("TableSelectNone").selected = true;
-}
-//跟loadAndViewImage()一樣，只是只調整Window Level而不重置設定
-//註解請參考loadAndViewImage()
-function loadAndViewImageByWindowLevwl(imageId, windowcenter, windowwidth, openOrigin, viewportNum0) {
-
-    var dicomData = getPatientbyImageID[imageId];
-    WindowLevelObj = {
-        windowcenter: windowcenter,
-        windowwidth: windowwidth,
-        openOrigin: openOrigin
-    }
-    if (dicomData) parseDicomW(dicomData.image, dicomData.pixelData, viewportNum0, WindowLevelObj);
-}
-
 //按下滑鼠或觸控要做的事情 --*
 function DivDraw(e) {
     //if (MouseDownCheck == false) getByid("MeasureLabel").style.display = "none";
@@ -826,7 +664,7 @@ function DivDraw(e) {
     x_out = -parseInt(magnifierCanvas.style.width) / 2; // 與游標座標之水平距離
     y_out = -parseInt(magnifierCanvas.style.height) / 2; // 與游標座標之垂直距離
 
-    if (openMeasure && (MouseDownCheck == true || TouchDownCheck == true)) {
+    /*if (openMeasure && (MouseDownCheck == true || TouchDownCheck == true)) {
         getByid("MeasureLabel").style.display = '';
         if (MeasureXY2[0] > MeasureXY[0])
             x_out = 20; // 與游標座標之水平距離
@@ -834,7 +672,7 @@ function DivDraw(e) {
         if (MeasureXY2[1] > MeasureXY[1])
             y_out = 20; // 與游標座標之水平距離
         else y_out = -20;
-    }
+    }*/
     if (openAngle >= 2) {
         getByid("AngleLabel").style.display = '';
         if (AngleXY2[0] > AngleXY0[0])
@@ -871,10 +709,10 @@ function DivDraw(e) {
         dgs.left = x + dbsl + x_out + "px";
     }
     if (openMeasure) {
-        getByid("MeasureLabel").innerText = parseInt(Math.sqrt(
+        /*getByid("MeasureLabel").innerText = parseInt(Math.sqrt(
             Math.pow(MeasureXY2[0] / GetViewport().PixelSpacingX - MeasureXY[0] / GetViewport().PixelSpacingX, 2) +
             Math.pow(MeasureXY2[1] / GetViewport().PixelSpacingY - MeasureXY[1] / GetViewport().PixelSpacingY, 2), 2)) +
-            "mm";
+            "mm";*/
     } else if (openAngle == 2) {
         var getAngle = ({
             x: x1,

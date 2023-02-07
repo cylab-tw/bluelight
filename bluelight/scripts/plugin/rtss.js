@@ -550,7 +550,7 @@ function writertss() {
             }
             putLabel();
             for (var i = 0; i < Viewport_Total; i++)
-                displayRular(i);
+                displayRuler(i);
             if (!rightMouseDown && RTSS_now_choose) {
                 let Uid = GetNowUid();
                 var angle2point = rotateCalculation(e)

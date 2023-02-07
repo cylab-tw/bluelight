@@ -51,6 +51,7 @@ function html_onload() {
         directoryReader.readEntries(fnReadEntries)
       } else {
         item.file(function (file) {
+          resetViewport();
           var url = URL.createObjectURL(file);
 
           function basename(path) {
@@ -223,7 +224,7 @@ function html_onload() {
     changeLinkImg();
   }
 
-  getByid("MeasureRular").onclick = function () {
+  getByid("MeasureRuler").onclick = function () {
     if (this.enable == false) return;
     set_BL_model('measure');
     measure();
@@ -231,7 +232,7 @@ function html_onload() {
     drawBorder(this);
   }
 
-  getByid("AngleRular").onclick = function () {
+  getByid("AngleRuler").onclick = function () {
     if (this.enable == false) return;
     //cancelTools();
     set_BL_model('angle');
@@ -376,7 +377,7 @@ function html_onload() {
       let reader = new FileReader();
       reader.readAsDataURL(this.files[k]);
       reader.onloadend = function () {
-        //virtualLoadImage('wadouri:' + reader.result, -1);
+        resetViewport();
         loadAndViewImage('wadouri:' + reader.result);
         /*
         var baseUrl = window.URL || window.webkitURL;
@@ -450,12 +451,12 @@ function drawBorder(element) {
   if (element != getByid("b_Scroll")) openChangeFile = false;
   Css(getByid("MouseOperation"), 'border', "");
   Css(getByid("WindowRevision"), 'border', "");
-  Css(getByid("MeasureRular"), 'border', "");
+  Css(getByid("MeasureRuler"), 'border', "");
   Css(getByid("MouseRotate"), 'border', "");
   Css(getByid("playvideo"), 'border', "");
   Css(getByid("zoom"), 'border', "");
   Css(getByid("b_Scroll"), 'border', "");
-  Css(getByid("AngleRular"), 'border', "");
+  Css(getByid("AngleRuler"), 'border', "");
   Css(element, 'border', 3 + "px #FFFFFF solid");
   Css(element, 'borderRadius', "3px 3px 3px 3px");
 }

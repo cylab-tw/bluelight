@@ -585,7 +585,7 @@ function writegsps() {
             }
             putLabel();
             for (var i = 0; i < Viewport_Total; i++)
-                displayRular(i);
+                displayRuler(i);
 
             if (MouseDownCheck == true && getByid("GspsCIRCLE").selected == true) { //flag
                 let Uid = SearchNowUid();
@@ -610,7 +610,7 @@ function writegsps() {
                 refreshMark(dcm);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
                 PatientMark.splice(PatientMark.indexOf(dcm), 1);
             }
             if (MouseDownCheck == true && getByid("GspsLINE").selected == true) {
@@ -636,7 +636,7 @@ function writegsps() {
                 refreshMark(dcm);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
                 PatientMark.splice(PatientMark.indexOf(dcm), 1);
             }
             if ((openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true)) && (MouseDownCheck == true || rightMouseDown == true)) {
@@ -687,7 +687,7 @@ function writegsps() {
                     refreshMark(dcm);
                     for (var i = 0; i < Viewport_Total; i++)
                         displayMark(i);
-                    displayAngleRular();
+                    displayAngleRuler();
                     PatientMark.splice(PatientMark.indexOf(dcm), 1);
                 } else {
                     if (rightMouseDown == true) {
@@ -764,7 +764,7 @@ function writegsps() {
                 refreshMark(dcm);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
                 Graphic_now_choose = {
                     reference: dcm
                 };
@@ -792,7 +792,7 @@ function writegsps() {
                 refreshMark(dcm);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
                 Graphic_now_choose = {
                     reference: dcm
                 };
@@ -845,7 +845,7 @@ function writegsps() {
                 Graphic_pounch(currX, (currY + GetViewport().originalPointY) / 2, dcm);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
                 //set_Graphic_context();
                 refreshMark(dcm);
             }

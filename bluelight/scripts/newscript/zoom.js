@@ -51,7 +51,7 @@ function zoom() {
             }
             putLabel();
             for (var i = 0; i < Viewport_Total; i++)
-                displayRular(i);
+                displayRuler(i);
 
             if (MouseDownCheck) {
                 magnifierDiv.style.display = "";
@@ -72,10 +72,10 @@ function zoom() {
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
-            displayMeasureRular();
+            
             if (openLink) {
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayRular(i);
+                    displayRuler(i);
             }
         }
 
@@ -135,7 +135,7 @@ function zoom() {
             rightTouchDown = false;
 
             magnifierDiv.style.display = "none";
-            displayMeasureRular();
+            
         }
         // Touchstart = function (e, e2) {}
         // Touchmove = function (e, e2) {}

@@ -39,7 +39,7 @@ function scroll() {
             }
             putLabel();
             for (var i = 0; i < Viewport_Total; i++)
-                displayRular(i);
+                displayRuler(i);
 
             if (MouseDownCheck) {
                 windowMouseX = GetmouseX(e);
@@ -97,10 +97,10 @@ function scroll() {
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
-            displayMeasureRular();
+            
             if (openLink) {
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayRular(i);
+                    displayRuler(i);
             }
         }
         Touchstart = function (e, e2) {
@@ -177,7 +177,7 @@ function scroll() {
             }
             // putLabel();
             //  for (var i = 0; i < Viewport_Total; i++)
-            //     displayRular(i);
+            //     displayRuler(i);
         }
         Touchend = function (e, e2) {
             if (TouchDownCheck == true) {
@@ -188,7 +188,7 @@ function scroll() {
             rightTouchDown = false;
 
             magnifierDiv.style.display = "none";
-            displayMeasureRular();
+            
         }
         AddMouseEvent();
     }

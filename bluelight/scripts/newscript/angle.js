@@ -34,7 +34,7 @@ function angle() {
                 AngleXY1 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
             }
         };
 
@@ -53,7 +53,7 @@ function angle() {
                 AngleXY2 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
                 return;
             }
 
@@ -65,7 +65,7 @@ function angle() {
             }
             putLabel();
             for (var i = 0; i < Viewport_Total; i++)
-                displayRular(i);
+                displayRuler(i);
 
             if (MouseDownCheck) {
                 windowMouseX = GetmouseX(e);
@@ -75,7 +75,7 @@ function angle() {
                     AngleXY0 = angle2point;
                     for (var i = 0; i < Viewport_Total; i++)
                         displayMark(i);
-                    displayAngleRular();
+                    displayAngleRuler();
                     return;
                 }
             }
@@ -119,7 +119,7 @@ function angle() {
                 AngleXY1 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
             }
         }
         Touchmove = function (e, e2) {
@@ -140,7 +140,7 @@ function angle() {
                 AngleXY2 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
                 return;
             }
             if (angle.angle_ == 1) {
@@ -151,7 +151,7 @@ function angle() {
                 AngleXY0 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
                 return;
             }
         }
@@ -164,13 +164,13 @@ function angle() {
             rightTouchDown = false;
 
             magnifierDiv.style.display = "none";
-            displayMeasureRular();
+            
         }
         AddMouseEvent();
     }
 }
 
-function displayAngleRular() {
+function displayAngleRuler() {
     if (!angle.angle_) return;
     if (parseInt(Math.sqrt(
         Math.pow(AngleXY1[0] / GetViewport().PixelSpacingX - AngleXY0[0] / GetViewport().PixelSpacingX, 2) +

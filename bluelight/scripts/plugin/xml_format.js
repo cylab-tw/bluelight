@@ -471,7 +471,7 @@ function writexml() {
       }
       putLabel();
       for (var i = 0; i < Viewport_Total; i++)
-        displayRular(i);
+        displayRuler(i);
 
       if (MouseDownCheck) {
         windowMouseX = GetmouseX(e);
@@ -499,7 +499,7 @@ function writexml() {
           refreshMark(dcm);
           for (var i = 0; i < Viewport_Total; i++)
             displayMark(i);
-          displayAngleRular();
+          displayAngleRuler();
           PatientMark.splice(PatientMark.indexOf(dcm), 1);
         } else {
           if (xml_now_choose.value == "up") {
@@ -546,7 +546,7 @@ function writexml() {
         refreshMark(dcm);
         for (var i = 0; i < Viewport_Total; i++)
           displayMark(i);
-        displayAngleRular();
+        displayAngleRuler();
         //setXml_context();
       }
     }

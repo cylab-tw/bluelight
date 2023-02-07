@@ -2,14 +2,14 @@
 var openWriteSEG = false;
 
 function loadWriteSEG() {
-  var span = document.createElement("SPAN")
-  span.innerHTML =
-    `<img class="img SEG" alt="writeSEG" id="writeSEG" src="../image/icon/black/seg_off.png" width="50" height="50">`;
-  getByid("icon-list").appendChild(span);
+    var span = document.createElement("SPAN")
+    span.innerHTML =
+        `<img class="img SEG" alt="writeSEG" id="writeSEG" src="../image/icon/black/seg_off.png" width="50" height="50">`;
+    getByid("icon-list").appendChild(span);
 
-  var span = document.createElement("SPAN")
-  span.innerHTML =
-    `<div id="SegStyleDiv" style="background-color:#30306044;">
+    var span = document.createElement("SPAN")
+    span.innerHTML =
+        `<div id="SegStyleDiv" style="background-color:#30306044;">
     <font color="white">ManufacturerModelName：</font><input type="text" id="SegManufacturerModelName"
       value="ModelName" size="8" />
     <font color="white">SeriesDescription：</font><input type="text" id="SegSeriesDescription" value="Research"
@@ -18,8 +18,8 @@ function loadWriteSEG() {
     <font color="white">Brush Size</font><input type="text" id="SegBrushSizeText" value="10" size="2" />
     &nbsp;&nbsp;<button id="overlay2seg" sytle="">OverLay to Seg</button>
   </div>`
-  getByid("page-header").appendChild(span);
-  getByid("SegStyleDiv").style.display = "none";
+    getByid("page-header").appendChild(span);
+    getByid("SegStyleDiv").style.display = "none";
 }
 loadWriteSEG();
 
@@ -31,42 +31,42 @@ getByid("overlay2seg").onclick = function () {
     let index = SearchUid2Index(sop);
     if (!index) return;
     let i = index[0],
-      j = index[1],
-      k = index[2];
+        j = index[1],
+        k = index[2];
     for (var n = 0; n < PatientMark.length; n++) {
-      if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
-        for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-          for (var m = 0; m < PatientMark[n].mark.length; m++) {
-            if (PatientMark[n].mark[m].type == "Overlay" && PatientMark[n].sop == Patient.Study[i].Series[j].Sop[l].SopUID) {
-              let Uid = GetNowUid();
-              var dcm = {};
-              dcm.study = Uid.study;
-              dcm.series = Uid.sreies;
+        if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
+            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
+                for (var m = 0; m < PatientMark[n].mark.length; m++) {
+                    if (PatientMark[n].mark[m].type == "Overlay" && PatientMark[n].sop == Patient.Study[i].Series[j].Sop[l].SopUID) {
+                        let Uid = GetNowUid();
+                        var dcm = {};
+                        dcm.study = Uid.study;
+                        dcm.series = Uid.sreies;
 
-              dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
-              dcm.mark = [];
-              dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
-              dcm.hideName = dcm.showName;
-              dcm.mark.push({});
-              dcm.sop = Patient.Study[i].Series[j].Sop[l].SopUID;
-              var DcmMarkLength = dcm.mark.length - 1;
-              dcm.mark[DcmMarkLength].type = "SEG";
-              function jsonDeepClone(obj) {
-                return JSON.parse(JSON.stringify(obj));
-              }
-              dcm.mark[DcmMarkLength].canvas= PatientMark[n].mark[m].canvas;
-              PatientMark.push(dcm);
-              refreshMark(dcm);
-              SEG_now_choose = dcm.mark[DcmMarkLength];
+                        dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
+                        dcm.mark = [];
+                        dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
+                        dcm.hideName = dcm.showName;
+                        dcm.mark.push({});
+                        dcm.sop = Patient.Study[i].Series[j].Sop[l].SopUID;
+                        var DcmMarkLength = dcm.mark.length - 1;
+                        dcm.mark[DcmMarkLength].type = "SEG";
+                        function jsonDeepClone(obj) {
+                            return JSON.parse(JSON.stringify(obj));
+                        }
+                        dcm.mark[DcmMarkLength].canvas = PatientMark[n].mark[m].canvas;
+                        PatientMark.push(dcm);
+                        refreshMark(dcm);
+                        SEG_now_choose = dcm.mark[DcmMarkLength];
 
-              // PatientMark.splice(PatientMark.indexOf(temp_overlay), 1);
+                        // PatientMark.splice(PatientMark.indexOf(temp_overlay), 1);
+                    }
+                }
             }
-          }
         }
-      }
     }
     refreshMarkFromSop(GetNowUid().sop);
-  }
+}
 
 getByid("writeSEG").onclick = function () {
     if (this.enable == false) return;
@@ -467,6 +467,46 @@ function get_SEG_context() {
     return temp_str;
 }
 
+function Line_setSEG2PixelData(point1, point2) {
+    if (!point1 || !point2) return;
+    var distance = (Math.sqrt(((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) - (point1[1] - point2[1]))));
+
+    var Reduce_X = point1[0] > point2[0] ? point2[0] : point1[0];
+    var Reduce_Y = point1[1] > point2[1] ? point2[1] : point1[1];
+    var Up_X = point1[0] < point2[0] ? point2[0] : point1[0];
+    var Up_Y = point1[1] < point2[1] ? point2[1] : point1[1];
+    /*for (var i = 0; i <  parseInt(distance); i++) {
+        var x = parseInt(Reduce_X + ((Up_X - Reduce_X) / distance) * i);
+        var y = parseInt(Reduce_Y + ((Up_Y - Reduce_Y) / distance) * i);
+        setSEG2PixelData([x, y]);
+    }*/
+    if (point1[0] == Reduce_X && point1[1] == Reduce_Y) {
+        for (var i = 0; i < parseInt(distance); i++) {
+            var x = parseInt(Reduce_X + ((Up_X - Reduce_X) / distance) * i);
+            var y = parseInt(Reduce_Y + ((Up_Y - Reduce_Y) / distance) * i);
+            setSEG2PixelData([x, y]);
+        }
+    } else if (point1[0] == Up_X && point1[1] == Up_Y) {
+        for (var i = 0; i < parseInt(distance); i++) {
+            var x = parseInt(Up_X - ((Up_X - Reduce_X) / distance) * i);
+            var y = parseInt(Up_Y - ((Up_Y - Reduce_Y) / distance) * i);
+            setSEG2PixelData([x, y]);
+        }
+    } else if (point1[0] == Reduce_X && point1[1] == Up_Y) {
+        for (var i = 0; i < parseInt(distance); i++) {
+            var x = parseInt(Reduce_X + ((Up_X - Reduce_X) / distance) * i);
+            var y = parseInt(Up_Y - ((Up_Y - Reduce_Y) / distance) * i);
+            setSEG2PixelData([x, y]);
+        }
+    } else if (point1[0] == Up_X && point1[1] == Reduce_Y) {
+        for (var i = 0; i < parseInt(distance); i++) {
+            var x = parseInt(Up_X - ((Up_X - Reduce_X) / distance) * i);
+            var y = parseInt(Reduce_Y + ((Up_Y - Reduce_Y) / distance) * i);
+            setSEG2PixelData([x, y]);
+        }
+    }
+};
+
 function writeSeg() {
     if (BL_mode == 'writeSeg') {
         DeleteMouseEvent();
@@ -540,6 +580,7 @@ function writeSeg() {
                     displayMark(i);
             }
         };
+        var Previous_angle2point;
 
         Mousemove = function (e) {
             var currX = getCurrPoint(e)[0];
@@ -550,12 +591,16 @@ function writeSeg() {
             }
             if (MouseDownCheck && !rightMouseDown && SEG_now_choose && openWindow != true) {
                 let angle2point = rotateCalculation(e);
-                setSEG2PixelData(angle2point);
+                if (Previous_angle2point && (Previous_angle2point[0] != angle2point[0] || Previous_angle2point[1] != angle2point[1])) {
+                    setSEG2PixelData(angle2point);
+                    Line_setSEG2PixelData(Previous_angle2point, angle2point);
 
-                let Uid = GetNowUid();
-                refreshMark(Uid.sop);
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                    let Uid = GetNowUid();
+                    refreshMark(Uid.sop);
+                    for (var i = 0; i < Viewport_Total; i++)
+                        displayMark(i);
+                }
+                Previous_angle2point = angle2point;
             }
             if (!rightMouseDown && openWindow != true) {
                 var rect = getByid("SegBrushSizeText").value;
@@ -575,6 +620,7 @@ function writeSeg() {
 
         }
         Mouseup = function (e) {
+            Previous_angle2point = undefined;
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
@@ -582,10 +628,10 @@ function writeSeg() {
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
-            displayMeasureRular();
+
             if (openLink) {
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayRular(i);
+                    displayRuler(i);
             }
         }
         AddMouseEvent();

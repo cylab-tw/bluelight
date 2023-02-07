@@ -50,7 +50,7 @@ function rotate() {
             }
             putLabel();
             for (var i = 0; i < Viewport_Total; i++)
-                displayRular(i);
+                displayRuler(i);
 
             if (MouseDownCheck) {
                 var MouseX = GetmouseX(e);
@@ -74,7 +74,7 @@ function rotate() {
                 }
                 putLabel();
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayRular(i);
+                    displayRuler(i);
             }
             GetViewport().originalPointX = currX;
             GetViewport().originalPointY = currY;
@@ -87,10 +87,10 @@ function rotate() {
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
-            displayMeasureRular();
+            
             if (openLink) {
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayRular(i);
+                    displayRuler(i);
             }
         }
         Touchstart = function (e, e2) {
@@ -241,7 +241,7 @@ function rotate() {
                    displayMark(i);*/
                 putLabel();
                 for (var i = 0; i < Viewport_Total; i++)
-                    displayRular(i);
+                    displayRuler(i);
             }
         }
         Touchend = function (e, e2) {
@@ -253,7 +253,7 @@ function rotate() {
             rightTouchDown = false;
 
             magnifierDiv.style.display = "none";
-            displayMeasureRular();
+            
         }
 
 

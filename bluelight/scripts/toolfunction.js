@@ -30,7 +30,7 @@ function CreateSecurePassword() {
 function securePassword(min, max, step) {
     if (!step) step = 1;
     var len = ((max - min) / step) + 1;
-    var number = Math.floor((window.crypto.getRandomValues(new Uint32Array(1))[0]/(4294967295)) * (len)) * step + min;
+    var number = Math.floor((window.crypto.getRandomValues(new Uint32Array(1))[0] / (4294967295)) * (len)) * step + min;
     if (number < min) number = min;
     if (number > max) number = max;
     return number;
@@ -420,9 +420,10 @@ function checkMark(i, j, n) {
                 for (var elemNum in elem) {
                     if (elem[elemNum].name == PatientMark[n].hideName) {
                         if (elem[elemNum].series == "true") {
+                            if (PatientMark[n].displayMark) PatientMark[n].displayMark();
                             checkRtss = 1;
                             return checkRtss;
-                        }
+                        } else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
                     }
                 }
             }
@@ -432,7 +433,7 @@ function checkMark(i, j, n) {
 }
 
 function refreshMark(dcm, refresh) {
-    if (refresh == false)  return;
+    if (refresh == false) return;
     var index = SearchUid2Index(dcm.sop);
     if (!index) return;
     var i3 = index[0],
