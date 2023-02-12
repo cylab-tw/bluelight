@@ -76,21 +76,12 @@ function angle() {
                 dcm.mark[DcmMarkLength].markX.push(AngleXY0[0]);
                 dcm.mark[DcmMarkLength].markY.push(AngleXY2[1]);
                 dcm.mark[DcmMarkLength].markX.push(AngleXY2[0]);
+
+                dcm.mark[DcmMarkLength].Text = getAnglelValue(e);
                 PatientMark.push(dcm);
-                if (!dcm.mark[DcmMarkLength].Label) {
-                    var label = document.createElement("Label");
-                    label.className = "AngleLabel" + dcm.sop;
-                    label.id = "AngleLabel" + "_" + dcm.sop + "_" + btoa("" + parseInt(AngleXY0[0]) + "_" + parseInt(AngleXY0[1]));
-                    label.style = "color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none;";
-                    label.innerText = "";
-                    getByid("form-group").appendChild(label);
-                    dcm.mark[DcmMarkLength].Label = label;
-                }
-                dcm.mark[DcmMarkLength].Text = getAnglelValue(e, dcm.mark[DcmMarkLength].Label);
                 refreshMark(dcm);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                getByid("" + dcm.mark[DcmMarkLength].Label.id).parentNode.replaceChild(dcm.mark[DcmMarkLength].Label, getByid("" + dcm.mark[DcmMarkLength].Label.id));
                 PatientMark.splice(PatientMark.indexOf(dcm), 1);
                 //displayAngleRuler();
                 //return;
@@ -136,22 +127,12 @@ function angle() {
                     dcm.mark[DcmMarkLength].markY.push(AngleXY0[1]);
                     dcm.mark[DcmMarkLength].markX.push(AngleXY0[0]);
 
+                    dcm.mark[DcmMarkLength].Text = getAnglelValue(e);
                     PatientMark.push(dcm);
-                    if (!dcm.mark[DcmMarkLength].Label) {
-                        var label = document.createElement("Label");
-                        label.className = "AngleLabel" + dcm.sop;
-                        label.id = "AngleLabel" + "_" + dcm.sop + "_" + btoa("" + parseInt(AngleXY0[0]) + "_" + parseInt(AngleXY0[1]));
-                        label.style = "color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none;";
-                        label.innerText = "";
-                        getByid("form-group").appendChild(label);
-                        dcm.mark[DcmMarkLength].Label = label;
-                    }
-                    dcm.mark[DcmMarkLength].Text = getAnglelValue(e, dcm.mark[DcmMarkLength].Label);
                     refreshMark(dcm);
 
                     for (var i = 0; i < Viewport_Total; i++)
                         displayMark(i);
-                    getByid("" + dcm.mark[DcmMarkLength].Label.id).parentNode.replaceChild(dcm.mark[DcmMarkLength].Label, getByid("" + dcm.mark[DcmMarkLength].Label.id));
                     PatientMark.splice(PatientMark.indexOf(dcm), 1);
                     //return;
                 }
@@ -175,7 +156,7 @@ function angle() {
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
                 dcm.sop = Uid.sopuid;
-                dcm.hideMark = function () {
+                /*dcm.hideMark = function () {
                     for (var m = 0; m < getClass("AngleLabel" + dcm.sop).length; m++)
                         getClass("AngleLabel" + dcm.sop)[m].style.display = "none";
                 }
@@ -183,6 +164,12 @@ function angle() {
                     for (var m = 0; m < getClass("AngleLabel" + dcm.sop).length; m++)
                         getClass("AngleLabel" + dcm.sop)[m].style.display = "";
                 }
+                dcm.deleteMark = function () {
+                    var AngleLabelClass = getClass("AngleLabel" + dcm.sop);
+                    for (var m = 0; m < AngleLabelClass.length; m++) {
+                        AngleLabelClass[m].remove();
+                    }
+                }*/
                 //dcm.hideMark = function () { getClass("MeasureLabel").style.display = "none"; };
                 //dcm.displayMark = function () { getClass("MeasureLabel").style.display = ""; };
                 var DcmMarkLength = dcm.mark.length - 1;
@@ -198,17 +185,9 @@ function angle() {
                 dcm.mark[DcmMarkLength].markX.push(AngleXY0[0]);
                 dcm.mark[DcmMarkLength].markY.push(AngleXY2[1]);
                 dcm.mark[DcmMarkLength].markX.push(AngleXY2[0]);
+
+                dcm.mark[DcmMarkLength].Text = getAnglelValue(e);
                 PatientMark.push(dcm);
-                if (!dcm.mark[DcmMarkLength].Label) {
-                    var label = document.createElement("Label");
-                    label.className = "AngleLabel" + dcm.sop;
-                    label.id = "AngleLabel" + "_" + dcm.sop + "_" + btoa("" + parseInt(AngleXY0[0]) + "_" + parseInt(AngleXY0[1]));
-                    label.style = "color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none;";
-                    label.innerText = "";
-                    getByid("form-group").appendChild(label);
-                    dcm.mark[DcmMarkLength].Label = label;
-                }
-                dcm.mark[DcmMarkLength].Text = getAnglelValue(e, dcm.mark[DcmMarkLength].Label);
                 refreshMark(dcm);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
@@ -343,11 +322,14 @@ function drawAngleRuler(obj) {
     }
     ctx.closePath();
 
-    ctx.globalAlpha = tempAlpha2;
-
-    if (mark.Text && mark.Label) {
-        mark.Label.innerText = mark.Text;
+    if (mark.Text) {
+        ctx.beginPath();
+        ctx.font = "" + (22) + "px Arial";
+        ctx.fillStyle = "#FF0000";
+        ctx.fillText("" + mark.Text, mark.markX[mark.markX.length - 1], mark.markY[mark.markY.length - 1]);
+        ctx.closePath();
     }
+    ctx.globalAlpha = tempAlpha2;
 }
 PLUGIN.PushMarkList(drawAngleRuler);
 function displayAngleRuler() {
@@ -402,6 +384,28 @@ function displayAngleRuler() {
 
 function getAnglelValue(e, Label) {
     if (!angle.angle_) return;
+    var getAngle = ({
+        x: x1,
+        y: y1
+    }, {
+        x: x2,
+        y: y2
+    }) => {
+        const dot = x1 * x2 + y1 * y2
+        const det = x1 * y2 - y1 * x2
+        const angle = Math.atan2(det, dot) / Math.PI * 180
+        return (angle + 360) % 360
+    }
+    var angle1 = getAngle({
+        x: AngleXY1[0] - AngleXY2[0],
+        y: AngleXY1[1] - AngleXY2[1],
+    }, {
+        x: AngleXY1[0] - AngleXY0[0],
+        y: AngleXY1[1] - AngleXY0[1],
+    });
+    if (angle1 > 180) angle1 = 360 - angle1;
+    if (!Label) return parseInt(angle1) + "°";
+
     x_out = -parseInt(magnifierCanvas.style.width) / 2; // 與游標座標之水平距離
     y_out = -parseInt(magnifierCanvas.style.height) / 2; // 與游標座標之垂直距離
     if (angle.angle_ >= 2) {
@@ -431,18 +435,7 @@ function getAnglelValue(e, Label) {
     }
     dgs.top = y + dbst + y_out + "px";
     dgs.left = x + dbsl + x_out + "px";
-    var getAngle = ({
-        x: x1,
-        y: y1
-    }, {
-        x: x2,
-        y: y2
-    }) => {
-        const dot = x1 * x2 + y1 * y2
-        const det = x1 * y2 - y1 * x2
-        const angle = Math.atan2(det, dot) / Math.PI * 180
-        return (angle + 360) % 360
-    }
+
     var angle1 = getAngle({
         x: AngleXY0[0] - AngleXY2[0],
         y: AngleXY0[1] - AngleXY2[1],
