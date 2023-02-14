@@ -24,7 +24,7 @@ function measure() {
             GetViewport().originalPointX = getCurrPoint(e)[0];
             GetViewport().originalPointY = getCurrPoint(e)[1];
 
-            getByid("MeasureLabel").style.display = '';
+            //getByid("MeasureLabel").style.display = '';
             let angle2point = rotateCalculation(e);
             MeasureXY = angle2point;
             MeasureXY2 = angle2point;

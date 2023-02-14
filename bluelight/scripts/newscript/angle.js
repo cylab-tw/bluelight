@@ -26,7 +26,7 @@ function angle() {
             GetViewport().originalPointY = getCurrPoint(e)[1];
 
             if (angle.angle_ == 3) angle.angle_ = 1;
-            if (angle.angle_ == 2) getByid("AngleLabel").style.display = '';
+            //if (angle.angle_ == 2) getByid("AngleLabel").style.display = '';
 
             if (angle.angle_ == 1) {
                 let angle2point = rotateCalculation(e);
@@ -127,7 +127,7 @@ function angle() {
                     dcm.mark[DcmMarkLength].markY.push(AngleXY0[1]);
                     dcm.mark[DcmMarkLength].markX.push(AngleXY0[0]);
 
-                    dcm.mark[DcmMarkLength].Text = getAnglelValue(e);
+                    dcm.mark[DcmMarkLength].Text = "";//getAnglelValue(e);
                     PatientMark.push(dcm);
                     refreshMark(dcm);
 
