@@ -251,7 +251,7 @@ function html_onload() {
     measure();
 
     drawBorder(this);
-  }
+  } 
 
   getByid("AngleRuler").onclick = function () {
     if (this.enable == false) return;
