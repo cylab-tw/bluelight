@@ -12,7 +12,7 @@ function html_onload() {
   function KeyUp(KeyboardKeys) {
     KeyCode_ctrl = false;
   }
-  
+
   function KeyDown(KeyboardKeys) {
     var key = KeyboardKeys.which
     if (key === 33) {
@@ -191,6 +191,27 @@ function html_onload() {
     //SetTable();
   }
 
+  getByid("openMeasureImg").onclick = function () {
+    invertDisplayById('openMeasureDIv');
+  }
+
+  getByid("removeRuler").onclick = function () {
+    var sopList = [];
+    for (var n in PatientMark) {
+      var M = PatientMark[n];
+      if (M.hideName == "ruler") {
+        for (var M2 = 0; M2 < M.mark.length; M2++) {
+          M.mark[M2].type = "delete";
+        }
+        sopList.push(M.sop);
+        refreshMark(M);
+      }
+    }
+    PatientMark = PatientMark.filter(m => m.type == "delete");
+    for (var s = 0; s < sopList.length; s++)
+      refreshMarkFromSop(sopList[s]);
+  }
+
   getByid("zoom").onclick = function () {
     if (this.enable == false) return;
     //BL_mode = 'zoom';
@@ -230,7 +251,7 @@ function html_onload() {
     measure();
 
     drawBorder(this);
-  }
+  } 
 
   getByid("AngleRuler").onclick = function () {
     if (this.enable == false) return;

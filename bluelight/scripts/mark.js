@@ -595,7 +595,7 @@ function displayMark(viewportNum0) {
                 if (mark.type == "SEG") drawSEG(MarkCanvas, mark, viewport);
                 else if (mark.type == "Overlay") drawOverLay(MarkCanvas, mark, viewport);
             }
-        } else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
+        } 
     }
 
     for (var n = 0; n < PatientMark.length; n++) {
@@ -614,7 +614,7 @@ function displayMark(viewportNum0) {
                 else if (mark.type == "TwoDimensionMultiPoint") drawTwoDimensionMultiPoint(MarkCanvas, mark, viewport);
                 else if (mark.type == "TwoDimensionEllipse") drawTwoDimensionEllipse(MarkCanvas, mark, viewport);
             }
-        } else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
+        } 
     }
 
     for (var n = 0; n < PatientMark.length; n++) {
@@ -626,7 +626,7 @@ function displayMark(viewportNum0) {
                 if (mark.type == "RTSS") drawRTSS(MarkCanvas, mark, viewport);
                 else if (mark.type == "TextAnnotationEntity") drawTextAnnotationEntity(MarkCanvas, mark, viewport);
             }
-        } else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
+        } 
     }
 
     for (var n = 0; n < PatientMark.length; n++) {
@@ -637,6 +637,6 @@ function displayMark(viewportNum0) {
                 mark.parent = PatientMark[n];
                 MARKER.drawMark({ "canvas": MarkCanvas, "mark": mark, "showName": PatientMark[n].showName });//MarkCanvas, mark, viewport
             }
-        } else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
+        } 
     }
 }

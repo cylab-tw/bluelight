@@ -9,7 +9,7 @@
   <meta content="no-cache" http-equiv="pragma">
   <meta content="0" http-equiv="expires">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-  
+
   <link rel="stylesheet" type="text/css" href="../css/vr.css">
   <link rel="icon" href="../image/icon/title/bluelight.png" type="image/x-icon" />
 
@@ -96,10 +96,22 @@
           src="../image/icon/black/b_InvertGrayscale.png" width="50" height="50"></span>
       <span id="unlink_span"><img class="img" alt="連接" id="unlink"
           src="../image/icon/black/b_unlink translation synchronization.png" width="50" height="50"></span>
-      <span id="MeasureRuler_span"><img class="img" alt="測量" id="MeasureRuler"
-          src="../image/icon/black/b_DistanceMeasurement.png" width="50" height="50"></span>
-      <span id="AngleRuler_span"><img class="img" alt="角度" id="AngleRuler"
-          src="../image/icon/black/b_AngleMeasurement.png" width="50" height="50"></span>
+      <span style="position:relative;">
+        <img class="img" id="openMeasureImg" src="../image/icon/black/M.png" width="50" height="50">
+        <div id="openMeasureDIv" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+        width: 500; display: none;background-color: black;">
+          <span id="removeRuler_span">
+            <img alt="清除測量" id="removeRuler" src="../image/icon/black/X.png" width="50" height="50">
+          </span>
+          <span id="MeasureRuler_span">
+            <img alt="測量" id="MeasureRuler" src="../image/icon/black/b_DistanceMeasurement.png" width="50" height="50">
+          </span>
+          <span id="AngleRuler_span">
+            <img alt="角度" id="AngleRuler" src="../image/icon/black/b_AngleMeasurement.png" width="50" height="50">
+          </span>
+        </div>
+      </span>
+
       <span id="playvideo_span"><img class="img" alt="播放" id="playvideo" src="../image/icon/black/b_CinePlay.png"
           width="50" height="50"></span>
       <span id="MarkButton_span"><img class="img VR MPR" alt="標記" id="MarkButton" src="../image/icon/black/fist0.png"
@@ -167,7 +179,7 @@
       <font color="white">3x3:<input type="radio" class="split_radio" name="split_radio" id="radio_3x3" />　</font>
       <font color="white">4x4:<input type="radio" class="split_radio" name="split_radio" id="radio_4x4" />　</font>
     </div>
-    <span id="WindowLevelDiv_span" >
+    <span id="WindowLevelDiv_span">
       <div id="WindowLevelDiv" style="background-color:#33666644;">
         <font color="white" id="myWC">WC：</font><input type="text" id="textWC" value="520" />
         <font color="white" id="myWW">WW：</font><input type="text" id="textWW" value="50" />

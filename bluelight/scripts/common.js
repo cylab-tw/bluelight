@@ -86,54 +86,6 @@ function displayRuler2(viewportNum0) {
     } catch (ex) { }
 }
 
-function displayAngleRuler() {
-    if (!openAngle) return;
-    if (parseInt(Math.sqrt(
-        Math.pow(AngleXY1[0] / GetViewport().PixelSpacingX - AngleXY0[0] / GetViewport().PixelSpacingX, 2) +
-        Math.pow(AngleXY1[1] / GetViewport().PixelSpacingY - AngleXY0[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
-
-    var MarkCanvas = GetViewportMark();
-    var tempctx = MarkCanvas.getContext("2d");
-
-    var lineWid = parseFloat(MarkCanvas.width) / parseFloat(Css(MarkCanvas, 'width'));
-
-    if (lineWid <= 0) lineWid = parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width);
-    if (lineWid <= 1.5) lineWid = 1.5;
-
-    tempctx.lineWidth = "" + ((Math.abs(lineWid)) * 1);
-
-    tempctx.beginPath();
-    tempctx.strokeStyle = "#00FF00";
-    tempctx.fillStyle = "#00FF00";
-
-    tempctx.moveTo(AngleXY0[0], AngleXY0[1]);
-    tempctx.lineTo(AngleXY1[0], AngleXY1[1]);
-    tempctx.stroke();
-    if (openAngle == 2) {
-        tempctx.moveTo(AngleXY0[0], AngleXY0[1]);
-        tempctx.lineTo(AngleXY2[0], AngleXY2[1]);
-    }
-    tempctx.stroke();
-    tempctx.closePath();
-    tempctx.beginPath();
-    tempctx.strokeStyle = "#FF0000";
-    tempctx.fillStyle = "#FF0000";
-    tempctx.arc(AngleXY0[0], AngleXY0[1], 3, 0, 2 * Math.PI);
-    tempctx.fill();
-
-    tempctx.arc(AngleXY1[0], AngleXY1[1], 3, 0, 2 * Math.PI);
-    tempctx.fill();
-    if (openAngle == 2) {
-        tempctx.strokeStyle = "#FF0000";
-        tempctx.fillStyle = "#FF0000";
-        tempctx.arc(AngleXY0[0], AngleXY0[1], 3, 0, 2 * Math.PI);
-        tempctx.fill();
-        tempctx.arc(AngleXY2[0], AngleXY2[1], 3, 0, 2 * Math.PI);
-        tempctx.fill();
-    }
-    tempctx.closePath();
-}
-
 function resetViewport(viewportNum0) {
     var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
     GetViewport(viewportNum).NowCanvasSizeWidth = GetViewport(viewportNum).NowCanvasSizeHeight = null;

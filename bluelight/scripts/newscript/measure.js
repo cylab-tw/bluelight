@@ -24,7 +24,7 @@ function measure() {
             GetViewport().originalPointX = getCurrPoint(e)[0];
             GetViewport().originalPointY = getCurrPoint(e)[1];
 
-            getByid("MeasureLabel").style.display = '';
+            //getByid("MeasureLabel").style.display = '';
             let angle2point = rotateCalculation(e);
             MeasureXY = angle2point;
             MeasureXY2 = angle2point;
@@ -75,23 +75,13 @@ function measure() {
                 dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
                 dcm.mark[DcmMarkLength].markY.push(currY);
                 dcm.mark[DcmMarkLength].markX.push(currX);
+               
+                dcm.mark[DcmMarkLength].Text = getMeasurelValue(e);
                 PatientMark.push(dcm);
-                if (!dcm.mark[DcmMarkLength].Label) {
-                    var label = document.createElement("Label");
-                    label.className = "MeasureLabel" + dcm.sop;
-                    label.id = "MeasureLabel" + "_" + dcm.sop + "_" + btoa("" + parseInt(MeasureXY[0]) + "_" + parseInt(MeasureXY[1]));
-                    label.style = "color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none;";
-                    label.innerText = "";
-                    getByid("form-group").appendChild(label);
-                    dcm.mark[DcmMarkLength].Label = label;
-                }
-                dcm.mark[DcmMarkLength].Text = getMeasurelValue(e, dcm.mark[DcmMarkLength].Label);
                 refreshMark(dcm);
                 //for (var i = 0; i < Viewport_Total; i++)
                 //     displayMark(i);
                 //  displayAngleRuler();
-                getByid("" + dcm.mark[DcmMarkLength].Label.id).parentNode.replaceChild(dcm.mark[DcmMarkLength].Label, getByid("" + dcm.mark[DcmMarkLength].Label.id));
-                //getByid("form-group").removeChild(dcm.mark[DcmMarkLength].Label);
                 PatientMark.splice(PatientMark.indexOf(dcm), 1);
                 return;
             }
@@ -124,7 +114,7 @@ function measure() {
             dcm.mark.push({});
             dcm.sop = Uid.sopuid;
 
-            dcm.hideMark = function () {
+            /*dcm.hideMark = function () {
                 for (var m = 0; m < getClass("MeasureLabel" + dcm.sop).length; m++)
                     getClass("MeasureLabel" + dcm.sop)[m].style.display = "none";
             }
@@ -132,6 +122,12 @@ function measure() {
                 for (var m = 0; m < getClass("MeasureLabel" + dcm.sop).length; m++)
                     getClass("MeasureLabel" + dcm.sop)[m].style.display = "";
             }
+            dcm.deleteMark = function () {
+                var MeasureLabelClass = getClass("MeasureLabel" + dcm.sop);
+                for (var m = 0; m < MeasureLabelClass.length; m++) {
+                    MeasureLabelClass[m].remove();
+                }
+            }*/
 
             var DcmMarkLength = dcm.mark.length - 1;
             dcm.mark[DcmMarkLength].type = "MeasureRuler";
@@ -142,10 +138,9 @@ function measure() {
             dcm.mark[DcmMarkLength].markY.push(currY);
             dcm.mark[DcmMarkLength].markX.push(currX);
 
-            dcm.mark[DcmMarkLength].Text = getMeasurelValue(e, dcm.mark[DcmMarkLength].Label);
+            dcm.mark[DcmMarkLength].Text = getMeasurelValue(e);
             PatientMark.push(dcm);
             refreshMark(dcm);
-
             for (var i = 0; i < Viewport_Total; i++)
                 displayMark(i);
             displayAngleRuler();
@@ -247,12 +242,12 @@ function measure() {
 }
 
 function getMeasurelValue(e, Label) {
-    if (!Label) return;
+    
     var value = parseInt(Math.sqrt(
         Math.pow(MeasureXY2[0] / GetViewport().PixelSpacingX - MeasureXY[0] / GetViewport().PixelSpacingX, 2) +
         Math.pow(MeasureXY2[1] / GetViewport().PixelSpacingY - MeasureXY[1] / GetViewport().PixelSpacingY, 2), 2)) +
         "mm";
-
+    if (!Label) return value;
     if (document.body.scrollTop && document.body.scrollTop != 0) {
         var dbst = document.body.scrollTop;
         var dbsl = document.body.scrollLeft;
@@ -268,7 +263,6 @@ function getMeasurelValue(e, Label) {
         dgs.top = y + dbst + "px";
         dgs.left = x + dbsl + "px";
     }
-
 
     if (parseInt(value) <= 1) return "";
     else return value;
@@ -312,10 +306,14 @@ function drawMeasureRuler(obj) {
     ctx.arc(mark.markX[mark.markX.length - 1], mark.markY[mark.markY.length - 1], 3, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
-    ctx.globalAlpha = tempAlpha2;
-    
-    if (mark.Text && mark.Label) {
-        mark.Label.innerText = mark.Text;
+
+    if (mark.Text) {
+        ctx.beginPath();
+        ctx.font = "" + (22) + "px Arial";
+        ctx.fillStyle = "#FF0000";
+        ctx.fillText("" + mark.Text, mark.markX[mark.markX.length - 1], mark.markY[mark.markY.length - 1]);
+        ctx.closePath();
     }
+    ctx.globalAlpha = tempAlpha2;
 }
 PLUGIN.PushMarkList(drawMeasureRuler);

@@ -45,6 +45,12 @@ function random(min, max, step) {
     return number;
 }
 
+function invertDisplayById(id) {
+    if (!id && !getByid(id)) return;
+    if (getByid(id).style.display == "none") getByid(id).style.display = "";
+    else getByid(id).style.display = "none";
+}
+
 function getCurrPoint(e) {
     var canvas = GetViewport().canvas()
     if (!canvas) return [0, 0];
@@ -420,10 +426,10 @@ function checkMark(i, j, n) {
                 for (var elemNum in elem) {
                     if (elem[elemNum].name == PatientMark[n].hideName) {
                         if (elem[elemNum].series == "true") {
-                            if (PatientMark[n].displayMark) PatientMark[n].displayMark();
+                            //if (PatientMark[n].displayMark) PatientMark[n].displayMark();
                             checkRtss = 1;
                             return checkRtss;
-                        } else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
+                        }//else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
                     }
                 }
             }
