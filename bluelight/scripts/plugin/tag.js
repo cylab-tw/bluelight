@@ -1,79 +1,152 @@
-window.addEventListener("load", function (event) {
+let openWriteTAG = false;
 
-    getByid("medicalSpecialtyTag").onchange = function () {
+function loadWriteTAG() {
+    let span = document.createElement("SPAN");
+    span.innerHTML =
+        `<img class="img TAG" alt="writeTAG" id="writeTAG" src="../image/icon/black/tag_off.png" width="50" height="50">`;
+    getByid("icon-list").appendChild(span);
+    span = document.createElement("SPAN");
+    span.innerHTML = `<div id="TagStyleDiv" style="background-color:#30306044;">
+                        <span style="color: white; " id="medicalSpecialtyTagSpan">Medical specialty：</span>
+                        <select id="medicalSpecialtyTag">
+                        </select>
+                    </div>`;
 
-        let disabledDiseaseDiv = document.getElementById("TagStyleDiv").querySelectorAll("div");
-        disabledDiseaseDiv.forEach((elem) => {
-            elem.hidden = true;
-        });
+    getByid("page-header").appendChild(span);
+    getByid("TagStyleDiv").style.display = "none";
+}
 
-        let enabledDiseaseDiv = document.querySelectorAll("div[id='" + this.value + "']");
-        enabledDiseaseDiv.forEach((elem) => {
-            elem.hidden = false;
+function readImageTags(url) {
+    let request = new XMLHttpRequest();
+    request.open('GET', url);
+    request.responseType = 'json';
+    request.send();
+    request.onload = function () {
+        let response = Object.entries(request.response['medicalSpecialty']);
+
+        response.forEach(medicalSpecialityObject => {
+            let [key, value] = medicalSpecialityObject;
+
+            let medicalSpecialtyName = value['name'];
+            let selectField = document.getElementById("medicalSpecialtyTag");
+            let opt = document.createElement('option');
+            opt.id = medicalSpecialtyName;
+
+            opt.textContent = medicalSpecialtyName;
+            selectField.appendChild(opt);
+
+            let tagDiv = document.getElementById("TagStyleDiv");
+            let diseasesDiv = document.createElement('div');
+            diseasesDiv.id = medicalSpecialtyName;
+            diseasesDiv.style.color = "white";
+            tagDiv.appendChild(diseasesDiv);
+
+            let diseases = Object.entries(value['diseases']);
+            diseases.forEach(diseaseObject => {
+                let [diseaseKey, diseaseValue] = diseaseObject;
+                let span = document.createElement("span");
+                let diseaseName = diseaseValue['name'];
+                span.id = "diseaseTagSpan";
+                span.textContent = "Disease：" + diseaseName + " ";
+                diseasesDiv.appendChild(span);
+
+                let select = document.createElement('select');
+                select.id = "diseaseSelectorTag" + diseaseName.replace(/ /g, "");
+
+                let selectDiseaseTagNumber = document.querySelectorAll('[id^=diseaseSelectorTag]').length
+                if (selectDiseaseTagNumber > 0) {
+                    diseasesDiv.hidden = true;
+                }
+                diseasesDiv.appendChild(select);
+
+                diseaseValue['tags'].forEach(tag => {
+                    let opt = document.createElement('option');
+                    opt.id = tag;
+                    opt.textContent = tag;
+                    select.appendChild(opt);
+                });
+            });
         });
     }
+}
 
-    getByid("writeTAG").onclick = function () {
-        if (imgInvalid(this)) return;
-        cancelTools();
-        openWriteTAG = !openWriteTAG;
-        img2darkByClass("TAG", !openWriteTAG);
-        this.src = openWriteTAG == true ? '../image/icon/black/tag_on.png' : '../image/icon/black/tag_off.png';
-        if (openWriteTAG == true) {
-            getByid('TagStyleDiv').style.display = '';
-            set_BL_model('writeTAG');
-        } else getByid('TagStyleDiv').style.display = 'none';
-        displayMark(viewportNumber);
-        if (openWriteTAG == true) return;
+loadWriteTAG();
+readImageTags("../data/imageTags.json");
 
-        function download(text, name, type) {
-            let a = document.createElement('a');
-            let file = new Blob([text], {
-                type: type
-            });
-            a.href = window.URL.createObjectURL(file);
-            a.download = name;
-            a.click();
-        }
+getByid("medicalSpecialtyTag").onchange = function () {
 
-        function download2(text, name, type) {
-            let a = document.createElement('a');
-            let file = new File([text], name + ".xml", {
-                type: type
-            });
-            var xhr = new XMLHttpRequest();
+    let disabledDiseaseDiv = document.getElementById("TagStyleDiv").querySelectorAll("div");
+    disabledDiseaseDiv.forEach((elem) => {
+        elem.hidden = true;
+    });
 
-            xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
-            xhr.setRequestHeader("enctype", "multipart/form-data");
-            var formData = new FormData();
-            formData.append("files", file);
-            xhr.send(formData);
-            xhr.onload = function () {
-                if (xhr.status == 200) {
-                    let data = JSON.parse(xhr.responseText);
-                    for (let url of data) {
-                        window.open(url);
-                    }
+    let enabledDiseaseDiv = document.querySelectorAll("div[id='" + this.value + "']");
+    enabledDiseaseDiv.forEach((elem) => {
+        elem.hidden = false;
+    });
+}
+
+getByid("writeTAG").onclick = function () {
+    if (this.enable == false) return;
+    cancelTools();
+    openWriteTAG = !openWriteTAG;
+    img2darkByClass("TAG", !openWriteTAG);
+    this.src = openWriteTAG == true ? '../image/icon/black/tag_on.png' : '../image/icon/black/tag_off.png';
+    if (openWriteTAG == true) {
+        getByid('TagStyleDiv').style.display = '';
+        set_BL_model('writeTAG');
+    } else getByid('TagStyleDiv').style.display = 'none';
+    displayMark(viewportNumber);
+    if (openWriteTAG == true) return;
+
+    function download(text, name, type) {
+        let a = document.createElement('a');
+        let file = new Blob([text], {
+            type: type
+        });
+        a.href = window.URL.createObjectURL(file);
+        a.download = name;
+        a.click();
+    }
+
+    function download2(text, name, type) {
+        let a = document.createElement('a');
+        let file = new File([text], name + ".xml", {
+            type: type
+        });
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+        xhr.setRequestHeader("enctype", "multipart/form-data");
+        var formData = new FormData();
+        formData.append("files", file);
+        xhr.send(formData);
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+                let data = JSON.parse(xhr.responseText);
+                for (let url of data) {
+                    window.open(url);
                 }
             }
         }
-        let index = SearchUid2Index(GetViewport().alt);
-        let i = index[0],
-            j = index[1],
-            k = index[2];
-        let sopUID = Patient.Study[i].Series[j].Sop[k].SopUID;
-
-        set_TAG_context(index);
-
-        if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) {
-            download2(String(get_TAG_context()), "" + CreateRandom(), 'text/plain');
-        } else {
-            download(String(get_TAG_context()), sopUID + ".xml", 'text/plain');
-        }
-
-        getByid('MouseOperation').click();
     }
-});
+
+    let index = SearchUid2Index(GetViewport().sop);
+    let i = index[0],
+        j = index[1],
+        k = index[2];
+    let sopUID = Patient.Study[i].Series[j].Sop[k].SopUID;
+
+    set_TAG_context(index);
+
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) {
+        download2(String(get_TAG_context()), "" + CreateRandom(), 'text/plain');
+    } else {
+        download(String(get_TAG_context()), sopUID + ".xml", 'text/plain');
+    }
+
+    getByid('MouseOperation').click();
+}
 
 var TAG_format =
     `<?xml version="1.0" encoding="UTF-8"?>

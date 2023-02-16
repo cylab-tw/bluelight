@@ -34,7 +34,7 @@ function angle() {
                 AngleXY1 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
             }
         };
 
@@ -53,7 +53,7 @@ function angle() {
                 AngleXY2 = angle2point;
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
                 return;
             }
 
@@ -65,7 +65,7 @@ function angle() {
             }
             putLabel();
             for (var i = 0; i < Viewport_Total; i++)
-                displayRular(i);
+                displayRuler(i);
 
             if (MouseDownCheck) {
                 windowMouseX = GetmouseX(e);
@@ -75,7 +75,7 @@ function angle() {
                     AngleXY0 = angle2point;
                     for (var i = 0; i < Viewport_Total; i++)
                         displayMark(i);
-                    displayAngleRular();
+                    displayAngleRuler();
                     return;
                 }
             }
@@ -84,7 +84,7 @@ function angle() {
         }
         Mouseup = function (e) {
             if (openMouseTool == true && rightMouseDown == true)
-                displayMark(viewportNumber);
+                displayMark();
             if (MouseDownCheck == true) {
                 if (angle.angle_ == 1) angle.angle_ = 2;
                 else if (angle.angle_ == 2) angle.angle_ = 3;
@@ -93,7 +93,7 @@ function angle() {
             rightMouseDown = false;
         }
         Touchstart = function (e, e2) {
-            if (openVR == true) return;
+
             if (!e2) TouchDownCheck = true;
             else rightTouchDown = true;
             windowMouseX = GetmouseX(e);
@@ -119,12 +119,12 @@ function angle() {
                 AngleXY1 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
             }
         }
         Touchmove = function (e, e2) {
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
-            if (openVR == true) return;
+
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
             if (e2) {
@@ -140,7 +140,7 @@ function angle() {
                 AngleXY2 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
                 return;
             }
             if (angle.angle_ == 1) {
@@ -151,7 +151,7 @@ function angle() {
                 AngleXY0 = [currX11, currY11];
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
-                displayAngleRular();
+                displayAngleRuler();
                 return;
             }
         }
@@ -162,15 +162,15 @@ function angle() {
             }
             TouchDownCheck = false;
             rightTouchDown = false;
-            if (openVR == true) return;
+
             magnifierDiv.style.display = "none";
-            displayMeasureRular();
+            
         }
         AddMouseEvent();
     }
 }
 
-function displayAngleRular() {
+function displayAngleRuler() {
     if (!angle.angle_) return;
     if (parseInt(Math.sqrt(
         Math.pow(AngleXY1[0] / GetViewport().PixelSpacingX - AngleXY0[0] / GetViewport().PixelSpacingX, 2) +
