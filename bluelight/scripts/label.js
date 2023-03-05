@@ -1,9 +1,9 @@
 function displayWindowLevel(viewportNum0) {
   var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
-  textWC.value = "originWindowCenter";
-  textWW.value = "originWindowWidth";
-  textWW.value = "" + parseInt(GetViewport(viewportNum).windowWidthList);
-  textWC.value = "" + parseInt(GetViewport(viewportNum).windowCenterList);
+  getByid("textWC").value = "originWindowCenter";
+  getByid("textWW").value = "originWindowWidth";
+  getByid("textWW").value = "" + parseInt(GetViewport(viewportNum).windowWidthList);
+  getByid("textWC").value = "" + parseInt(GetViewport(viewportNum).windowCenterList);
   labelWC[viewportNum].innerText = " WC: " + parseInt(GetViewport(viewportNum).windowCenterList) + " WW: " + parseInt(GetViewport(viewportNum).windowWidthList);
 }
 

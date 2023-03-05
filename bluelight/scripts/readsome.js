@@ -717,6 +717,7 @@ function loadDicomSeg(image, imageId) {
 function loadUID(DICOM_obj) {
   var study = DICOM_obj.study, series = DICOM_obj.series, sop = DICOM_obj.sop;
   var instance = DICOM_obj.instance, imageId = DICOM_obj.imageId, patientId = DICOM_obj.patientId, image = DICOM_obj.image, pixelData = DICOM_obj.pixelData;
+  var pdf = DICOM_obj.pdf;
   var Hierarchy = 0;
   var NumberOfStudy = -1;
   for (var i = 0; i < Patient.StudyAmount; i++) {
@@ -739,6 +740,7 @@ function loadUID(DICOM_obj) {
     Sop.imageId = imageId;
     Sop.image = image;
     Sop.pixelData = pixelData;
+    Sop.pdf = pdf;
     getPatientbyImageID[imageId] = Sop;
     Series.Sop.push(Sop); Series.Sop[Sop.SopUID] = Sop;
     Study.Series.push(Series); Study.Series[Series.SeriesUID] = Series;
@@ -762,6 +764,7 @@ function loadUID(DICOM_obj) {
       Sop.imageId = imageId;
       Sop.image = image;
       Sop.pixelData = pixelData;
+      Sop.pdf = pdf;
       getPatientbyImageID[imageId] = Sop;
       Series.Sop.push(Sop); Series.Sop[Sop.SopUID] = Sop;
       Patient.Study[NumberOfStudy].Series.push(Series); Patient.Study[NumberOfStudy].Series[Series.SeriesUID] = Series;
@@ -780,6 +783,7 @@ function loadUID(DICOM_obj) {
         Sop.imageId = imageId;
         Sop.image = image;
         Sop.pixelData = pixelData;
+        Sop.pdf = pdf;
         Patient.Study[NumberOfStudy].Series[isSeries].Sop.push(Sop); Patient.Study[NumberOfStudy].Series[isSeries].Sop[Sop.SopUID] = Sop;
         Patient.Study[NumberOfStudy].Series[isSeries].SopAmount += 1;
         getPatientbyImageID[imageId] = Sop;

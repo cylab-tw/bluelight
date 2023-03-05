@@ -183,8 +183,8 @@ function html_onload() {
     windowlevel();
     drawBorder(this);
     //cancelTools();
-    //textWC.style.display = '';
-    //textWW.style.display = '';
+    //getByid("textWC").style.display = '';
+    //getByid("textWW").style.display = '';
     // getByid('WindowLevelDiv').style.display = '';
     //openWindow = true;
     //drawBorder(this);
@@ -203,13 +203,15 @@ function html_onload() {
         for (var M2 = 0; M2 < M.mark.length; M2++) {
           M.mark[M2].type = "delete";
         }
+        M.type = "delete";
         sopList.push(M.sop);
         refreshMark(M);
       }
     }
-    PatientMark = PatientMark.filter(m => m.type == "delete");
-    for (var s = 0; s < sopList.length; s++)
-      refreshMarkFromSop(sopList[s]);
+    PatientMark = PatientMark.filter(m => m.type != "delete");
+    for (var n in PatientMark) { refreshMark(PatientMark[n]); }
+    //for (var s = 0; s < sopList.length; s++)
+    //   refreshMarkFromSop(sopList[s]);
   }
 
   getByid("zoom").onclick = function () {
@@ -251,7 +253,7 @@ function html_onload() {
     measure();
 
     drawBorder(this);
-  } 
+  }
 
   getByid("AngleRuler").onclick = function () {
     if (this.enable == false) return;
@@ -351,14 +353,14 @@ function html_onload() {
   }
 
   getByid("textWC").onchange = function () {
-    GetViewport().windowCenterList = parseInt(textWC.value);
+    GetViewport().windowCenterList = parseInt(getByid("textWC").value);
     getByid("WindowCustom").selected = true;
     SetWindowWL();
     WindowOpen = true;
   }
 
   getByid("textWW").onchange = function () {
-    GetViewport().windowWidthList = parseInt(textWW.value);
+    GetViewport().windowWidthList = parseInt(getByid("textWW").value);
     getByid("WindowCustom").selected = true;
     SetWindowWL();
     WindowOpen = true;

@@ -2,8 +2,8 @@
 function windowlevel() {
     if (BL_mode == 'windowlevel') {
         DeleteMouseEvent();
-        textWC.style.display = '';
-        textWW.style.display = '';
+        getByid("textWC").style.display = '';
+        getByid("textWW").style.display = '';
         getByid('WindowLevelDiv').style.display = '';
         //  getByid('myWW').style.display = '';
         openWindow = true;
@@ -67,8 +67,8 @@ function windowlevel() {
                             GetViewport().windowWidthList = (parseInt(GetViewport().windowWidthList) + Math.abs(GetmouseX(e) - windowMouseX));
                     }
                     if (GetViewport().windowWidthList < 1) GetViewport().windowWidthList = 1;
-                    textWC.value = "" + parseInt(GetViewport().windowCenterList);
-                    textWW.value = "" + parseInt(GetViewport().windowWidthList);
+                    getByid("textWC").value = "" + parseInt(GetViewport().windowCenterList);
+                    getByid("textWW").value = "" + parseInt(GetViewport().windowWidthList);
                     if (openLink == true) {
                         for (var z = 0; z < 4; z++)
                             GetViewport(z).windowWidthList = GetViewport().windowWidthList;
@@ -142,8 +142,8 @@ function windowlevel() {
                         GetViewport().windowWidthList = (parseInt(GetViewport().windowWidthList) + Math.abs(GetmouseX(e) - windowMouseX));
                 }
                 if (GetViewport().windowWidthList < 1) GetViewport().windowWidthList = 1;
-                textWC.value = "" + parseInt(GetViewport().windowCenterList);
-                textWW.value = "" + parseInt(GetViewport().windowWidthList);
+                getByid("textWC").value = "" + parseInt(GetViewport().windowCenterList);
+                getByid("textWW").value = "" + parseInt(GetViewport().windowWidthList);
                 if (openLink == true) {
                     for (var z = 0; z < Viewport_Total; z++)
                         windowWidthList[z] = GetViewport().windowWidthList;

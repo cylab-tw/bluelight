@@ -2,6 +2,13 @@
 let VIEWPORT = {};
 VIEWPORT.fixRow = null;
 VIEWPORT.fixCol = null;
+VIEWPORT.delPDFView = function (viewport) {
+    if (viewport && viewport.PDFView) {
+        viewport.removeChild(viewport.PDFView);
+        viewport.PDFView = undefined;
+    }
+}
+
 VIEWPORT.initPixelSpacing = function (viewport) {
     if (viewport.PixelSpacing) {
         viewport.PixelSpacingX = 1.0 / parseFloat(viewport.PixelSpacing.split("\\")[0]);
@@ -62,9 +69,10 @@ VIEWPORT.loadViewport = function (element, image, viewportNum) {
         VIEWPORT[VIEWPORT.loadViewportList[i]](element, image, viewportNum);
     }
 }
-VIEWPORT.loadViewportList = ['initImagePosition', 'initPixelSpacing', 'initImageOrientation', 'putLabel2Element'];
+VIEWPORT.loadViewportList = ['initImagePosition', 'initPixelSpacing', 'initImageOrientation', 'putLabel2Element', 'delPDFView'];
 
 VIEWPORT.lockViewportList = [];
+
 /*
 initImagePosition(element);
 initPixelSpacing(element);//載入Pixel Spacing
@@ -105,6 +113,38 @@ window.onresize = function () {
             style.height = "" + height + "px";
     } catch (ex) { }
     EnterRWD();
+}
+
+
+function displayImg2LefyCanvas(DicomCanvas, image, pixelData) {
+    DicomCanvas.width = 100;
+    DicomCanvas.height = 100;
+    DicomCanvas.style.width = 66 + "px";
+    DicomCanvas.style.height = 66 + "px";
+    var ctx = DicomCanvas.getContext("2d");
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, 100, 100);
+    ctx.fillStyle = "gray";
+    function roundRect(ctx, x, y, w, h, r = 10) {
+        if (w < 2 * r) r = w / 2;
+        if (h < 2 * r) r = h / 2;
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+        ctx.fill();
+    }
+    roundRect(ctx, 10, 10, 80, 80, 10);
+    ctx.beginPath();
+    ctx.fillStyle = "white";
+    ctx.font = "32px serif";
+    ctx.closePath();
+    ctx.fillText("PDF", 20, 59);
+    ctx.closePath();
+    ctx.fill();
 }
 
 function displayLefyCanvas(DicomCanvas, image, pixelData) {
@@ -310,6 +350,88 @@ function wadorsLoader(url) {
     return getData();
 }
 
+function displayPDF(pdf) {
+    getClass("DicomCanvas")[viewportNumber].width = getClass("DicomCanvas")[viewportNumber].height = 1;
+    GetViewportMark(viewportNumber).width = GetViewportMark(viewportNumber).height = 1;
+    var element = GetViewport();
+    for (var tag in element.DicomTagsList) element[element.DicomTagsList[tag][1]] = undefined;
+    element.imageWidth = element.imageHeight = element.windowCenterList = element.windowWidthList =
+        element.newMousePointX = element.newMousePointY = element.rotateValue = element.NowCanvasSizeWidth = element.NowCanvasSizeHeight =
+        element.windowCenter = element.windowWidth = element.sop = undefined;
+
+    VIEWPORT.delPDFView(element);
+    var iFrame = document.createElement("iframe");
+    iFrame.className = "PDFView";
+    iFrame.id = "PDFView_" + viewportNumber;
+    iFrame.src = pdf;
+    iFrame.style.width = iFrame.style.height = "100%";
+    iFrame.style.left = "0px";
+    iFrame.style.position = "absolute";
+    element.appendChild(iFrame);
+    element.PDFView = iFrame;
+
+    getClass("labelWC")[viewportNumber].style.display = "none";
+    getClass("labelLT")[viewportNumber].style.display = "none";
+    getClass("labelRT")[viewportNumber].style.display = "none";
+    getClass("labelRB")[viewportNumber].style.display = "none";
+    getClass("labelWC")[viewportNumber].style.display = "none";
+    getClass("labelXY")[viewportNumber].style.display = "none";
+    getClass("leftRule")[viewportNumber].style.display = "none";
+    getClass("downRule")[viewportNumber].style.display = "none";
+}
+
+function parseDicomWithoutImage(dataSet, imageId) {
+    if (dataSet.string("x00020002") == '1.2.840.10008.5.1.4.1.1.104.1') {
+        var fileTag = dataSet.elements.x00420011;
+        var pdfByteArray = dataSet.byteArray.slice(fileTag.dataOffset, fileTag.dataOffset + fileTag.length);
+        var pdfObj = new Blob([pdfByteArray], { type: 'application/pdf' });
+        var pdf = URL.createObjectURL(pdfObj);
+
+        var DICOM_obj = {
+            study: dataSet.string('x0020000d'),
+            series: dataSet.string('x0020000e'),
+            sop: dataSet.string('x00080018'),
+            instance: dataSet.string('x00200013'),
+            imageId: imageId,
+            image: null,
+            pdf: pdf,
+            pixelData: null,
+            patientId: dataSet.string('x00100020')
+        };
+        loadUID(DICOM_obj);
+
+        var checkleftCanvas = -1;
+        //如果有，checkleftCanvas就指向該series
+        for (var checkSeries in leftCanvasStudy) {
+            if (leftCanvasStudy[checkSeries] == dataSet.string('x0020000e')) {
+                checkleftCanvas = checkSeries;
+            }
+        }
+
+        //如果未曾出現在左側面板，就加到左側面板
+        if (checkleftCanvas == -1) {
+            var newView = SetToLeft(dataSet.string('x0020000e'), -1, "patientID:" + securePassword(0, 99999, 1));
+            leftCanvasStudy.push(dataSet.string('x0020000e'));
+            var NewCanvas = document.createElement("CANVAS");
+            NewCanvas.className = "LeftCanvas";
+            newView.appendChild(NewCanvas);
+            displayImg2LefyCanvas(NewCanvas);
+        } else {
+            var checkNum;
+            for (var dCount = 0; dCount <= dicomImageCount; dCount++) {
+                if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == image.data.string('x0020000e')) {
+                    checkNum = dCount;
+                    break;
+                }
+            }
+            if (checkNum != undefined) SetToLeft(dataSet.string('x0020000e'), checkNum, "patientID:" + securePassword(0, 99999, 1));
+        }
+
+        dicomImageCount += 1;
+        displayPDF(pdf);
+    }
+}
+
 function parseDicom(image, pixelData, viewportNum0) {
     var viewportNum;
     if (viewportNum0 >= 0) viewportNum = viewportNum0;
@@ -324,6 +446,9 @@ function parseDicom(image, pixelData, viewportNum0) {
 
     if (image.data.string('x00080016') == '1.2.840.10008.5.1.4.1.1.66.4') {
         loadDicomSeg(image, image.imageId);
+        return;
+    } else if (image.data.string("x00020002") == '1.2.840.10008.5.1.4.1.1.104.1') {
+        parseDicomWithoutImage(image.data, image.imageId);
         return;
     }
 
@@ -573,6 +698,7 @@ function parseDicom(image, pixelData, viewportNum0) {
     displayRuler(viewportNum);
     putLabel();
     displayAIM();
+    displayAnnotation();
     for (var i = 0; i < Viewport_Total; i++)
         displayRuler(i);
 }
@@ -611,7 +737,7 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
                 parseDicom(image, DICOM_obj.pixelData, viewportNum0);
 
             },
-                function (err) { });
+                function (err) { if (err.dataSet) parseDicomWithoutImage(err.dataSet, imageId); });
         } catch (err) { }
     }
     else {

@@ -5,6 +5,8 @@ window.onload = function () {
   loadLdcmview();
   //初始化HTML元素事件
   html_onload();
+  //執行RWD
+  EnterRWD();
 }
 
 function loadLdcmview() {
