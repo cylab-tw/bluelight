@@ -1,12 +1,20 @@
 let PLUGIN = {};
 PLUGIN.List = [];
 
-PLUGIN.loadScript = function (path, name) {
-    var script = document.createElement('script');
-    script.src = path;
-    script.type = 'text/javascript';
-    document.getElementsByTagName('head')[0].appendChild(script);
-    PLUGIN[name] = true;
+PLUGIN.loadScript = function (path, name, scriptType) {
+    if (scriptType && scriptType == "module") {
+        var script = document.createElement('script');
+        script.src = path;
+        script.type = 'module';
+        document.getElementsByTagName('head')[0].appendChild(script);
+        PLUGIN[name] = true;
+    } else {
+        var script = document.createElement('script');
+        script.src = path;
+        script.type = 'text/javascript';
+        document.getElementsByTagName('head')[0].appendChild(script);
+        PLUGIN[name] = true;
+    }
 }
 
 window.addEventListener("load", function (event) {
@@ -23,7 +31,7 @@ window.addEventListener("load", function (event) {
         for (var i = 0; i < plugins.length; i++) {
             const plugin = plugins[i];
             var str_disableCatch = plugin.disableCatch == "true" ? "?" + parseInt(Math.random() * 9999) : "";
-            sleep(150 * (i + 1)).then(() => { PLUGIN.loadScript(plugin.path + str_disableCatch, plugin.name); })
+            sleep(150 * (i + 1)).then(() => { PLUGIN.loadScript(plugin.path + str_disableCatch, plugin.name, plugin.scriptType); })
         }
     }
     /*PLUGIN.loadScript("../scripts/plugin/mpr.js", "MPR");

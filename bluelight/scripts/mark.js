@@ -386,10 +386,13 @@ function drawCIRCLE(canvas, mark, viewport) {
         var y2 = mark.markY[o + 1] * 1;
 
         ctx.beginPath();
+        var tempAlpha = ctx.globalAlpha;
+        ctx.globalAlpha = 1.0;
         var temp_distance = getDistance(Math.abs(x1 - x2), Math.abs(y1 - y2)); //Math.abs(x1 - x2) > Math.abs(y1 - y2) ? Math.abs(x1 - x2) : Math.abs(y1 - y2);
         ctx.arc(x1, y1, temp_distance, 0, 2 * Math.PI);
         ctx.stroke();
         //if (getByid("markFillCheck").checked) ctx.fill();
+        ctx.globalAlpha = tempAlpha;
         ctx.closePath();
     }
 }
