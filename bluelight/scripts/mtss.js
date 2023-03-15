@@ -17,7 +17,7 @@ function getQueryVariable_mtss(variable, str) {
 }
 
 function getParameterByName2(name, str) {
-    name = name.replace(/[\[]/g, "\\[").replace(/[\]]/g, "\\]");
+    name = name.replace(/\[\[]/g, "\\[").replace(/\[\]]/g, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec("?" + str);
     if (results == null) {
