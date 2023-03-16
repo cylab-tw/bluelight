@@ -1,4 +1,7 @@
 
+//表示現在正在調整WindowLevel
+var WindowOpen = false;
+
 function windowlevel() {
     if (BL_mode == 'windowlevel') {
         DeleteMouseEvent();

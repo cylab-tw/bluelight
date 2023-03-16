@@ -1,4 +1,9 @@
 
+//存放量角器
+var AngleXY0 = [];
+var AngleXY1 = [];
+var AngleXY2 = [];
+
 function angle() {
     if (BL_mode == 'angle') {
         DeleteMouseEvent();

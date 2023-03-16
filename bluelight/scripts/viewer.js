@@ -459,6 +459,8 @@ function parseDicom(image, pixelData, viewportNum0) {
         DicomCanvas.height = image.height
         var ctx2 = DicomCanvas.getContext("2d");
         var imgData2 = ctx2.createImageData(image.width, image.height);
+        if (element.SeriesInstanceUID && element.SeriesInstanceUID != image.data.string("x0020000e"))
+            element.windowCenterList = element.windowWidthList = null;
         var windowCenter = element.windowCenterList ? element.windowCenterList : image.windowCenter;
         var windowWidth = element.windowWidthList ? element.windowWidthList : image.windowWidth;
         var high = windowCenter + (windowWidth / 2);

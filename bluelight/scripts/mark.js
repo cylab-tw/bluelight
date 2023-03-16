@@ -282,30 +282,6 @@ function drawPOLYLINE(canvas, mark, viewport) {
             console.log(x1, y1, x2, y2)
         };
         ctx.closePath();
-
-        if (openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true && openWriteGSPS == true)) {
-            if (mark.RotationAngle && mark.RotationPoint) {
-                [x1, y1] = rotatePoint([x1, y1], -mark.RotationAngle, mark.RotationPoint);
-                [x2, y2] = rotatePoint([x2, y2], -mark.RotationAngle, mark.RotationPoint);
-            }
-            ctx.lineWidth = "" + parseInt(ctx.lineWidth) * 2;
-            var fillstyle = ctx.fillStyle;
-
-            if (Graphic_now_choose && Graphic_now_choose.mark == mark) ctx.strokeStyle = getRGBFrom0xFF(ctx.strokeStyle, false, true);
-            ctx.beginPath();
-            ctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
-            ctx.stroke();
-            ctx.closePath();
-
-            for (var fil = 0; fil < 2; fil++) {
-                ctx.fillStyle = fillstyle;
-                ctx.beginPath();
-                ctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
-                ctx.fill();
-                ctx.closePath();
-            }
-            ctx.lineWidth = "" + parseInt(ctx.lineWidth) / 2;
-        }
     }
 }
 

@@ -4,7 +4,17 @@ var openVR = false;
 var openRendering = false;
 //VR橫切片與縱切片數量
 var o3Dcount = 0;
+//3D VR的貼皮數量
+var o3d_3degree = -1;
+//3D VR的切片數量
+var o3DListLength = 0;
 
+//3D VR模型的透明度百分比
+var o3DAlphaValue = 100;
+//代表3D挖掘模式為開啟狀態
+var openCave = false;
+//代表切片厚度
+var Thickness = 1;
 
 var degerrX = 0;
 var degerrY = 0;

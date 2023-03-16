@@ -1,5 +1,7 @@
 //代表GSPS標記模式為開啟狀態
 var openWriteGSPS = false;
+//代表Graphic Annotation標記模式為開啟狀態
+var openWriteGraphic = false;
 
 function loadWriteGraphic() {
     var span = document.createElement("SPAN")

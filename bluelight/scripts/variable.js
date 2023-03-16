@@ -4,20 +4,9 @@ const Viewport_Total = 16;
 let Viewport_row = 1;
 let Viewport_col = 1;
 
-//3D VR的貼皮數量
-var o3d_3degree = -1;
-//暫時用的Pixeldata
-var tempPixeldata;
-//3D VR的切片數量
-var o3DListLength = 0;
 //當前選擇的Viewport的canvas
 //var canvas;
 //var ctx;
-
-//存放量角器
-var AngleXY0 = [];
-var AngleXY1 = [];
-var AngleXY2 = [];
 
 //表示按住了滑鼠左鍵
 var MouseDownCheck = false;
@@ -36,8 +25,6 @@ var openWindow = false;
 var openZoom = false;
 //表示Viewport為連接狀態
 var openLink = false;
-//表示現在正在調整WindowLevel
-var WindowOpen = false;
 //表示左側的影像可以點擊
 var openLeftImgClick = true;
 
@@ -47,13 +34,6 @@ var openPenDraw = false;
 var openAngle = 0;
 //表示目前icon圖示的RWD收合功能為開啟狀態
 var openRWD = true;
-//3D VR模型的透明度百分比
-var o3DAlphaValue = 100;
-//代表3D挖掘模式為開啟狀態
-var openCave = false;
-
-//代表Graphic Annotation標記模式為開啟狀態
-var openWriteGraphic = false;
 
 //紀錄滑鼠座標
 var windowMouseX = 0,
@@ -84,8 +64,6 @@ var openRotate = false;
 
 //代表目前從左側面板拖曳中的影像的Series UID
 var dragseries = "";
-//代表切片厚度
-var Thickness = 1;
 //代表原始影像，通常被用於放大鏡的參考
 var originalCanvas;
 var originalCtx;
