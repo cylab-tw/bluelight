@@ -1,0 +1,14 @@
+{
+    "enabled":false,
+    "hostname":"127.0.0.1",
+    "port":"8080",
+    "http":"http",
+    "client_id":"account",
+    "endpoints":
+    {
+        "auth":"realms/TestRealm/protocol/openid-connect/auth",
+        "validation":"realms/TestRealm/protocol/openid-connect/userinfo", 
+        "token":"realms/TestRealm/protocol/openid-connect/token" 
+    },
+    "tokenInRequest":true
+}

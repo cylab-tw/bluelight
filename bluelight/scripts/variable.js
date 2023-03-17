@@ -4,20 +4,9 @@ const Viewport_Total = 16;
 let Viewport_row = 1;
 let Viewport_col = 1;
 
-//3D VR的貼皮數量
-var o3d_3degree = -1;
-//暫時用的Pixeldata
-var tempPixeldata;
-//3D VR的切片數量
-var o3DListLength = 0;
 //當前選擇的Viewport的canvas
-var canvas;
-var ctx;
-
-//存放量角器
-var AngleXY0 = [];
-var AngleXY1 = [];
-var AngleXY2 = [];
+//var canvas;
+//var ctx;
 
 //表示按住了滑鼠左鍵
 var MouseDownCheck = false;
@@ -36,8 +25,8 @@ var openWindow = false;
 var openZoom = false;
 //表示Viewport為連接狀態
 var openLink = false;
-//表示現在正在調整WindowLevel
-var WindowOpen = false;
+//表示左側的影像可以點擊
+var openLeftImgClick = true;
 
 //暫時移除的功能
 var openPenDraw = false;
@@ -45,20 +34,7 @@ var openPenDraw = false;
 var openAngle = 0;
 //表示目前icon圖示的RWD收合功能為開啟狀態
 var openRWD = true;
-//3D VR模型的透明度百分比
-var o3DAlphaValue = 100;
-//代表3D挖掘模式為開啟狀態
-var openCave = false;
-//代表XML標記模式為開啟狀態
-var openWriteXML = false;
-//代表Graphic Annotation標記模式為開啟狀態
-var openWriteGraphic = false;
-//代表RTSS標記模式為開啟狀態
-var openWriteRTSS = false;
-//代表GSPS標記模式為開啟狀態
-var openWriteGSPS = false;
-//代表SEG標記模式為開啟狀態
-var openWriteSEG = false;
+
 //紀錄滑鼠座標
 var windowMouseX = 0,
   windowMouseY = 0;
@@ -86,21 +62,8 @@ var openMeasure = false;
 //代表正在使用旋轉工具
 var openRotate = false;
 
-//代表VR模式為開啟狀態
-var openVR = false;
-//代表VR影像正在渲染中
-var openRendering = false;
-//VR橫切片與縱切片數量
-var o3Dcount = 0;
-//MPR的選擇座標
-var o3DPointX = 0;
-var o3DPointY = 0;
-//代表MPR模式為開啟狀態
-var openMPR = false;
 //代表目前從左側面板拖曳中的影像的Series UID
-var dragalt = "";
-//代表切片厚度
-var Thickness = 1;
+var dragseries = "";
 //代表原始影像，通常被用於放大鏡的參考
 var originalCanvas;
 var originalCtx;
@@ -116,7 +79,7 @@ var openDisplayMarkup = false;
 var SeriesCount = 0;
 
 //代表目前載入影像的Series UID --*
-var NowAlt = "";
+//var NowSeries = "";
 //邊框寬度
 var bordersize = 5;
 //label距離邊緣多遠
@@ -139,7 +102,7 @@ var labelRB = getClass("labelRB");
 //放大鏡元素
 var magnifierDiv = getByid("magnifierDiv");
 //代表現在視窗大小受到改變，須執行RWD
-var NowResize = false;
+//var NowResize = false;
 //裝DICOM階層樣式表等資訊的物件
 var Patient = {};
 //

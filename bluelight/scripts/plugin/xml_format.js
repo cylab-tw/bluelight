@@ -1,35 +1,200 @@
-window.addEventListener("load", function(event) {
-  getByid("writeXML").onclick = function () {
-    if (imgInvalid(this)) return;
-    cancelTools();
-    openWriteXML = !openWriteXML;
-    img2darkByClass("XML", !openWriteXML);
-    this.src = openWriteXML == true ? '../image/icon/black/xml_on.png' : '../image/icon/black/xml_off.png';
-    if (openWriteXML == true) {
-      getByid('xmlMarkName').style.display = '';
-      set_BL_model('writexml');
-      writexml();
-    }
-    else getByid('xmlMarkName').style.display = 'none';
-    displayMark(viewportNumber);
-    if (openWriteXML == true) return;
-    else xml_now_choose = null;
+//代表XML標記模式為開啟狀態
+var openWriteXML = false;
 
-    function download(text, name, type) {
-      let a = document.createElement('a');
-      let file = new Blob([text], {
-        type: type
-      });
-      a.href = window.URL.createObjectURL(file);
-      //a.style.display = '';
-      a.download = name;
-      a.click();
-    }
-    setXml_context();
-    download(String(getXml_context()), 'filename.xml', 'text/plain');
-    getByid('MouseOperation').click();
+function loadxml_format() {
+  var span = document.createElement("SPAN")
+  span.innerHTML =
+    `<img class="img XML" alt="writeXML" id="writeXML" src="../image/icon/black/xml_off.png" width="50" height="50">`;
+  getByid("icon-list").appendChild(span);
+
+  var span = document.createElement("SPAN")
+  span.innerHTML =
+    `<label style="color: #ffffff;" id="xmlMarkName">name<input type="text" id="xmlMarkNameText" value="noName" /></label>`
+  getByid("page-header").appendChild(span);
+  getByid("xmlMarkName").style.display = "none";
+}
+loadxml_format();
+
+getByid("writeXML").onclick = function () {
+  if (this.enable == false) return;
+  cancelTools();
+  openWriteXML = !openWriteXML;
+  img2darkByClass("XML", !openWriteXML);
+  openLeftImgClick = !openWriteXML;
+  this.src = openWriteXML == true ? '../image/icon/black/xml_on.png' : '../image/icon/black/xml_off.png';
+  if (openWriteXML == true) {
+    getByid('xmlMarkName').style.display = '';
+    set_BL_model('writexml');
+    writexml();
   }
+  else getByid('xmlMarkName').style.display = 'none';
+  displayMark();
+  if (openWriteXML == true) return;
+  else xml_now_choose = null;
+
+  function download(text, name, type) {
+    let a = document.createElement('a');
+    let file = new Blob([text], {
+      type: type
+    });
+    a.href = window.URL.createObjectURL(file);
+    a.download = name;
+    a.click();
+  }
+  setXml_context();
+  download(String(getXml_context()), 'filename.xml', 'text/plain');
+  getByid('MouseOperation').click();
+}
+
+window.addEventListener('keydown', (KeyboardKeys) => {
+  var key = KeyboardKeys.which
+  if ((openWriteXML) && xml_now_choose && (key === 46 || key === 110)) {
+    PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
+    displayMark();
+    xml_now_choose = null;
+    refreshMarkFromSop(GetNowUid().sop);
+  }
+  xml_now_choose = null;
 });
+
+getByid("xmlMarkNameText").onchange = function () {
+  if (xml_now_choose) {
+    xml_now_choose.reference.showName = '' + this.value;
+    xml_now_choose.reference.hideName = xml_now_choose.reference.showName;
+    refreshMark(xml_now_choose.reference);
+    xml_now_choose = null;
+    //this.value = '';
+    for (var i = 0; i < Viewport_Total; i++)
+      displayMark(i);
+  }
+}
+
+function drawXML_mark_Write(obj) {
+  var canvas = obj.canvas, mark = obj.mark, showName = obj.showName;
+  if (mark.type != "XML_mark") return;
+  var ctx = canvas.getContext("2d");
+  ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
+  var tempAlpha = ctx.globalAlpha;
+  ctx.globalAlpha = 1.0;
+  ctx.font = "" + (parseInt(ctx.lineWidth) * 12) + "px Arial";
+  ctx.fillStyle = "red";
+  if (openWriteXML == true) {
+    for (var o = 0; o < mark.markX.length; o += 2) {
+      ctx.strokeStyle = "" + mark.parent.color;
+      ctx.beginPath();
+      var x1 = mark.markX[o] * 1;
+      var y1 = mark.markY[o] * 1;
+      var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
+      var x2 = mark.markX[o + 1] * 1;
+      var y2 = mark.markY[o + 1] * 1;
+
+      ctx.fillText("" + showName, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 5 : y2 - 5);
+
+      ctx.rect(x1, y1, x2 - x1, y2 - y1);
+      ctx.stroke();
+
+      ctx.closePath();
+      if (openWriteXML == true) {
+        ctx.lineWidth = "" + parseInt(ctx.lineWidth) * 2;
+        ctx.beginPath();
+        if (xml_now_choose && xml_now_choose.mark == mark) {
+          ctx.strokeStyle = "#00FFFF";
+          ctx.arc(x1 / 2 + x2 / 2, y1, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+          ctx.stroke();
+          ctx.closePath();
+
+          ctx.beginPath();
+          ctx.strokeStyle = "#00FFFF";
+          ctx.arc(x1 / 2 + x2 / 2, y2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+          ctx.stroke();
+          ctx.closePath();
+
+          ctx.beginPath();
+          ctx.strokeStyle = "#00FFFF";
+          ctx.arc(x1, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+          ctx.stroke();
+          ctx.closePath();
+
+          ctx.beginPath();
+          ctx.strokeStyle = "#00FFFF";
+          ctx.arc(x2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+          ctx.stroke();
+          ctx.closePath();
+        };
+        ctx.beginPath();
+        ctx.fillStyle = "#FF0000";
+        ctx.arc(x1 / 2 + x2 / 2, y1, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.fillStyle = "#FF0000";
+        ctx.arc(x1 / 2 + x2 / 2, y2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.fillStyle = "#FF0000";
+        ctx.arc(x1, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.fillStyle = "#FF0000";
+        ctx.arc(x2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+        ctx.lineWidth = "" + parseInt(ctx.lineWidth) / 2;
+      }
+    }
+  } else {
+    for (var o = 0; o < mark.markX.length; o += 2) {
+      ctx.strokeStyle = "" + mark.parent.color;
+      ctx.beginPath();
+      var x1 = mark.markX[o] * 1;
+      var y1 = mark.markY[o] * 1;
+      var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
+      var x2 = mark.markX[o + 1] * 1;
+      var y2 = mark.markY[o + 1] * 1;
+
+      ctx.fillText("" + showName, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 5 : y2 - 5);
+
+      ctx.rect(x1, y1, x2 - x1, y2 - y1);
+      ctx.stroke();
+      ctx.closePath();
+      if (openWriteXML == true) {
+        ctx.lineWidth = "" + parseInt(ctx.lineWidth) * 2;
+        ctx.beginPath();
+        ctx.fillStyle = "#FF0000";
+        ctx.arc(x1 / 2 + x2 / 2, y1, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.fillStyle = "#FF0000";
+        ctx.arc(x1 / 2 + x2 / 2, y2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.fillStyle = "#FF0000";
+        ctx.arc(x1, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.fillStyle = "#FF0000";
+        ctx.arc(x2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+        ctx.lineWidth = "" + parseInt(ctx.lineWidth) / 2;
+      }
+    }
+  }
+  ctx.globalAlpha = tempAlpha;
+}
+
+PLUGIN.PushMarkList(drawXML_mark_Write);
 
 var xml_format = `
 <annotation>
@@ -99,7 +264,7 @@ function setXml_context() {
   xml_format_object_list = []
   let temp = ""
   // x1 = parseInt(x1); x2 = parseInt(x2); y1 = parseInt(y1); y2 = parseInt(y2);
-  let index = SearchUid2Index(GetViewport().alt);
+  let index = SearchUid2Index(GetViewport().sop);
   let i = index[0],
     j = index[1],
     k = index[2];
@@ -138,7 +303,7 @@ function getXml_context() {
 
 function xml_pounch(currX, currY) {
   let block_size = getMarkSize(GetViewportMark(), false) * 4;
-  let index = SearchUid2Index(GetViewport().alt);
+  let index = SearchUid2Index(GetViewport().sop);
   let i = index[0],
     j = index[1],
     k = index[2];
@@ -197,7 +362,7 @@ function xml_pounch(currX, currY) {
 }
 
 function deleteXml() {
-  let index = SearchUid2Index(GetViewport().alt);
+  let index = SearchUid2Index(GetViewport().sop);
   let i = index[0],
     j = index[1],
     k = index[2];
@@ -306,7 +471,7 @@ function writexml() {
       }
       putLabel();
       for (var i = 0; i < Viewport_Total; i++)
-        displayRular(i);
+        displayRuler(i);
 
       if (MouseDownCheck) {
         windowMouseX = GetmouseX(e);
@@ -334,7 +499,7 @@ function writexml() {
           refreshMark(dcm);
           for (var i = 0; i < Viewport_Total; i++)
             displayMark(i);
-          displayAngleRular();
+          displayAngleRuler();
           PatientMark.splice(PatientMark.indexOf(dcm), 1);
         } else {
           if (xml_now_choose.value == "up") {
@@ -381,7 +546,7 @@ function writexml() {
         refreshMark(dcm);
         for (var i = 0; i < Viewport_Total; i++)
           displayMark(i);
-        displayAngleRular();
+        displayAngleRuler();
         //setXml_context();
       }
     }

@@ -4,27 +4,36 @@ function CreateUid(UidClass) {
     Uid += date.getFullYear() + "." + (date.getMonth() + 1) + "." + (date.getDate()) + ".";
     Uid += (date.getHours() + 1) + "." + (date.getMinutes()) + "." +
         (date.getSeconds()) + "." + (date.getMilliseconds()) + ".";
-    Uid += random(1, 99999, 1) + ".";
-    Uid += random(1, 99, 1) + ".";
-    Uid += random(1, 9999, 1) + ".";
-    if (UidClass == 0 || UidClass == 'study') Uid += random(1, 2, 1);
-    else if (UidClass == 1 || UidClass == 'series') Uid += random(3, 4, 1);
-    else if (UidClass == 2 || UidClass == 'sop') Uid += random(5, 6, 1);
-    else Uid += random(7, 8, 1);
+    Uid += securePassword(1, 99999, 1) + ".";
+    Uid += securePassword(1, 99, 1) + ".";
+    Uid += securePassword(1, 9999, 1) + ".";
+    if (UidClass == 0 || UidClass == 'study') Uid += securePassword(1, 2, 1);
+    else if (UidClass == 1 || UidClass == 'series') Uid += securePassword(3, 4, 1);
+    else if (UidClass == 2 || UidClass == 'sop') Uid += securePassword(5, 6, 1);
+    else Uid += securePassword(7, 8, 1);
     if (Uid.length % 2 != 0) Uid += 0;
     return Uid;
 }
 
-function CreateRandom() {
+function CreateSecurePassword() {
     var Uid = "xml_";
     var date = new Date();
     Uid += date.getFullYear() + "y" + (date.getMonth() + 1) + "m" + (date.getDate()) + "d";
     Uid += (date.getHours() + 1) + "h" + (date.getMinutes()) + "mm" +
         (date.getSeconds()) + "ss" + (date.getMilliseconds()) + "mmm";
 
-    Uid += random(1, 999, 1) + "b";
-    Uid += random(1, 999, 1) + "l";
+    Uid += securePassword(1, 999, 1) + "b";
+    Uid += securePassword(1, 999, 1) + "l";
     return Uid;
+}
+
+function securePassword(min, max, step) {
+    if (!step) step = 1;
+    var len = ((max - min) / step) + 1;
+    var number = Math.floor((window.crypto.getRandomValues(new Uint32Array(1))[0] / (4294967295)) * (len)) * step + min;
+    if (number < min) number = min;
+    if (number > max) number = max;
+    return number;
 }
 
 function random(min, max, step) {
@@ -36,33 +45,17 @@ function random(min, max, step) {
     return number;
 }
 
+function invertDisplayById(id) {
+    if (!id && !getByid(id)) return;
+    if (getByid(id).style.display == "none") getByid(id).style.display = "";
+    else getByid(id).style.display = "none";
+}
+
 function getCurrPoint(e) {
+    var canvas = GetViewport().canvas()
     if (!canvas) return [0, 0];
     var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().imageWidth / parseFloat(canvas.style.width)));
     var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().imageHeight / parseFloat(canvas.style.height)));
-    return [currX, currY];
-}
-
-function VRscreenshot() {
-    var backgroundColor = GetViewport().style.backgroundColor;
-    GetViewport().style.backgroundColor = "black";
-    html2canvas(GetViewport()).then(function (canvas) {
-        //document.body.appendChild(canvas);
-        var a = document.createElement('a');
-        a.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-        a.download = 'image.png';
-        a.click();
-        delete canvas;
-    });
-    GetViewport().style.backgroundColor = backgroundColor;
-}
-
-function get3dCurrPoint(e) {
-    var currX = parseFloat(e.pageX);
-    var currY = parseFloat(e.pageY);
-    // var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().imageWidth / parseFloat(canvas.style.width)));
-    //var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().imageHeight / parseFloat(canvas.style.height)));
-
     return [currX, currY];
 }
 
@@ -164,11 +157,11 @@ function GetmouseY(evt) {
     else return null;
 }
 
-function SearchUid2Json(alt) {
+function SearchUid2Json(sop) {
     for (var i = 0; i < Patient.StudyAmount; i++) {
         for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
             for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == alt) {
+                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
                     return {
                         studyuid: i,
                         sreiesuid: j,
@@ -180,11 +173,11 @@ function SearchUid2Json(alt) {
     }
 }
 
-function SearchUid2Index(alt) {
+function SearchUid2Index(sop) {
     for (var i = 0; i < Patient.StudyAmount; i++) {
         for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
             for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == alt) {
+                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
                     return [i, j, l]
                 }
             }
@@ -192,10 +185,10 @@ function SearchUid2Index(alt) {
     }
 }
 
-function SearchUid2IndexBySeries(alt) {
+function SearchUid2IndexBySeries(sop) {
     for (var i = 0; i < Patient.StudyAmount; i++) {
         for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            if (Patient.Study[i].Series[j].SeriesUID == alt) {
+            if (Patient.Study[i].Series[j].SeriesUID == sop) {
                 return [i, j];
             }
         }
@@ -203,15 +196,15 @@ function SearchUid2IndexBySeries(alt) {
 }
 
 function SearchNowUid() {
-    let alt = GetViewport().alt;
+    let sop = GetViewport().sop;
     for (var i = 0; i < Patient.StudyAmount; i++) {
         for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
             for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == alt) {
+                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
                     return {
                         studyuid: Patient.Study[i],
                         sreiesuid: Patient.Study[i].Series[j],
-                        sopuid: alt
+                        sopuid: sop
                     }
                 }
             }
@@ -220,11 +213,11 @@ function SearchNowUid() {
 }
 
 function GetNowUid() {
-    let alt = GetViewport().alt;
+    let sop = GetViewport().sop;
     for (var i = 0; i < Patient.StudyAmount; i++) {
         for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
             for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == alt) {
+                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
                     return {
                         study: Patient.Study[i].StudyUID,
                         sreies: Patient.Study[i].Series[j].SeriesUID,
@@ -236,12 +229,12 @@ function GetNowUid() {
     }
 }
 
-function sortInstance(alt) {
-    let index = SearchUid2Index(alt);
+function sortInstance(sop) {
+    let index = SearchUid2Index(sop);
     let i = index[0],
         j = index[1],
         k = index[2];
-    if (Patient.Study[i].Series[j].Sop[k].SopUID == alt) {
+    if (Patient.Study[i].Series[j].Sop[k].SopUID == sop) {
         var list = [];
         var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
         for (var l = 0; l < Patient.Study[i].Series[j].Sop.length; l++) {
@@ -261,10 +254,10 @@ function sortInstance(alt) {
     }
 }
 
-function getAllSop(sop) {
-    let alt;
-    if (!sop) alt = GetViewport().alt;
-    else alt = sop;
+function getAllSop(sop0) {
+    let sop;
+    if (!sop0) sop = GetViewport().sop;
+    else sop = sop0;
 
     function getSopList(i, j, l) {
         var list = [];
@@ -276,7 +269,7 @@ function getAllSop(sop) {
     for (var i = 0; i < Patient.StudyAmount; i++) {
         for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
             for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == alt) {
+                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
                     return getSopList(i, j, l);
                 }
             }
@@ -298,14 +291,14 @@ function getImgaeIdFromSop(sop) {
 function getNowInstance() {
     var break1 = false;
     var nowInstanceNumber = 0;
-    var alt = GetViewport().alt;
+    var sop = GetViewport().sop;
     for (var i = 0; i < Patient.StudyAmount; i++) {
         for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
             for (var k = 0; k < Patient.Study[i].Series[j].SopAmount; k++) {
-                if (Patient.Study[i].Series[j].Sop[k].SopUID == alt) {
+                if (Patient.Study[i].Series[j].Sop[k].SopUID == sop) {
                     if (break1 == true) break;
                     var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-                    var list = sortInstance(alt);
+                    var list = sortInstance(sop);
                     for (var l = 0; l < list.length; l++) {
                         if (break1 == true) break;
                         if (list[l].InstanceNumber == Onum) {
@@ -320,6 +313,7 @@ function getNowInstance() {
 }
 
 function rotateCalculation(e) {
+    var canvas = GetViewport().canvas();
     if (!canvas) return [0, 0];
     let cx = (GetViewport().imageWidth / 2);
     let cy = (GetViewport().imageHeight / 2);
@@ -375,7 +369,7 @@ function GetViewportMark(num) {
 }
 
 function jump2UpOrEnd(number, choose) {
-    let index = SearchUid2Index(GetViewport().alt);
+    let index = SearchUid2Index(GetViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -401,7 +395,7 @@ function jump2UpOrEnd(number, choose) {
 }
 
 function jump2Mark(showName) {
-    let index = SearchUid2Index(GetViewport().alt);
+    let index = SearchUid2Index(GetViewport().sop);
     if (!index) return;
     let i = index[0],
         j = index[1],
@@ -427,14 +421,15 @@ function checkMark(i, j, n) {
     let checkRtss = 0;
     for (var dCount = 0; dCount < dicomImageCount; dCount++) {
         if (getByid("dicomDivListDIV" + dCount)) {
-            if (getByid("dicomDivListDIV" + dCount).alt == Patient.Study[i].Series[j].SeriesUID) {
+            if (getByid("dicomDivListDIV" + dCount).series == Patient.Study[i].Series[j].SeriesUID) {
                 var elem = document.querySelectorAll("#dicomDivListDIV" + dCount + " label input");
                 for (var elemNum in elem) {
                     if (elem[elemNum].name == PatientMark[n].hideName) {
-                        if (elem[elemNum].alt == "true") {
+                        if (elem[elemNum].series == "true") {
+                            //if (PatientMark[n].displayMark) PatientMark[n].displayMark();
                             checkRtss = 1;
                             return checkRtss;
-                        }
+                        }//else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
                     }
                 }
             }
@@ -444,9 +439,7 @@ function checkMark(i, j, n) {
 }
 
 function refreshMark(dcm, refresh) {
-    if (refresh == false) {
-        return;
-    };
+    if (refresh == false) return;
     var index = SearchUid2Index(dcm.sop);
     if (!index) return;
     var i3 = index[0],
@@ -454,7 +447,7 @@ function refreshMark(dcm, refresh) {
         k3 = index[2];
     var checkNum;
     for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).alt == Patient.Study[i3].Series[j3].SeriesUID) {
+        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == Patient.Study[i3].Series[j3].SeriesUID) {
             checkNum = dCount;
         }
     }
@@ -471,171 +464,12 @@ function refreshMarkFromSop(sop) {
         k3 = index[2];
     var checkNum;
     for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).alt == Patient.Study[i3].Series[j3].SeriesUID) {
+        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == Patient.Study[i3].Series[j3].SeriesUID) {
             checkNum = dCount;
         }
     }
     SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
     for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(i9);
-}
-
-function rotate3dVR(VrDistance) {
-    if ((!(degerrY >= 90 && degerrY <= 270) && (degerrX >= 90 && degerrX <= 270)) ||
-        (degerrY >= 90 && degerrY <= 270) && !(degerrX >= 90 && degerrX <= 270)) {
-        for (var ll = 0; ll < o3DListLength; ll++) {
-            var canvas1 = getByid("3DDiv" + ll).getElementsByClassName("VrCanvas")[0];
-            var div1 = getByid("3DDiv" + ll);
-            div1.style.zIndex = -ll + o3DListLength + o3d_3degree;
-            div1.style.transform = "translate3d(0,0,0) rotateY(" + degerrX + "deg) rotateX(" + degerrY + "deg)  translateZ(" + (parseFloat(parseFloat(1) * (parseFloat(canvas1.style.height) / parseFloat(GetViewport().imageHeight))) * (div1.thickness - Thickness) - (VrDistance / 2)) + "px)";
-        }
-    } else {
-        for (var ll = 0; ll < o3DListLength; ll++) {
-            var canvas1 = getByid("3DDiv" + ll).getElementsByClassName("VrCanvas")[0];
-            var div1 = getByid("3DDiv" + ll);
-            div1.style.zIndex = ll + o3d_3degree;
-            div1.style.transform = "translate3d(0,0,0) rotateY(" + degerrX + "deg) rotateX(" + degerrY + "deg)  translateZ(" + (parseFloat(parseFloat(1) * (parseFloat(canvas1.style.height) / parseFloat(GetViewport().imageHeight))) * (div1.thickness - Thickness) - (VrDistance / 2)) + "px)";
-        }
-    }
-    if ((!(degerrY >= 0 && degerrY <= 180) && (degerrX >= 90 && degerrX <= 270)) ||
-        (degerrY >= 0 && degerrY <= 180) && !(degerrX >= 90 && degerrX <= 270)) {
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var div2 = getByid("3DDiv2_" + ll);
-            if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25)
-                div2.style.zIndex = ll + o3DListLength + o3d_3degree;
-            else
-                div2.style.zIndex = ll;
-            div2.style.transform = "translate3d(0,0,0) rotateY(" + (degerrX + 0) + "deg) rotateX(" + (degerrY + 0) + "deg)  translateZ(" + (0) + "px)";
-        }
-    } else {
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var div2 = getByid("3DDiv2_" + ll);
-            if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25)
-                div2.style.zIndex = -ll + o3DListLength + o3d_3degree + o3d_3degree;
-            else
-                div2.style.zIndex = -ll + o3d_3degree;
-            div2.style.transform = "translate3d(0,0,0) rotateY(" + (degerrX + 0) + "deg) rotateX(" + (degerrY + 0) + "deg)  translateZ(" + (0) + "px)";
-        }
-    }
-    if ((!(degerrY >= 90 && degerrY <= 270) && (degerrX >= 0 && degerrX <= 180)) ||
-        (degerrY >= 90 && degerrY <= 270) && !(degerrX >= 0 && degerrX <= 180)) {
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var div3 = getByid("3DDiv3_" + ll);
-            if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25) {
-                if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
-                    if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3DListLength + o3d_3degree + o3d_3degree;
-                    } else {
-                        div3.style.zIndex = ll + o3DListLength + o3d_3degree;
-                    }
-                } else {
-                    if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3d_3degree;
-                    } else {
-                        div3.style.zIndex = ll;
-                    }
-                }
-            } else {
-                if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
-                    if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3d_3degree + o3DListLength + o3d_3degree;
-                    } else {
-                        div3.style.zIndex = ll + o3DListLength + o3d_3degree;
-                    }
-                } else {
-                    if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3d_3degree;
-                    } else {
-                        div3.style.zIndex = ll;
-                    }
-                }
-            }
-            div3.style.transform = "translate3d(0,0,0) rotateY(" + (degerrX + 0) + "deg) rotateX(" + (degerrY + 0) + "deg)  translateZ(" + (0) + "px)";
-        }
-    } else {
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var div3 = getByid("3DDiv3_" + ll);
-            if (Math.abs(90 - degerrY) < 25 || Math.abs(270 - degerrY) < 25) {
-                if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
-                    if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3d_3degree + o3DListLength + o3d_3degree;
-                    } else {
-                        div3.style.zIndex = ll + o3DListLength + o3d_3degree;
-                    }
-                } else {
-                    if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3d_3degree;
-                    } else {
-                        div3.style.zIndex = ll;
-                    }
-                }
-            } else {
-                if (Math.abs(90 - degerrX) < 25 || Math.abs(270 - degerrX) < 25) {
-                    if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3d_3degree + o3DListLength + o3d_3degree;
-                    } else {
-                        div3.style.zIndex = ll + o3DListLength + o3d_3degree;
-                    }
-                } else {
-                    if (degerrX >= 0 && degerrX <= 180) {
-                        div3.style.zIndex = -ll + o3d_3degree;
-                    } else {
-                        div3.style.zIndex = ll;
-                    }
-                }
-            }
-            div3.style.transform = "translate3d(0,0,0) rotateY(" + (degerrX + 0) + "deg) rotateX(" + (degerrY + 0) + "deg)  translateZ(" + (0) + "px)";
-        }
-    }
-}
-
-function setVrLight() {
-    var num = 0;
-    if (getByid("3dShadow_0").selected == true) num = 0;
-    else if (getByid("3dShadow_05").selected == true) num = 0.005;
-    else if (getByid("3dShadow_1").selected == true) num = 0.01;
-    else if (getByid("3dShadow_2").selected == true) num = 0.02;
-    else if (getByid("3dShadow_3").selected == true) num = 0.03;
-    else if (getByid("3dShadow_4").selected == true) num = 0.04;
-    else if (getByid("3dShadow_5").selected == true) num = 0.05;
-    else if (getByid("3dShadow_6").selected == true) num = 0.06;
-    else if (getByid("3dShadow_7").selected == true) num = 0.07;
-    else if (getByid("3dShadow_8").selected == true) num = 0.08;
-    else if (getByid("3dShadow_12").selected == true) num = 0.12;
-    if (num == 0) {
-        for (var ll = 0; ll < o3DListLength; ll++) {
-            var canvas1 = getByid("3DDiv" + ll).canvas();
-            canvas1.style.backgroundColor = "";
-        }
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var canvas1 = getByid("3DDiv2_" + ll).canvas();
-            canvas1.style.backgroundColor = "";
-        }
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var canvas1 = getByid("3DDiv3_" + ll).canvas();
-            canvas1.style.backgroundColor = "";
-        }
-    } else {
-        for (var ll = 0; ll < o3DListLength; ll++) {
-            var canvas1 = getByid("3DDiv" + ll).canvas();
-            canvas1.style.backgroundColor = "rgba(0,0,0," + num + ")";
-        }
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var canvas1 = getByid("3DDiv2_" + ll).canvas();
-            canvas1.style.backgroundColor = "rgba(0,0,0," + num + ")";
-        }
-        for (var ll = 0; ll < o3d_3degree; ll++) {
-            var canvas1 = getByid("3DDiv3_" + ll).canvas();
-            canvas1.style.backgroundColor = "rgba(0,0,0," + num + ")";
-        }
-    }
-}
-
-function get3dDistance() {
-    var VrDistance = 0;
-    VrDistance += getByid("3DDiv" + (o3Dcount - 1)).thickness - (getByid("3DDiv" + 0).thickness);
-    if (VrDistance < 0) VrDistance *= -1;
-    VrDistance *= (parseFloat(getByid("3DDiv" + 0).canvas().style.height) / parseFloat(GetViewport().imageHeight));
-    return VrDistance;
 }
 
 function dropTable(num) {
@@ -647,22 +481,6 @@ function dropTable(num) {
         var elem = getByid("AimTable" + (num + 1));
         elem.parentElement.removeChild(elem);
     }
-}
-
-function getMarkSize(MarkCanvas, sizeCheck) {
-    var lineSize = parseFloat(getByid('markSizeText').value);
-    var lineWid = 2 * parseFloat(MarkCanvas.width) / parseFloat(Css(MarkCanvas, 'width'));
-    if (sizeCheck == true && lineWid <= 0) {
-        lineWid = parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width);
-        if (lineWid <= 1.5) lineWid = 1.5;
-        lineWid *= Math.abs(parseFloat(MarkCanvas.width) / parseFloat(Css(MarkCanvas, 'width')));
-    } else if (sizeCheck == true) {
-        lineWid *= Math.abs(parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width));
-    } else if (lineWid <= 0) {
-        lineWid = parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width);
-    }
-    if (lineWid <= 1.5) lineWid = 1.5;
-    return ((Math.abs(lineWid)) * 2 * lineSize);
 }
 
 function getDistance(x, y) {
@@ -684,54 +502,6 @@ function getRotationPoint(mark, middle) {
     }
     if (middle == true) return [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2];
     return [Max_X, Min_X, Max_Y, Min_Y];
-}
-
-function GetGraphicColor() {
-    //if (getByid("Graphicselected").selected) return "#0000FF";
-    if (getByid("GraphicBlackSelect").selected) return "#000000";
-    else if (getByid("GraphicBlueSelect").selected) return "#0000FF";
-    else if (getByid("GraphicBrownSelect").selected) return "#844200";
-    else if (getByid("GraphicCyanSelect").selected) return "#00FFFF";
-    else if (getByid("GraphicGreenSelect").selected) return "#00FF00";
-    else if (getByid("GraphicMagentaSelect").selected) return "#FF00FF";
-    else if (getByid("GraphicOrangeSelect").selected) return "#FFA500";
-    else if (getByid("GraphicPurpleSelect").selected) return "#663399";
-    else if (getByid("GraphicRedSelect").selected) return "#FF0000";
-    else if (getByid("GraphicYellowSelect").selected) return "#FFFF00";
-    else if (getByid("GraphicWhiteSelect").selected) return "#FFFFFF";
-    else return "#0000FF";
-}
-
-function GetGSPSColor() {
-    //if (getByid("Graphicselected").selected) return "#0000FF";
-    if (getByid("GSPSBlackSelect").selected) return "#000000";
-    else if (getByid("GSPSBlueSelect").selected) return "#0000FF";
-    else if (getByid("GSPSBrownSelect").selected) return "#844200";
-    else if (getByid("GSPSCyanSelect").selected) return "#00FFFF";
-    else if (getByid("GSPSGreenSelect").selected) return "#00FF00";
-    else if (getByid("GSPSMagentaSelect").selected) return "#FF00FF";
-    else if (getByid("GSPSOrangeSelect").selected) return "#FFA500";
-    else if (getByid("GSPSPurpleSelect").selected) return "#663399";
-    else if (getByid("GSPSRedSelect").selected) return "#FF0000";
-    else if (getByid("GSPSYellowSelect").selected) return "#FFFF00";
-    else if (getByid("GSPSWhiteSelect").selected) return "#FFFFFF";
-    else return "#0000FF";
-}
-
-function GetGraphicName() {
-    //if (getByid("Graphicselected").selected) return "T8";
-    if (getByid("GraphicBlackSelect").selected) return "T7";
-    else if (getByid("GraphicBlueSelect").selected) return "T8";
-    else if (getByid("GraphicBrownSelect").selected) return "T9";
-    else if (getByid("GraphicCyanSelect").selected) return "T10";
-    else if (getByid("GraphicGreenSelect").selected) return "T11";
-    else if (getByid("GraphicMagentaSelect").selected) return "T12";
-    else if (getByid("GraphicOrangeSelect").selected) return "L1";
-    else if (getByid("GraphicPurpleSelect").selected) return "L2";
-    else if (getByid("GraphicRedSelect").selected) return "L3";
-    else if (getByid("GraphicYellowSelect").selected) return "L4";
-    else if (getByid("GraphicWhiteSelect").selected) return "L5";
-    else return "T8";
 }
 
 function ConvertGraphicColor(r, g, b) {
@@ -769,48 +539,4 @@ function equal_TOL(a, b, tolerance) {
     if (tolerance === undefined) tolerance = 1;
     if (Math.abs(a - b) <= tolerance) return true;
     return false;
-}
-
-function getColorFromRGB(str) {
-    return str.split("(")[1].split(")")[0].split(",");
-}
-
-function getColorFrom16(r, g, b, bit) {
-    if (bit == 16) {
-        r = parseInt(r / 256);
-        g = parseInt(g / 256);
-        b = parseInt(b / 256);
-    }
-
-    function componentToHex(c) {
-        var hex = c.toString(16);
-        return hex.length == 1 ? "0" + hex : hex;
-    }
-
-    function rgbToHex(r, g, b) {
-        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-    }
-    return rgbToHex(r, g, b);
-}
-
-function getRGBFrom0xFF(color, RGB, invert) {
-    function hexToRgb(hex) {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-    }
-
-    var R = hexToRgb(color).r;
-    var G = hexToRgb(color).g;
-    var B = hexToRgb(color).b;
-    if (invert == true) {
-        R = 255 - R;
-        G = 255 - G;
-        B = 255 - B;
-    }
-    if (RGB == true) return ([R, G, B]);
-    else return (getColorFrom16(R, G, B, 8));
 }
