@@ -46,6 +46,7 @@ function scroll() {
                 windowMouseY = GetmouseY(e);
 
                 var nextInstanceNumber = -1;
+                var nextFramesNumber = -1;
                 var sop = GetViewport().sop;
                 let index = SearchUid2Index(sop);
                 // if (!index) continue;
@@ -84,6 +85,40 @@ function scroll() {
                             else nextInstanceNumber = l + 1;
                         }
                     }
+                } else {
+                    if (list.length == 1 && list[0].frames) {
+                        if (GetViewport().framesNumber == undefined) GetViewport().framesNumber = 0;
+                        var l = 0, NowframesNumber = GetViewport().framesNumber;
+                        for (l = 0; l < list[0].frames.length; l++) {
+                            if (l == NowframesNumber) {
+                                break;
+                            }
+                        }
+                        if (Math.abs(currY - GetViewport().originalPointY) < Math.abs(currX - GetViewport().originalPointX)) {
+                            if (currX < GetViewport().originalPointX - 3) {
+                                nextFrame(viewportNumber, -1);
+                                if (l - 1 < 0) nextFramesNumber = list[0].frames.length - 1;
+                                else nextFramesNumber = l - 1;
+                            } else if (currX > GetViewport().originalPointX + 3) {
+                                nextFrame(viewportNumber, 1);
+                                if (NowframesNumber == l) {
+                                    if (l + 1 >= list[0].frames.length) nextFramesNumber = 0;
+                                    else nextFramesNumber = l + 1;
+                                }
+
+                            }
+                        } else {
+                            if (currY < GetViewport().originalPointY - 3) {
+                                nextFrame(viewportNumber, -1);
+                                if (l - 1 < 0) nextFramesNumber = list[0].frames.length - 1;
+                                else nextFramesNumber = l - 1;
+                            } else if (currY > GetViewport().originalPointY + 3) {
+                                nextFrame(viewportNumber, 1);
+                                if (l + 1 >= list[0].frames.length) nextFramesNumber = 0;
+                                else nextFramesNumber = l + 1;
+                            }
+                        }
+                    }
                 }
                 GetViewport().originalPointX = currX;
                 GetViewport().originalPointY = currY;
@@ -97,7 +132,7 @@ function scroll() {
             MouseDownCheck = false;
             rightMouseDown = false;
             magnifierDiv.style.display = "none";
-            
+
             if (openLink) {
                 for (var i = 0; i < Viewport_Total; i++)
                     displayRuler(i);
@@ -188,7 +223,7 @@ function scroll() {
             rightTouchDown = false;
 
             magnifierDiv.style.display = "none";
-            
+
         }
         AddMouseEvent();
     }

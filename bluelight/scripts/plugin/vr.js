@@ -416,7 +416,7 @@ function initVR() {
         var uid0 = SearchUid2Json(sop0);
 
         if (uid0)
-            loadAndViewImage(Patient.Study[uid0.studyuid].Series[uid0.sreiesuid].Sop[uid0.sopuid].imageId, null, null, 0);
+            loadAndViewImage(Patient.Study[uid0.studyuid].Series[uid0.sreiesuid].Sop[uid0.sopuid].imageId, 0);
         o3DListLength = 0;
     } else if (openVR == true) {
         enterVR_UI();

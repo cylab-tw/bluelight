@@ -215,12 +215,12 @@ getByid("MouseOperation_MPR").onclick = function () {
                     if (break1 == true) break;
                     if (list[l].InstanceNumber == Onum) {
                         if (l - 1 < 0) {
-                            loadAndViewImage(list[list.length - 1].imageId, currX1, currY1, viewportNum);
+                            loadAndViewImage(list[list.length - 1].imageId, viewportNum);
                             nextInstanceNumber = list.length - 1;
                             break1 = true;
                             break;
                         }
-                        loadAndViewImage(list[l - 1].imageId, currX1, currY1, viewportNum);
+                        loadAndViewImage(list[l - 1].imageId, viewportNum);
                         nextInstanceNumber = l - 1;
                         break1 = true;
                         break;
@@ -231,12 +231,12 @@ getByid("MouseOperation_MPR").onclick = function () {
                     if (break1 == true) break;
                     if (list[l].InstanceNumber == Onum) {
                         if (l + 1 >= list.length) {
-                            loadAndViewImage(list[0].imageId, currX1, currY1, viewportNum);
+                            loadAndViewImage(list[0].imageId, viewportNum);
                             nextInstanceNumber = 0;
                             break1 = true;
                             break;
                         }
-                        loadAndViewImage(list[l + 1].imageId, currX1, currY1, viewportNum);
+                        loadAndViewImage(list[l + 1].imageId, viewportNum);
                         nextInstanceNumber = l + 1;
                         break1 = true;
                         break;
@@ -594,7 +594,7 @@ function initMPR() {
         //set_BL_model('MouseTool');
         //mouseTool();
         if (uid0)
-            loadAndViewImage(Patient.Study[uid0.studyuid].Series[uid0.sreiesuid].Sop[uid0.sopuid].imageId, null, null, 0);
+            loadAndViewImage(Patient.Study[uid0.studyuid].Series[uid0.sreiesuid].Sop[uid0.sopuid].imageId, 0);
         //canvas = GetViewport().canvas()
         getByid("MouseOperation").click();
     } else if (openMPR == true) {

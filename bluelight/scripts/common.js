@@ -344,22 +344,43 @@ function nextFrame(dir, frame) {
         if (Patient.Study[i].Series[j].Sop[k].SopUID == sop) {
             var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
             var list = sortInstance(sop);
-            for (var l = 0; l < list.length; l++) {
-                if (break1 == true) break;
-                if (list[l].InstanceNumber == Onum) {
-                    if (l + frame < 0) {
-                        loadAndViewImage(list[list.length + frame].imageId, null, null, viewportNum);
+            if (list.length == 1 && list[0].frames) {
+                for (var l = 0; l < list[0].frames.length; l++) {
+                    if (break1 == true) break;
+                    if (l == GetViewport(viewportNum).framesNumber) {
+                        if (l + frame < 0) {
+                            loadAndViewImage(list[0].imageId, viewportNum, list[0].frames.length + frame);
+                            break1 = true;
+                            break;
+                        }
+                        if (l + frame >= list[0].frames.length) {
+                            loadAndViewImage(list[0].imageId, viewportNum, 0);
+                            break1 = true;
+                            break;
+                        }
+                        loadAndViewImage(list[0].imageId, viewportNum, l + frame);
                         break1 = true;
                         break;
                     }
-                    if (l + frame >= list.length) {
-                        loadAndViewImage(list[0].imageId, null, null, viewportNum);
+                }
+            } else {
+                for (var l = 0; l < list.length; l++) {
+                    if (break1 == true) break;
+                    if (list[l].InstanceNumber == Onum) {
+                        if (l + frame < 0) {
+                            loadAndViewImage(list[list.length + frame].imageId, viewportNum);
+                            break1 = true;
+                            break;
+                        }
+                        if (l + frame >= list.length) {
+                            loadAndViewImage(list[0].imageId, viewportNum);
+                            break1 = true;
+                            break;
+                        }
+                        loadAndViewImage(list[l + frame].imageId, viewportNum);
                         break1 = true;
                         break;
                     }
-                    loadAndViewImage(list[l + frame].imageId, null, null, viewportNum);
-                    break1 = true;
-                    break;
                 }
             }
         }

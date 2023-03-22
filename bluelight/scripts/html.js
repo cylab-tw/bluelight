@@ -104,7 +104,7 @@ function html_onload() {
     PatientMark = [];
     for (var i = 0; i < Viewport_Total; i++) {
       var sop = GetViewport(i).sop;
-      loadAndViewImage(getImgaeIdFromSop(sop), null, null, i);
+      loadAndViewImage(getImgaeIdFromSop(sop), i);
     }
   }
 

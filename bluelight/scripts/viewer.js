@@ -96,7 +96,7 @@ window.onresize = function () {
             //20210919新增
             //NowSeries = '';
             GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
-            loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId, null, null, i);
+            loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId, i);
         } catch (ex) { }
     }
 
@@ -432,6 +432,34 @@ function parseDicomWithoutImage(dataSet, imageId) {
     }
 }
 
+function loadDicomMutiFrame(image, imageId, viewportNum0) {
+    var dataSet = image.data;
+    var Size = image.width * image.height;
+
+    var pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
+    var frames = [];
+    var TotalFrames = image.data.intString('x00280008');
+    for (var i = 0; i < TotalFrames; i++) {
+        frames.push(pixelData.slice(Size * i, Size * i + Size));
+    }
+
+    var DICOM_obj = {
+        study: image.data.string('x0020000d'),
+        series: image.data.string('x0020000e'),
+        sop: image.data.string('x00080018'),
+        instance: image.data.string('x00200013'),
+        imageId: imageId,
+        image: image,
+        pixelData: frames[0],//pixelData.slice(0, Size),
+        frames: frames,
+        patientId: image.data.string('x00100020')
+    };
+
+    loadUID(DICOM_obj);
+
+    parseDicom(image, DICOM_obj.frames[0], viewportNum0);
+}
+
 function parseDicom(image, pixelData, viewportNum0) {
     var viewportNum;
     if (viewportNum0 >= 0) viewportNum = viewportNum0;
@@ -704,8 +732,9 @@ function parseDicom(image, pixelData, viewportNum0) {
     for (var i = 0; i < Viewport_Total; i++)
         displayRuler(i);
 }
+
 //imageId:影像編碼資料，currX,currY:放大鏡座標，viewportNum0傳入的Viewport是第幾個
-function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
+function loadAndViewImage(imageId, viewportNum0, framesNumber) {
     //if (openPenDraw == true) return;
     //如果沒有傳入指定的viewport，則使用目前選取的viewport
     var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
@@ -725,25 +754,33 @@ function loadAndViewImage(imageId, currX1, currY1, viewportNum0) {
             cornerstone.loadImage(imageId, {
                 usePDFJS: true
             }).then(function (image) {
-                var DICOM_obj = {
-                    study: image.data.string('x0020000d'),
-                    series: image.data.string('x0020000e'),
-                    sop: image.data.string('x00080018'),
-                    instance: image.data.string('x00200013'),
-                    imageId: imageId,
-                    image: image,
-                    pixelData: image.getPixelData(),
-                    patientId: image.data.string('x00100020')
-                };
-                loadUID(DICOM_obj);
-                parseDicom(image, DICOM_obj.pixelData, viewportNum0);
 
+                if (image.data.string('x00080016') == '1.2.840.10008.5.1.4.1.1.7.3') {//muti frame
+                    loadDicomMutiFrame(image, image.imageId, viewportNum0);
+                } else {
+                    var DICOM_obj = {
+                        study: image.data.string('x0020000d'),
+                        series: image.data.string('x0020000e'),
+                        sop: image.data.string('x00080018'),
+                        instance: image.data.string('x00200013'),
+                        imageId: imageId,
+                        image: image,
+                        pixelData: image.getPixelData(),
+                        patientId: image.data.string('x00100020')
+                    };
+                    loadUID(DICOM_obj);
+                    parseDicom(image, DICOM_obj.pixelData, viewportNum0);
+                }
             },
                 function (err) { if (err.dataSet) parseDicomWithoutImage(err.dataSet, imageId); });
         } catch (err) { }
     }
     else {
-        parseDicom(dicomData.image, dicomData.pixelData, viewportNum0);
+        if (framesNumber != undefined) {
+            GetViewport(viewportNum).framesNumber = framesNumber;
+            parseDicom(dicomData.image, dicomData.frames[framesNumber], viewportNum0);
+        }
+        else parseDicom(dicomData.image, dicomData.pixelData, viewportNum0);
     }
 }
 

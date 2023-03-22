@@ -78,6 +78,7 @@ function Wheel(e) {
     getByid("MeasureLabel").style.display = "none";
     var viewport = GetViewport(), canvas = viewport.canvas();
     var nextInstanceNumber = 0;
+    var nextFramesNumber = 0;
     var break1 = false;
     var viewportNum = viewportNumber;
 
@@ -96,37 +97,75 @@ function Wheel(e) {
                 k = index[2];*/
             var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
             var list = sortInstance(sop);
-            if (list.length <= 1) continue;
-            if (e.deltaY < 0) {
-                for (var l = 0; l < list.length; l++) {
-                    if (break1 == true) break;
-                    if (list[l].InstanceNumber == Onum) {
-                        if (l - 1 < 0) {
-                            loadAndViewImage(list[list.length - 1].imageId, currX1, currY1, viewportNum);
-                            nextInstanceNumber = list.length - 1;
+            if (list.length == 0) continue;
+            if (list.length == 1 && !list[0].frames) continue;
+            if (list.length == 1 && list[0].frames) {
+                if (GetViewport(viewportNum).framesNumber==undefined) GetViewport(viewportNum).framesNumber = 0;
+                if (e.deltaY < 0) {
+                    for (var l = 0; l < list[0].frames.length; l++) {
+                        if (break1 == true) break;
+                        if (l == GetViewport(viewportNum).framesNumber) {
+                            if (l - 1 < 0) {
+                                loadAndViewImage(list[0].imageId, viewportNum, list[0].frames.length - 1);
+                                nextFramesNumber = list[0].frames.length - 1;
+                                break1 = true;
+                                break;
+                            }
+                            loadAndViewImage(list[0].imageId, viewportNum, l - 1);
+                            nextFramesNumber = l - 1;
                             break1 = true;
                             break;
                         }
-                        loadAndViewImage(list[l - 1].imageId, currX1, currY1, viewportNum);
-                        nextInstanceNumber = l - 1;
-                        break1 = true;
-                        break;
+                    }
+                } else {
+                    for (var l = 0; l < list[0].frames.length; l++) {
+                        if (break1 == true) break;
+                        if (l == GetViewport(viewportNum).framesNumber) {
+                            if (l + 1 >= list[0].frames.length) {
+                                loadAndViewImage(list[0].imageId, viewportNum, 0);
+                                nextFramesNumber = 0;
+                                break1 = true;
+                                break;
+                            }
+                            loadAndViewImage(list[0].imageId, viewportNum, l + 1);
+                            nextFramesNumber = l + 1;
+                            break1 = true;
+                            break;
+                        }
                     }
                 }
             } else {
-                for (var l = 0; l < list.length; l++) {
-                    if (break1 == true) break;
-                    if (list[l].InstanceNumber == Onum) {
-                        if (l + 1 >= list.length) {
-                            loadAndViewImage(list[0].imageId, currX1, currY1, viewportNum);
-                            nextInstanceNumber = 0;
+                if (e.deltaY < 0) {
+                    for (var l = 0; l < list.length; l++) {
+                        if (break1 == true) break;
+                        if (list[l].InstanceNumber == Onum) {
+                            if (l - 1 < 0) {
+                                loadAndViewImage(list[list.length - 1].imageId, viewportNum);
+                                nextInstanceNumber = list.length - 1;
+                                break1 = true;
+                                break;
+                            }
+                            loadAndViewImage(list[l - 1].imageId, viewportNum);
+                            nextInstanceNumber = l - 1;
                             break1 = true;
                             break;
                         }
-                        loadAndViewImage(list[l + 1].imageId, currX1, currY1, viewportNum);
-                        nextInstanceNumber = l + 1;
-                        break1 = true;
-                        break;
+                    }
+                } else {
+                    for (var l = 0; l < list.length; l++) {
+                        if (break1 == true) break;
+                        if (list[l].InstanceNumber == Onum) {
+                            if (l + 1 >= list.length) {
+                                loadAndViewImage(list[0].imageId, viewportNum);
+                                nextInstanceNumber = 0;
+                                break1 = true;
+                                break;
+                            }
+                            loadAndViewImage(list[l + 1].imageId, viewportNum);
+                            nextInstanceNumber = l + 1;
+                            break1 = true;
+                            break;
+                        }
                     }
                 }
             }

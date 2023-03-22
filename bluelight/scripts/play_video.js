@@ -17,11 +17,26 @@ function playVideo(dir) {
                 if (break1 == true) break;
                 if (list[l].InstanceNumber == Onum) {
                     if (l + 1 >= list.length) {
-                        loadAndViewImage(list[0].imageId, null, null, viewportNum);
+                        loadAndViewImage(list[0].imageId, viewportNum);
                         break1 = true;
                         break;
                     }
-                    loadAndViewImage(list[l + 1].imageId, null, null, viewportNum);
+                    loadAndViewImage(list[l + 1].imageId, viewportNum);
+                    break1 = true;
+                    break;
+                }
+            }
+        }
+        else if ((list.length==1&&list[0].frames)) {
+            for (var l = 0; l < list[0].frames.length; l++) {
+                if (break1 == true) break;
+                if (l == GetViewport(viewportNum).framesNumber) {
+                    if (l + 1 >= list[0].frames.length) {
+                        loadAndViewImage(list[0].imageId, viewportNum,0);
+                        break1 = true;
+                        break;
+                    }
+                    loadAndViewImage(list[0].imageId, viewportNum,l+1);
                     break1 = true;
                     break;
                 }
