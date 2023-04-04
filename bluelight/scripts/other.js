@@ -1,28 +1,9 @@
-let webWorkerUrl = '../scripts/external/threejs/cornerstoneWADOImageLoaderWebWorker.min.js';
-let codecsUrl = './cornerstoneWADOImageLoaderCodecs.js';
-let webWorkerTaskPath = './convolveTask.js';
-window.customWebWorkerConfig = {
-  maxWebWorkers: navigator.hardwareConcurrency || 1,
-  startWebWorkersOnDemand: true,
-  webWorkerPath: webWorkerUrl,
-  webWorkerTaskPaths: [webWorkerTaskPath],
-  taskConfiguration: {
-    decodeTask: {
-      loadCodecsOnStartup: true,
-      initializeCodecsOnStartup: false,
-      codecsPath: codecsUrl,
-      usePDFJS: false
-    }
-  }
-};
-
-cornerstoneWebImageLoader.external.cornerstone = cornerstone;
-cornerstoneWebImageLoader.configure({
+config = window.customWebWorkerConfig;
+cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+cornerstoneWADOImageLoader.configure({
   beforeSend: function (xhr) {
   }
 });
-config = window.customWebWorkerConfig;
-cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 cornerstoneWADOImageLoader.webWorkerManager.initialize(config);/*
 */
 function getBlobUrl(url) {
