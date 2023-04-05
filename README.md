@@ -41,7 +41,7 @@
 * Most general image IODs (CR, DX, CT, MR, US, etc)
 * PDF
 
-### Mative features for 2D image interpretation 
+### Native features for 2D image interpretation 
 * Pan, zoom, move
 * Scroll images within a series
 * Rotation, Flip, Invert
@@ -54,7 +54,7 @@
 * hide/display markups and annotations
 * Export image
 
-### supported the display of the kinds of markups and annotations
+### support the display of the kinds of markups and annotations
 * GSPS: DICOM Graphic Annotation
 * DICOM Overlay
 * DICOM-RT structure set (RTSS)
@@ -63,7 +63,7 @@
 * [LabelImg](https://github.com/tzutalin/labelImg)
 * *Provide the function to convert the DICOM Overalys to a DICOM SEG object.*
 
-## Plugin 
+## Plugins
 * Some advanced features are separated from the native parts of Bluelight to facilitate better performance. All supported functions are placed in folder `/scripts/plugin`. Using the [config](/bluelight/data/plugin.json) enable the selected plugins. If disableCatch is set as false, the plugin is enabled.
 
 ```json
