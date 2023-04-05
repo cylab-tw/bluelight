@@ -6,7 +6,9 @@
 
 <a href="https://blsearch.dicom.tw"><strong>Live DEMO</strong></a>&ensp;&ensp;&ensp;
 <a href="https://bl.dicom.tw"><strong>Online Viewer</strong></a>&ensp;&ensp;&ensp;
-<a href="https://youtu.be/UkZt_Qbw1Rk"><strong> Video - Basic operation</strong></a> 
+<a href="https://youtu.be/UkZt_Qbw1Rk"><strong> Video - Basic operation</strong></a> &ensp;&ensp;&ensp;
+<a href="https://youtu.be/mW4Xh9i38ZM"><strong> Video - Labeling tools</strong></a> 
+
 
 ## Install
 * Put all files into any directory in the static directory on any HTTP server.
