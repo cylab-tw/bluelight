@@ -26,13 +26,20 @@
 ### Network support
 * Load local files
 * Integration with any DICOMWeb Image Archive, including Raccoon, Orthanc, and dcm4chee server
-  - Retrieve methods: WADO-URI (as default) and WADO-RS: specify one of them in config.json. 
-        - ContentType= application/dicom
-* Integration with IHE Invoke Image Display (IID) Profile, as the Image Display Acotr in Transaction [RAD-106]. (on going)
-  - We are trying to implement it with in the scenario of FHIR ImagingStudy.
-* Integration with XNAT (currently doesn't build as an XNAT plugin)
+  - Retrieve methods: WADO-URI (as default) and WADO-RS: specify one of them in config.json
+* Integration with XNAT by plugin [xnat.js](/bluelight/scripts/plugin/xnat.js). BlueLight will query the XNAT's API to get the XML and retrieve the DICOM stored in experiments and its scans. Currently we doesn't build it as an XNAT plugin. [issue: XNAT Connection](https://github.com/cylab-tw/bluelight/issues/11)
+  - Step1: copy BlueLight to XNAT deployment folder
+  - Step2: type URL: https://{XNAT's hostname}/bluelight/search/html/start.html?experiments={XNAT expID}&scans={scanID}&format=json
 
-### 2D image interpretation
+```html
+  http://{XNAT's hostname}/REST/projects/test/subjects/XNAT_S00001/experiments/XNAT_E00002/scans/1/files?format=json
+```
+
+### Support IODs
+* Most general image IODs (CR, DX, CT, MR, US, etc)
+* PDF
+
+### Mative features for 2D image interpretation 
 * Pan, zoom, move
 * Scroll images within a series
 * Rotation, Flip, Invert
@@ -52,21 +59,64 @@
 * Annotation and Image Markup (AIM)
 * DICOM SEG (Segementation)
 * [LabelImg](https://github.com/tzutalin/labelImg)
+* *Provide the function to convert the DICOM Overalys to a DICOM SEG object.*
 
-### 3D Post-Processing
-* MPR (Multiplanar Reconstruction)
-* 3D Volume Rendering 
-* MIP (maximum intensity projection)
+## Plugin 
+* Some advanced features are separated from the native parts of Bluelight to facilitate better performance. All supported functions are placed in folder `/scripts/plugin`. Using the [config](/bluelight/data/plugin.json) enable the selected plugins. If disableCatch is set as false, the plugin is enabled.
 
-### Labeling tool interfaces (on experiment state)
+```json
+{
+    "plugin": [
+    /*  path: the location of plugin
+     *  name: the name of plugin
+     *  disableCatch: enable the plugin or not.
+     *  examples show as follows:        
+     * /
+        {"path":"../scripts/plugin/oauth.js", "name": "oauth", "disableCatch": "true"},
+        {"path":"../scripts/plugin/mpr.js", "name": "MPR", "disableCatch": "true"},        
+    ]
+}
+
+```
+* We welcome any idea of adding new plugins from any third party, such as:
+  - Create the customized annotations encoded as a xml - see [xml_format.js](/bluelight/scripts/plugin/xml_format.js)
+  
+### Plugin: Authentication
+* OAuth2 - see [oauth.js](/bluelight/scripts/plugin/oauth.js). If OAuth2 is enabled, and then modify the [config](/bluelight/data/configOAuth.json). 
+   - **Note:** we used Keycloak to test the function of OAuth2.
+
+```json
+{
+    "enabled":false,
+    "hostname":"127.0.0.1",
+    "port":"8080",
+    "http":"http",
+    "client_id":"account",
+    "endpoints":
+    {
+        "auth":"realms/TestRealm/protocol/openid-connect/auth",
+        "validation":"realms/TestRealm/protocol/openid-connect/userinfo", 
+        "token":"realms/TestRealm/protocol/openid-connect/token" 
+    },
+    "tokenInRequest":true
+}
+```
+### Plugin : 3D Post-Processing
+* MPR (Multiplanar Reconstruction) - see [mpr.js](/bluelight/scripts/plugin/mpr.js)
+* MIP (maximum intensity projection) - implemented in MPR 
+* 3D Volume Rendering - see [vr.js](/bluelight/scripts/plugin/vr.js)
+
+### Plugin : Labeling tool interfaces (on experiment state)
 * [LabelImg](https://github.com/tzutalin/labelImg)
-* GSPS: DICOM Graphic Annotation 
-* DICOM-RT structure set (RTSS)
-* DICOM Overlay
-* DICOM SEG (Segementation)
+* GSPS: DICOM Graphic Annotation - see [graphic_annotation.js](/bluelight/scripts/plugin/graphic_annotation.js)
+* DICOM-RT structure set (RTSS) - see [rtss.js](/bluelight/scripts/plugin/rtss.js)
+* DICOM SEG (Segementation) - see [seg.js](/bluelight/scripts/plugin/seg.js)
   - **Download as DCMTK DICOM-XML**: only launch BlueLight
   - **Download as DIOCM SEG**: It is integrated with [Raccoon.net](https://github.com/cylab-tw/raccoon). Please put the BlightLight on Raccoon.
-* *Provide the function to convert the DICOM Overalys to a DICOM SEG object.*
+
+### Plugin : General
+* Display DICOM TAG - see [tag.js](/bluelight/scripts/plugin/tag.js)
+* Display LUT- see [table.js](/bluelight/scripts/plugin/table.js)
 
 ## Supported library
 * BlueLight Viewer uses several oepn source libraries as folowing:
@@ -83,13 +133,12 @@
 * Display DICOM Waveform - 12 Lead ECG Waveform
 
 # Special projects
-* **BlueLight-WSI**: :construction:
+* **BlueLight-WSI**: :construction: please visit the project [mainecoon](https://github.com/cylab-tw/mainecoon)
 * **BlueLight@Orthanc**: :secret:
 * **BlueLight@XANT**: :white_check_mark:
 * **BlueLight@Raccoon.net**: :white_check_mark: - [Raccoon.net](https://github.com/cylab-tw/raccoon) is a noSQL-based medical image repository.
 
 # Acknowledgement
-
 * To acknowledge the BlueLight in an academic publication, please cite
 
  *Chen, TT., Sun, YC., Chu, WC. et al. BlueLight: An Open Source DICOM Viewer Using Low-Cost Computation Algorithm Implemented with JavaScript Using Advanced Medical Imaging Visualization. J Digit Imaging (2022). https://doi.org/10.1007/s10278-022-00746-0*
