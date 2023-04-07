@@ -188,6 +188,12 @@ function readDicomRTSS(byteArray, dataSet, patientmark) {
       var colorStr = ("" + dataSet.elements.x30060039.items[i].dataSet.string('x3006002a')).split("\\");
       var color;
       if (colorStr) color = "rgb(" + parseInt(colorStr[0]) + ", " + parseInt(colorStr[1]) + ", " + parseInt(colorStr[2]) + ")";
+
+
+      if (!Object.prototype.hasOwnProperty.call(dataSet.elements.x30060039.items[i].dataSet.elements, "x30060040")) {
+        continue;
+      }
+
       for (var j in dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items) {
         for (var k in dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.elements.x30060016.items) {
           var dcm = {};
