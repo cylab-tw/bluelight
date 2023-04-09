@@ -84,6 +84,10 @@ var SeriesCount = 0;
 var bordersize = 5;
 //label距離邊緣多遠
 var labelPadding = 3;
+var leftLabelPadding = labelPadding;
+var rightLabelPadding = labelPadding;
+var topLabelPadding = labelPadding;
+var bottomLabelPadding = labelPadding;
 //代表目前載入了多少次DICOM --*
 var dicomImageCount = 0;
 

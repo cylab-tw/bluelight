@@ -25,7 +25,6 @@ function loadLdcmview() {
   getByid("SplitViewportDiv").style.display = "none";
   getByid('MarkStyleDiv').style.display = 'none';
   getByid("GraphicStyleDiv").style.display = "none";
-  labelPadding = 5;
 
   //設定放大鏡長寬
   getByid("magnifierDiv").style.width = magnifierWidth + "px";
@@ -232,7 +231,7 @@ function loadLdcmview() {
   getByid("textWC").style.display = getByid("textWW").style.display = "none";
 
   //載入config檔的設定
-  readDicomTags("../data/dicomTags.json");
+  readDicomTags("../data/dicomTags.json", setLabelPadding);
   readConfigJson("../data/config.json", readAllJson, readJson);
 
   //設定icon邊框
@@ -260,7 +259,15 @@ function getParameterByName(name) {
   return pairList;
 }
 
-function readDicomTags(url) {
+function setLabelPadding() {
+  labelPadding = isNaN(parseInt(DicomTags.labelPadding)) ? 5 : parseInt(DicomTags.labelPadding);
+  leftLabelPadding = isNaN(parseInt(DicomTags.leftLabelPadding)) ? labelPadding : parseInt(DicomTags.leftLabelPadding);
+  rightLabelPadding = isNaN(parseInt(DicomTags.rightLabelPadding)) ? labelPadding : parseInt(DicomTags.rightLabelPadding);
+  topLabelPadding = isNaN(parseInt(DicomTags.topLabelPadding)) ? labelPadding : parseInt(DicomTags.topLabelPadding);
+  bottomLabelPadding = isNaN(parseInt(DicomTags.bottomLabelPadding)) ? labelPadding : parseInt(DicomTags.bottomLabelPadding);
+}
+
+function readDicomTags(url, setLabelPadding) {
   //讀取DICOM Tags設定檔
   var request = new XMLHttpRequest();
   request.open('GET', url);
@@ -273,6 +280,12 @@ function readDicomTags(url) {
   //RB代表right bottom
   request.onload = function () {
     var DicomResponse = request.response["default"];
+    dicomtags.labelPadding = parseInt(DicomResponse["labelPadding"]) ? parseInt(DicomResponse["labelPadding"]) : 5;
+    dicomtags.leftLabelPadding = parseInt(DicomResponse["leftLabelPadding"]) ? parseInt(DicomResponse["leftLabelPadding"]) : dicomtags.labelPadding;
+    dicomtags.rightLabelPadding = parseInt(DicomResponse["rightLabelPadding"]) ? parseInt(DicomResponse["rightLabelPadding"]) : dicomtags.labelPadding;
+    dicomtags.topLabelPadding = parseInt(DicomResponse["topLabelPadding"]) ? parseInt(DicomResponse["topLabelPadding"]) : dicomtags.labelPadding;
+    dicomtags.bottomLabelPadding = parseInt(DicomResponse["bottomLabelPadding"]) ? parseInt(DicomResponse["bottomLabelPadding"]) : dicomtags.labelPadding;
+
     dicomtags.LT = {};
     dicomtags.LT.name = [];
     dicomtags.LT.tag = [];
@@ -303,6 +316,7 @@ function readDicomTags(url) {
     }
     //指派至全域變數
     Object.assign(DicomTags, dicomtags);
+    if (setLabelPadding) setLabelPadding();
   }
 }
 

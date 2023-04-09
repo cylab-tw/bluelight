@@ -33,16 +33,16 @@ function DisplaySeriesCount(viewportNum0) {
 
 function putLabel() {
   for (var i = 0; i < Viewport_Total; i++) {
-    getClass("labelLT")[i].style.top = labelPadding + "px";
-    getClass("labelLT")[i].style.left = labelPadding + "px";
-    getClass("labelRT")[i].style.top = labelPadding + "px";
-    getClass("labelRT")[i].style.right = labelPadding + "px";
-    getClass("labelRB")[i].style.right = labelPadding + "px";
-    getClass("labelRB")[i].style.bottom = labelPadding + "px";
-    getClass("labelXY")[i].style.left = labelPadding + "px";
-    getClass("labelXY")[i].style.bottom = labelPadding + "px";
-    getClass("labelWC")[i].style.left = labelPadding + "px";
-    getClass("labelWC")[i].style.bottom = labelPadding + getClass("labelXY")[i].clientHeight + "px";
+    getClass("labelLT")[i].style.top = topLabelPadding + "px";
+    getClass("labelLT")[i].style.left = leftLabelPadding + "px";
+    getClass("labelRT")[i].style.top = topLabelPadding + "px";
+    getClass("labelRT")[i].style.right = rightLabelPadding + "px";
+    getClass("labelRB")[i].style.right = rightLabelPadding + "px";
+    getClass("labelRB")[i].style.bottom = bottomLabelPadding + "px";
+    getClass("labelXY")[i].style.left = leftLabelPadding + "px";
+    getClass("labelXY")[i].style.bottom = bottomLabelPadding + "px";
+    getClass("labelWC")[i].style.left = leftLabelPadding + "px";
+    getClass("labelWC")[i].style.bottom = bottomLabelPadding + getClass("labelXY")[i].clientHeight + "px";
   }
 }
 
