@@ -233,7 +233,7 @@ function EnterRWD() {
     SetTable();
 }
 
-function wadorsLoader(url) {
+function wadorsLoader(url, onlyload) {
     var data = [];
 
     function getData() {
@@ -263,7 +263,8 @@ function wadorsLoader(url) {
                 //console.log(bops.to(resBlob, encoding="binary"))
                 //let item = await resBlob.text();
                 var url = await stowMultipartRelated(string);
-                loadAndViewImage("wadouri:" + url);
+                if(onlyload==true) onlyLoadImage("wadouri:" + url);
+                else loadAndViewImage("wadouri:" + url);
             })
             .catch(function (err) {
                 //console.log(err);
@@ -731,6 +732,34 @@ function parseDicom(image, pixelData, viewportNum0) {
     displayAnnotation();
     for (var i = 0; i < Viewport_Total; i++)
         displayRuler(i);
+}
+
+
+function onlyLoadImage(imageId) {
+    var dicomData = getPatientbyImageID[imageId];
+    if (!dicomData) {
+        try {
+            cornerstone.loadImage(imageId, {
+                usePDFJS: true
+            }).then(function (image) {
+                if (image.data.string('x00080016') == '1.2.840.10008.5.1.4.1.1.7.3') {//muti frame
+                    loadDicomMutiFrame(image, image.imageId, viewportNum0);
+                } else {
+                    var DICOM_obj = {
+                        study: image.data.string('x0020000d'),
+                        series: image.data.string('x0020000e'),
+                        sop: image.data.string('x00080018'),
+                        instance: image.data.string('x00200013'),
+                        imageId: imageId,
+                        image: image,
+                        pixelData: image.getPixelData(),
+                        patientId: image.data.string('x00100020')
+                    };
+                    loadUID(DICOM_obj);
+                }
+            }, function (err) { if (err.dataSet) parseDicomWithoutImage(err.dataSet, imageId); });
+        } catch (err) { }
+    }
 }
 
 //imageId:影像編碼資料，currX,currY:放大鏡座標，viewportNum0傳入的Viewport是第幾個

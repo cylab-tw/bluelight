@@ -467,7 +467,7 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
         };
         // if (ConfigLog.WADO.WADOType == "URI") loadUID(DICOM_obj);
         //預載入DICOM至Viewport
-        if (ConfigLog.WADO.WADOType == "URI") loadAndViewImage(url, 1);
+        if (ConfigLog.WADO.WADOType == "URI") loadAndViewImage(url);
         else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
       }
     } catch (ex) { console.log(ex); }
@@ -503,8 +503,8 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
         patientId: getValue(DicomResponse[i]["00100020"])
       };
       //預載入DICOM至Viewport
-      if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
-      else loadAndViewImage(url);
+      if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url, true);
+      else onlyLoadImage(url);
 
       try {
         if (getValue(DicomResponse[i]["00080060"]) == 'PR' || getValue(SeriesResponse[instance]["00080060"]) == 'PR') {
