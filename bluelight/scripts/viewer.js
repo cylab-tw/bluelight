@@ -154,31 +154,58 @@ function displayLefyCanvas(DicomCanvas, image, pixelData) {
     DicomCanvas.style.height = 66 + "px";
     var ctx2 = DicomCanvas.getContext("2d");
     var imgData2 = ctx2.createImageData(image.width, image.height);
-    var windowCenter = image.windowCenter;
-    var windowWidth = image.windowWidth;
-    var high = windowCenter + (windowWidth / 2);
-    var low = windowCenter - (windowWidth / 2);
-    var intercept = image.intercept;
-    if (CheckNull(intercept)) intercept = 0;
-    var slope = image.slope;
-    if (CheckNull(slope)) slope = 1;
-    var multiplication = 255 / ((high - low)) * slope;
-    var addition = (- low + intercept) / (high - low) * 255;
-    if (image.color == true) {
-        for (var i = imgData2.data.length; i >= 0; i -= 4) {
-            imgData2.data[i + 0] = pixelData[i] * multiplication + addition;
-            imgData2.data[i + 1] = pixelData[i + 1] * multiplication + addition;
-            imgData2.data[i + 2] = pixelData[i + 2] * multiplication + addition;
-            imgData2.data[i + 3] = 255;
+    if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
+        var max = -99999999999, min = 99999999999;
+        if (image.MinPixel == undefined || image.MaxPixel == undefined) {
+            for (var i in pixelData) {
+                if (pixelData[i] > max) max = pixelData[i];
+                if (pixelData[i] < min) min = pixelData[i];
+            }
+            image.MinPixel = min; image.MaxPixel = max;
+        }
+        min = image.MinPixel; max = image.MaxPixel;
+        if (min != max && min != undefined && max != undefined) {
+            if (image.color == true) {
+                for (var i = imgData2.data.length; i >= 0; i -= 4) {
+                    imgData2.data[i + 0] = parseInt((pixelData[i] / (max - min)) * 255);
+                    imgData2.data[i + 1] = parseInt((pixelData[i + 1] / (max - min)) * 255);
+                    imgData2.data[i + 2] = parseInt((pixelData[i + 2] / (max - min)) * 255);
+                    imgData2.data[i + 3] = 255;
+                }
+            } else {
+                for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
+                    imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt((pixelData[j] / (max - min)) * 255);
+                    imgData2.data[i + 3] = 255;
+                }
+            }
+            ctx2.putImageData(imgData2, 0, 0);
         }
     } else {
-        for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
-            imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = pixelData[j] * multiplication + addition;
-            imgData2.data[i + 3] = 255;
+        var windowCenter = image.windowCenter;
+        var windowWidth = image.windowWidth;
+        var high = windowCenter + (windowWidth / 2);
+        var low = windowCenter - (windowWidth / 2);
+        var intercept = image.intercept;
+        if (CheckNull(intercept)) intercept = 0;
+        var slope = image.slope;
+        if (CheckNull(slope)) slope = 1;
+        var multiplication = 255 / ((high - low)) * slope;
+        var addition = (- low + intercept) / (high - low) * 255;
+        if (image.color == true) {
+            for (var i = imgData2.data.length; i >= 0; i -= 4) {
+                imgData2.data[i + 0] = pixelData[i] * multiplication + addition;
+                imgData2.data[i + 1] = pixelData[i + 1] * multiplication + addition;
+                imgData2.data[i + 2] = pixelData[i + 2] * multiplication + addition;
+                imgData2.data[i + 3] = 255;
+            }
+        } else {
+            for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
+                imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = pixelData[j] * multiplication + addition;
+                imgData2.data[i + 3] = 255;
+            }
         }
+        ctx2.putImageData(imgData2, 0, 0);
     }
-    ctx2.putImageData(imgData2, 0, 0);
-
     var invert = (image.invert == true);
     function mirrorImage(ctx, picture, x = 0, y = 0, horizontal = false, vertical = false) {
         ctx.save();  // save the current canvas state
@@ -263,7 +290,7 @@ function wadorsLoader(url, onlyload) {
                 //console.log(bops.to(resBlob, encoding="binary"))
                 //let item = await resBlob.text();
                 var url = await stowMultipartRelated(string);
-                if(onlyload==true) onlyLoadImage("wadouri:" + url);
+                if (onlyload == true) onlyLoadImage("wadouri:" + url);
                 else loadAndViewImage("wadouri:" + url);
             })
             .catch(function (err) {
@@ -436,8 +463,14 @@ function parseDicomWithoutImage(dataSet, imageId) {
 function loadDicomMutiFrame(image, imageId, viewportNum0) {
     var dataSet = image.data;
     var Size = image.width * image.height;
+    var pixelData;
+    var BitsAllocated = image.data.int16('x00280100');
+    if (BitsAllocated == 16) pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
+    else if (BitsAllocated == 32) pixelData = new Int32Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 4);
+    else if (BitsAllocated == 8) pixelData = new Int8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 1);
+    else pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
+    if (!pixelData) return;
 
-    var pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
     var frames = [];
     var TotalFrames = image.data.intString('x00280008');
     for (var i = 0; i < TotalFrames; i++) {
@@ -490,44 +523,73 @@ function parseDicom(image, pixelData, viewportNum0) {
         var imgData2 = ctx2.createImageData(image.width, image.height);
         if (element.SeriesInstanceUID && element.SeriesInstanceUID != image.data.string("x0020000e"))
             element.windowCenterList = element.windowWidthList = null;
-        var windowCenter = element.windowCenterList ? element.windowCenterList : image.windowCenter;
-        var windowWidth = element.windowWidthList ? element.windowWidthList : image.windowWidth;
-        var high = windowCenter + (windowWidth / 2);
-        var low = windowCenter - (windowWidth / 2);
-        var intercept = image.intercept;
-        if (CheckNull(intercept)) intercept = 0;
-        var slope = image.slope;
-        if (CheckNull(slope)) slope = 1;
 
-        /*if (image.color == true) {
-            for (var i = imgData2.data.length; i >=0 ; i -= 4) {
-                imgData2.data[i + 0] = parseInt(((pixelData[i] * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 1] = parseInt(((pixelData[i + 1] * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 2] = parseInt(((pixelData[i + 2] * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 3] = 255;
+        if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
+            var max = -99999999999, min = 99999999999;
+            if (image.MinPixel == undefined || image.MaxPixel == undefined) {
+                for (var i in pixelData) {
+                    if (pixelData[i] > max) max = pixelData[i];
+                    if (pixelData[i] < min) min = pixelData[i];
+                }
+                image.MinPixel = min; image.MaxPixel = max;
+            }
+            min = image.MinPixel; max = image.MaxPixel;
+            if (min != max && min != undefined && max != undefined) {
+                if (image.color == true) {
+                    for (var i = imgData2.data.length; i >= 0; i -= 4) {
+                        imgData2.data[i + 0] = parseInt((pixelData[i] / (max - min)) * 255);
+                        imgData2.data[i + 1] = parseInt((pixelData[i + 1] / (max - min)) * 255);
+                        imgData2.data[i + 2] = parseInt((pixelData[i + 2] / (max - min)) * 255);
+                        imgData2.data[i + 3] = 255;
+                    }
+                } else {
+                    for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
+                        imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt((pixelData[j] / (max - min)) * 255);
+                        imgData2.data[i + 3] = 255;
+                    }
+                }
+                ctx2.putImageData(imgData2, 0, 0);
             }
         } else {
-            for (var i = imgData2.data.length, j = imgData2.data.length/4; i>=0 ; i -= 4, j--) {
-                imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255);
-                imgData2.data[i + 3] = 255;
+            var windowCenter = element.windowCenterList ? element.windowCenterList : image.windowCenter;
+            var windowWidth = element.windowWidthList ? element.windowWidthList : image.windowWidth;
+            var high = windowCenter + (windowWidth / 2);
+            var low = windowCenter - (windowWidth / 2);
+            var intercept = image.intercept;
+            if (CheckNull(intercept)) intercept = 0;
+            var slope = image.slope;
+            if (CheckNull(slope)) slope = 1;
+
+            /*if (image.color == true) {
+                for (var i = imgData2.data.length; i >=0 ; i -= 4) {
+                    imgData2.data[i + 0] = parseInt(((pixelData[i] * slope - low + intercept) / (high - low)) * 255);
+                    imgData2.data[i + 1] = parseInt(((pixelData[i + 1] * slope - low + intercept) / (high - low)) * 255);
+                    imgData2.data[i + 2] = parseInt(((pixelData[i + 2] * slope - low + intercept) / (high - low)) * 255);
+                    imgData2.data[i + 3] = 255;
+                }
+            } else {
+                for (var i = imgData2.data.length, j = imgData2.data.length/4; i>=0 ; i -= 4, j--) {
+                    imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255);
+                    imgData2.data[i + 3] = 255;
+                }
+            }*/
+            var multiplication = 255 / ((high - low)) * slope;
+            var addition = (- low + intercept) / (high - low) * 255;
+            if (image.color == true) {
+                for (var i = imgData2.data.length; i >= 0; i -= 4) {
+                    imgData2.data[i + 0] = pixelData[i] * multiplication + addition;
+                    imgData2.data[i + 1] = pixelData[i + 1] * multiplication + addition;
+                    imgData2.data[i + 2] = pixelData[i + 2] * multiplication + addition;
+                    imgData2.data[i + 3] = 255;
+                }
+            } else {
+                for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
+                    imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = pixelData[j] * multiplication + addition;
+                    imgData2.data[i + 3] = 255;
+                }
             }
-        }*/
-        var multiplication = 255 / ((high - low)) * slope;
-        var addition = (- low + intercept) / (high - low) * 255;
-        if (image.color == true) {
-            for (var i = imgData2.data.length; i >= 0; i -= 4) {
-                imgData2.data[i + 0] = pixelData[i] * multiplication + addition;
-                imgData2.data[i + 1] = pixelData[i + 1] * multiplication + addition;
-                imgData2.data[i + 2] = pixelData[i + 2] * multiplication + addition;
-                imgData2.data[i + 3] = 255;
-            }
-        } else {
-            for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
-                imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = pixelData[j] * multiplication + addition;
-                imgData2.data[i + 3] = 255;
-            }
+            ctx2.putImageData(imgData2, 0, 0);
         }
-        ctx2.putImageData(imgData2, 0, 0);
 
         var invert = ((image.invert != true && element.openInvert == true) || (image.invert == true && element.openInvert == false));
         function mirrorImage(ctx, picture, x = 0, y = 0, horizontal = false, vertical = false) {
@@ -742,7 +804,7 @@ function onlyLoadImage(imageId) {
             cornerstone.loadImage(imageId, {
                 usePDFJS: true
             }).then(function (image) {
-                if (image.data.string('x00080016') == '1.2.840.10008.5.1.4.1.1.7.3') {//muti frame
+                if (image.data.intString("x00280008") > 1) {//muti frame
                     loadDicomMutiFrame(image, image.imageId, viewportNum0);
                 } else {
                     var DICOM_obj = {
@@ -784,7 +846,7 @@ function loadAndViewImage(imageId, viewportNum0, framesNumber) {
                 usePDFJS: true
             }).then(function (image) {
 
-                if (image.data.string('x00080016') == '1.2.840.10008.5.1.4.1.1.7.3') {//muti frame
+                if (image.data.intString("x00280008") > 1) {//muti frame
                     loadDicomMutiFrame(image, image.imageId, viewportNum0);
                 } else {
                     var DICOM_obj = {

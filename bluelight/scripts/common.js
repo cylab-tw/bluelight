@@ -91,6 +91,7 @@ function resetViewport(viewportNum0) {
     GetViewport(viewportNum).NowCanvasSizeWidth = GetViewport(viewportNum).NowCanvasSizeHeight = null;
     GetViewport(viewportNum).newMousePointX = GetViewport(viewportNum).newMousePointY = GetViewport().rotateValue = 0;
     GetViewport(viewportNum).windowCenterList = GetViewport(viewportNum).windowWidthList = null;
+    if (GetViewport(viewportNum).framesNumber != undefined) GetViewport(viewportNum).framesNumber = 0;
 }
 
 function PictureOnclick(series) {
