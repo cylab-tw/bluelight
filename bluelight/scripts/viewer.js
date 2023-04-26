@@ -463,18 +463,38 @@ function parseDicomWithoutImage(dataSet, imageId) {
 function loadDicomMutiFrame(image, imageId, viewportNum0) {
     var dataSet = image.data;
     var Size = image.width * image.height;
-    var pixelData;
     var BitsAllocated = image.data.int16('x00280100');
-    if (BitsAllocated == 16) pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
-    else if (BitsAllocated == 32) pixelData = new Int32Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 4);
-    else if (BitsAllocated == 8) pixelData = new Int8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 1);
-    else pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
-    if (!pixelData) return;
 
     var frames = [];
     var TotalFrames = image.data.intString('x00280008');
-    for (var i = 0; i < TotalFrames; i++) {
-        frames.push(pixelData.slice(Size * i, Size * i + Size));
+
+    if (image.data.string("x00020010") && image.data.string("x00020010").includes("1.2.840.10008.1.2.4")) {
+        for (var i = 0; i < dataSet.elements.x7fe00010.fragments.length; i++) {
+            var pixelData;
+            if (BitsAllocated == 16) pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.fragments[i].length / 2);
+            else if (BitsAllocated == 32) pixelData = new Int32Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.fragments[i].length / 4);
+            else if (BitsAllocated == 8) pixelData = new Int8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.fragments[i].length / 1);
+            else pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.length / 2);
+            if (!pixelData) return;
+
+            var NewpixelData = decodeImageFrame(cornerstoneWADOImageLoader.getImageFrame(imageId), image.data.string("x00020010"), pixelData, {
+                usePDFJS: false
+            }).pixelData;
+
+            if (NewpixelData) pixelData = NewpixelData;
+            frames.push(pixelData);
+        }
+    } else {
+        var pixelData;
+        if (BitsAllocated == 16) pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
+        else if (BitsAllocated == 32) pixelData = new Int32Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 4);
+        else if (BitsAllocated == 8) pixelData = new Int8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 1);
+        else pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
+        if (!pixelData) return;
+
+        for (var i = 0; i < TotalFrames; i++) {
+            frames.push(pixelData.slice(Size * i, Size * i + Size));
+        }
     }
 
     var DICOM_obj = {
