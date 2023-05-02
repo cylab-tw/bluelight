@@ -417,6 +417,20 @@ function jump2Mark(showName) {
     }
 }
 
+function checkMark2(seriesUID, Mark) {
+    for (var dCount = 0; dCount < dicomImageCount; dCount++) {
+        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == seriesUID) {
+            var elem = document.querySelectorAll("#dicomDivListDIV" + dCount + " label input");
+            for (var elemNum in elem) {
+                if (elem[elemNum].name == Mark.hideName) {
+                    if (elem[elemNum].series == "true") return 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 function checkMark(i, j, n) {
     let checkRtss = 0;
     for (var dCount = 0; dCount < dicomImageCount; dCount++) {

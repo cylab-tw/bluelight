@@ -33,20 +33,20 @@ function readXML(url) {
           .getElementsByTagName("ImagingObservationEntity");
         for (var i = 0; i < tempText.length; i++) {
           dcm.mark.push({});
-          var DcmMarkLength = dcm.mark.length - 1;
-          dcm.mark[DcmMarkLength].type = "Characteristic";
+          var mark = dcm.mark[dcm.mark.length - 1];
+          mark.type = "Characteristic";
           var temp2 = tempText[i].getElementsByTagName("imagingObservationCharacteristicCollection")[0].
             getElementsByTagName("ImagingObservationCharacteristic");
-          dcm.mark[DcmMarkLength].markTitle = "";
-          dcm.mark[DcmMarkLength].markTitle = "" + tempText[i].getElementsByTagName("label")[0].getAttribute("value") +
+          mark.markTitle = "";
+          mark.markTitle = "" + tempText[i].getElementsByTagName("label")[0].getAttribute("value") +
             ":" + tempText[i].getElementsByTagName("typeCode")[0].getElementsByTagName("iso:displayName")[0].getAttribute("value");;
-          dcm.mark[DcmMarkLength].markX = [];
-          dcm.mark[DcmMarkLength].markY = [];
-          dcm.mark[DcmMarkLength].markZ = [];
+          mark.markX = [];
+          mark.markY = [];
+          mark.markZ = [];
           for (var j = 0; j < temp2.length; j++) {
-            dcm.mark[DcmMarkLength].markX.push(temp2[j].getElementsByTagName("label")[0].getAttribute("value"));
-            dcm.mark[DcmMarkLength].markZ.push(temp2[j].getElementsByTagName("typeCode")[0].getAttribute("code"));
-            dcm.mark[DcmMarkLength].markY.push(temp2[j].getElementsByTagName("typeCode")[0].getElementsByTagName("iso:displayName")[0].getAttribute("value"));
+            mark.markX.push(temp2[j].getElementsByTagName("label")[0].getAttribute("value"));
+            mark.markZ.push(temp2[j].getElementsByTagName("typeCode")[0].getAttribute("code"));
+            mark.markY.push(temp2[j].getElementsByTagName("typeCode")[0].getElementsByTagName("iso:displayName")[0].getAttribute("value"));
           }
         }
       } catch (ex) {
@@ -56,48 +56,48 @@ function readXML(url) {
       for (var i = 0; i < temp.length; i++) {
         if (temp[i].getAttribute("xsi:type") == "TwoDimensionPolyline") {
           dcm.mark.push({});
-          var DcmMarkLength = dcm.mark.length - 1;
-          dcm.mark[DcmMarkLength].type = "TwoDimensionPolyline";
+          var mark = dcm.mark[dcm.mark.length - 1];
+          mark.type = "TwoDimensionPolyline";
           var temp2 = temp[i].getElementsByTagName("twoDimensionSpatialCoordinateCollection")[0].getElementsByTagName("TwoDimensionSpatialCoordinate");
-          dcm.mark[DcmMarkLength].markX = [];
-          dcm.mark[DcmMarkLength].markY = [];
+          mark.markX = [];
+          mark.markY = [];
           for (var j = 0; j < temp2.length; j++) {
             //console.log(7);
-            dcm.mark[DcmMarkLength].markX.push(temp2[j].getElementsByTagName("x")[0].getAttribute("value"));
-            dcm.mark[DcmMarkLength].markY.push(temp2[j].getElementsByTagName("y")[0].getAttribute("value"));
+            mark.markX.push(temp2[j].getElementsByTagName("x")[0].getAttribute("value"));
+            mark.markY.push(temp2[j].getElementsByTagName("y")[0].getAttribute("value"));
           }
         } else if (temp[i].getAttribute("xsi:type") == "TwoDimensionMultiPoint") {
           dcm.mark.push({});
-          var DcmMarkLength = dcm.mark.length - 1;
-          dcm.mark[DcmMarkLength].type = "TwoDimensionMultiPoint";
+          var mark = dcm.mark[dcm.mark.length - 1];
+          mark.type = "TwoDimensionMultiPoint";
           var temp2 = temp[i].getElementsByTagName("twoDimensionSpatialCoordinateCollection")[0].getElementsByTagName("TwoDimensionSpatialCoordinate");
-          dcm.mark[DcmMarkLength].markX = [];
-          dcm.mark[DcmMarkLength].markY = [];
+          mark.markX = [];
+          mark.markY = [];
           for (var j = 0; j < temp2.length; j++) {
-            dcm.mark[DcmMarkLength].markX.push(temp2[j].getElementsByTagName("x")[0].getAttribute("value"));
-            dcm.mark[DcmMarkLength].markY.push(temp2[j].getElementsByTagName("y")[0].getAttribute("value"));
+            mark.markX.push(temp2[j].getElementsByTagName("x")[0].getAttribute("value"));
+            mark.markY.push(temp2[j].getElementsByTagName("y")[0].getAttribute("value"));
           }
         } else if (temp[i].getAttribute("xsi:type") == "TwoDimensionEllipse") {
           dcm.mark.push({});
-          var DcmMarkLength = dcm.mark.length - 1;
-          dcm.mark[DcmMarkLength].type = "TwoDimensionEllipse";
+          var mark = dcm.mark[dcm.mark.length - 1];
+          mark.type = "TwoDimensionEllipse";
           var temp2 = temp[i].getElementsByTagName("twoDimensionSpatialCoordinateCollection")[0].getElementsByTagName("TwoDimensionSpatialCoordinate");
-          dcm.mark[DcmMarkLength].markX = [];
-          dcm.mark[DcmMarkLength].markY = [];
+          mark.markX = [];
+          mark.markY = [];
           for (var j = 0; j < temp2.length; j++) {
-            dcm.mark[DcmMarkLength].markX.push(temp2[j].getElementsByTagName("x")[0].getAttribute("value"));
-            dcm.mark[DcmMarkLength].markY.push(temp2[j].getElementsByTagName("y")[0].getAttribute("value"));
+            mark.markX.push(temp2[j].getElementsByTagName("x")[0].getAttribute("value"));
+            mark.markY.push(temp2[j].getElementsByTagName("y")[0].getAttribute("value"));
           }
         } else if (temp[i].getAttribute("xsi:type") == "TextAnnotationEntity") {
           dcm.mark.push({});
-          var DcmMarkLength = dcm.mark.length - 1;
-          dcm.mark[DcmMarkLength].type = "TextAnnotationEntity";
+          var mark = dcm.mark[dcm.mark.length - 1];
+          mark.type = "TextAnnotationEntity";
           var temp2 = temp[i].getElementsByTagName("twoDimensionSpatialCoordinateCollection")[0].getElementsByTagName("TwoDimensionSpatialCoordinate");
-          dcm.mark[DcmMarkLength].markX = [];
-          dcm.mark[DcmMarkLength].markY = [];
+          mark.markX = [];
+          mark.markY = [];
           for (var j = 0; j < temp2.length; j++) {
-            dcm.mark[DcmMarkLength].markX.push(temp2[j].getElementsByTagName("x")[0].getAttribute("value"));
-            dcm.mark[DcmMarkLength].markY.push(temp2[j].getElementsByTagName("y")[0].getAttribute("value"));
+            mark.markX.push(temp2[j].getElementsByTagName("x")[0].getAttribute("value"));
+            mark.markY.push(temp2[j].getElementsByTagName("y")[0].getAttribute("value"));
           }
         }
       }
@@ -160,22 +160,22 @@ function readDicomOverlay(byteArray, dataSet, patientmark) {
         dcm.showName = dataSet.string('x60' + ov_str + '1500');
       }
       dcm.mark.push({});
-      var DcmMarkLength = dcm.mark.length - 1;
-      dcm.mark[DcmMarkLength].type = "Overlay";
-      dcm.mark[DcmMarkLength].pixelData = tempPixeldata.slice(0);
-      dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
-      dcm.mark[DcmMarkLength].canvas.width = dcm.width;
-      dcm.mark[DcmMarkLength].canvas.height = dcm.height;
-      dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
-      var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, dcm.width, dcm.height);
+      var mark = dcm.mark[dcm.mark.length - 1];
+      mark.type = "Overlay";
+      mark.pixelData = tempPixeldata.slice(0);
+      mark.canvas = document.createElement("CANVAS");
+      mark.canvas.width = dcm.width;
+      mark.canvas.height = dcm.height;
+      mark.ctx = mark.canvas.getContext('2d');
+      var pixelData = mark.ctx.getImageData(0, 0, dcm.width, dcm.height);
       for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
-        if (dcm.mark[DcmMarkLength].pixelData[j] == 1) {
+        if (mark.pixelData[j] == 1) {
           pixelData.data[i] = 0;
           pixelData.data[i + 1] = 0;
           pixelData.data[i + 2] = 255;
           pixelData.data[i + 3] = 255;
         }
-      dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
+      mark.ctx.putImageData(pixelData, 0, 0);
       patientmark.push(dcm);
       refreshMark(dcm);
     } catch (ex) { console.log(ex) }
@@ -212,16 +212,16 @@ function readDicomRTSS(byteArray, dataSet, patientmark) {
           dcm.mark.push({});
           //dcm.SliceLocation=dataSet.string('x00201041');
           dcm.sop = dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.elements.x30060016.items[k].dataSet.string('x00081155');;
-          var DcmMarkLength = dcm.mark.length - 1;
-          dcm.mark[DcmMarkLength].type = "RTSS";
-          dcm.mark[DcmMarkLength].markX = [];
-          dcm.mark[DcmMarkLength].markY = [];
-          dcm.mark[DcmMarkLength].point = [];
+          var mark = dcm.mark[dcm.mark.length - 1];
+          mark.type = "RTSS";
+          mark.markX = [];
+          mark.markY = [];
+          mark.point = [];
           var str0 = ("" + dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.string('x30060050')).split("\\");
           for (var k2 = 0; k2 < str0.length; k2 += 3) {
-            dcm.mark[DcmMarkLength].markX.push((parseFloat(str0[k2])));
-            dcm.mark[DcmMarkLength].markY.push((parseFloat(str0[k2 + 1])));
-            dcm.mark[DcmMarkLength].point.push([parseFloat(str0[k2]), parseFloat(str0[k2 + 1])]);
+            mark.markX.push((parseFloat(str0[k2])));
+            mark.markY.push((parseFloat(str0[k2 + 1])));
+            mark.point.push([parseFloat(str0[k2]), parseFloat(str0[k2 + 1])]);
             dcm.imagePositionZ = parseFloat(str0[k2 + 2]);
           }
           patientmark.push(dcm);
@@ -328,17 +328,17 @@ function readDicom(url, patientmark, openfile) {
                         dcm.showName = GSPS_Text;
                       };
                       dcm.hideName = dcm.showName;
-                      var DcmMarkLength = dcm.mark.length - 1;
-                      dcm.mark[DcmMarkLength].type = tempDataSet[j].dataSet.string('x00700023');//"POLYLINE";
-                      dcm.mark[DcmMarkLength].markX = [];
-                      dcm.mark[DcmMarkLength].markY = [];
-                      dcm.mark[DcmMarkLength].point = [];
-                      dcm.mark[DcmMarkLength].RotationAngle = tempDataSet[j].dataSet.double('x00710230');
-                      dcm.mark[DcmMarkLength].GraphicFilled = tempDataSet[j].dataSet.string('x00700024');
+                      var mark = dcm.mark[dcm.mark.length - 1];
+                      mark.type = tempDataSet[j].dataSet.string('x00700023');//"POLYLINE";
+                      mark.markX = [];
+                      mark.markY = [];
+                      mark.point = [];
+                      mark.RotationAngle = tempDataSet[j].dataSet.double('x00710230');
+                      mark.GraphicFilled = tempDataSet[j].dataSet.string('x00700024');
 
-                      dcm.mark[DcmMarkLength].RotationPoint = [tempDataSet[j].dataSet.float('x00710273', 0), tempDataSet[j].dataSet.float('x00710273', 1)];
+                      mark.RotationPoint = [tempDataSet[j].dataSet.float('x00710273', 0), tempDataSet[j].dataSet.float('x00710273', 1)];
                       if (GSPS_Text != "" && GSPS_Text != undefined) {
-                        dcm.mark[DcmMarkLength].GSPS_Text = GSPS_Text;
+                        mark.GSPS_Text = GSPS_Text;
                       };
                       var xTemp16 = tempDataSet[j].dataSet.string('x00700022');
 
@@ -376,12 +376,12 @@ function readDicom(url, patientmark, openfile) {
                           numX = tempDataSet[j].dataSet.float("x00700022", r);
                           numY = tempDataSet[j].dataSet.float("x00700022", r + 1);
                         }
-                        if (dcm.mark[DcmMarkLength].RotationAngle && dcm.mark[DcmMarkLength].RotationPoint) {
-                          [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
+                        if (mark.RotationAngle && mark.RotationPoint) {
+                          [numX, numY] = rotatePoint([numX, numY], -mark.RotationAngle, mark.RotationPoint);
                         }
-                        dcm.mark[DcmMarkLength].markX.push(parseFloat(numX));
-                        dcm.mark[DcmMarkLength].markY.push(parseFloat(numY));
-                        dcm.mark[DcmMarkLength].point.push([parseFloat(numX), parseFloat(numY)]);
+                        mark.markX.push(parseFloat(numX));
+                        mark.markY.push(parseFloat(numY));
+                        mark.point.push([parseFloat(numX), parseFloat(numY)]);
                       }
                       patientmark.push(dcm);
                       refreshMark(dcm, false);
@@ -403,12 +403,12 @@ function readDicom(url, patientmark, openfile) {
                       }
                       dcm.showName = showname;
                       dcm.hideName = dcm.showName;
-                      var DcmMarkLength = dcm.mark.length - 1;
-                      dcm.mark[DcmMarkLength].type = "CIRCLE";
-                      dcm.mark[DcmMarkLength].markX = [];
-                      dcm.mark[DcmMarkLength].markY = [];
-                      dcm.mark[DcmMarkLength].point = [];
-                      dcm.mark[DcmMarkLength].GraphicFilled = tempDataSet[j].dataSet.string('x00700024');
+                      var mark = dcm.mark[dcm.mark.length - 1];
+                      mark.type = "CIRCLE";
+                      mark.markX = [];
+                      mark.markY = [];
+                      mark.point = [];
+                      mark.GraphicFilled = tempDataSet[j].dataSet.string('x00700024');
                       var xTemp16 = tempDataSet[j].dataSet.string('x00700022');;
                       var rect = parseInt(tempDataSet[j].dataSet.int16("x00700020")) * parseInt(tempDataSet[j].dataSet.int16("x00700021"));
                       for (var r = 0; r < rect; r += 4) {
@@ -423,12 +423,12 @@ function readDicom(url, patientmark, openfile) {
                         /*if (dcm.mark[DcmMarkLength].RotationAngle && dcm.mark[DcmMarkLength].RotationPoint) {
                           [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
                         }*/
-                        dcm.mark[DcmMarkLength].markX.push(parseFloat(numX));
-                        dcm.mark[DcmMarkLength].markY.push(parseFloat(numY));
-                        dcm.mark[DcmMarkLength].point.push([parseFloat(numX), parseFloat(numY)]);
-                        dcm.mark[DcmMarkLength].markX.push(parseFloat(numX2));
-                        dcm.mark[DcmMarkLength].markY.push(parseFloat(numY2));
-                        dcm.mark[DcmMarkLength].point.push([parseFloat(numX2), parseFloat(numY2)]);
+                        mark.markX.push(parseFloat(numX));
+                        mark.markY.push(parseFloat(numY));
+                        mark.point.push([parseFloat(numX), parseFloat(numY)]);
+                        mark.markX.push(parseFloat(numX2));
+                        mark.markY.push(parseFloat(numY2));
+                        mark.point.push([parseFloat(numX2), parseFloat(numY2)]);
                       }
                       patientmark.push(dcm);
                       refreshMark(dcm, false);
@@ -454,14 +454,14 @@ function readDicom(url, patientmark, openfile) {
                         dcm.showName = GSPS_Text;
                       };
                       dcm.hideName = dcm.showName;
-                      var DcmMarkLength = dcm.mark.length - 1;
-                      dcm.mark[DcmMarkLength].type = "POLYLINE";
-                      dcm.mark[DcmMarkLength].markX = [];
-                      dcm.mark[DcmMarkLength].markY = [];
-                      dcm.mark[DcmMarkLength].point = [];
-                      dcm.mark[DcmMarkLength].markX.push(tempDataSet[j].dataSet.float('x00700010', 0), tempDataSet[j].dataSet.float('x00700011', 0));
-                      dcm.mark[DcmMarkLength].markY.push(tempDataSet[j].dataSet.float('x00700010', 1), tempDataSet[j].dataSet.float('x00700011', 1));
-                      dcm.mark[DcmMarkLength].point.push(
+                      var mark = dcm.mark[dcm.mark.length - 1];
+                      mark.type = "POLYLINE";
+                      mark.markX = [];
+                      mark.markY = [];
+                      mark.point = [];
+                      mark.markX.push(tempDataSet[j].dataSet.float('x00700010', 0), tempDataSet[j].dataSet.float('x00700011', 0));
+                      mark.markY.push(tempDataSet[j].dataSet.float('x00700010', 1), tempDataSet[j].dataSet.float('x00700011', 1));
+                      mark.point.push(
                         [tempDataSet[j].dataSet.float('x00700010', 0), tempDataSet[j].dataSet.float('x00700010', 1)],
                         [tempDataSet[j].dataSet.float('x00700011', 0), tempDataSet[j].dataSet.float('x00700011', 1)]
                       );
@@ -483,22 +483,22 @@ function readDicom(url, patientmark, openfile) {
                         var showname = 'TEXT';
                         dcm.showName = showname;
                         dcm.hideName = dcm.showName;
-                        var DcmMarkLength = dcm.mark.length - 1;
-                        dcm.mark[DcmMarkLength].type = "TEXT";
-                        dcm.mark[DcmMarkLength].markX = [];
-                        dcm.mark[DcmMarkLength].markY = [];
-                        dcm.mark[DcmMarkLength].point = [];
+                        var mark = dcm.mark[dcm.mark.length - 1];
+                        mark.type = "TEXT";
+                        mark.markX = [];
+                        mark.markY = [];
+                        mark.point = [];
                         if (GSPS_Text != "" && GSPS_Text != undefined) {
                           GSPS_Text = ("" + GSPS_Text).replace('\r\n', '\n');
-                          dcm.mark[DcmMarkLength].GSPS_Text = GSPS_Text;
+                          mark.GSPS_Text = GSPS_Text;
                         };
-                        dcm.mark[DcmMarkLength].markX.push(tempDataSet[j].dataSet.float('x00700010', 0));
-                        dcm.mark[DcmMarkLength].markX.push(tempDataSet[j].dataSet.float('x00700011', 0));
-                        dcm.mark[DcmMarkLength].markY.push(tempDataSet[j].dataSet.float('x00700010', 1));
-                        dcm.mark[DcmMarkLength].markY.push(tempDataSet[j].dataSet.float('x00700011', 1));
+                        mark.markX.push(tempDataSet[j].dataSet.float('x00700010', 0));
+                        mark.markX.push(tempDataSet[j].dataSet.float('x00700011', 0));
+                        mark.markY.push(tempDataSet[j].dataSet.float('x00700010', 1));
+                        mark.markY.push(tempDataSet[j].dataSet.float('x00700011', 1));
 
-                        dcm.mark[DcmMarkLength].point.push([tempDataSet[j].dataSet.float('x00700010', 0), tempDataSet[j].dataSet.float('x00700010', 1)]);
-                        dcm.mark[DcmMarkLength].point.push([tempDataSet[j].dataSet.float('x00700011', 0), tempDataSet[j].dataSet.float('x00700011', 1)]);
+                        mark.point.push([tempDataSet[j].dataSet.float('x00700010', 0), tempDataSet[j].dataSet.float('x00700010', 1)]);
+                        mark.point.push([tempDataSet[j].dataSet.float('x00700011', 0), tempDataSet[j].dataSet.float('x00700011', 1)]);
                         patientmark.push(dcm);
                         refreshMark(dcm, false);
                       }
@@ -511,12 +511,12 @@ function readDicom(url, patientmark, openfile) {
                       var showname = 'ELLIPSE';
                       dcm.showName = showname;
                       dcm.hideName = dcm.showName;
-                      var DcmMarkLength = dcm.mark.length - 1;
-                      dcm.mark[DcmMarkLength].type = "ELLIPSE";
-                      dcm.mark[DcmMarkLength].markX = [];
-                      dcm.mark[DcmMarkLength].markY = [];
-                      dcm.mark[DcmMarkLength].point = [];
-                      dcm.mark[DcmMarkLength].GraphicFilled = tempDataSet[j].dataSet.string('x00700024');
+                      var mark = dcm.mark[dcm.mark.length - 1];
+                      mark.type = "ELLIPSE";
+                      mark.markX = [];
+                      mark.markY = [];
+                      mark.point = [];
+                      mark.GraphicFilled = tempDataSet[j].dataSet.string('x00700024');
                       var xTemp16 = tempDataSet[j].dataSet.string('x00700022');;
                       var ablecheck = false;
                       for (var k2 = 0; k2 < xTemp16.length; k2 += 4) {
@@ -533,9 +533,9 @@ function readDicom(url, patientmark, openfile) {
                         });
                         var num = view.getFloat32(0, true);
                         if (ablecheck == false) {
-                          dcm.mark[DcmMarkLength].markX.push(num);
+                          mark.markX.push(num);
                         } else {
-                          dcm.mark[DcmMarkLength].markY.push(num);
+                          mark.markY.push(num);
                         }
                         ablecheck = !ablecheck;
                       }
@@ -633,25 +633,25 @@ function loadDicomSeg(image, imageId) {
           dcm.showName = showname;
           dcm.hideName = dcm.showName;
           dcm.mark.push({});
-          var DcmMarkLength = dcm.mark.length - 1;
-          dcm.mark[DcmMarkLength].type = "SEG";
-          dcm.mark[DcmMarkLength].pixelData = new Uint8ClampedArray(rect);
+          var mark = dcm.mark[dcm.mark.length - 1];
+          mark.type = "SEG";
+          mark.pixelData = new Uint8ClampedArray(rect);
           for (var pix = 0; pix < rect; pix++)
-            dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix];
+            mark.pixelData[pix] = NewpixelData[pix];
 
-          dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
-          dcm.mark[DcmMarkLength].canvas.width = image.columns;
-          dcm.mark[DcmMarkLength].canvas.height = image.rows;
-          dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
-          var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, image.columns, image.rows);
+          mark.canvas = document.createElement("CANVAS");
+          mark.canvas.width = image.columns;
+          mark.canvas.height = image.rows;
+          mark.ctx = mark.canvas.getContext('2d');
+          var pixelData = mark.ctx.getImageData(0, 0, image.columns, image.rows);
           for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
-            if (dcm.mark[DcmMarkLength].pixelData[j] != 0) {
+            if (mark.pixelData[j] != 0) {
               pixelData.data[i] = 0;
               pixelData.data[i + 1] = 0;
               pixelData.data[i + 2] = 255;
               pixelData.data[i + 3] = 255;
             }
-          dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
+          mark.ctx.putImageData(pixelData, 0, 0);
 
           PatientMark.push(dcm);
           refreshMark(dcm);
@@ -685,31 +685,31 @@ function loadDicomSeg(image, imageId) {
           dcm.showName = showname;
           dcm.hideName = dcm.showName;
           dcm.mark.push({});
-          var DcmMarkLength = dcm.mark.length - 1;
-          dcm.mark[DcmMarkLength].type = "SEG";
+          var mark = dcm.mark[dcm.mark.length - 1];
+          mark.type = "SEG";
 
-          dcm.mark[DcmMarkLength].pixelData = new Uint8ClampedArray(rect);
+          mark.pixelData = new Uint8ClampedArray(rect);
           if (NewpixelData.length == rect * x52009230.items.length) {
             for (var pix = 0; pix < rect; pix++)
-              dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[pix + rect * k];
+              mark.pixelData[pix] = NewpixelData[pix + rect * k];
           } else {
             for (var pix = 0; pix < rect; pix++)
-              dcm.mark[DcmMarkLength].pixelData[pix] = NewpixelData[parseInt(pix / (rect / (NewpixelData.length / sliceNum))) + (NewpixelData.length / sliceNum) * k];
+              mark.pixelData[pix] = NewpixelData[parseInt(pix / (rect / (NewpixelData.length / sliceNum))) + (NewpixelData.length / sliceNum) * k];
           }
 
-          dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
-          dcm.mark[DcmMarkLength].canvas.width = image.columns;
-          dcm.mark[DcmMarkLength].canvas.height = image.rows;
-          dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
-          var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, image.columns, image.rows);
+          mark.canvas = document.createElement("CANVAS");
+          mark.canvas.width = image.columns;
+          mark.canvas.height = image.rows;
+          mark.ctx = mark.canvas.getContext('2d');
+          var pixelData = mark.ctx.getImageData(0, 0, image.columns, image.rows);
           for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
-            if (dcm.mark[DcmMarkLength].pixelData[j] != 0) {
+            if (mark.pixelData[j] != 0) {
               pixelData.data[i] = 0;
               pixelData.data[i + 1] = 0;
               pixelData.data[i + 2] = 255;
               pixelData.data[i + 3] = 255;
             }
-          dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
+          mark.ctx.putImageData(pixelData, 0, 0);
           PatientMark.push(dcm);
           refreshMark(dcm);
         }

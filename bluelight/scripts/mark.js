@@ -554,68 +554,52 @@ function displayMark(viewportNum0) {
     ctx.lineJoin = ctx.lineCap = 'round';
     ctx.lineWidth = "" + getMarkSize(MarkCanvas, false);
     setMarkColor(ctx);
-    try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
+    //try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
+    var patientMark_all = PatientMark.filter(M => M.sop == viewport.sop);
+    var patientMark_enable = patientMark_all.filter(M => checkMark2(viewport.SeriesInstanceUID, M));
 
     //compatibleMark
-    for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (!PatientMark[n].mark.point) PatientMark[n].mark = compatibleMark(PatientMark[n].mark);
-            }
+    for (var Mark of patientMark_all) {
+        for (var mark of Mark.mark) {
+            if (!mark.point) mark = compatibleMark(mark);
         }
     }
 
-    for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (checkMark(i, j, n) == 0) continue;
-                var mark = PatientMark[n].mark[m];
-                mark.parent = PatientMark[n];
-                if (mark.type == "SEG") drawSEG(MarkCanvas, mark, viewport);
-                else if (mark.type == "Overlay") drawOverLay(MarkCanvas, mark, viewport);
-            }
-        } 
+    for (var Mark of patientMark_enable) {
+        for (var mark of Mark.mark) {
+            mark.parent = Mark;
+            if (mark.type == "SEG") drawSEG(MarkCanvas, mark, viewport);
+            else if (mark.type == "Overlay") drawOverLay(MarkCanvas, mark, viewport);
+        }
     }
 
-    for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (checkMark(i, j, n) == 0) continue;
-                var mark = PatientMark[n].mark[m];
-                mark.parent = PatientMark[n];
-                if (mark.type == "XML_mark") drawXML_mark(MarkCanvas, mark, PatientMark[n].showName);
-                else if (mark.type == "TEXT") drawTEXT(MarkCanvas, mark, viewport);
-                else if (mark.type == "POLYLINE") drawPOLYLINE(MarkCanvas, mark, viewport);
-                else if (mark.type == "INTERPOLATED") drawINTERPOLATED(MarkCanvas, mark, viewport);
-                else if (mark.type == "ELLIPSE") drawELLIPSE(MarkCanvas, mark, viewport);
-                else if (mark.type == "CIRCLE") drawCIRCLE(MarkCanvas, mark, viewport);
-                else if (mark.type == "TwoDimensionPolyline") drawTwoDimensionPolyline(MarkCanvas, mark, viewport);
-                else if (mark.type == "TwoDimensionMultiPoint") drawTwoDimensionMultiPoint(MarkCanvas, mark, viewport);
-                else if (mark.type == "TwoDimensionEllipse") drawTwoDimensionEllipse(MarkCanvas, mark, viewport);
-            }
-        } 
+    for (var Mark of patientMark_enable) {
+        for (var mark of Mark.mark) {
+            mark.parent = Mark;
+            if (mark.type == "XML_mark") drawXML_mark(MarkCanvas, mark, Mark.showName);
+            else if (mark.type == "TEXT") drawTEXT(MarkCanvas, mark, viewport);
+            else if (mark.type == "POLYLINE") drawPOLYLINE(MarkCanvas, mark, viewport);
+            else if (mark.type == "INTERPOLATED") drawINTERPOLATED(MarkCanvas, mark, viewport);
+            else if (mark.type == "ELLIPSE") drawELLIPSE(MarkCanvas, mark, viewport);
+            else if (mark.type == "CIRCLE") drawCIRCLE(MarkCanvas, mark, viewport);
+            else if (mark.type == "TwoDimensionPolyline") drawTwoDimensionPolyline(MarkCanvas, mark, viewport);
+            else if (mark.type == "TwoDimensionMultiPoint") drawTwoDimensionMultiPoint(MarkCanvas, mark, viewport);
+            else if (mark.type == "TwoDimensionEllipse") drawTwoDimensionEllipse(MarkCanvas, mark, viewport);
+        }
     }
 
-    for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (checkMark(i, j, n) == 0) continue;
-                var mark = PatientMark[n].mark[m];
-                mark.parent = PatientMark[n];
-                if (mark.type == "RTSS") drawRTSS(MarkCanvas, mark, viewport);
-                else if (mark.type == "TextAnnotationEntity") drawTextAnnotationEntity(MarkCanvas, mark, viewport);
-            }
-        } 
+    for (var Mark of patientMark_enable) {
+        for (var mark of Mark.mark) {
+            mark.parent = Mark;
+            if (mark.type == "RTSS") drawRTSS(MarkCanvas, mark, viewport);
+            else if (mark.type == "TextAnnotationEntity") drawTextAnnotationEntity(MarkCanvas, mark, viewport);
+        }
     }
 
-    for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (checkMark(i, j, n) == 0) continue;
-                var mark = PatientMark[n].mark[m];
-                mark.parent = PatientMark[n];
-                MARKER.drawMark({ "canvas": MarkCanvas, "mark": mark, "showName": PatientMark[n].showName });//MarkCanvas, mark, viewport
-            }
-        } 
+    for (var Mark of patientMark_enable) {
+        for (var mark of Mark.mark) {
+            mark.parent = Mark;
+            MARKER.drawMark({ "canvas": MarkCanvas, "mark": mark, "showName": Mark.showName });//MarkCanvas, mark, viewport
+        }
     }
 }

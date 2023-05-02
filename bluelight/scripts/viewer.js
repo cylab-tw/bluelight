@@ -641,6 +641,13 @@ function parseDicom(image, pixelData, viewportNum0) {
         var attr = TAG_DICT[tagIndex];
         return attr;
     }
+
+    //清除之前的值
+    if (element.DicomTagsList) {
+        for (var elem of element.DicomTagsList) {
+            element[elem[1]] = undefined;
+        }
+    }
     //取得DICOM Tags放入清單
     element.DicomTagsList = [];
     element.imageId = image.imageId ? image.imageId : "";
