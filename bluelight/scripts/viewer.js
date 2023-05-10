@@ -463,65 +463,45 @@ function parseDicomWithoutImage(dataSet, imageId) {
 function loadDicomMultiFrame(image, imageId, viewportNum0) {
     var dataSet = image.data;
     var Size = image.width * image.height;
+    var pixelData;
     var BitsAllocated = image.data.int16('x00280100');
-    var frames = [];
-    var TotalFrames = image.data.intString('x00280008');
 
-    if (image.data.string("x00020010") && image.data.string("x00020010").includes("1.2.840.10008.1.2.4")) {
-        for (var i = 0; i < dataSet.elements.x7fe00010.fragments.length; i++) {
-            var pixelData;
-            if (BitsAllocated == 16) pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.fragments[i].length / 2);
-            else if (BitsAllocated == 32) pixelData = new Int32Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.fragments[i].length / 4);
-            else if (BitsAllocated == 8) pixelData = new Int8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.fragments[i].length / 1);
-            else pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.length / 2);
+    if (BitsAllocated == 16) pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
+    else if (BitsAllocated == 32) pixelData = new Int32Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 4);
+    else if (BitsAllocated == 8) pixelData = new Int8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 1);
+    else pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
+    if (!pixelData) return;
 
-            if (!pixelData) return;
-            try {
-                var NewpixelData = decodeImageFrame(cornerstoneWADOImageLoader.getImageFrame(imageId), image.data.string("x00020010"), pixelData, {
-                    usePDFJS: false
-                }).pixelData;
-            } catch (ex) {
-                if (BitsAllocated == 16) pixelData = new Uint16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.fragments[i].length / 2);
-                else if (BitsAllocated == 32) pixelData = new Uint32Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.fragments[i].length / 4);
-                else if (BitsAllocated == 8) pixelData = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.fragments[i].length / 1);
-                else pixelData = new Uint16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.fragments[i].position, dataSet.elements.x7fe00010.length / 2);
-                var NewpixelData = decodeImageFrame(cornerstoneWADOImageLoader.getImageFrame(imageId), image.data.string("x00020010"), pixelData, {
-                    usePDFJS: false
-                }).pixelData;
-            }
+    let frames = [];
+    let totalFrames = image.data.intString('x00280008');
 
-            if (NewpixelData) pixelData = NewpixelData;
-            frames.push(pixelData);
-        }
-    } else {
-        var pixelData;
-        var SamplesPerPixel = !image.data.int16("x00280002") ? 1 : image.data.int16("x00280002");
-        if (BitsAllocated == 16) pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / (2 * SamplesPerPixel));
-        else if (BitsAllocated == 32) pixelData = new Int32Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / (4 * SamplesPerPixel));
-        else if (BitsAllocated == 8) pixelData = new Int8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / (1 * SamplesPerPixel));
-        else pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / (2 * SamplesPerPixel));
-        if (!pixelData) return;
-
-        for (var i = 0; i < TotalFrames; i++) {
-            frames.push(pixelData.slice(Size * i, Size * i + Size));
-        }
+    for (let i = 0; i < totalFrames; i++) {
+        let imageFrameId = `${imageId}?frame=${i}`;
+        cornerstone.loadImage(imageFrameId).then((img) => {
+            frames.push(img.getPixelData());
+        });
     }
 
-    var DICOM_obj = {
-        study: image.data.string('x0020000d'),
-        series: image.data.string('x0020000e'),
-        sop: image.data.string('x00080018'),
-        instance: image.data.string('x00200013'),
-        imageId: imageId,
-        image: image,
-        pixelData: frames[0],//pixelData.slice(0, Size),
-        frames: frames,
-        patientId: image.data.string('x00100020')
-    };
-
-    loadUID(DICOM_obj);
-
-    parseDicom(image, DICOM_obj.frames[0], viewportNum0);
+    let checkFrameLoadedInterval = setInterval(() => {
+        if (frames.length === totalFrames) {
+            let DICOM_obj = {
+                study: image.data.string('x0020000d'),
+                series: image.data.string('x0020000e'),
+                sop: image.data.string('x00080018'),
+                instance: image.data.string('x00200013'),
+                imageId: imageId,
+                image: image,
+                pixelData: frames[0],//pixelData.slice(0, Size),
+                frames: frames,
+                patientId: image.data.string('x00100020')
+            };
+        
+            loadUID(DICOM_obj);
+        
+            parseDicom(image, DICOM_obj.frames[0], viewportNum0);
+            clearInterval(checkFrameLoadedInterval);
+        }
+    }, 200);
 }
 
 function parseDicom(image, pixelData, viewportNum0) {
