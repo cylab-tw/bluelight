@@ -166,10 +166,10 @@ function displayLefyCanvas(DicomCanvas, image, pixelData) {
         min = image.MinPixel; max = image.MaxPixel;
         if (min != max && min != undefined && max != undefined) {
             if (image.color == true) {
-                for (var i = imgData2.data.length; i >= 0; i -= 4) {
-                    imgData2.data[i + 0] = parseInt((pixelData[i] / (max - min)) * 255);
-                    imgData2.data[i + 1] = parseInt((pixelData[i + 1] / (max - min)) * 255);
-                    imgData2.data[i + 2] = parseInt((pixelData[i + 2] / (max - min)) * 255);
+                for (var i = 0, j = 0; i < imgData2.data.length; i += 4, j += 3) {
+                    imgData2.data[i + 0] = parseInt((pixelData[j] / (max - min)) * 255);
+                    imgData2.data[i + 1] = parseInt((pixelData[j + 1] / (max - min)) * 255);
+                    imgData2.data[i + 2] = parseInt((pixelData[j + 2] / (max - min)) * 255);
                     imgData2.data[i + 3] = 255;
                 }
             } else {
@@ -465,6 +465,7 @@ function loadDicomMultiFrame(image, imageId, viewportNum0) {
     var Size = image.width * image.height;
     var pixelData;
     var BitsAllocated = image.data.int16('x00280100');
+
     if (BitsAllocated == 16) pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
     else if (BitsAllocated == 32) pixelData = new Int32Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 4);
     else if (BitsAllocated == 8) pixelData = new Int8Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 1);
@@ -545,10 +546,10 @@ function parseDicom(image, pixelData, viewportNum0) {
             min = image.MinPixel; max = image.MaxPixel;
             if (min != max && min != undefined && max != undefined) {
                 if (image.color == true) {
-                    for (var i = imgData2.data.length; i >= 0; i -= 4) {
-                        imgData2.data[i + 0] = parseInt((pixelData[i] / (max - min)) * 255);
-                        imgData2.data[i + 1] = parseInt((pixelData[i + 1] / (max - min)) * 255);
-                        imgData2.data[i + 2] = parseInt((pixelData[i + 2] / (max - min)) * 255);
+                    for (var i = 0, j = 0; i < imgData2.data.length; i += 4, j += 3) {
+                        imgData2.data[i + 0] = parseInt((pixelData[j] / (max - min)) * 255);
+                        imgData2.data[i + 1] = parseInt((pixelData[j + 1] / (max - min)) * 255);
+                        imgData2.data[i + 2] = parseInt((pixelData[j + 2] / (max - min)) * 255);
                         imgData2.data[i + 3] = 255;
                     }
                 } else {
