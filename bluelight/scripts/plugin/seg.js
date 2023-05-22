@@ -469,7 +469,7 @@ function get_SEG_context() {
 
 function Line_setSEG2PixelData(point1, point2) {
     if (!point1 || !point2) return;
-    var distance = (Math.sqrt(((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) - (point1[1] - point2[1]))));
+    var distance = (Math.sqrt(((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) * (point1[1] - point2[1]))));
 
     var Reduce_X = point1[0] > point2[0] ? point2[0] : point1[0];
     var Reduce_Y = point1[1] > point2[1] ? point2[1] : point1[1];

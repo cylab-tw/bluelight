@@ -245,23 +245,12 @@ function initMPR2() {
         GetViewport(i1).removeEventListener("touchstart", touchstartF, false);
         GetViewport(i1).removeEventListener("touchend", touchendF, false);
         GetViewport(i1).removeEventListener("touchstart", thisF, false);
-        //GetViewport(i1).removeEventListener("mousedown", thisF, false);
-        //GetViewport(i).addEventListener("wheel", wheelF, false);
     }
-    //GetViewport().removeEventListener("touchstart", thisF, false);
-    //GetViewport().removeEventListener("mousedown", thisF, false);
     GetViewport().addEventListener("contextmenu", contextmenuF, false);
     GetViewport().addEventListener("mouseout", Mouseout, false);
-    //GetViewport().addEventListener("touchstart", touchstartF, false);
-    //GetViewport().addEventListener("touchmove", touchmoveF, false);
-    //GetViewport().addEventListener("touchend", touchendF, false);
-    //GetViewport().addEventListener("wheel", Wheel, false);
     GetViewport(3).addEventListener("mousemove", mousemove3D, false);
     GetViewport(3).addEventListener("mousedown", mousedown3D, false);
     GetViewport(3).addEventListener("mouseup", mouseup3D, false);
-    //GetViewport(3).addEventListener("touchstart", touchstart3D, false);
-    //GetViewport(3).addEventListener("touchmove", touchmove3D, false);
-    //GetViewport(3).addEventListener("touchend", touchend3D, false);
     GetViewport(3).addEventListener("contextmenu", contextmenuF, false);
 
     var list = sortInstance(sop);
@@ -297,9 +286,9 @@ function initMPR2() {
         var addition = (- low + intercept) / (high - low) * 255;
         var j = 0;
         for (var h = 0; h < pixelData2.length; h++) {
-            for (var w = 0; w < pixelData2[h].length; w++, j++) {
-                pixelData2[h][w][0] = pixelData2[h][w][1] = pixelData2[h][w][2] = pixelData[j] * multiplication + addition;
-                pixelData2[h][w][3] = 255;
+            for (var w = 0, w4 = 0; w < pixelData2[h].length / 4; w++, w4 += 4, j++) {
+                pixelData2[h][w4 + 0] = pixelData2[h][w4 + 1] = pixelData2[h][w4 + 2] = pixelData[j] * multiplication + addition;
+                pixelData2[h][w4 + 3] = 255;
             }
         }
         return pixelData2;
@@ -317,10 +306,7 @@ function initMPR2() {
 
         var Arr_ = new Array(image.height);
         for (var h = 0; h < image.height; h++) {
-            Arr_[h] = new Array(image.width);
-            for (var w = 0; w < image.width; w++) {
-                Arr_[h][w] = new Uint8ClampedArray(4);
-            }
+            Arr_[h] = new Uint8ClampedArray(image.width * 4);
         }
 
         Arr_ = loadImageDataForMPR(o3dImage[o3dImage.length - 1], o3dPixelData[o3dPixelData.length - 1], Arr_);
@@ -408,10 +394,10 @@ function display3dImage2Canvas() {
         var pixelData1 = canvas1.getContext("2d").getImageData(0, 0, canvas1.width, canvas1.height);
         for (var h = 0, h4 = 0; h < canvas1.height; h++, h4 += 4) {
             for (var w = 0, w4 = 0; w < canvas1.width; w++, w4 += 4) {
-                pixelData1.data[h * (canvas1.width * 4) + w4] = o3dPixelData2[h][line][w][0];
-                pixelData1.data[h * (canvas1.width * 4) + w4 + 1] = o3dPixelData2[h][line][w][1];
-                pixelData1.data[h * (canvas1.width * 4) + w4 + 2] = o3dPixelData2[h][line][w][2];
-                pixelData1.data[h * (canvas1.width * 4) + w4 + 3] = o3dPixelData2[h][line][w][3];
+                pixelData1.data[h * (canvas1.width * 4) + w4] = o3dPixelData2[h][line][w4 + 0];
+                pixelData1.data[h * (canvas1.width * 4) + w4 + 1] = o3dPixelData2[h][line][w4 + 1];
+                pixelData1.data[h * (canvas1.width * 4) + w4 + 2] = o3dPixelData2[h][line][w4 + 2];
+                pixelData1.data[h * (canvas1.width * 4) + w4 + 3] = o3dPixelData2[h][line][w4 + 3];
             }
         }
         canvas1.getContext("2d").putImageData(pixelData1, 0, 0);
@@ -430,10 +416,10 @@ function display3dImage2Canvas() {
         var pixelData2 = canvas2.getContext("2d").getImageData(0, 0, canvas2.width, canvas2.height);
         for (var h = 0, h4 = 0; h < canvas2.height; h++, h4 += 4) {
             for (var w = 0, w4 = 0; w < canvas2.width; w++, w4 += 4) {
-                pixelData2.data[h * (canvas2.width * 4) + w4] = o3dPixelData2[w][h][line][0];
-                pixelData2.data[h * (canvas2.width * 4) + w4 + 1] = o3dPixelData2[w][h][line][1];
-                pixelData2.data[h * (canvas2.width * 4) + w4 + 2] = o3dPixelData2[w][h][line][2];
-                pixelData2.data[h * (canvas2.width * 4) + w4 + 3] = o3dPixelData2[w][h][line][3];
+                pixelData2.data[h * (canvas2.width * 4) + w4] = o3dPixelData2[w][h][line * 4 + 0];
+                pixelData2.data[h * (canvas2.width * 4) + w4 + 1] = o3dPixelData2[w][h][line * 4 + 1];
+                pixelData2.data[h * (canvas2.width * 4) + w4 + 2] = o3dPixelData2[w][h][line * 4 + 2];
+                pixelData2.data[h * (canvas2.width * 4) + w4 + 3] = o3dPixelData2[w][h][line * 4 + 3];
             }
         }
         canvas2.getContext("2d").putImageData(pixelData2, 0, 0);
@@ -453,10 +439,10 @@ function display3dImage2Canvas() {
         var pixelData0 = canvas0.getContext("2d").getImageData(0, 0, canvas0.width, canvas0.height);
         for (var h = 0, h4 = 0; h < pixelData0.height; h++, h4 += 4) {
             for (var w = 0, w4 = 0; w < pixelData0.width; w++, w4 += 4) {
-                pixelData0.data[h * (pixelData0.width * 4) + w4] = o3dPixelData2[line][h][w][0];
-                pixelData0.data[h * (pixelData0.width * 4) + w4 + 1] = o3dPixelData2[line][h][w][1];
-                pixelData0.data[h * (pixelData0.width * 4) + w4 + 2] = o3dPixelData2[line][h][w][2];
-                pixelData0.data[h * (pixelData0.width * 4) + w4 + 3] = o3dPixelData2[line][h][w][3];
+                pixelData0.data[h * (pixelData0.width * 4) + w4] = o3dPixelData2[line][h][w4 + 0];
+                pixelData0.data[h * (pixelData0.width * 4) + w4 + 1] = o3dPixelData2[line][h][w4 + 1];
+                pixelData0.data[h * (pixelData0.width * 4) + w4 + 2] = o3dPixelData2[line][h][w4 + 2];
+                pixelData0.data[h * (pixelData0.width * 4) + w4 + 3] = o3dPixelData2[line][h][w4 + 3];
             }
         }
         canvas0.getContext("2d").putImageData(pixelData0, 0, 0);
@@ -527,7 +513,7 @@ function display3dImage2Canvas() {
     canvas0.reflesh(parseInt(o3dPixelData2.length / 2));
     canvas1.reflesh(parseInt(canvas0.height / 2));
     canvas2.reflesh(parseInt(canvas0.width / 2));
-    canvas1.drawLine(parseInt(canvas0.width / 2),parseInt(o3dPixelData2.length / 2));
+    canvas1.drawLine(parseInt(canvas0.width / 2), parseInt(o3dPixelData2.length / 2));
     canvas2.drawLine(parseInt(o3dPixelData2.length / 2), parseInt(canvas0.height / 2));
     canvas0.drawLine(parseInt(canvas0.width / 2), parseInt(canvas0.height / 2));
     canvas1.drawLine(parseInt(canvas0.width / 2), parseInt(o3dPixelData2.length / 2));
