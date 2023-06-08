@@ -3,6 +3,7 @@ function cancelTools() {
     openWindow = false;
     openZoom = false;
     openMeasure = false;
+    openWheel = false;
     openRotate = false;
     openAngle = 0;
     getByid("textWC").style.display = "none";

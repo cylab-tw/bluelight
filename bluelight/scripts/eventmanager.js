@@ -85,7 +85,7 @@ function Wheel(e) {
     for (var z = 0; z < Viewport_Total; z++) {
         var break1 = false;
         if (openLink == true) viewportNum = z;
-        if (openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true) {
+        if (openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true) {
             var currX1 = (e.pageX - canvas.getBoundingClientRect().left - GetViewport().newMousePointX - 100) * (GetViewport().imageWidth / parseInt(GetViewport().canvas().style.width));
             var currY1 = (e.pageY - canvas.getBoundingClientRect().top - GetViewport().newMousePointY - 100) * (GetViewport().imageHeight / parseInt(GetViewport().canvas().style.height));
             var sop = GetViewport(viewportNum).sop;
@@ -100,7 +100,7 @@ function Wheel(e) {
             if (list.length == 0) continue;
             if (list.length == 1 && !list[0].frames) continue;
             if (list.length == 1 && list[0].frames) {
-                if (GetViewport(viewportNum).framesNumber==undefined) GetViewport(viewportNum).framesNumber = 0;
+                if (GetViewport(viewportNum).framesNumber == undefined) GetViewport(viewportNum).framesNumber = 0;
                 if (e.deltaY < 0) {
                     for (var l = 0; l < list[0].frames.length; l++) {
                         if (break1 == true) break;

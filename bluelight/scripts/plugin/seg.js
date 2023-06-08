@@ -79,6 +79,7 @@ getByid("writeSEG").onclick = function () {
         getByid("overlay2seg").style.display = "";
         getByid('SegStyleDiv').style.display = 'flex';
         set_BL_model('writeSeg');
+        openWheel = true;
         writeSeg();
     }
     else getByid('SegStyleDiv').style.display = 'none';

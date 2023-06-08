@@ -55,6 +55,8 @@ var magnifierWidth = 200;
 var magnifierHeight = 200;
 //代表目前處於基本操作狀態
 var openMouseTool = false;
+//代表目前開放使用滾輪切換影像，無論處於什麼操作模式
+var openWheel = false;
 //代表病患資訊顯示狀態
 var openAnnotation = true;
 //代表正在使用測量工具

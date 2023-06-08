@@ -84,6 +84,7 @@ getByid("writeRTSS").onclick = function () {
     if (openWriteRTSS == true) {
         getByid('RtssDiv').style.display = 'flex';
         set_BL_model('writertss');
+        openWheel = true;
         writertss();
     }
     else getByid('RtssDiv').style.display = 'none';
@@ -348,7 +349,7 @@ function set_RTSS_context() {
     let temp = ""
     let tail6_list = "";
     let tail2_list = "";
-    let tail4_list = ";"
+    let tail4_list = "";
     var viewport = GetViewport();
     let index = SearchUid2Index(viewport.sop);
     let i = index[0],
@@ -401,10 +402,10 @@ function set_RTSS_context() {
                     //tail6 = tail6.replace("___ReferencedSOPInstanceUID___", PatientMark[n].sop);
                     //tail = tail.replace("___PatternOnColorCIELabValue___", "" + SetGraphicColor(PatientMark[n].color));
                     //tail = tail.replace("___GraphicType___", "POLYLINE"); 
+                    tail6_list += tail6;
+                    tail4_list += tail4;
                 }
             }
-            tail6_list += tail6;
-            tail4_list += tail4;
         }
         var createSopUid = CreateUid("sop");
         var createSeriesUid = CreateUid("series");
