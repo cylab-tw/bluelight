@@ -332,20 +332,67 @@ function initMPR2() {
     display3dImage2Canvas();
     return;
 }
-function trueMousedownClick() {
-    this.MousedownClick = true;
+function trueMousedownClick(e) {
+    if (e.which == 1) this.MouseLeftClick = true;
+    else if (e.which == 2) this.MouseMiddleClick = true;
+    else if (e.which == 3) this.MouseRightClick = true;
 }
-function falseMousedownClick() {
-    this.MousedownClick = false;
+function falseMousedownClick(e) {
+    this.MouseLeftClick = false;
+    this.MouseMiddleClick = false;
+    this.MouseRightClick = false;
 }
-function display3dImage2Canvas() {
-    var VrDistance = 0;
 
+function getVrDistance() {
+    var VrDistance = 0;
     VrDistance += thicknessList_MPR[thicknessList_MPR.length - 1] - Thickness_MPR - (thicknessList_MPR[0] - Thickness_MPR);
     VrDistance /= o3dPixelData2.length;
     if (VrDistance == 0) VrDistance = 1;
     if (VrDistance < 0) VrDistance *= -1;
+    return VrDistance;
+}
+function Line_forMPR(point1, point2, pointMin, pointMax) {
+    if (!point1 || !point2) return;
+    var distance = (Math.sqrt(((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) * (point1[1] - point2[1]))));
 
+    var Reduce_X = point1[0] > point2[0] ? point2[0] : point1[0];
+    var Reduce_Y = point1[1] > point2[1] ? point2[1] : point1[1];
+    var Up_X = point1[0] < point2[0] ? point2[0] : point1[0];
+    var Up_Y = point1[1] < point2[1] ? point2[1] : point1[1];
+    var list = [];
+    if (point1[0] == Reduce_X && point1[1] == Reduce_Y) {
+        for (var i = 0; i < parseInt(distance); i++) {
+            var x = parseInt(Reduce_X + ((Up_X - Reduce_X) / distance) * i);
+            var y = parseInt(Reduce_Y + ((Up_Y - Reduce_Y) / distance) * i);
+            if (x >= pointMin[0] && y >= pointMin[1] && x < pointMax[0] && y < pointMax[1])
+                list.push([x, y]);
+        }
+    } else if (point1[0] == Up_X && point1[1] == Up_Y) {
+        for (var i = 0; i < parseInt(distance); i++) {
+            var x = parseInt(Up_X - ((Up_X - Reduce_X) / distance) * i);
+            var y = parseInt(Up_Y - ((Up_Y - Reduce_Y) / distance) * i);
+            if (x >= pointMin[0] && y >= pointMin[1] && x < pointMax[0] && y < pointMax[1])
+                list.push([x, y]);
+        }
+    } else if (point1[0] == Reduce_X && point1[1] == Up_Y) {
+        for (var i = 0; i < parseInt(distance); i++) {
+            var x = parseInt(Reduce_X + ((Up_X - Reduce_X) / distance) * i);
+            var y = parseInt(Up_Y - ((Up_Y - Reduce_Y) / distance) * i);
+            if (x >= pointMin[0] && y >= pointMin[1] && x < pointMax[0] && y < pointMax[1])
+                list.push([x, y]);
+        }
+    } else if (point1[0] == Up_X && point1[1] == Reduce_Y) {
+        for (var i = 0; i < parseInt(distance); i++) {
+            var x = parseInt(Up_X - ((Up_X - Reduce_X) / distance) * i);
+            var y = parseInt(Reduce_Y + ((Up_Y - Reduce_Y) / distance) * i);
+            if (x >= pointMin[0] && y >= pointMin[1] && x < pointMax[0] && y < pointMax[1])
+                list.push([x, y]);
+        }
+    }
+    return list;
+};
+function display3dImage2Canvas() {
+    var VrDistance = getVrDistance();
 
     var canvas0 = document.createElement("CANVAS");
     canvas0.id = "canvas0_MPR";
@@ -354,52 +401,69 @@ function display3dImage2Canvas() {
 
     GetViewport(0).appendChild(canvas0);
 
-    canvas0.MousedownClick = false;
+    canvas0.MouseLeftClick = false;
+    canvas0.MouseRightClick = false;
+    canvas0.rotate = 0;
     canvas0.addEventListener("mousedown", trueMousedownClick, false);
     canvas0.addEventListener("mousemove", mpr2Canvas0, false);
     canvas0.addEventListener("mouseup", falseMousedownClick, false);
-
+    canvas0.oncontextmenu = function (e) { e.preventDefault(); };
 
     var canvas1 = document.createElement("CANVAS");
     canvas1.id = "canvas1_MPR";
     canvas1.width = GetViewport().imageWidth;
-    canvas1.height = o3dPixelData2.length;
+    canvas1.height = VrDistance * o3dPixelData2.length;//GetViewport().imageHeight;
 
     GetViewport(1).appendChild(canvas1);
 
-    canvas1.MousedownClick = false;
+    canvas1.MouseLeftClick = false;
+    canvas1.MouseRightClick = false;
+    canvas1.rotate = 0;
     canvas1.addEventListener("mousedown", trueMousedownClick, false);
     canvas1.addEventListener("mousemove", mpr2Canvas1, false);
     canvas1.addEventListener("mouseup", falseMousedownClick, false);
+    canvas1.oncontextmenu = function (e) { e.preventDefault(); };
 
 
     var canvas2 = document.createElement("CANVAS");
     canvas2.id = "canvas2_MPR";
-    canvas2.width = o3dPixelData2.length;
+    canvas2.width = VrDistance * o3dPixelData2.length;//o3dPixelData2.length;
     canvas2.height = GetViewport().imageHeight;
 
     GetViewport(2).appendChild(canvas2);
 
-    canvas2.MousedownClick = false;
+    canvas2.MouseLeftClick = false;
+    canvas2.MouseRightClick = false;
+    canvas2.rotate = 0;
     canvas2.addEventListener("mousedown", trueMousedownClick, false);
     canvas2.addEventListener("mousemove", mpr2Canvas2, false);
     canvas2.addEventListener("mouseup", falseMousedownClick, false);
+    canvas2.oncontextmenu = function (e) { e.preventDefault(); };
 
     for (var c of getClass("DicomCanvas")) c.style.display = "none";
 
     canvas1.reflesh = function (line) {
+        var canvas0 = getByid("canvas0_MPR");
         var canvas1 = getByid("canvas1_MPR");
+        var canvas2 = getByid("canvas2_MPR");
         if (line == undefined) line = canvas1.Line;
         if (line == undefined) return;
         var pixelData1 = canvas1.getContext("2d").getImageData(0, 0, canvas1.width, canvas1.height);
-        for (var h = 0, h4 = 0; h < canvas1.height; h++, h4 += 4) {
-            for (var w = 0, w4 = 0; w < canvas1.width; w++, w4 += 4) {
-                pixelData1.data[h * (canvas1.width * 4) + w4] = o3dPixelData2[h][line][w4 + 0];
-                pixelData1.data[h * (canvas1.width * 4) + w4 + 1] = o3dPixelData2[h][line][w4 + 1];
-                pixelData1.data[h * (canvas1.width * 4) + w4 + 2] = o3dPixelData2[h][line][w4 + 2];
-                pixelData1.data[h * (canvas1.width * 4) + w4 + 3] = o3dPixelData2[h][line][w4 + 3];
+        pixelData1.data.fill(0);
+        if (canvas0.rotatePoint1) {
+            var offsetY = (o3dPixelData2.length / canvas1.height);
+            //var offsetX = (canvas1.width / canvas0.rotateList1.length);
+            for (var h = 0, h4 = 0; h < canvas1.height; h++, h4 += 4) {
+                for (var w = 0, w4 = 0; w < canvas0.rotateList1.length; w++, w4 += 4) {
+                    if (o3dPixelData2[parseInt(h * offsetY)] == undefined) continue;
+                    pixelData1.data[h * (canvas1.width * 4) + w4] = o3dPixelData2[parseInt(h * offsetY)][canvas0.rotateList1[w][1]][parseInt(canvas0.rotateList1[parseInt(w * 1)][0]) * 4 + 0];
+                    pixelData1.data[h * (canvas1.width * 4) + w4 + 1] = o3dPixelData2[parseInt(h * offsetY)][canvas0.rotateList1[w][1]][parseInt(canvas0.rotateList1[parseInt(w * 1)][0]) * 4 + 1];
+                    pixelData1.data[h * (canvas1.width * 4) + w4 + 2] = o3dPixelData2[parseInt(h * offsetY)][canvas0.rotateList1[w][1]][parseInt(canvas0.rotateList1[parseInt(w * 1)][0]) * 4 + 2];
+                    pixelData1.data[h * (canvas1.width * 4) + w4 + 3] = o3dPixelData2[parseInt(h * offsetY)][canvas0.rotateList1[w][1]][parseInt(canvas0.rotateList1[parseInt(w * 1)][0]) * 4 + 3];
+                }
             }
         }
+
         canvas1.getContext("2d").putImageData(pixelData1, 0, 0);
         canvas1.style.height = o3dPixelData2.length * (1 * VrDistance / 1) + "px";
         canvas1.style.width = canvas1.width + "px";
@@ -410,16 +474,25 @@ function display3dImage2Canvas() {
     }
 
     canvas2.reflesh = function (line) {
+        var canvas0 = getByid("canvas0_MPR");
+        var canvas1 = getByid("canvas1_MPR");
         var canvas2 = getByid("canvas2_MPR");
         if (line == undefined) line = canvas2.Line;
         if (line == undefined) return;
+        var offsetX = (o3dPixelData2.length / canvas2.width);
         var pixelData2 = canvas2.getContext("2d").getImageData(0, 0, canvas2.width, canvas2.height);
-        for (var h = 0, h4 = 0; h < canvas2.height; h++, h4 += 4) {
-            for (var w = 0, w4 = 0; w < canvas2.width; w++, w4 += 4) {
-                pixelData2.data[h * (canvas2.width * 4) + w4] = o3dPixelData2[w][h][line * 4 + 0];
-                pixelData2.data[h * (canvas2.width * 4) + w4 + 1] = o3dPixelData2[w][h][line * 4 + 1];
-                pixelData2.data[h * (canvas2.width * 4) + w4 + 2] = o3dPixelData2[w][h][line * 4 + 2];
-                pixelData2.data[h * (canvas2.width * 4) + w4 + 3] = o3dPixelData2[w][h][line * 4 + 3];
+        pixelData2.data.fill(0);
+        if (canvas0.rotatePoint2) {
+            //var offsetY = (o3dPixelData2.length / canvas2.height);
+            var offsetX = (o3dPixelData2.length / canvas2.width);
+            for (var h = 0, h4 = 0; h < canvas0.rotateList2.length; h++, h4 += 4) {
+                for (var w = 0, w4 = 0; w < canvas2.height; w++, w4 += 4) {
+                    if (o3dPixelData2[parseInt(w * offsetX)] == undefined) continue;
+                    pixelData2.data[h * (canvas2.width * 4) + w4] = o3dPixelData2[parseInt(w * offsetX)][canvas0.rotateList2[h][1]][parseInt(canvas0.rotateList2[parseInt(h * 1)][0]) * 4 + 0];
+                    pixelData2.data[h * (canvas2.width * 4) + w4 + 1] = o3dPixelData2[parseInt(w * offsetX)][canvas0.rotateList2[h][1]][parseInt(canvas0.rotateList2[parseInt(h * 1)][0]) * 4 + 1];
+                    pixelData2.data[h * (canvas2.width * 4) + w4 + 2] = o3dPixelData2[parseInt(w * offsetX)][canvas0.rotateList2[h][1]][parseInt(canvas0.rotateList2[parseInt(h * 1)][0]) * 4 + 2];
+                    pixelData2.data[h * (canvas2.width * 4) + w4 + 3] = o3dPixelData2[parseInt(w * offsetX)][canvas0.rotateList2[h][1]][parseInt(canvas0.rotateList2[parseInt(h * 1)][0]) * 4 + 3];
+                }
             }
         }
         canvas2.getContext("2d").putImageData(pixelData2, 0, 0);
@@ -434,9 +507,12 @@ function display3dImage2Canvas() {
 
     canvas0.reflesh = function (line) {
         var canvas0 = getByid("canvas0_MPR");
+        var canvas1 = getByid("canvas1_MPR");
+        var canvas2 = getByid("canvas2_MPR");
         if (line == undefined) line = canvas0.Line;
         if (line == undefined) return;
         var pixelData0 = canvas0.getContext("2d").getImageData(0, 0, canvas0.width, canvas0.height);
+        pixelData0.data.fill(0);
         for (var h = 0, h4 = 0; h < pixelData0.height; h++, h4 += 4) {
             for (var w = 0, w4 = 0; w < pixelData0.width; w++, w4 += 4) {
                 pixelData0.data[h * (pixelData0.width * 4) + w4] = o3dPixelData2[line][h][w4 + 0];
@@ -455,107 +531,197 @@ function display3dImage2Canvas() {
         canvas0.Line = line;
     }
     canvas2.drawLine = function (x, y) {
+        var canvas0 = getByid("canvas0_MPR");
+        var canvas1 = getByid("canvas1_MPR");
         var canvas2 = getByid("canvas2_MPR");
         if (x == undefined) x = canvas2.drawLineX;
         if (y == undefined) y = canvas2.drawLineY;
+        var zeroX = 0, zeroY = 0;
+
+        [x0, zeroY] = rotatePoint(x, -canvas1.width - canvas0.width - canvas2.width, x, y, canvas2.rotate);
+        [zeroX, y0] = rotatePoint(-canvas1.height - canvas0.height - canvas2.height, y, x, y, canvas2.rotate);
+
+        [wi, y1] = rotatePoint(canvas1.width + canvas0.width + canvas2.width, y, x, y, canvas2.rotate);
+        [x1, he] = rotatePoint(x, canvas1.height + canvas0.height + canvas2.height, x, y, canvas2.rotate);
+
         var ctx = canvas2.getContext("2d");
+        ctx.lineWidth = 3;
         ctx.strokeStyle = "pink";
         ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas2.width, y);
+        ctx.moveTo(zeroX, y0);
+        ctx.lineTo(wi, y1);
         ctx.stroke();
         ctx.strokeStyle = "yellow";
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas2.height);
+        ctx.moveTo(x0, zeroY);
+        ctx.lineTo(x1, he);
         ctx.stroke();
         canvas2.drawLineX = x;
         canvas2.drawLineY = y;
     }
-    canvas1.drawLine = function (x, y) {
+    canvas1.drawLine = function (originX, originY, setRotate = false) {
+        var canvas0 = getByid("canvas0_MPR");
         var canvas1 = getByid("canvas1_MPR");
-        if (x == undefined) x = canvas1.drawLineX;
-        if (y == undefined) y = canvas1.drawLineY;
+        var canvas2 = getByid("canvas2_MPR");
+        var x = originX, y = originY;
+        if (originX == undefined) x = canvas1.drawLineX;
+        if (originY == undefined) y = canvas1.drawLineY;
+        var numH = canvas1.height / parseFloat(canvas1.style.height);
+        y *= numH;
+        var numW = canvas1.width / parseFloat(canvas1.style.width);
+        x *= numW;
+
+        var zeroX = 0, zeroY = 0;
+        [x0, zeroY] = rotatePoint(x, 0, x, y, canvas1.rotate);
+        [zeroX, y0] = rotatePoint(0, y, x, y, canvas1.rotate);
+
+        [wi, y1] = rotatePoint(canvas1.width, y, x, y, canvas1.rotate);
+        [x1, he] = rotatePoint(x, canvas1.height, x, y, canvas1.rotate);
+
         var ctx = canvas1.getContext("2d");
+        ctx.lineWidth = 3;
         ctx.strokeStyle = "yellow";
         ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas1.width, y);
+        ctx.moveTo(zeroX, y0);
+        ctx.lineTo(wi, y1);
         ctx.stroke();
         ctx.strokeStyle = "blue";
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas1.height);
+        ctx.moveTo(x0, zeroY);
+        ctx.lineTo(x1, he);
         ctx.stroke();
-        canvas1.drawLineX = x;
-        canvas1.drawLineY = y;
+        canvas1.drawLineX = originX == undefined ? canvas1.drawLineX : originX;
+        canvas1.drawLineY = originY == undefined ? canvas1.drawLineY : originY;
     }
-    canvas0.drawLine = function (x, y) {
+    canvas0.drawLine = function (originX, originY, setRotate = false, pinkOffset = undefined, blueOffset = undefined) {
         var canvas0 = getByid("canvas0_MPR");
-        if (x == undefined) x = canvas0.drawLineX;
-        if (y == undefined) y = canvas0.drawLineY;
+        var canvas1 = getByid("canvas1_MPR");
+        var canvas2 = getByid("canvas2_MPR");
+        var x = originX, y = originY;
+        if (originX == undefined) x = canvas0.drawLineX;
+        if (originY == undefined) y = canvas0.drawLineY;
+        var numH = canvas0.height / parseFloat(canvas0.style.height);
+        y *= numH;
+        var numW = canvas0.width / parseFloat(canvas0.style.width);
+        x *= numW;
+        var zeroX = 0, zeroY = 0;
+        [x0, zeroY] = rotatePoint(blueOffset == undefined ? x : blueOffset, -canvas0.height, x, y, canvas0.rotate);//blue
+        [zeroX, y0] = rotatePoint(-canvas0.width, pinkOffset == undefined ? y : pinkOffset, x, y, canvas0.rotate);//pink
+
+        [wi, y1] = rotatePoint(canvas0.width * 2, pinkOffset == undefined ? y : pinkOffset, x, y, canvas0.rotate);//pink
+        [x1, he] = rotatePoint(blueOffset == undefined ? x : blueOffset, canvas0.height * 2, x, y, canvas0.rotate);//blue
+        /*if(x==canvas0.drawLineX){
+            [zeroX, y0] = rotatePoint(0, canvas0.drawLineY, x, canvas0.drawLineY, -canvas0.rotate);//pink
+            [wi, y1] = rotatePoint(canvas0.width, canvas0.drawLineY, x, canvas0.drawLineY, canvas0.rotate);//pink
+        }*/
+
+        if (setRotate == true || !canvas0.rotateList1 || !canvas0.rotateList2) {
+            canvas0.rotateList1 = Line_forMPR([zeroX, y0], [wi, y1], [0, 0], [canvas0.width, canvas0.height]);
+            canvas0.rotatePoint1 = [canvas0.rotateList1[0], canvas0.rotateList1[canvas0.rotateList1.length - 1]];
+            canvas0.rotateList2 = Line_forMPR([x0, zeroY], [x1, he], [0, 0], [canvas0.width, canvas0.height]);
+            canvas0.rotatePoint2 = [canvas0.rotateList2[0], canvas0.rotateList2[canvas0.rotateList2.length - 1]];
+        }
+
         var ctx = canvas0.getContext("2d");
+        ctx.lineWidth = 3;
         ctx.strokeStyle = "pink";
         ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas0.width, y);
+        ctx.moveTo(zeroX, y0);
+        ctx.lineTo(wi, y1);
         ctx.stroke();
         ctx.strokeStyle = "blue";
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas0.height);
+        ctx.moveTo(x0, zeroY);
+        ctx.lineTo(x1, he);
         ctx.stroke();
-        canvas0.drawLineX = x;
-        canvas0.drawLineY = y;
+        canvas0.drawLineX = originX == undefined ? canvas0.drawLineX : originX;
+        canvas0.drawLineY = originY == undefined ? canvas0.drawLineY : originY;
     }
+    //canvas1.rotate = 45;
+    canvas0.style.height = canvas0.height + "px";
+    canvas1.style.height = canvas1.height + "px";
+    canvas2.style.height = canvas2.height + "px";
+    canvas0.style.width = canvas0.width + "px";
+    canvas1.style.width = canvas1.width + "px";
+    canvas2.style.width = canvas2.width + "px";
 
-
+    canvas1.drawLine(parseInt(canvas1.width / 2), parseInt(canvas1.height / 2));
+    canvas2.drawLine(parseInt(o3dPixelData2.length / 2), parseInt(canvas0.height / 2));
+    canvas0.drawLine(parseInt(canvas0.width / 2), parseInt(canvas0.height / 2));
+    canvas1.drawLine(parseInt(canvas1.width / 2), parseInt(canvas1.height / 2));
+    canvas2.drawLine(parseInt(o3dPixelData2.length / 2), parseInt(canvas0.height / 2));
+    canvas0.drawLine(parseInt(canvas0.width / 2), parseInt(canvas0.height / 2));
     canvas0.reflesh(parseInt(o3dPixelData2.length / 2));
     canvas1.reflesh(parseInt(canvas0.height / 2));
     canvas2.reflesh(parseInt(canvas0.width / 2));
-    canvas1.drawLine(parseInt(canvas0.width / 2), parseInt(o3dPixelData2.length / 2));
+    canvas1.drawLine(parseInt(canvas1.width / 2), parseInt(canvas1.height / 2));
     canvas2.drawLine(parseInt(o3dPixelData2.length / 2), parseInt(canvas0.height / 2));
     canvas0.drawLine(parseInt(canvas0.width / 2), parseInt(canvas0.height / 2));
-    canvas1.drawLine(parseInt(canvas0.width / 2), parseInt(o3dPixelData2.length / 2));
+    canvas1.drawLine(parseInt(canvas1.width / 2), parseInt(canvas1.height / 2));
     canvas2.drawLine(parseInt(o3dPixelData2.length / 2), parseInt(canvas0.height / 2));
     canvas0.drawLine(parseInt(canvas0.width / 2), parseInt(canvas0.height / 2));
 }
 
+function rotatePoint(x, y, cx, cy, angle) {
+    // 將角度轉換為弧度
+    var radian = angle * Math.PI / 180;
+    // 計算相對於中心點的偏移量
+    var offsetX = x - cx;
+    var offsetY = y - cy;
+    // 進行旋轉計算
+    var rotatedX = offsetX * Math.cos(radian) - offsetY * Math.sin(radian);
+    var rotatedY = offsetX * Math.sin(radian) + offsetY * Math.cos(radian);
+    // 將旋轉後的座標加回中心點的位置
+    var newX = rotatedX + cx;
+    var newY = rotatedY + cy;
+    // 返回旋轉後的座標
+    return [newX, newY];//{ x: newX, y: newY };
+}
+
+function refleshAndDrawMpr2() {
+    var canvas0 = getByid("canvas0_MPR");
+    var canvas1 = getByid("canvas1_MPR");
+    var canvas2 = getByid("canvas2_MPR");
+    canvas0.reflesh(); canvas1.reflesh(); canvas2.reflesh();
+    canvas0.drawLine(undefined, undefined, true);
+    canvas2.drawLine(undefined, undefined);
+    canvas1.drawLine(undefined, undefined);
+}
 
 function mpr2Canvas0(event) {
 
     var canvasC = getByid("canvas0_MPR");
-    if (canvasC.MousedownClick == false) return;
+    if (getByid("canvas0_MPR").MouseRightClick == true) {
+        getByid("canvas0_MPR").rotate += 10;
+        refleshAndDrawMpr2();
+        return;
+    }
+    if (canvasC.MouseLeftClick == false) return;
     var numH = (parseFloat(canvasC.style.height) / parseFloat(GetViewport().imageHeight));
     var numW = (parseFloat(canvasC.style.width) / parseFloat(GetViewport().imageWidth));
     var currX11 = (event.offsetX != null) ? event.offsetX : event.originalEvent.layerX;
     var currY11 = (event.offsetY != null) ? event.offsetY : event.originalEvent.layerY;
     currX11 /= numW;
     currY11 /= numH;
-    var VrDistance = 0;
-    VrDistance += thicknessList_MPR[thicknessList_MPR.length - 1] - Thickness_MPR - (thicknessList_MPR[0] - Thickness_MPR);
-    VrDistance /= o3dPixelData2.length;
-
-    if (VrDistance == 0) VrDistance = 1;
-    if (VrDistance < 0) VrDistance *= -1;
+    var VrDistance = getVrDistance();
 
     var canvas0 = getByid("canvas0_MPR");
     var canvas1 = getByid("canvas1_MPR");
     var canvas2 = getByid("canvas2_MPR");
 
     canvas1.width = GetViewport().imageWidth;
-    canvas1.height = o3dPixelData2.length;
+    canvas1.height = canvas0.rotateList1.length;// VrDistance * o3dPixelData2.length;;//o3dPixelData2.length;
 
-    canvas2.width = o3dPixelData2.length;
+    canvas2.width = VrDistance * o3dPixelData2.length;
     canvas2.height = GetViewport().imageHeight;
 
-    canvas1.style.height = ((Thickness_MPR < 0 ? -Thickness_MPR : Thickness_MPR)) + "px";
-    canvas2.style.width = ((Thickness_MPR < 0 ? -Thickness_MPR : Thickness_MPR)) + "px";
+    //canvas1.style.height = ((Thickness_MPR < 0 ? -Thickness_MPR : Thickness_MPR)) + "px";
+    //canvas2.style.width = ((Thickness_MPR < 0 ? -Thickness_MPR : Thickness_MPR)) + "px";
 
+    canvas0.drawLine(parseInt(currX11), parseInt(currY11), true);
     canvas0.reflesh();
     canvas1.reflesh(parseInt(currY11));
     canvas2.reflesh(parseInt(currX11));
-
 
     canvas0.drawLine(parseInt(currX11), parseInt(currY11));
     canvas2.drawLine(undefined, parseInt(currY11));
@@ -564,83 +730,86 @@ function mpr2Canvas0(event) {
 
 
 function mpr2Canvas1(event) {
-    if (getByid("canvas1_MPR").MousedownClick == false) return;
-    var canvasC = getByid("canvas0_MPR");
-
-    var numH = (parseFloat(canvasC.style.height) / parseFloat(GetViewport().imageHeight));
-    var numW = (parseFloat(canvasC.style.width) / parseFloat(GetViewport().imageWidth));
-    var currX11 = (event.offsetX != null) ? event.offsetX : event.originalEvent.layerX;
-    var currY11 = (event.offsetY != null) ? event.offsetY : event.originalEvent.layerY;
-    currX11 /= numW;
-    currY11 /= numH;
-    var VrDistance = 0;
-    VrDistance += thicknessList_MPR[thicknessList_MPR.length - 1] - Thickness_MPR - (thicknessList_MPR[0] - Thickness_MPR);
-    VrDistance /= o3dPixelData2.length;
-
-    if (VrDistance == 0) VrDistance = 1;
-    if (VrDistance < 0) VrDistance *= -1;
-
     var canvas0 = getByid("canvas0_MPR");
     var canvas1 = getByid("canvas1_MPR");
     var canvas2 = getByid("canvas2_MPR");
+    var canvasC = getByid("canvas0_MPR");
+    if (getByid("canvas1_MPR").MouseRightClick == true) {
+        //getByid("canvas1_MPR").rotate += 10;
+        //refleshAndDrawMpr2();
+        return;
+    }
+    if (getByid("canvas1_MPR").MouseLeftClick == false) return;
+    //var numH = (parseFloat(canvasC.style.height) / parseFloat(GetViewport().imageHeight));
+    //var numW = (parseFloat(canvasC.style.width) / parseFloat(GetViewport().imageWidth));
+
+    var currX11 = (event.offsetX != null) ? event.offsetX : event.originalEvent.layerX;
+    var currY11 = (event.offsetY != null) ? event.offsetY : event.originalEvent.layerY;
+    //currX11 /= numW;
+    //currY11 /= numH;
+    var VrDistance = getVrDistance();
+
+
 
     canvas0.width = GetViewport().imageWidth;
     canvas0.height = GetViewport().imageHeight;
 
-    canvas2.width = o3dPixelData2.length;
+    canvas2.width = VrDistance * o3dPixelData2.length;
 
     canvas2.height = GetViewport().imageHeight;
 
     canvas2.style.width = ((Thickness_MPR < 0 ? -Thickness_MPR : Thickness_MPR)) + "px";
 
+    canvas0.drawLine(undefined, undefined, true, undefined, parseInt(currX11));
     canvas1.reflesh();
-    canvas0.reflesh(parseInt(currY11 / VrDistance / 1));
+    canvas0.reflesh(parseInt(currY11 / VrDistance));
     canvas2.reflesh(parseInt(currX11));
 
 
-    canvas1.drawLine(parseInt(currX11), parseInt(currY11 / VrDistance / 1));
-    canvas2.drawLine(parseInt(currY11 / VrDistance / 1), undefined);
-    canvas0.drawLine(parseInt(currX11), undefined);
+    canvas1.drawLine(parseInt(currX11), parseInt(currY11));
+    canvas2.drawLine(parseInt(currY11), undefined);
+    canvas0.drawLine(undefined, undefined, false, undefined, parseInt(currX11));
 }
 
 
 
 function mpr2Canvas2(event) {
-    if (getByid("canvas2_MPR").MousedownClick == false) return;
 
     var canvasC = getByid("canvas0_MPR");
-
+    if (getByid("canvas2_MPR").MouseRightClick == true) {
+        //getByid("canvas2_MPR").rotate += 10;
+        //refleshAndDrawMpr2();
+        return;
+    }
+    if (getByid("canvas2_MPR").MouseLeftClick == false) return;
     var numH = (parseFloat(canvasC.style.height) / parseFloat(GetViewport().imageHeight));
     var numW = (parseFloat(canvasC.style.width) / parseFloat(GetViewport().imageWidth));
     var currX11 = (event.offsetX != null) ? event.offsetX : event.originalEvent.layerX;
     var currY11 = (event.offsetY != null) ? event.offsetY : event.originalEvent.layerY;
     currX11 /= numW;
     currY11 /= numH;
-    var VrDistance = 0;
-    VrDistance += thicknessList_MPR[thicknessList_MPR.length - 1] - Thickness_MPR - (thicknessList_MPR[0] - Thickness_MPR);
-    VrDistance /= o3dPixelData2.length;
-
-    if (VrDistance == 0) VrDistance = 1;
-    if (VrDistance < 0) VrDistance *= -1;
+    var VrDistance = getVrDistance();
 
     var canvas0 = getByid("canvas0_MPR");
     var canvas1 = getByid("canvas1_MPR");
     var canvas2 = getByid("canvas2_MPR");
 
     canvas1.width = GetViewport().imageWidth;
-    canvas1.height = o3dPixelData2.length;
+    canvas1.height = VrDistance * o3dPixelData2.length;//o3dPixelData2.length;
 
     canvas0.width = GetViewport().imageWidth;
     canvas0.height = GetViewport().imageHeight;
 
     canvas1.style.height = ((Thickness_MPR < 0 ? -Thickness_MPR : Thickness_MPR)) + "px";
-    canvas0.reflesh(parseInt(currX11 / VrDistance / 1));
+
+    canvas0.drawLine(undefined, undefined, true, parseInt(currY11), undefined);
+    canvas0.reflesh(parseInt(currX11 / VrDistance));
     canvas1.reflesh(parseInt(currY11));
     canvas2.reflesh();
 
 
-    canvas2.drawLine(parseInt(currX11 / VrDistance / 1), parseInt(currY11));
-    canvas0.drawLine(undefined, parseInt(currY11));
-    canvas1.drawLine(undefined, parseInt(currX11 / VrDistance / 1));
+    canvas2.drawLine(parseInt(currX11), parseInt(currY11));
+    canvas0.drawLine(undefined, undefined, false, parseInt(currY11), undefined);
+    canvas1.drawLine(undefined, parseInt(currX11));
 }
 
