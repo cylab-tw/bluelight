@@ -44,6 +44,39 @@ var thisF = function () {
         }
     }
 }
+window.addEventListener("keydown", function (e) {
+    e = e || window.event;
+    var nextInstanceNumber = 0;
+    if (e.keyCode == '38') nextInstanceNumber = -1;
+    else if (e.keyCode == '40') nextInstanceNumber = 1;
+    else if (e.keyCode == '37') nextInstanceNumber = -1;
+    else if (e.keyCode == '39') nextInstanceNumber = 1;
+    if (!GetViewport() || nextInstanceNumber == 0) return;
+    var sop = GetViewport().sop;
+    let index = SearchUid2Index(sop);
+
+    let i = index[0],
+        j = index[1],
+        k = index[2];
+    var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
+    var list = sortInstance(sop);
+    for (l = 0; l < list.length; l++) {
+        if (list[l].InstanceNumber == Onum) {
+            break;
+        }
+    }
+    if (nextInstanceNumber == -1) {
+        nextFrame(viewportNumber, -1);
+        if (l - 1 < 0) nextInstanceNumber = list.length - 1;
+        else nextInstanceNumber = l - 1;
+    } else if (nextInstanceNumber = 1) {
+        nextFrame(viewportNumber, 1);
+        if (list[l].InstanceNumber == Onum) {
+            if (l + 1 >= list.length) nextInstanceNumber = 0;
+            else nextInstanceNumber = l + 1;
+        }
+    }
+});
 
 window.addEventListener('load', function () {
     var isWindowTop = false;
