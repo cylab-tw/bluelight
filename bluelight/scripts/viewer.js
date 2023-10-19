@@ -60,8 +60,19 @@ VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
     }
     for (var i = 0; i < DicomTags.LT.name.length; i++)
         labelLT[viewportNum].innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
-    for (var i = 0; i < DicomTags.RT.name.length; i++)
-        labelRT[viewportNum].innerHTML += "" + DicomTags.RT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.RT.tag[i])) + "<br/>";
+    for (var i = 0; i < DicomTags.RT.name.length; i++) {
+        //避免PatientName出現中文亂碼
+        if ("x" + DicomTags.RT.tag[i] == 'x00100010') {
+            var dataSet = image.data;
+            var data = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements['x00100010'].dataOffset, dataSet.elements['x00100010'].length);
+            var textDecoder = new TextDecoder('utf-8');
+            var decodedString = textDecoder.decode(data);
+            //element.PatientName = decodedString;
+            labelRT[viewportNum].innerHTML += "" + DicomTags.RT.name[i] + " " + htmlEntities(decodedString) + "<br/>";
+        } else {
+            labelRT[viewportNum].innerHTML += "" + DicomTags.RT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.RT.tag[i])) + "<br/>";
+        }
+    }
 }
 
 VIEWPORT.loadViewport = function (element, image, viewportNum) {
