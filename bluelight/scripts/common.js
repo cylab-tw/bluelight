@@ -95,6 +95,30 @@ function resetViewport(viewportNum0) {
     if (GetViewport(viewportNum).framesNumber != undefined) GetViewport(viewportNum).framesNumber = 0;
 }
 
+function resetAndLoadImg(viewportNum0, dontLoad = false) {
+    var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
+    GetViewport(viewportNum).NowCanvasSizeWidth = GetViewport(viewportNum).NowCanvasSizeHeight = null;
+    GetViewport(viewportNum).newMousePointX = GetViewport(viewportNum).newMousePointY = GetViewport().rotateValue = 0;
+    GetViewport(viewportNum).windowCenterList = GetViewport(viewportNum).windowWidthList = null;
+    GetViewport().openVerticalFlip = GetViewport().openHorizontalFlip = GetViewport().openInvert = false;
+    if (getByid("removeRuler")) getByid("removeRuler").onclick();
+    //if (GetViewport(viewportNum).framesNumber != undefined) GetViewport(viewportNum).framesNumber = 0;
+    if (dontLoad == true) return;
+    let index = SearchUid2IndexBySeries(GetViewport(viewportNum).SeriesInstanceUID);
+    let i = index[0],
+        j = index[1];
+    for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
+        if (Patient.Study[i].Series[j].Sop[l].pdf) {
+            displayPDF(Patient.Study[i].Series[j].Sop[l].pdf); break;
+        }
+        else if (Patient.Study[i].Series[j].Sop[l].SopUID == GetViewport(viewportNum).SOPInstanceUID) {
+            GetViewport(viewportNum).SeriesInstanceUID = null;
+            loadAndViewImage(Patient.Study[i].Series[j].Sop[l].imageId, viewportNum0);
+            break;
+        }
+    }
+}
+
 function PictureOnclick(series) {
     if (!openLeftImgClick) return;
     WindowOpen = false;

@@ -247,6 +247,11 @@ function html_onload() {
     changeLinkImg();
   }
 
+  getByid("resetImg").onclick = function () {
+    if (this.enable == false) return;
+    resetAndLoadImg();
+  }
+
   getByid("MeasureRuler").onclick = function () {
     if (this.enable == false) return;
     set_BL_model('measure');
