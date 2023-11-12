@@ -31,10 +31,10 @@ var zoomRatio3D = 1;
 function loadVR() {
     var span = document.createElement("SPAN");
     span.innerHTML =
-        `<img class="img VR" alt="3d" id="ImgVR" src="../image/icon/black/b_3D_off.png" width="50" height="50">
-    <img class="img VR MPR" alt="3dDisplay" id="3dDisplay" src="../image/icon/black/b_DisplayReset.png"
+        `<img class="img VR" alt="VR" id="ImgVR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/b_3D_off.png" width="50" height="50">
+    <img class="img VR MPR" alt="Render" id="3dDisplay" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/b_DisplayReset.png"
     style="display:none;" width="50" height="50">
-    <img class="img VR" alt="3dCave" id="3dCave" src="../image/icon/black/b_Cross-hair_OFF.png" style="display:none;"
+    <img class="img VR" alt="Scalpel" id="3dCave" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/b_Cross-hair_OFF.png" style="display:none;"
     width="50" height="50">`;
     getByid("icon-list").appendChild(span);
 

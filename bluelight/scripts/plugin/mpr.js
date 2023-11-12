@@ -10,7 +10,7 @@ var buffer_mpr_Y = 0;
 
 function loadMPR() {
     var span = document.createElement("SPAN");
-    span.innerHTML = `<img class="img MPR" alt="3d" id="ImgMPR" src="../image/icon/black/b_AdvancedMode_off.png" width="50" height="50">`;
+    span.innerHTML = `<img class="img MPR" alt="Old MPR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="ImgMPR" src="../image/icon/black/b_AdvancedMode_off.png" width="50" height="50">`;
     getByid("icon-list").appendChild(span);
 
     var span = document.createElement("SPAN");

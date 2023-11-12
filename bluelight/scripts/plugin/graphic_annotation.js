@@ -6,7 +6,7 @@ var openWriteGraphic = false;
 function loadWriteGraphic() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        `<img class="img GSPS" alt="writeGSPS" id="writeGSPS" src="../image/icon/black/gsps_off.png" width="50" height="50">`;
+        `<img class="img GSPS" alt="writeGSPS" id="writeGSPS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/gsps_off.png" width="50" height="50">`;
     getByid("icon-list").appendChild(span);
 
     var span = document.createElement("SPAN")

@@ -4,7 +4,7 @@ var openWriteXML = false;
 function loadxml_format() {
   var span = document.createElement("SPAN")
   span.innerHTML =
-    `<img class="img XML" alt="writeXML" id="writeXML" src="../image/icon/black/xml_off.png" width="50" height="50">`;
+    `<img class="img XML" alt="writeXML" id="writeXML" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/xml_off.png" width="50" height="50">`;
   getByid("icon-list").appendChild(span);
 
   var span = document.createElement("SPAN")

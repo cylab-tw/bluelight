@@ -4,7 +4,7 @@ var openWriteSEG = false;
 function loadWriteSEG() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        `<img class="img SEG" alt="writeSEG" id="writeSEG" src="../image/icon/black/seg_off.png" width="50" height="50">`;
+        `<img class="img SEG" alt="writeSEG" id="writeSEG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/seg_off.png" width="50" height="50">`;
     getByid("icon-list").appendChild(span);
 
     var span = document.createElement("SPAN")

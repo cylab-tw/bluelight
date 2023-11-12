@@ -16,7 +16,7 @@ var globalTemVector3 = undefined;
 function loadMPR2() {
     var span = document.createElement("SPAN");
     span.id = "ImgMPR2_span";
-    span.innerHTML = `<img class="img MPR2 MPR_icon" alt="3d" id="ImgMPR2" src="../image/icon/black/b_LocalizerLines.png" width="50" height="50">`;
+    span.innerHTML = `<img class="img MPR2 MPR_icon" alt="New MPR" id="ImgMPR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/b_LocalizerLines.png" width="50" height="50">`;
     getByid("icon-list").appendChild(span);
 
     /*var span = document.createElement("SPAN");

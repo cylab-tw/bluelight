@@ -4,7 +4,7 @@ var openWriteRTSS = false;
 function loadWriteRTSS() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        ` <img class="img RTSS" alt="writeRTSS" id="writeRTSS" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">`;
+        ` <img class="img RTSS" alt="writeRTSS" id="writeRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">`;
     getByid("icon-list").appendChild(span);
 
     var span = document.createElement("SPAN")

@@ -193,6 +193,11 @@ function html_onload() {
 
   getByid("openMeasureImg").onclick = function () {
     invertDisplayById('openMeasureDIv');
+    if (getByid("openMeasureDIv").style.display == "none") getByid("MeasureImgParent").style.position = "";
+    else {
+      getByid("MeasureImgParent").style.position = "relative";
+      onElementLeave();
+    }
   }
 
   getByid("removeRuler").onclick = function () {
@@ -212,6 +217,13 @@ function html_onload() {
     for (var n in PatientMark) { refreshMark(PatientMark[n]); }
     //for (var s = 0; s < sopList.length; s++)
     //   refreshMarkFromSop(sopList[s]);
+  }
+
+  for (var element of getClass("img")) {
+    if (element && element.alt) {
+      element.onmouseover = onElementOver;
+      element.onmouseleave = onElementLeave;
+    }
   }
 
   getByid("zoom").onclick = function () {
@@ -505,4 +517,34 @@ function img2darkByClass(classname, dark) {
       class1[i].enable = true;
     }
   }
+}
+
+function onElementOver(OriginElem) {
+  if (!OriginElem) OriginElem = this;
+  if (OriginElem.constructor.name == 'MouseEvent') OriginElem = OriginElem.toElement;
+  // 建立 label 元素
+  var label = document.createElement("label");
+
+  if (OriginElem.getAttribute("alt")) label.innerHTML = OriginElem.getAttribute("alt");
+
+
+  var userLanguage = navigator.language || navigator.userLanguage;
+
+  if (userLanguage && userLanguage.toLowerCase() == "zh-tw") {
+    if (OriginElem.getAttribute("altzhtw")) label.innerHTML = OriginElem.getAttribute("altzhtw");
+  }
+
+  label.style.color = "white";
+  label.style.position = "absolute";
+
+  label.id = "tooltiptext_img";
+  // 將 label 元素添加到按鈕的父元素中
+  OriginElem.parentNode.appendChild(label);
+  label.style.top = "" + (OriginElem.height + 15) + "px";
+  label.style.left = "" + (OriginElem.getBoundingClientRect().x + (OriginElem.offsetWidth / 2) - (label.offsetWidth / 2)) + "px";
+}
+
+function onElementLeave() {
+  var elem = getByid("tooltiptext_img");
+  if (elem) elem.remove();
 }
