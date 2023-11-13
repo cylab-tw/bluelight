@@ -25,6 +25,54 @@ function html_onload() {
       jump2UpOrEnd(0, 'end');
     } else if (key === 17) {
       KeyCode_ctrl = true;
+    } else if (KeyboardKeys.key == '-') {
+      var viewport = GetViewport(), canvas = viewport.canvas();
+      var tempWidth = parseFloat(canvas.style.width);
+      var tempHeight = parseFloat(canvas.style.height)
+      var canvasW = GetViewportMark().style.width = canvas.style.width = tempWidth / 1.05 + "px";
+      var cnavsH = GetViewportMark().style.height = canvas.style.height = tempHeight / 1.05 + "px";
+      viewport.newMousePointX += Math.abs(tempWidth - (parseFloat(canvasW))) / 2;
+      viewport.newMousePointY += Math.abs(tempHeight - (parseFloat(cnavsH))) / 2;
+      viewport.NowCanvasSizeWidth = parseFloat(canvas.style.width);
+      viewport.NowCanvasSizeHeight = parseFloat(canvas.style.height);
+      setTransform();
+      if (openLink == true) {
+        for (var i = 0; i < Viewport_Total; i++) {
+          if (i == viewportNumber) continue;
+          GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = canvas.style.width;
+          GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = canvas.style.height;
+          GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
+          GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
+          GetViewport(i).newMousePointX = viewport.newMousePointX;
+          GetViewport(i).newMousePointY = viewport.newMousePointY;
+          setTransform(i);
+        }
+      }
+      for (var i = 0; i < Viewport_Total; i++)  displayRuler(i);
+    } else if (KeyboardKeys.key == '+') {
+      var viewport = GetViewport(), canvas = viewport.canvas();
+      var tempWidth = parseFloat(canvas.style.width);
+      var tempHeight = parseFloat(canvas.style.height)
+      var canvasW = GetViewportMark().style.width = canvas.style.width = tempWidth * 1.05 + "px";
+      var cnavsH = GetViewportMark().style.height = canvas.style.height = tempHeight * 1.05 + "px";
+      viewport.newMousePointX -= Math.abs(tempWidth - (parseFloat(canvasW))) / 2;
+      viewport.newMousePointY -= Math.abs(tempHeight - (parseFloat(cnavsH))) / 2;
+      viewport.NowCanvasSizeWidth = parseFloat(canvas.style.width);
+      viewport.NowCanvasSizeHeight = parseFloat(canvas.style.height);
+      setTransform();
+      if (openLink == true) {
+        for (var i = 0; i < Viewport_Total; i++) {
+          if (i == viewportNumber) continue;
+          GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = canvas.style.width;
+          GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = canvas.style.height;
+          GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
+          GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
+          GetViewport(i).newMousePointX = viewport.newMousePointX;
+          GetViewport(i).newMousePointY = viewport.newMousePointY;
+          setTransform(i);
+        }
+      }
+      for (var i = 0; i < Viewport_Total; i++)  displayRuler(i);
     }
   }
 
