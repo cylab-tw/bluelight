@@ -224,6 +224,40 @@ function html_onload() {
     drawBorder(this);
   }
 
+  getByid("Rotate_90").onclick = function () {
+    GetViewport().rotateValue = 90;
+    setTransform();
+    if (openLink == true) {
+      for (var z = 0; z < Viewport_Total; z++) {
+        GetViewport(z).rotateValue = GetViewport().rotateValue;
+        setTransform(z);
+      }
+    }
+  }
+
+  getByid("Rotate_180").onclick = function () {
+    GetViewport().rotateValue = 180;
+    setTransform();
+    if (openLink == true) {
+      for (var z = 0; z < Viewport_Total; z++) {
+        GetViewport(z).rotateValue = GetViewport().rotateValue;
+        setTransform(z);
+      }
+    }
+  }
+
+  getByid("Rotate_270").onclick = function () {
+    GetViewport().rotateValue = 270;
+    setTransform();
+    if (openLink == true) {
+      for (var z = 0; z < Viewport_Total; z++) {
+        GetViewport(z).rotateValue = GetViewport().rotateValue;
+        setTransform(z);
+      }
+    }
+  }
+
+
   getByid("WindowRevision").onclick = function () {
     if (this.enable == false) return;
     //BL_mode = 'windowlevel';
@@ -240,10 +274,21 @@ function html_onload() {
   }
 
   getByid("openMeasureImg").onclick = function () {
+    hideAllImgListDiv("openMeasureDIv");
     invertDisplayById('openMeasureDIv');
     if (getByid("openMeasureDIv").style.display == "none") getByid("MeasureImgParent").style.position = "";
     else {
       getByid("MeasureImgParent").style.position = "relative";
+      onElementLeave();
+    }
+  }
+
+  getByid("openTransformationsImg").onclick = function () {
+    hideAllImgListDiv("openTransformationsDiv");
+    invertDisplayById('openTransformationsDiv');
+    if (getByid("openTransformationsDiv").style.display == "none") getByid("TransformationsImgParent").style.position = "";
+    else {
+      getByid("TransformationsImgParent").style.position = "relative";
       onElementLeave();
     }
   }
@@ -595,4 +640,13 @@ function onElementOver(OriginElem) {
 function onElementLeave() {
   var elem = getByid("tooltiptext_img");
   if (elem) elem.remove();
+}
+function hideAllImgListDiv(id) {
+  for (var obj of getClass("imgListDiv")) {
+    if (id && obj.id == id) {
+     
+    }else{
+      obj.style.display = "none";
+    }
+  }
 }
