@@ -222,6 +222,12 @@ function loadLdcmview() {
     DicomCanvas1.className = "DicomCanvas";
     GetViewport(count - 1).appendChild(DicomCanvas1);
   }
+  //增加右側卷軸
+  count = 0;
+  while (count < Viewport_Total) {
+    count++;
+    GetViewport(count - 1).ScrollBar = new ScrollBar(GetViewport(count - 1));
+  }
 
   labelWC = getClass("labelWC");
   labelLT = getClass("labelLT");

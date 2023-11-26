@@ -269,6 +269,9 @@ function EnterRWD() {
     else getByid("rwdImgTag").style.display = "none";
     //刷新Viewport窗格
     SetTable();
+    //刷新ScrollBar的Style
+    //for (var slider of getClass("rightSlider")) slider.setStyle();
+    if (GetViewport(0)) for (var i = 0; i < Viewport_Total; i++) GetViewport(i).ScrollBar.reflesh();
 }
 
 function wadorsLoader(url, onlyload) {
@@ -822,6 +825,12 @@ function parseDicom(image, pixelData, viewportNum0) {
     displayAnnotation();
     for (var i = 0; i < Viewport_Total; i++)
         displayRuler(i);
+
+    //ScrollBar
+    var sopList = sortInstance(element.sop);
+    element.ScrollBar.setTotal(sopList.length);
+    element.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == element.InstanceNumber));
+    element.ScrollBar.reflesh();
 }
 
 

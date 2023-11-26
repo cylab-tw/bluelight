@@ -227,4 +227,54 @@ function scroll() {
         }
         AddMouseEvent();
     }
+};
+
+
+class ScrollBar {
+    constructor(viewport) {
+        this.viewport = viewport;
+        this.total = 0;
+        this.index = 0;
+        this.width = 15;
+        this.outerDIV = document.createElement("DIV");
+        this.innerDIV = document.createElement("DIV");
+
+        this.outerDIV.style.backgroundColor = "rgb(241,241,241)";
+        this.innerDIV.style.backgroundColor = "rgb(193,193,193)";
+
+        this.outerDIV.style.position = "absolute";
+        this.innerDIV.style.position = "absolute";
+
+        this.outerDIV.style.top = "0px";
+        this.innerDIV.style.top = "0px";
+
+        this.outerDIV.style.right = "0px";
+        this.innerDIV.style.right = "0px";
+
+        this.outerDIV.style.zIndex = "7";
+        this.innerDIV.style.zIndex = "8";
+
+        this.outerDIV.appendChild(this.innerDIV);
+        this.viewport.appendChild(this.outerDIV);
+        this.reflesh();
+    }
+    setTotal(num) {
+        this.total = num;
+    }
+    setIndex(num) {
+        this.index = num;
+    }
+    reflesh() {
+        this.outerDIV.style.width = this.width + "px";
+        this.innerDIV.style.width = this.width + "px";
+
+        this.outerDIV.style.height = "100%";//this.viewport.clientHeight + "px";
+        if (this.total <= 1) this.innerDIV.style.height = "0%";//this.viewport.clientHeight + "px";
+        else {
+            this.innerDIV.style.height = parseInt(100 / this.total) + "%";
+            this.innerDIV.style.top = ((((this.index) / this.total) * 100)) + "%";
+        }
+        //避免擋到Label
+        if (rightLabelPadding < this.width) rightLabelPadding = this.width + 2;
+    }
 }

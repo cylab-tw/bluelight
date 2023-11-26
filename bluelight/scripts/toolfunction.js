@@ -185,10 +185,21 @@ function SearchUid2Index(sop) {
     }
 }
 
-function SearchUid2IndexBySeries(sop) {
+function getSopAmountFromSeriesBySop(series) {
     for (var i = 0; i < Patient.StudyAmount; i++) {
         for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            if (Patient.Study[i].Series[j].SeriesUID == sop) {
+            if (Patient.Study[i].Series[j].SeriesUID == series) {
+                return Patient.Study[i].Series[j].SopAmount;
+            }
+        }
+    }
+    return 0;
+}
+
+function SearchUid2IndexBySeries(series) {
+    for (var i = 0; i < Patient.StudyAmount; i++) {
+        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
+            if (Patient.Study[i].Series[j].SeriesUID == series) {
                 return [i, j];
             }
         }
