@@ -29,7 +29,9 @@ function angle() {
             windowMouseY = GetmouseY(e);
             GetViewport().originalPointX = getCurrPoint(e)[0];
             GetViewport().originalPointY = getCurrPoint(e)[1];
-
+            angle_pounch(getCurrPoint(e)[0], getCurrPoint(e)[1]);
+            Angle_previous_choose = null;
+            if (Angle_now_choose) return;
             if (angle.angle_ == 3) angle.angle_ = 1;
             //if (angle.angle_ == 2) getByid("AngleLabel").style.display = '';
 
@@ -141,6 +143,16 @@ function angle() {
                     PatientMark.splice(PatientMark.indexOf(dcm), 1);
                     //return;
                 }
+                if (Angle_now_choose) {
+                    Angle_now_choose.mark.markX[Angle_now_choose.order] = currX;
+                    Angle_now_choose.mark.markY[Angle_now_choose.order] = currY;
+                    Angle_now_choose.mark.markX[3] = Angle_now_choose.mark.markX[0];
+                    Angle_now_choose.mark.markY[3] = Angle_now_choose.mark.markY[0];
+                    Angle_now_choose.mark.Text = getAnglelValueBy2Point(Angle_now_choose.mark);
+                    refreshMark(Angle_now_choose.dcm);
+                    //PatientMark.splice(PatientMark.indexOf(Angle_now_choose.dcm), 1);
+                    return;
+                }
             }
             GetViewport().originalPointX = currX;
             GetViewport().originalPointY = currY;
@@ -148,6 +160,16 @@ function angle() {
         Mouseup = function (e) {
             if (openMouseTool == true && rightMouseDown == true)
                 displayMark();
+
+            if (Angle_now_choose) {
+                Angle_now_choose.mark.markX[Angle_now_choose.order] = getCurrPoint(e)[0];
+                Angle_now_choose.mark.markY[Angle_now_choose.order] = getCurrPoint(e)[1];
+                Angle_now_choose.mark.markX[3] = Angle_now_choose.mark.markX[0];
+                Angle_now_choose.mark.markY[3] = Angle_now_choose.mark.markY[0];
+                Angle_now_choose.mark.Text = getAnglelValueBy2Point(Angle_now_choose.mark);
+                refreshMark(Angle_now_choose.dcm);
+                angle.angle_ = 3;
+            }
             if (angle.angle_ == 2) {
                 let angle2point = rotateCalculation(e);
                 AngleXY2 = angle2point;
@@ -199,11 +221,14 @@ function angle() {
                 //PatientMark.splice(PatientMark.indexOf(dcm), 1);
                 //displayAngleRuler();
                 //return;
+                Angle_previous_choose = dcm;
             }
             if (MouseDownCheck == true) {
                 if (angle.angle_ == 1) angle.angle_ = 2;
                 else if (angle.angle_ == 2) angle.angle_ = 3;
             }
+            if (Angle_now_choose) Angle_previous_choose = Angle_now_choose;
+            Angle_now_choose = null;
             MouseDownCheck = false;
             rightMouseDown = false;
         }
@@ -284,6 +309,49 @@ function angle() {
         AddMouseEvent();
     }
 }
+
+var Angle_now_choose = null;
+var Angle_previous_choose = null;
+function angle_pounch(currX, currY) {
+    let block_size = getMarkSize(GetViewportMark(), false) * 4;
+    let index = SearchUid2Index(GetViewport().sop);
+    let i = index[0],
+        j = index[1],
+        k = index[2];
+    for (var n = 0; n < PatientMark.length; n++) {
+        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
+            for (var m = 0; m < PatientMark[n].mark.length; m++) {
+                if (PatientMark[n].mark[m].type == "AngleRuler") {
+                    var tempMark = PatientMark[n].mark[m];
+                    var x1 = parseInt(tempMark.markX[0]);
+                    var y1 = parseInt(tempMark.markY[0]);
+
+                    PatientMark[n].mark[m].markX[0];
+                    if (currY + block_size >= y1 && currY - block_size <= y1 && currX + block_size >= x1 && currX - block_size <= x1) {
+                        Angle_now_choose = { dcm: PatientMark[n], mark: PatientMark[n].mark[m], order: 0 };
+                    }
+
+                    var x2 = parseInt(tempMark.markX[1]);
+                    var y2 = parseInt(tempMark.markY[1]);
+                    if (currY + block_size >= y2 && currY - block_size <= y2 && currX + block_size >= x2 && currX - block_size <= x2) {
+                        Angle_now_choose = { dcm: PatientMark[n], mark: PatientMark[n].mark[m], order: 1 };
+                    }
+
+                    var x3 = parseInt(tempMark.markX[2]);
+                    var y3 = parseInt(tempMark.markY[2]);
+                    if (currY + block_size >= y3 && currY - block_size <= y3 && currX + block_size >= x3 && currX - block_size <= x3) {
+                        Angle_now_choose = { dcm: PatientMark[n], mark: PatientMark[n].mark[m], order: 2 };
+                    }
+                    /*if (currY + block_size >= y1 && currX + block_size >= x1 / 2 + x2 / 2 && currY < y1 + block_size && currX < x1 / 2 + x2 / 2 + block_size) {
+
+                    }*/
+
+                }
+            }
+        }
+    }
+}
+
 function drawAngleRuler(obj) {
     var canvas = obj.canvas, mark = obj.mark;
     if (mark.type != "AngleRuler") return;
@@ -386,6 +454,43 @@ function displayAngleRuler() {
     tempctx.closePath();
     //displayAngleLabel();
 }
+
+function getAnglelValueBy2Point(mark) {
+    if (!angle.angle_) return;
+    var getAngle = ({
+        x: x1,
+        y: y1
+    }, {
+        x: x2,
+        y: y2
+    }) => {
+        const dot = x1 * x2 + y1 * y2
+        const det = x1 * y2 - y1 * x2
+        const angle = Math.atan2(det, dot) / Math.PI * 180
+        return (angle + 360) % 360
+    }
+    var angle1 = getAngle({
+        x: mark.markX[1] - mark.markX[2],
+        y: mark.markY[1] - mark.markY[2],
+    }, {
+        x: mark.markX[1] - mark.markX[0],
+        y: mark.markY[1] - mark.markY[0],
+    });
+    if (angle1 > 180) angle1 = 360 - angle1;
+    return parseInt(angle1) + "°";
+}
+
+window.addEventListener('keydown', (KeyboardKeys) => {
+    var key = KeyboardKeys.which
+
+    if ((BL_mode == 'angle') && Angle_previous_choose && (key === 46 || key === 110)) {
+        PatientMark.splice(PatientMark.indexOf(Angle_previous_choose.dcm), 1);
+        displayMark();
+        Angle_previous_choose = null;
+        refreshMarkFromSop(GetNowUid().sop);
+    }
+    Angle_previous_choose = null;
+});
 
 function getAnglelValue(e, Label) {
     if (!angle.angle_) return;
