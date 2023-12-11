@@ -22,13 +22,15 @@ function DisplaySeriesCount(viewportNum0) {
             return;
           }
         } else {
-          labelRB[viewportNum].innerText = "Im: " + viewport.InstanceNumber + "/" + (SeriesCount - 0) + "\n" + viewport.StudyDate;
+          if (viewport.NumberOfFrames && viewport.NumberOfFrames > 0) labelRB[viewportNum].innerText = "Im: " + viewport.framesNumber + "/" + (viewport.NumberOfFrames - 0) + "\n" + viewport.StudyDate;
+          else labelRB[viewportNum].innerText = "Im: " + viewport.InstanceNumber + "/" + (SeriesCount - 0) + "\n" + viewport.StudyDate;
           return;
         }
       }
     }
   }
-  labelRB[viewportNum].innerText = "Im: " + viewport.InstanceNumber + "/" + SeriesCount + "\n" + viewport.StudyDate;
+  if (viewport.NumberOfFrames && viewport.NumberOfFrames > 0) labelRB[viewportNum].innerText = "Im: " + viewport.framesNumber + "/" + viewport.NumberOfFrames + "\n" + viewport.StudyDate;
+  else labelRB[viewportNum].innerText = "Im: " + viewport.InstanceNumber + "/" + SeriesCount + "\n" + viewport.StudyDate;
 }
 
 function putLabel() {

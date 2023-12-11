@@ -511,7 +511,8 @@ function loadDicomMultiFrame(image, imageId, viewportNum0) {
             };
 
             loadUID(DICOM_obj);
-
+            GetViewport(viewportNum0).framesNumber = 0;
+            
             parseDicom(image, DICOM_obj.frames[0], viewportNum0);
             clearInterval(checkFrameLoadedInterval);
         }
@@ -550,7 +551,7 @@ function parseDicom(image, pixelData, viewportNum0) {
 
         if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
             var max = -99999999999, min = 99999999999;
-            if (image.MinPixel == undefined || image.MaxPixel == undefined) {
+            if (image.MinPixel == undefined || image.MaxPixel == undefined || (image.MinPixel == 0 && image.MaxPixel == 0)) {
                 for (var i in pixelData) {
                     if (pixelData[i] > max) max = pixelData[i];
                     if (pixelData[i] < min) min = pixelData[i];
@@ -827,10 +828,16 @@ function parseDicom(image, pixelData, viewportNum0) {
         displayRuler(i);
 
     //ScrollBar
-    var sopList = sortInstance(element.sop);
-    element.ScrollBar.setTotal(sopList.length);
-    element.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == element.InstanceNumber));
-    element.ScrollBar.reflesh();
+    if (element.NumberOfFrames && element.NumberOfFrames > 0&&element.framesNumber!=undefined&&element.framesNumber!=null) {
+        element.ScrollBar.setTotal(parseInt(element.NumberOfFrames));
+        element.ScrollBar.setIndex(parseInt(element.framesNumber));
+        element.ScrollBar.reflesh();
+    }else{
+        var sopList = sortInstance(element.sop);
+        element.ScrollBar.setTotal(sopList.length);
+        element.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == element.InstanceNumber));
+        element.ScrollBar.reflesh();
+    }
 }
 
 
