@@ -148,13 +148,13 @@ function html_onload() {
     }*/
   }
 
-  getByid("ClearMarkupButton").onclick = function () {
+  /*getByid("ClearMarkupButton").onclick = function () {
     PatientMark = [];
     for (var i = 0; i < Viewport_Total; i++) {
       var sop = GetViewport(i).sop;
       loadAndViewImage(getImgaeIdFromSop(sop), i);
     }
-  }
+  }*/
 
   getByid("ExportButton2").onclick = function () {
     var Export2dcm = function () {
