@@ -262,19 +262,6 @@ function readDicom(url, patientmark, openfile) {
         var byteArray = new Uint8Array(oReq.response);
         var dataSet = dicomParser.parseDicom(byteArray);
         readDicomOverlay(byteArray, dataSet, patientmark);
-        ////暫時取消的功能
-        /*
-        if (openfile && openfile == true) {
-          if (dataSet.string('x00080016') == '1.2.840.10008.5.1.4.1.1.481.2') {
-            LeftImg("Dose");
-          }
-          if (dataSet.string('x00080016') == '1.2.840.10008.5.1.4.1.1.481.3') {
-            LeftImg("Struct");
-          }
-          if (dataSet.string('x00080016') == '1.2.840.10008.5.1.4.1.1.481.5') {
-            LeftImg("Plan");
-          }
-        }*/
 
         if (dataSet.string('x00700001')) {
           var sop1;
@@ -718,90 +705,4 @@ function loadDicomSeg(image, imageId) {
     }
     x52009229_or_30(image.data.elements.x52009230, image.data.elements.x52009229);
   }
-}
-
-function loadUID(DICOM_obj) {
-  var study = DICOM_obj.study, series = DICOM_obj.series, sop = DICOM_obj.sop;
-  var instance = DICOM_obj.instance, imageId = DICOM_obj.imageId, patientId = DICOM_obj.patientId, image = DICOM_obj.image, pixelData = DICOM_obj.pixelData;
-  var frames = DICOM_obj.frames;
-  var pdf = DICOM_obj.pdf;
-  var Hierarchy = 0;
-  var NumberOfStudy = -1;
-  for (var i = 0; i < Patient.StudyAmount; i++) {
-    if (Patient.Study[i].StudyUID == study)
-      NumberOfStudy = i;
-  }
-  if (NumberOfStudy == -1) {
-    var Study = {};
-    Study.StudyUID = study;
-    Study.PatientId = patientId;
-    Study.SeriesAmount = 1;
-    Study.Series = [];
-    var Series = {};
-    Series.SeriesUID = series;
-    Series.SopAmount = 1;
-    Series.Sop = [];
-    var Sop = {};
-    Sop.InstanceNumber = instance;
-    Sop.SopUID = sop;
-    Sop.imageId = imageId;
-    Sop.image = image;
-    Sop.pixelData = pixelData;
-    Sop.pdf = pdf;
-    Sop.frames = frames;
-    getPatientbyImageID[imageId] = Sop;
-    Series.Sop.push(Sop); Series.Sop[Sop.SopUID] = Sop;
-    Study.Series.push(Series); Study.Series[Series.SeriesUID] = Series;
-    Patient.Study.push(Study); Patient.Study[Study.StudyUID] = Study;
-    Patient.StudyAmount += 1;
-  } else {
-    Hierarchy = 1;
-    var isSeries = -1;
-    for (var i = 0; i < Patient.Study[NumberOfStudy].SeriesAmount; i++) {
-      if (Patient.Study[NumberOfStudy].Series[i].SeriesUID == series)
-        isSeries = i;
-    }
-    if (isSeries == -1) {
-      var Series = {};
-      Series.SeriesUID = series;
-      Series.SopAmount = 1;
-      Series.Sop = [];
-      var Sop = {};
-      Sop.InstanceNumber = instance;
-      Sop.SopUID = sop;
-      Sop.imageId = imageId;
-      Sop.image = image;
-      Sop.pixelData = pixelData;
-      Sop.pdf = pdf;
-      Sop.frames = frames;
-      getPatientbyImageID[imageId] = Sop;
-      Series.Sop.push(Sop); Series.Sop[Sop.SopUID] = Sop;
-      Patient.Study[NumberOfStudy].Series.push(Series); Patient.Study[NumberOfStudy].Series[Series.SeriesUID] = Series;
-      Patient.Study[NumberOfStudy].SeriesAmount += 1;
-    } else {
-      Hierarchy = 2;
-      var isSop = -1;
-      for (var i = 0; i < Patient.Study[NumberOfStudy].Series[isSeries].SopAmount; i++) {
-        if (Patient.Study[NumberOfStudy].Series[isSeries].Sop[i].SopUID == sop)
-          isSop = i;
-      }
-      if (isSop == -1) {
-        var Sop = {};
-        Sop.InstanceNumber = instance;
-        Sop.SopUID = sop;
-        Sop.imageId = imageId;
-        Sop.image = image;
-        Sop.pixelData = pixelData;
-        Sop.pdf = pdf;
-        Sop.frames = frames;
-        Patient.Study[NumberOfStudy].Series[isSeries].Sop.push(Sop); Patient.Study[NumberOfStudy].Series[isSeries].Sop[Sop.SopUID] = Sop;
-        Patient.Study[NumberOfStudy].Series[isSeries].SopAmount += 1;
-        getPatientbyImageID[imageId] = Sop;
-      } else {
-        //  console.log("重複載入");
-        Hierarchy = -1;
-      }
-    }
-  }
-  return Hierarchy;
 }

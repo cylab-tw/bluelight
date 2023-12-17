@@ -524,15 +524,15 @@ function drawTextAnnotationEntity(canvas, mark, viewport) {
 
 function getMarkSize(MarkCanvas, sizeCheck) {
     var lineSize = parseFloat(getByid('markSizeText').value);
-    var lineWid = 2 * parseFloat(MarkCanvas.width) / parseFloat(Css(MarkCanvas, 'width'));
+    var lineWid = 2 * parseFloat(MarkCanvas.width) / parseFloat(MarkCanvas.style.width);
     if (sizeCheck == true && lineWid <= 0) {
-        lineWid = parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width);
+        lineWid = parseFloat(MarkCanvas.style.width) / parseFloat(MarkCanvas.width);
         if (lineWid <= 1.5) lineWid = 1.5;
-        lineWid *= Math.abs(parseFloat(MarkCanvas.width) / parseFloat(Css(MarkCanvas, 'width')));
+        lineWid *= Math.abs(parseFloat(MarkCanvas.width) / parseFloat(MarkCanvas.style.width));
     } else if (sizeCheck == true) {
-        lineWid *= Math.abs(parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width));
+        lineWid *= Math.abs(parseFloat(MarkCanvas.style.width) / parseFloat(MarkCanvas.width));
     } else if (lineWid <= 0) {
-        lineWid = parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width);
+        lineWid = parseFloat(MarkCanvas.style.width) / parseFloat(MarkCanvas.width);
     }
     if (lineWid <= 1.5) lineWid = 1.5;
     return ((Math.abs(lineWid)) * 2 * lineSize);
@@ -556,7 +556,7 @@ function displayMark(viewportNum0) {
     setMarkColor(ctx);
     //try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
     var patientMark_all = PatientMark.filter(M => M.sop == viewport.sop);
-    var patientMark_enable = patientMark_all.filter(M => checkMark2(viewport.SeriesInstanceUID, M));
+    var patientMark_enable = patientMark_all.filter(M => checkMarkEnabled(viewport.SeriesInstanceUID, M));
 
     //compatibleMark
     for (var Mark of patientMark_all) {

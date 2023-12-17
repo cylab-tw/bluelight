@@ -16,9 +16,9 @@ function html_onload() {
   function KeyDown(KeyboardKeys) {
     var key = KeyboardKeys.which
     if (key === 33) {
-      jump2UpOrEnd(getNowInstance() - parseInt(getAllSop().length / 10) + 1, undefined);
+      jump2UpOrEnd(GetViewport().InstanceNumber - parseInt(getAllSop().length / 10) + 1, undefined);
     } else if (key === 34) {
-      jump2UpOrEnd(getNowInstance() + parseInt(getAllSop().length / 10) + 1, undefined);
+      jump2UpOrEnd(GetViewport().InstanceNumber + parseInt(getAllSop().length / 10) + 1, undefined);
     } else if (key === 36) {
       jump2UpOrEnd(0, 'up');
     } else if (key === 35) {
@@ -225,7 +225,18 @@ function html_onload() {
   }
 
   getByid("Rotate_90").onclick = function () {
-    GetViewport().rotateValue = 90;
+    GetViewport().rotateValue +=90;
+    setTransform();
+    if (openLink == true) {
+      for (var z = 0; z < Viewport_Total; z++) {
+        GetViewport(z).rotateValue = GetViewport().rotateValue;
+        setTransform(z);
+      }
+    }
+  }
+  
+  getByid("Rotate_i90").onclick = function () {
+    GetViewport().rotateValue -=90;
     setTransform();
     if (openLink == true) {
       for (var z = 0; z < Viewport_Total; z++) {
@@ -235,7 +246,7 @@ function html_onload() {
     }
   }
 
-  getByid("Rotate_180").onclick = function () {
+  /*getByid("Rotate_180").onclick = function () {
     GetViewport().rotateValue = 180;
     setTransform();
     if (openLink == true) {
@@ -255,8 +266,7 @@ function html_onload() {
         setTransform(z);
       }
     }
-  }
-
+  }*/
 
   getByid("WindowRevision").onclick = function () {
     if (this.enable == false) return;
@@ -582,16 +592,12 @@ function changeLinkImg() {
 
 function drawBorder(element) {
   if (element != getByid("b_Scroll")) openChangeFile = false;
-  Css(getByid("MouseOperation"), 'border', "");
-  Css(getByid("WindowRevision"), 'border', "");
-  Css(getByid("MeasureRuler"), 'border', "");
-  Css(getByid("MouseRotate"), 'border', "");
-  Css(getByid("playvideo"), 'border', "");
-  Css(getByid("zoom"), 'border', "");
-  Css(getByid("b_Scroll"), 'border', "");
-  Css(getByid("AngleRuler"), 'border', "");
-  Css(element, 'border', 3 + "px #FFFFFF solid");
-  Css(element, 'borderRadius', "3px 3px 3px 3px");
+
+  var list = ["MouseOperation", "WindowRevision", "MeasureRuler", "MouseRotate", "playvideo", "zoom", "b_Scroll", "AngleRuler"]
+  for (elemID of list) getByid(elemID).style['border'] = "";
+
+  element.style["border"] = 3 + "px #FFFFFF solid"
+  element.style["borderRadius"] = "3px 3px 3px 3px"
 }
 
 function img2darkByClass(classname, dark) {
@@ -644,8 +650,8 @@ function onElementLeave() {
 function hideAllImgListDiv(id) {
   for (var obj of getClass("imgListDiv")) {
     if (id && obj.id == id) {
-     
-    }else{
+
+    } else {
       obj.style.display = "none";
     }
   }

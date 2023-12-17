@@ -369,7 +369,8 @@ function initVR() {
                 elem.getElementsByClassName("VrCanvas")[0] = null;
             } catch (ex) { }
         }
-        VIEWPORT.lockViewportList = [];
+        //VIEWPORT.lockViewportList = [];
+        ViewPortList[0].lockRender = false;
         // o3DListLength = 0;
         window.removeEventListener("resize", resizeVR, false);
         GetViewport(0).removeEventListener("mousemove", mousemove3D, false);
@@ -442,7 +443,9 @@ function initVR() {
         GetViewportMark().style.display = "none";
         GetViewport(0).canvas().style.display = "none";
         GetViewportMark(0).style.display = "none";
-        VIEWPORT.lockViewportList = [0];
+        //VIEWPORT.lockViewportList = [0];
+        ViewPortList[0].lockRender = true;
+
         window.addEventListener("resize", resizeVR, false);
         for (var i1 = 0; i1 < Viewport_Total; i1++) {
             GetViewport(i1).removeEventListener("contextmenu", contextmenuF, false);
@@ -1952,7 +1955,8 @@ function display3DMark(MarkCanvas, sop) {
     for (var n = 0; n < PatientMark.length; n++) {
         if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
             for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (checkMark(i, j, n) == 0) continue;
+                //if (checkMark(i, j, n) == 0) continue;
+                if (checkMarkEnabled(Patient.Study[i].Series[j].SeriesUID, PatientMark[n]) == 0) continue;
                 var mark = PatientMark[n].mark[m];
                 mark.parent = PatientMark[n];
                 if (mark.type == "SEG") drawSEG(MarkCanvas, mark, viewport);
@@ -1964,7 +1968,8 @@ function display3DMark(MarkCanvas, sop) {
     for (var n = 0; n < PatientMark.length; n++) {
         if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
             for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (checkMark(i, j, n) == 0) continue;
+                //if (checkMark(i, j, n) == 0) continue;
+                if (checkMarkEnabled(Patient.Study[i].Series[j].SeriesUID, PatientMark[n]) == 0) continue;
                 var mark = PatientMark[n].mark[m];
                 mark.parent = PatientMark[n];
                 if (mark.type == "XML_mark") drawXML_mark(MarkCanvas, mark, PatientMark[n].showName);
@@ -1982,7 +1987,8 @@ function display3DMark(MarkCanvas, sop) {
     for (var n = 0; n < PatientMark.length; n++) {
         if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
             for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (checkMark(i, j, n) == 0) continue;
+                //if (checkMark(i, j, n) == 0) continue;
+                if (checkMarkEnabled(Patient.Study[i].Series[j].SeriesUID, PatientMark[n]) == 0) continue;
                 var mark = PatientMark[n].mark[m];
                 mark.parent = PatientMark[n];
                 if (mark.type == "RTSS") drawRTSS(MarkCanvas, mark, viewport);

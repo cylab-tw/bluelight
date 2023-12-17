@@ -43,7 +43,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
         PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
         displayMark();
         Graphic_now_choose = null;
-        refreshMarkFromSop(GetNowUid().sop);
+        refreshMarkFromSop(GetViewport().sop);
     }
 });
 
@@ -590,16 +590,16 @@ function writegsps() {
                 displayRuler(i);
 
             if (MouseDownCheck == true && getByid("GspsCIRCLE").selected == true) { //flag
-                let Uid = SearchNowUid();
                 var dcm = {};
-                dcm.study = Uid.studyuid;
-                dcm.series = Uid.sreiesuid;
+                dcm.study = GetViewport().study;
+                dcm.series = GetViewport().series;
+                dcm.sop = GetViewport().sop;
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
-                dcm.sop = Uid.sopuid;
+                
                 var DcmMarkLength = dcm.mark.length - 1;
                 dcm.mark[DcmMarkLength].type = "CIRCLE";
                 dcm.mark[DcmMarkLength].markX = [];
@@ -616,16 +616,16 @@ function writegsps() {
                 PatientMark.splice(PatientMark.indexOf(dcm), 1);
             }
             if (MouseDownCheck == true && getByid("GspsLINE").selected == true) {
-                let Uid = SearchNowUid();
                 var dcm = {};
-                dcm.study = Uid.studyuid;
-                dcm.series = Uid.sreiesuid;
+                dcm.study = GetViewport().study;
+                dcm.series = GetViewport().series;
+                dcm.sop = GetViewport().sop;
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = "" + getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
-                dcm.sop = Uid.sopuid;
+               
                 var DcmMarkLength = dcm.mark.length - 1;
                 dcm.mark[DcmMarkLength].type = "POLYLINE";
                 dcm.mark[DcmMarkLength].markX = [];
@@ -659,10 +659,10 @@ function writegsps() {
                 if (GetViewport().originalPointY > GetViewport().imageHeight)
                     GetViewport().originalPointY = GetViewport().imageHeight;
                 if (!Graphic_now_choose && MouseDownCheck == true) {
-                    let Uid = SearchNowUid();
                     var dcm = {};
-                    dcm.study = Uid.studyuid;
-                    dcm.series = Uid.sreiesuid;
+                    dcm.study = GetViewport().study;
+                    dcm.series = GetViewport().series;
+                    dcm.sop = GetViewport().sop;
                     dcm.color = GetGraphicColor();
                     if (getByid("GspsPOLYLINE").selected == true) dcm.color = GetGSPSColor();
                     dcm.mark = [];
@@ -670,7 +670,7 @@ function writegsps() {
                     dcm.hideName = dcm.showName;
                     if (getByid("GspsPOLYLINE").selected == true) dcm.showName = getByid("GspsName").value;
                     dcm.mark.push({});
-                    dcm.sop = Uid.sopuid;
+                 
                     var DcmMarkLength = dcm.mark.length - 1;
                     dcm.mark[DcmMarkLength].type = "POLYLINE";
                     dcm.mark[DcmMarkLength].markX = [];
@@ -744,16 +744,16 @@ function writegsps() {
             MouseDownCheck = false;
             rightMouseDown = false;
             if (getByid("GspsLINE").selected == true) {
-                let Uid = SearchNowUid();
                 var dcm = {};
-                dcm.study = Uid.studyuid;
-                dcm.series = Uid.sreiesuid;
+                dcm.study = GetViewport().study;
+                dcm.series = GetViewport().series;
+                dcm.sop = GetViewport().sop;
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = "" + getByid("xmlMarkNameText").value; //"" + getByid("xmlMarkNameText").value;
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
-                dcm.sop = Uid.sopuid;
+               
                 var DcmMarkLength = dcm.mark.length - 1;
                 dcm.mark[DcmMarkLength].type = "POLYLINE";
                 dcm.mark[DcmMarkLength].markX = [];
@@ -772,16 +772,16 @@ function writegsps() {
                 };
             } //flag
             if (getByid("GspsCIRCLE").selected == true) {
-                let Uid = SearchNowUid();
                 var dcm = {};
-                dcm.study = Uid.studyuid;
-                dcm.series = Uid.sreiesuid;
+                dcm.study = GetViewport().study;
+                dcm.series = GetViewport().series;
+                dcm.sop = GetViewport().sop;
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = getByid("GspsName").value;
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
-                dcm.sop = Uid.sopuid;
+              
                 var DcmMarkLength = dcm.mark.length - 1;
                 dcm.mark[DcmMarkLength].type = "CIRCLE";
                 dcm.mark[DcmMarkLength].markX = [];
@@ -816,10 +816,10 @@ function writegsps() {
                     GetViewport().originalPointX = GetViewport().imageWidth;
                 if (GetViewport().originalPointY > GetViewport().imageHeight)
                     GetViewport().originalPointY = GetViewport().imageHeight;
-                let Uid = SearchNowUid();
                 var dcm = {};
-                dcm.study = Uid.studyuid;
-                dcm.series = Uid.sreiesuid;
+                dcm.study = GetViewport().study;
+                dcm.series = GetViewport().series;
+                dcm.sop = GetViewport().sop;
                 dcm.color = GetGraphicColor();
                 if (getByid("GspsPOLYLINE").selected == true) dcm.color = GetGSPSColor();
                 dcm.mark = [];
@@ -828,7 +828,7 @@ function writegsps() {
                 if (getByid("GspsPOLYLINE").selected == true) dcm.showName = getByid("GspsName").value;
 
                 dcm.mark.push({});
-                dcm.sop = Uid.sopuid;
+               
                 var DcmMarkLength = dcm.mark.length - 1;
                 dcm.mark[DcmMarkLength].type = "POLYLINE";
                 dcm.mark[DcmMarkLength].markX = [];

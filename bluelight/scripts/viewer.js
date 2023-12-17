@@ -43,23 +43,22 @@ VIEWPORT.initImagePosition = function (viewport) {
 }
 
 VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
-    labelLT = getClass("labelLT");
-    labelRT = getClass("labelRT");
-    labelRB = getClass("labelRB");
+    var label_LT = getClass("labelLT")[viewportNum];
+    var label_RT = getClass("labelRT")[viewportNum];
     var date = element.StudyDate;
     var time = element.StudyTime;
     date = ("" + date).replace(/^(\d{4})(\d\d)(\d\d)$/, '$1/$2/$3');
     time = ("" + time).replace(/^(\d{2})(\d\d)(\d\d)/, '$1:$2:$3');
     date = date + " " + time.substr(0, 8);
     //清空label的數值
-    labelLT[viewportNum].innerHTML = labelRT[viewportNum].innerHTML = "";
+    label_LT.innerHTML = label_RT.innerHTML = "";
     //依照dicom tags設定檔載入影像
     function htmlEntities(str) {
         str = Null2Empty(str);
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace("\r\n", "<br/>").replace("\n", "<br/>");
     }
     for (var i = 0; i < DicomTags.LT.name.length; i++)
-        labelLT[viewportNum].innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
+        label_LT.innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
     for (var i = 0; i < DicomTags.RT.name.length; i++) {
         //避免PatientName出現中文亂碼
         if ("x" + DicomTags.RT.tag[i] == 'x00100010') {
@@ -68,9 +67,9 @@ VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
             var textDecoder = new TextDecoder('utf-8');
             var decodedString = textDecoder.decode(data);
             //element.PatientName = decodedString;
-            labelRT[viewportNum].innerHTML += "" + DicomTags.RT.name[i] + " " + htmlEntities(decodedString) + "<br/>";
+            label_RT.innerHTML += "" + DicomTags.RT.name[i] + " " + htmlEntities(decodedString) + "<br/>";
         } else {
-            labelRT[viewportNum].innerHTML += "" + DicomTags.RT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.RT.tag[i])) + "<br/>";
+            label_RT.innerHTML += "" + DicomTags.RT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.RT.tag[i])) + "<br/>";
         }
     }
 }
@@ -82,7 +81,7 @@ VIEWPORT.loadViewport = function (element, image, viewportNum) {
 }
 VIEWPORT.loadViewportList = ['initImagePosition', 'initPixelSpacing', 'initImageOrientation', 'putLabel2Element', 'delPDFView'];
 
-VIEWPORT.lockViewportList = [];
+//VIEWPORT.lockViewportList = [];
 
 /*
 initImagePosition(element);
@@ -94,146 +93,21 @@ putLabel2Element(element, image, viewportNum);//putLabel
 //當視窗大小改變
 window.onresize = function () {
     //設定左側面板的style
-    getByid("LeftPicture").style = "display: flex;flex-direction: column;position: absolute;z-index: 9";
-    if (parseInt(getByid("LeftPicture").offsetHeight) + 10 >= window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) { //getByid("LeftPicture").style.height=""+(window.innerHeight- document.getElementsByClassName("container")[0].offsetTop- (bordersize * 2))+"px";
-        getByid("LeftPicture").style = "overflow-y: scroll;display: flex;flex-direction: column;position: absolute;z-index: 9;height:" + (window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) + "px;"
-    }
+    leftLayout.reflesh();
     //刷新每個Viewport
     for (i = 0; i < Viewport_Total; i++) {
         try {
             var sop = GetViewport(i).sop;
             var uid = SearchUid2Json(sop);
             //NowResize = true;
-            //20210919新增
-            //NowSeries = '';
             GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
             loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId, i);
         } catch (ex) { }
     }
 
-    //暫時移除的功能
-    /*if (openPenDraw == true) {
-        var WandH = getFixSize(window.innerWidth, window.innerHeight, GetViewport(0));
-        GetViewport(0).style = "position:relative;float: top;left:100px;width:calc(100% - " + (100 + (bordersize * 2)) + "px);" + "height:" + (WandH[1] - (bordersize * 2)) + "px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;margin:0px";
-    }*/
-    try { //需要再做更正--*
-        var height = window.innerHeight;
-        while (height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2) && height >= 10) height -= 5;
-        getByid("cornerstonePenCanvas").getElementsByClassName("CornerstoneViewport")[0]
-            .getElementsByClassName("viewport-element")[0].getElementsByClassName("cornerstone-canvas")[0].
-            style.height = "" + height + "px";
-    } catch (ex) { }
     EnterRWD();
 }
 
-
-function displayImg2LefyCanvas(DicomCanvas, image, pixelData) {
-    DicomCanvas.width = 100;
-    DicomCanvas.height = 100;
-    DicomCanvas.style.width = 66 + "px";
-    DicomCanvas.style.height = 66 + "px";
-    var ctx = DicomCanvas.getContext("2d");
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, 100, 100);
-    ctx.fillStyle = "gray";
-    function roundRect(ctx, x, y, w, h, r = 10) {
-        if (w < 2 * r) r = w / 2;
-        if (h < 2 * r) r = h / 2;
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.arcTo(x + w, y, x + w, y + h, r);
-        ctx.arcTo(x + w, y + h, x, y + h, r);
-        ctx.arcTo(x, y + h, x, y, r);
-        ctx.arcTo(x, y, x + w, y, r);
-        ctx.closePath();
-        ctx.fill();
-    }
-    roundRect(ctx, 10, 10, 80, 80, 10);
-    ctx.beginPath();
-    ctx.fillStyle = "white";
-    ctx.font = "32px serif";
-    ctx.closePath();
-    ctx.fillText("PDF", 20, 59);
-    ctx.closePath();
-    ctx.fill();
-}
-
-function displayLefyCanvas(DicomCanvas, image, pixelData) {
-    DicomCanvas.width = image.width;
-    DicomCanvas.height = image.height
-    DicomCanvas.style.width = 66 + "px";
-    DicomCanvas.style.height = 66 + "px";
-    var ctx2 = DicomCanvas.getContext("2d");
-    var imgData2 = ctx2.createImageData(image.width, image.height);
-    if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
-        var max = -99999999999, min = 99999999999;
-        if (image.MinPixel == undefined || image.MaxPixel == undefined) {
-            for (var i in pixelData) {
-                if (pixelData[i] > max) max = pixelData[i];
-                if (pixelData[i] < min) min = pixelData[i];
-            }
-            image.MinPixel = min; image.MaxPixel = max;
-        }
-        min = image.MinPixel; max = image.MaxPixel;
-        if (min != max && min != undefined && max != undefined) {
-            if (image.color == true) {
-                for (var i = imgData2.data.length; i >= 0; i -= 4) {
-                    imgData2.data[i + 0] = parseInt((pixelData[i] / (max - min)) * 255);
-                    imgData2.data[i + 1] = parseInt((pixelData[i + 1] / (max - min)) * 255);
-                    imgData2.data[i + 2] = parseInt((pixelData[i + 2] / (max - min)) * 255);
-                    imgData2.data[i + 3] = 255;
-                }
-            } else {
-                for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
-                    imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt((pixelData[j] / (max - min)) * 255);
-                    imgData2.data[i + 3] = 255;
-                }
-            }
-            ctx2.putImageData(imgData2, 0, 0);
-        }
-    } else {
-        var windowCenter = image.windowCenter;
-        var windowWidth = image.windowWidth;
-        var high = windowCenter + (windowWidth / 2);
-        var low = windowCenter - (windowWidth / 2);
-        var intercept = image.intercept;
-        if (CheckNull(intercept)) intercept = 0;
-        var slope = image.slope;
-        if (CheckNull(slope)) slope = 1;
-        var multiplication = 255 / ((high - low)) * slope;
-        var addition = (- low + intercept) / (high - low) * 255;
-        if (image.color == true) {
-            for (var i = imgData2.data.length; i >= 0; i -= 4) {
-                imgData2.data[i + 0] = pixelData[i] * multiplication + addition;
-                imgData2.data[i + 1] = pixelData[i + 1] * multiplication + addition;
-                imgData2.data[i + 2] = pixelData[i + 2] * multiplication + addition;
-                imgData2.data[i + 3] = 255;
-            }
-        } else {
-            for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
-                imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = pixelData[j] * multiplication + addition;
-                imgData2.data[i + 3] = 255;
-            }
-        }
-        ctx2.putImageData(imgData2, 0, 0);
-    }
-    var invert = (image.invert == true);
-    function mirrorImage(ctx, picture, x = 0, y = 0, horizontal = false, vertical = false) {
-        ctx.save();  // save the current canvas state
-        ctx.setTransform(
-            horizontal ? -1 : 1, 0, // set the direction of x axis
-            0, vertical ? -1 : 1,   // set the direction of y axis
-            x + (horizontal ? image.width : 0), // set the x origin
-            y + (vertical ? image.height : 0)   // set the y origin
-        );
-        if (invert == true) ctx.filter = "invert()";
-        ctx.drawImage(picture, 0, 0);
-        ctx.restore(); // restore the state as it was when this function was called
-    }
-    if (invert == true) {
-        mirrorImage(ctx2, DicomCanvas, 0, 0, GetViewport().openHorizontalFlip, GetViewport().openVerticalFlip);
-    }
-}
 //執行icon圖示的摺疊效果
 function EnterRWD() {
 
@@ -423,6 +297,7 @@ function displayPDF(pdf) {
 }
 
 function parseDicomWithoutImage(dataSet, imageId) {
+    //目前僅限於pdf的情況
     if (dataSet.string("x00020002") == '1.2.840.10008.5.1.4.1.1.104.1') {
         var fileTag = dataSet.elements.x00420011;
         var pdfByteArray = dataSet.byteArray.slice(fileTag.dataOffset, fileTag.dataOffset + fileTag.length);
@@ -450,24 +325,8 @@ function parseDicomWithoutImage(dataSet, imageId) {
             }
         }
 
-        //如果未曾出現在左側面板，就加到左側面板
-        if (checkleftCanvas == -1) {
-            var newView = SetToLeft(dataSet.string('x0020000e'), -1, "patientID:" + securePassword(0, 99999, 1));
-            leftCanvasStudy.push(dataSet.string('x0020000e'));
-            var NewCanvas = document.createElement("CANVAS");
-            NewCanvas.className = "LeftCanvas";
-            newView.appendChild(NewCanvas);
-            displayImg2LefyCanvas(NewCanvas);
-        } else {
-            var checkNum;
-            for (var dCount = 0; dCount <= dicomImageCount; dCount++) {
-                if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == image.data.string('x0020000e')) {
-                    checkNum = dCount;
-                    break;
-                }
-            }
-            if (checkNum != undefined) SetToLeft(dataSet.string('x0020000e'), checkNum, "patientID:" + securePassword(0, 99999, 1));
-        }
+        //改成無論是否曾出現在左側面板，都嘗試加到左側面板
+        leftLayout.setImg2Left(new QRLv(dataSet),"patientID:" + securePassword(0, 99999, 1));
 
         dicomImageCount += 1;
         displayPDF(pdf);
@@ -512,7 +371,7 @@ function loadDicomMultiFrame(image, imageId, viewportNum0) {
 
             loadUID(DICOM_obj);
             GetViewport(viewportNum0).framesNumber = 0;
-            
+
             parseDicom(image, DICOM_obj.frames[0], viewportNum0);
             clearInterval(checkFrameLoadedInterval);
         }
@@ -523,9 +382,11 @@ function parseDicom(image, pixelData, viewportNum0) {
     var viewportNum;
     if (viewportNum0 >= 0) viewportNum = viewportNum0;
     else viewportNum = viewportNumber;
-    if (VIEWPORT.lockViewportList && VIEWPORT.lockViewportList.includes(viewportNum)) return;
+    //if (VIEWPORT.lockViewportList && VIEWPORT.lockViewportList.includes(viewportNum)) return;
 
     var element = GetViewport(viewportNum);
+    if (element.enable == false) return;
+    if (element.lockRender == true) return;
     //if (viewportNum0 >= 0) element = GetViewport(viewportNum);
     var MarkCanvas = GetViewportMark(viewportNum);
     //if (viewportNum0 >= 0) MarkCanvas = GetViewportMark((viewportNum));
@@ -538,6 +399,8 @@ function parseDicom(image, pixelData, viewportNum0) {
         parseDicomWithoutImage(image.data, image.imageId);
         return;
     }
+    if (image.data.intString("x00280008") > 1) element.obj.QRLevel = "frames";
+    else element.obj.QRLevel = "series";
 
     var PreviousSeriesInstanceUID = element.SeriesInstanceUID == undefined ? "undefined" : element.SeriesInstanceUID;
 
@@ -712,8 +575,6 @@ function parseDicom(image, pixelData, viewportNum0) {
     element.imageWidth = image.width;
     element.imageHeight = image.height;
 
-    //代表如果當前載入的這張是目前選擇的影像
-    //var ifNowSeries = false; //--*
     //如果現在載入的這張跟上次載入的不一樣
     if (!(PreviousSeriesInstanceUID == element.SeriesInstanceUID && element.windowWidthList != 0) || WindowOpen == false) {
         element.windowCenterList = image.windowCenter;
@@ -727,7 +588,6 @@ function parseDicom(image, pixelData, viewportNum0) {
         //重置縮放大小
         element.NowCanvasSizeWidth = element.NowCanvasSizeHeight = null;
     } else { //如果一樣
-        //ifNowSeries = true;
         if (element.newMousePointX == null) element.newMousePointX = element.newMousePointY = 0;
     }
 
@@ -740,29 +600,17 @@ function parseDicom(image, pixelData, viewportNum0) {
         }
     }
 
-    //如果未曾出現在左側面板，就加到左側面板
-    if (checkleftCanvas == -1) {
-        var newView = SetToLeft(image.data.string('x0020000e'), -1, image.data.string('x00100020'));
-        leftCanvasStudy.push(image.data.string('x0020000e'));
-        var NewCanvas = document.createElement("CANVAS");
-        NewCanvas.className = "LeftCanvas";
-        newView.appendChild(NewCanvas);
-        displayLefyCanvas(NewCanvas, image, pixelData);
-        // showTheImage(newView, image, 'leftCanvas', null, viewportNum);
-    } else {
-        var checkNum;
-        for (var dCount = 0; dCount <= dicomImageCount; dCount++) {
-            if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == image.data.string('x0020000e')) {
-                checkNum = dCount;
-                break;
-            }
-        }
-        if (checkNum != undefined) SetToLeft(image.data.string('x0020000e'), checkNum, image.data.string('x00100020'));
-    }
+    //改成無論是否曾出現在左側面板，都嘗試加到左側面板
+    leftLayout.setImg2Left(new QRLv(image.data), image.data.string('x00100020'));
+    leftLayout.appendCanvasBySeries(element.SeriesInstanceUID, image, pixelData);
+    leftLayout.refleshMarkWithSeries(element.SeriesInstanceUID);
+
     //顯示資訊到label
     DisplaySeriesCount(viewportNum);
     var HandW = getStretchSize(element.imageWidth, element.imageHeight, element);
     element.style = "position:block;left:100px;width:" + element.imageWidth + "px;height:" + element.imageHeight + "px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;";
+    element.study = element.StudyInstanceUID;
+    element.series = element.SeriesInstanceUID;
     element.sop = element.SOPInstanceUID;
 
     //渲染影像到viewport和原始影像
@@ -775,7 +623,6 @@ function parseDicom(image, pixelData, viewportNum0) {
 
     textWC = getByid("textWC");
     textWW = getByid("textWW");
-    labelWC = getClass("labelWC");
 
     var MainCanvas = element.canvas();
     SetTable();
@@ -828,18 +675,17 @@ function parseDicom(image, pixelData, viewportNum0) {
         displayRuler(i);
 
     //ScrollBar
-    if (element.NumberOfFrames && element.NumberOfFrames > 0&&element.framesNumber!=undefined&&element.framesNumber!=null) {
+    if (element.NumberOfFrames && element.NumberOfFrames > 0 && element.framesNumber != undefined && element.framesNumber != null) {
         element.ScrollBar.setTotal(parseInt(element.NumberOfFrames));
         element.ScrollBar.setIndex(parseInt(element.framesNumber));
         element.ScrollBar.reflesh();
-    }else{
+    } else {
         var sopList = sortInstance(element.sop);
         element.ScrollBar.setTotal(sopList.length);
         element.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == element.InstanceNumber));
         element.ScrollBar.reflesh();
     }
 }
-
 
 function onlyLoadImage(imageId) {
     var dicomData = getPatientbyImageID[imageId];
@@ -878,9 +724,6 @@ function loadAndViewImage(imageId, viewportNum0, framesNumber) {
     var MarkCanvas = GetViewportMark(viewportNum);
     //if (viewportNum0 >= 0) MarkCanvas = GetViewportMark((viewportNum));
     //原始影像，通常被用於放大鏡的參考
-    labelLT = getClass("labelLT");
-    labelRT = getClass("labelRT");
-    labelRB = getClass("labelRB");
 
     var dicomData = getPatientbyImageID[imageId];
     if (!dicomData) {

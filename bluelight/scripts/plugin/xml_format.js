@@ -52,7 +52,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
     PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
     displayMark();
     xml_now_choose = null;
-    refreshMarkFromSop(GetNowUid().sop);
+    refreshMarkFromSop(GetViewport().sop);
   }
   xml_now_choose = null;
 });
@@ -395,18 +395,16 @@ function importXml(url) {
       var xmlDoc = parser.parseFromString(oReq.response, "text/xml");
       var objlist = xmlDoc.getElementsByTagName("annotation")[0].getElementsByTagName("object");
 
-      let Uid = SearchNowUid();
-
       for (var i = 0; i < objlist.length; i++) {
         var dcm = {};
-        dcm.study = Uid.studyuid;
-        dcm.series = Uid.sreiesuid;
+        dcm.study = GetViewport().study;
+        dcm.series = GetViewport().series;
+        dcm.sop = GetViewport().sop;
         dcm.color = "#0000FF";
         dcm.mark = [];
         dcm.showName = "" + objlist[i].getElementsByTagName("name")[0].childNodes[0].data;
         dcm.hideName = dcm.showName;
         dcm.mark.push({});
-        dcm.sop = Uid.sopuid;
         var DcmMarkLength = dcm.mark.length - 1;
         dcm.mark[DcmMarkLength].type = "XML_mark";
         dcm.mark[DcmMarkLength].markX = [];
@@ -477,16 +475,15 @@ function writexml() {
         windowMouseX = GetmouseX(e);
         windowMouseY = GetmouseY(e);
         if (!xml_now_choose) {
-          let Uid = SearchNowUid();
           var dcm = {};
-          dcm.study = Uid.studyuid;
-          dcm.series = Uid.sreiesuid;
+          dcm.study = GetViewport().study;
+          dcm.series = GetViewport().series;
+          dcm.sop = GetViewport().sop;
           dcm.color = "#0000FF";
           dcm.mark = [];
           dcm.showName = "" + getByid("xmlMarkNameText").value;
           dcm.hideName = dcm.showName;
           dcm.mark.push({});
-          dcm.sop = Uid.sopuid;
           var DcmMarkLength = dcm.mark.length - 1;
           dcm.mark[DcmMarkLength].type = "XML_mark";
           dcm.mark[DcmMarkLength].markX = [];
@@ -524,16 +521,16 @@ function writexml() {
       MouseDownCheck = false;
       rightMouseDown = false;
       if (openWriteXML == true && !xml_now_choose) {
-        let Uid = SearchNowUid();
         var dcm = {};
-        dcm.study = Uid.studyuid;
-        dcm.series = Uid.sreiesuid;
+        dcm.study = GetViewport().study;
+        dcm.series = GetViewport().series;
+        dcm.sop = GetViewport().sop;
         dcm.color = "#0000FF";
         dcm.mark = [];
         dcm.showName = "" + getByid("xmlMarkNameText").value;
         dcm.hideName = dcm.showName;
         dcm.mark.push({});
-        dcm.sop = Uid.sopuid;
+
         var DcmMarkLength = dcm.mark.length - 1;
         dcm.mark[DcmMarkLength].type = "XML_mark";
         dcm.mark[DcmMarkLength].markX = [];

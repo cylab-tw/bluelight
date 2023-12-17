@@ -66,16 +66,16 @@ function measure() {
                     //PatientMark.splice(PatientMark.indexOf(Measure_now_choose.dcm), 1);
                     return;
                 } else {
-                    let Uid = SearchNowUid();
                     var dcm = {};
-                    dcm.study = Uid.studyuid;
-                    dcm.series = Uid.sreiesuid;
+                    dcm.study = GetViewport().study;
+                    dcm.series = GetViewport().series;
+                    dcm.sop = GetViewport().sop;
                     dcm.color = "#FF0000";
                     dcm.mark = [];
                     dcm.showName = "ruler";
                     dcm.hideName = dcm.showName;
                     dcm.mark.push({});
-                    dcm.sop = Uid.sopuid;
+                   
                     //dcm.hideMark = function () { getClass("MeasureLabel").style.display = "none"; };
                     //dcm.displayMark = function () { getClass("MeasureLabel").style.display = ""; };
                     var DcmMarkLength = dcm.mark.length - 1;
@@ -126,16 +126,16 @@ function measure() {
                 };
             }
             else {
-                let Uid = SearchNowUid();
                 var dcm = {};
-                dcm.study = Uid.studyuid;
-                dcm.series = Uid.sreiesuid;
+                dcm.study = GetViewport().study;
+                dcm.series = GetViewport().series;
+                dcm.sop = GetViewport().sop;
                 dcm.color = "#FF0000";
                 dcm.mark = [];
                 dcm.showName = "ruler";
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
-                dcm.sop = Uid.sopuid;
+               
                 /*dcm.hideMark = function () {
                     for (var m = 0; m < getClass("MeasureLabel" + dcm.sop).length; m++)
                         getClass("MeasureLabel" + dcm.sop)[m].style.display = "none";
@@ -181,7 +181,7 @@ function measure() {
                 displayMark();
             MouseDownCheck = false;
             rightMouseDown = false;
-            magnifierDiv.style.display = "none";
+            magnifierDiv.hide();
 
             if (openLink) {
                 for (var i = 0; i < Viewport_Total; i++)
@@ -261,7 +261,7 @@ function measure() {
             TouchDownCheck = false;
             rightTouchDown = false;
 
-            magnifierDiv.style.display = "none";
+            magnifierDiv.hide();
 
         }
         AddMouseEvent();
@@ -327,7 +327,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
         PatientMark.splice(PatientMark.indexOf(Measure_previous_choose.dcm), 1);
         displayMark();
         Measure_previous_choose = null;
-        refreshMarkFromSop(GetNowUid().sop);
+        refreshMarkFromSop(GetViewport().sop);
     }
     Measure_previous_choose = null;
 });

@@ -52,29 +52,11 @@ window.addEventListener("keydown", function (e) {
     else if (e.keyCode == '37') nextInstanceNumber = -1;
     else if (e.keyCode == '39') nextInstanceNumber = 1;
     if (!GetViewport() || nextInstanceNumber == 0) return;
-    var sop = GetViewport().sop;
-    let index = SearchUid2Index(sop);
 
-    let i = index[0],
-        j = index[1],
-        k = index[2];
-    var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-    var list = sortInstance(sop);
-    for (l = 0; l < list.length; l++) {
-        if (list[l].InstanceNumber == Onum) {
-            break;
-        }
-    }
     if (nextInstanceNumber == -1) {
-        nextFrame(viewportNumber, -1);
-        if (l - 1 < 0) nextInstanceNumber = list.length - 1;
-        else nextInstanceNumber = l - 1;
+        GetViewport().obj.nextFrame(true);
     } else if (nextInstanceNumber = 1) {
-        nextFrame(viewportNumber, 1);
-        if (list[l].InstanceNumber == Onum) {
-            if (l + 1 >= list.length) nextInstanceNumber = 0;
-            else nextInstanceNumber = l + 1;
-        }
+        GetViewport().obj.nextFrame(false);
     }
 });
 
@@ -109,110 +91,26 @@ function Wheel(e) {
     if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
     //if (openPenDraw == true) return;
     getByid("MeasureLabel").style.display = "none";
-    var viewport = GetViewport(), canvas = viewport.canvas();
-    var nextInstanceNumber = 0;
-    var nextFramesNumber = 0;
-    var break1 = false;
     var viewportNum = viewportNumber;
 
-    for (var z = 0; z < Viewport_Total; z++) {
-        var break1 = false;
-        if (openLink == true) viewportNum = z;
-        if (openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true) {
-            var currX1 = (e.pageX - canvas.getBoundingClientRect().left - GetViewport().newMousePointX - 100) * (GetViewport().imageWidth / parseInt(GetViewport().canvas().style.width));
-            var currY1 = (e.pageY - canvas.getBoundingClientRect().top - GetViewport().newMousePointY - 100) * (GetViewport().imageHeight / parseInt(GetViewport().canvas().style.height));
-            var sop = GetViewport(viewportNum).sop;
-            try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
-            /*let index = SearchUid2Index(sop);
-            if (!index) continue;
-            let i = index[0],
-                j = index[1],
-                k = index[2];*/
-            var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-            var list = sortInstance(sop);
-            if (list.length == 0) continue;
-            if (list.length == 1 && !list[0].frames) continue;
-            if (list.length == 1 && list[0].frames) {
-                if (GetViewport(viewportNum).framesNumber == undefined) GetViewport(viewportNum).framesNumber = 0;
-                if (e.deltaY < 0) {
-                    for (var l = 0; l < list[0].frames.length; l++) {
-                        if (break1 == true) break;
-                        if (l == GetViewport(viewportNum).framesNumber) {
-                            if (l - 1 < 0) {
-                                loadAndViewImage(list[0].imageId, viewportNum, list[0].frames.length - 1);
-                                nextFramesNumber = list[0].frames.length - 1;
-                                break1 = true;
-                                break;
-                            }
-                            loadAndViewImage(list[0].imageId, viewportNum, l - 1);
-                            nextFramesNumber = l - 1;
-                            break1 = true;
-                            break;
-                        }
-                    }
-                } else {
-                    for (var l = 0; l < list[0].frames.length; l++) {
-                        if (break1 == true) break;
-                        if (l == GetViewport(viewportNum).framesNumber) {
-                            if (l + 1 >= list[0].frames.length) {
-                                loadAndViewImage(list[0].imageId, viewportNum, 0);
-                                nextFramesNumber = 0;
-                                break1 = true;
-                                break;
-                            }
-                            loadAndViewImage(list[0].imageId, viewportNum, l + 1);
-                            nextFramesNumber = l + 1;
-                            break1 = true;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                if (e.deltaY < 0) {
-                    for (var l = 0; l < list.length; l++) {
-                        if (break1 == true) break;
-                        if (list[l].InstanceNumber == Onum) {
-                            if (l - 1 < 0) {
-                                loadAndViewImage(list[list.length - 1].imageId, viewportNum);
-                                nextInstanceNumber = list.length - 1;
-                                break1 = true;
-                                break;
-                            }
-                            loadAndViewImage(list[l - 1].imageId, viewportNum);
-                            nextInstanceNumber = l - 1;
-                            break1 = true;
-                            break;
-                        }
-                    }
-                } else {
-                    for (var l = 0; l < list.length; l++) {
-                        if (break1 == true) break;
-                        if (list[l].InstanceNumber == Onum) {
-                            if (l + 1 >= list.length) {
-                                loadAndViewImage(list[0].imageId, viewportNum);
-                                nextInstanceNumber = 0;
-                                break1 = true;
-                                break;
-                            }
-                            loadAndViewImage(list[l + 1].imageId, viewportNum);
-                            nextInstanceNumber = l + 1;
-                            break1 = true;
-                            break;
-                        }
-                    }
-                }
-            }
+    if (!(openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true)) return;
+    if (openLink == false) {
+        if (e.deltaY < 0) GetViewport(viewportNum).obj.nextFrame(true);
+        else GetViewport(viewportNum).obj.nextFrame(false);
+    }
+    else {
+        for (var z = 0; z < Viewport_Total; z++) {
+            if (e.deltaY < 0) GetViewport(z).obj.nextFrame(true);
+            else GetViewport(z).obj.nextFrame(false);
         }
-        if (openLink == false)
-            break;
     }
 }
 
 function Mouseout(e) {
-    magnifierDiv.style.display = "none";
+    magnifierDiv.hide();
 }
 
-interact('.LeftImg').draggable({
+interact('.LeftImgAndMark').draggable({
     onmove(event) {
         if (!openLeftImgClick) return;
         dragseries = event.target.series;
@@ -220,7 +118,7 @@ interact('.LeftImg').draggable({
 })
 
 interact('.MyDicomDiv').dropzone({
-    accept: '.LeftImg',
+    accept: '.LeftImgAndMark',
     ondropactivate: function (event) {
         event.target.classList.add('drop-active')
     },

@@ -18,7 +18,7 @@ function displayDicomTagsList(viewportNum0) {
     Table.style.position = "absolute";
     Table.style.backgroundColor = "black";
     //Table.style.right = "0px";
-    Css(Table, 'zIndex', "20");
+    Table.style['zIndex'] = "20";
 
     var row0 = Table.insertRow(0);
     row0.setAttribute("border", 2);
@@ -78,7 +78,7 @@ function displayAIM(viewportNum0) {
     Table.style.position = "absolute";
     Table.style.backgroundColor = "black";
     //Table.style.right = "0px";
-    Css(Table, 'zIndex', "20");
+    Table.style['zIndex'] = "20";
     //SearchUid2Index
     var sop = GetViewport(viewportNum).sop;
     let index = SearchUid2Index(sop);

@@ -45,6 +45,10 @@ function random(min, max, step) {
     return number;
 }
 
+function SortArrayByElem(arr, str) {
+    return arr.sort((a, b) => a[str] - b[str]);
+}
+
 function invertDisplayById(id) {
     if (!id && !getByid(id)) return;
     if (getByid(id).style.display == "none") getByid(id).style.display = "";
@@ -64,16 +68,8 @@ function Css(element, style, value) {
     else return element.style[style] = value;
 }
 
-function Ipx(value) {
-    return parseInt(value) + "px";
-}
-
 function Fpx(value) {
     return parseFloat(value) + "px";
-}
-
-function ToPx(value) {
-    return value + "px";
 }
 
 function getByid(str) {
@@ -206,40 +202,6 @@ function SearchUid2IndexBySeries(series) {
     }
 }
 
-function SearchNowUid() {
-    let sop = GetViewport().sop;
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
-                    return {
-                        studyuid: Patient.Study[i],
-                        sreiesuid: Patient.Study[i].Series[j],
-                        sopuid: sop
-                    }
-                }
-            }
-        }
-    }
-}
-
-function GetNowUid() {
-    let sop = GetViewport().sop;
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
-                    return {
-                        study: Patient.Study[i].StudyUID,
-                        sreies: Patient.Study[i].Series[j].SeriesUID,
-                        sop: Patient.Study[i].Series[j].Sop[l].SopUID
-                    }
-                }
-            }
-        }
-    }
-}
-
 function sortInstance(sop) {
     let index = SearchUid2Index(sop);
     let i = index[0],
@@ -299,30 +261,6 @@ function getImgaeIdFromSop(sop) {
     }
 }
 
-function getNowInstance() {
-    var break1 = false;
-    var nowInstanceNumber = 0;
-    var sop = GetViewport().sop;
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var k = 0; k < Patient.Study[i].Series[j].SopAmount; k++) {
-                if (Patient.Study[i].Series[j].Sop[k].SopUID == sop) {
-                    if (break1 == true) break;
-                    var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-                    var list = sortInstance(sop);
-                    for (var l = 0; l < list.length; l++) {
-                        if (break1 == true) break;
-                        if (list[l].InstanceNumber == Onum) {
-                            nowInstanceNumber = l;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return nowInstanceNumber;
-}
-
 function rotateCalculation(e) {
     var canvas = GetViewport().canvas();
     if (!canvas) return [0, 0];
@@ -357,26 +295,6 @@ function rotatePoint(point, RotationAngle, RotationPoint) {
     currX = nx;
     currY = ny;
     return [currX, currY];
-}
-
-function GetViewport(num) {
-    if (!num) {
-        if (num === 0) {
-            return getByid("MyDicomDiv" + (0 + 0));
-        }
-        return getByid("MyDicomDiv" + (viewportNumber + 0));
-    }
-    return getByid("MyDicomDiv" + (num + 0));
-}
-
-function GetViewportMark(num) {
-    if (!num) {
-        if (num === 0) {
-            return getByid("MarkCanvas" + (0 - 0));
-        }
-        return getByid("MarkCanvas" + (viewportNumber - 0));
-    }
-    return getByid("MarkCanvas" + (num - 0));
 }
 
 function jump2UpOrEnd(number, choose) {
@@ -416,7 +334,8 @@ function jump2Mark(showName) {
             if (PatientMark[n].showName == showName) {
                 for (var m = 0; m < PatientMark[n].mark.length; m++) {
                     let checkRtss = 0;
-                    checkRtss = checkMark(i, j, n);
+                    //if (checkMark(i, j, n) == 0) continue;
+                    if (checkMarkEnabled(Patient.Study[i].Series[j].SeriesUID, PatientMark[n]) == 0) continue;
                     if (checkRtss == 0) continue;
                     else {
                         loadAndViewImage(getImgaeIdFromSop(PatientMark[n].sop));
@@ -428,39 +347,10 @@ function jump2Mark(showName) {
     }
 }
 
-function checkMark2(seriesUID, Mark) {
-    for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == seriesUID) {
-            var elem = document.querySelectorAll("#dicomDivListDIV" + dCount + " label input");
-            for (var elemNum in elem) {
-                if (elem[elemNum].name == Mark.hideName) {
-                    if (elem[elemNum].series == "true") return 1;
-                }
-            }
-        }
-    }
-    return 0;
-}
-
-function checkMark(i, j, n) {
-    let checkRtss = 0;
-    for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount)) {
-            if (getByid("dicomDivListDIV" + dCount).series == Patient.Study[i].Series[j].SeriesUID) {
-                var elem = document.querySelectorAll("#dicomDivListDIV" + dCount + " label input");
-                for (var elemNum in elem) {
-                    if (elem[elemNum].name == PatientMark[n].hideName) {
-                        if (elem[elemNum].series == "true") {
-                            //if (PatientMark[n].displayMark) PatientMark[n].displayMark();
-                            checkRtss = 1;
-                            return checkRtss;
-                        }//else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
-                    }
-                }
-            }
-        }
-    }
-    return checkRtss;
+function checkMarkEnabled(seriesUID, Mark) {
+    var mark = leftLayout.getCheckboxBySeriesAndHideName(seriesUID, Mark.hideName);
+    if (mark && mark.checked) return 1;
+    else return 0;
 }
 
 function refreshMark(dcm, refresh) {
@@ -476,7 +366,8 @@ function refreshMark(dcm, refresh) {
             checkNum = dCount;
         }
     }
-    SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
+    leftLayout.refleshMarkWithSeries(Patient.Study[i3].Series[j3].SeriesUID);
+    //SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
 
     for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(i9);
 }
@@ -493,7 +384,8 @@ function refreshMarkFromSop(sop) {
             checkNum = dCount;
         }
     }
-    SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
+    leftLayout.refleshMarkWithSeries(Patient.Study[i3].Series[j3].SeriesUID);
+    //SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
     for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(i9);
 }
 

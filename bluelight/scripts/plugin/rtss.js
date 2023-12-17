@@ -70,7 +70,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
         PatientMark.splice(PatientMark.indexOf(reference), 1);
         displayMark();
 
-        refreshMarkFromSop(GetNowUid().sop);
+        refreshMarkFromSop(GetViewport().sop);
     }
 });
 
@@ -500,10 +500,11 @@ function writertss() {
                 }
                 currX02 = currX02 / viewport.PixelSpacingX + viewport.imagePositionX;
                 currY02 = currY02 / viewport.PixelSpacingY + viewport.imagePositionY;
-                let Uid = GetNowUid();
+                
                 var dcm = {};
-                dcm.study = Uid.study;
-                dcm.series = Uid.sreies;
+                dcm.study = GetViewport().study;
+                dcm.series = GetViewport().sreies;
+                dcm.sop = GetViewport().sop;
                 dcm.color = "rgb(0,0,128)";
                 for (var co = 0; co < getClass("RTSSColorSelectOption").length; co++) {
                     if (getClass("RTSSColorSelectOption")[co].selected == true) {
@@ -516,7 +517,7 @@ function writertss() {
                 dcm.showName = getByid('textROIName').value; //"" + getByid("xmlMarkNameText").value;
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
-                dcm.sop = Uid.sop;
+                
                 var DcmMarkLength = dcm.mark.length - 1;
                 dcm.mark[DcmMarkLength].type = "RTSS";
                 dcm.mark[DcmMarkLength].markX = [];
@@ -553,7 +554,6 @@ function writertss() {
             for (var i = 0; i < Viewport_Total; i++)
                 displayRuler(i);
             if (!rightMouseDown && RTSS_now_choose) {
-                let Uid = GetNowUid();
                 var angle2point = rotateCalculation(e)
                 var currX11 = Math.floor(angle2point[0]);
                 var currY11 = Math.floor(angle2point[1]);
@@ -574,7 +574,7 @@ function writertss() {
                 RTSS_now_choose.markX.push(angle2point[0] - Math.abs(currX02 - angle2point[0]));
                 RTSS_now_choose.markY.push(angle2point[1] - Math.abs(currY02 - angle2point[1]));
                 //PatientMark.push(RTSS_now_choose);
-                refreshMark(Uid.sop);
+                refreshMark(GetViewport().sop);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
             }

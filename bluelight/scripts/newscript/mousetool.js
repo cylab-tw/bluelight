@@ -140,7 +140,7 @@ function mouseTool() {
                 displayMark();
             MouseDownCheck = false;
             rightMouseDown = false;
-            magnifierDiv.style.display = "none";
+            magnifierDiv.hide();
             
             if (openLink) {
                 for (var i = 0; i < Viewport_Total; i++)
@@ -289,7 +289,7 @@ function mouseTool() {
             TouchDownCheck = false;
             rightTouchDown = false;
 
-            magnifierDiv.style.display = "none";
+            magnifierDiv.hide();
             
         }
         AddMouseEvent();

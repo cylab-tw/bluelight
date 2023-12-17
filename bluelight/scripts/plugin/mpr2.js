@@ -172,7 +172,8 @@ function exitMPR2() {
     exitMPR2_UI();
     VIEWPORT.fixRow = VIEWPORT.fixCol = null;
 
-    VIEWPORT.lockViewportList = [];
+    //VIEWPORT.lockViewportList = [];
+    ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = false;
     window.removeEventListener("resize", resizeVR, false);
     GetViewport(0).removeEventListener("wheel", MPRWheel, false);
     GetViewport(1).removeEventListener("wheel", MPRWheel, false);
@@ -238,7 +239,8 @@ function initMPR2() {
         GetViewport(c).canvas().style.display = GetViewportMark(c).style.display = "none";
     viewportNumber = 0;
     loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId);
-    VIEWPORT.lockViewportList = [0, 1, 3];
+   // VIEWPORT.lockViewportList = [0, 1, 3];
+    ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
     window.addEventListener("resize", resizeVR, false);
     for (var i1 = 0; i1 < Viewport_Total; i1++) {
         GetViewport(i1).removeEventListener("contextmenu", contextmenuF, false);

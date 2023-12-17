@@ -1,4 +1,54 @@
 
+//放大鏡元素
+let magnifierDiv;
+
+onloadFunction.push(
+    function () {
+        magnifierDiv = getByid("magnifierDiv");
+        initMagnifier();
+    });
+
+function initMagnifier() {
+    //設定放大鏡長寬
+    getByid("magnifierCanvas").style.width = getByid("magnifierDiv").style.width = magnifierWidth + "px";
+    getByid("magnifierCanvas").style.height = getByid("magnifierDiv").style.height = magnifierHeight + "px";
+    getByid("magnifierCanvas").width = getByid("magnifierDiv").width = magnifierWidth;
+    getByid("magnifierCanvas").height = getByid("magnifierDiv").height = magnifierHeight;
+
+    magnifierDiv = document.getElementById("magnifierDiv");
+    magnifierDiv.style.display = "none";
+
+    magnifierDiv.hide = function () {
+        this.style.display = "none";
+    }
+    magnifierDiv.show = function () {
+        this.style.display = "";
+    }
+}
+
+function magnifierIng(currX, currY) {
+    var canvas = GetViewport().canvas();
+    var zoom = parseFloat(getByid('textZoom').value);
+    if ((zoom <= 25)) getByid('textZoom').value = zoom = 25;
+    if (zoom >= 400) getByid('textZoom').value = zoom = 400;
+    zoom /= 100;
+    magnifierWidth = parseFloat(GetViewport().imageWidth / parseFloat(canvas.style.width)) * (magnifierWidth0 / zoom);
+    magnifierHeight = parseFloat(GetViewport().imageHeight / parseFloat(canvas.style.height)) * (magnifierHeight0 / zoom);
+    var magnifierCanvas = document.getElementById("magnifierCanvas");
+    var magnifierCtx = magnifierCanvas.getContext("2d");
+    magnifierCanvas.width = magnifierWidth;
+    magnifierCanvas.height = magnifierHeight;
+    magnifierCanvas.style.width = magnifierWidth0 + "px";
+    magnifierCanvas.style.height = magnifierHeight0 + "px";
+    magnifierCanvas.style.transform = "rotate(" + GetViewport().rotateValue + "deg)";
+    magnifierCtx.clearRect(0, 0, magnifierWidth, magnifierHeight);
+
+    var currX02 = Math.floor(currX) - magnifierWidth / 2;
+    var currY02 = Math.floor(currY) - magnifierHeight / 2;
+    magnifierCtx.drawImage(canvas, currX02, currY02, magnifierWidth, magnifierHeight, 0, 0, magnifierWidth, magnifierHeight);
+    magnifierCtx.drawImage(GetViewportMark(), currX02, currY02, magnifierWidth, magnifierHeight, 0, 0, magnifierWidth, magnifierHeight);
+}
+
 function zoom() {
     if (BL_mode == 'zoom') {
         DeleteMouseEvent();
@@ -26,7 +76,7 @@ function zoom() {
             windowMouseY = GetmouseY(e);
             GetViewport().originalPointX = getCurrPoint(e)[0];
             GetViewport().originalPointY = getCurrPoint(e)[1];
-            if (MouseDownCheck == true) magnifierDiv.style.display = "";
+            if (MouseDownCheck == true) magnifierDiv.show();
             let angle2point = rotateCalculation(e);
             magnifierIng(angle2point[0], angle2point[1]);
         };
@@ -54,7 +104,7 @@ function zoom() {
                 displayRuler(i);
 
             if (MouseDownCheck) {
-                magnifierDiv.style.display = "";
+                magnifierDiv.show();;
                 let angle2point = rotateCalculation(e);
                 magnifierIng(angle2point[0], angle2point[1]);
 
@@ -71,8 +121,8 @@ function zoom() {
                 displayMark();
             MouseDownCheck = false;
             rightMouseDown = false;
-            magnifierDiv.style.display = "none";
-            
+            magnifierDiv.hide();
+
             if (openLink) {
                 for (var i = 0; i < Viewport_Total; i++)
                     displayRuler(i);
@@ -97,7 +147,7 @@ function zoom() {
             }
             //  if (openZoom == true && MouseDownCheck == true)
             {
-                magnifierDiv.style.display = "";
+                magnifierDiv.show();;
                 let angle2point = rotateCalculation(e);
                 var currX11 = angle2point[0];
                 var currY11 = angle2point[1];
@@ -118,7 +168,7 @@ function zoom() {
             labelXY[viewportNumber].innerText = "X: " + Math.floor(currX) + " Y: " + Math.floor(currY);
             if (TouchDownCheck == true && rightTouchDown == false) {
                 if (/*openZoom == true && */rightTouchDown == false) {
-                    magnifierDiv.style.display = "";
+                    magnifierDiv.show();;
                     let angle2point = rotateCalculation(e);
                     var currX11 = angle2point[0];
                     var currY11 = angle2point[1];
@@ -134,8 +184,8 @@ function zoom() {
             TouchDownCheck = false;
             rightTouchDown = false;
 
-            magnifierDiv.style.display = "none";
-            
+            magnifierDiv.hide();
+
         }
         // Touchstart = function (e, e2) {}
         // Touchmove = function (e, e2) {}

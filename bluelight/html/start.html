@@ -26,11 +26,16 @@
   <script src="../scripts/external/threejs/customWebWorkersConfig.js"></script>
   <script src="../scripts/external/threejs/initializeWebWorkers.js"></script>
 
+  
+  <script src="../scripts/onload.js"></script>
+  <script src="../scripts/viewport.js"></script>
 
   <script src="../scripts/toolfunction.js"></script>
+  <script src="../scripts/gui.js"></script>
   <script src="../scripts/variable.js"></script>
   <script src="../scripts/mark.js"></script>
 
+  <script src="../scripts/newscript/zoom.js"></script>
   <script src="../scripts/eventmanager.js"></script>
 
   <script src="../scripts/plugin/table.js"></script>
@@ -39,7 +44,7 @@
   <script src="../scripts/common.js"></script>
   <script src="../scripts/other.js"></script>
   <script src="../scripts/readsome.js"></script>
-  <script src="../scripts/onload.js"></script>
+  <!--onload-->
   <script src="../scripts/label.js"></script>
   <script src="../scripts/mtss.js"></script>
   <script src="../scripts/play_video.js"></script>
@@ -47,7 +52,6 @@
   <script src="../scripts/newscript/mousetool.js"></script>
   <script src="../scripts/newscript/scroll.js"></script>
   <script src="../scripts/newscript/windowlevel.js"></script>
-  <script src="../scripts/newscript/zoom.js"></script>
   <script src="../scripts/newscript/rotate.js"></script>
   <script src="../scripts/plugin/plugin.js"></script>
 
@@ -69,6 +73,18 @@
 
     .innerLabel {
       font-size: calc(0.4rem + 0.1*((5vw)));
+    }
+  </style>
+  <style>
+    #LeftPicture {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      z-index: 9;
+    }
+
+    .filpx {
+      transform: scaleX(-1);
     }
   </style>
 </head>
@@ -96,12 +112,14 @@
               src="../image/icon/black/b_FlipVertically.png" width="50" height="50"></span>
           <span id="MouseRotate_span"><img class="MPR" alt="rotate" altzhtw="旋轉" id="MouseRotate"
               src="../image/icon/black/b_Rotate 90 degrees clockwise.png" width="50" height="50"></span>
-          <span id="rotate90_span"><img altzhtw="旋轉90度" alt="rotate 90" id="Rotate_90"
+          <span id="rotatei90_span"><img altzhtw="旋轉-90度" alt="rotate 90" id="Rotate_i90"
               src="../image/icon/black/b_Rotate_90.png" width="50" height="50"></span>
-          <span id="rotate180_span"><img altzhtw="旋轉180度" alt="rotate 180" id="Rotate_180"
+          <span id="rotate90_span"><img altzhtw="旋轉90度" alt="rotate 90" id="Rotate_90" class="filpx"
+              src="../image/icon/black/b_Rotate_90.png" width="50" height="50"></span>
+          <!--<span id="rotate180_span"><img altzhtw="旋轉180度" alt="rotate 180" id="Rotate_180"
               src="../image/icon/black/b_Rotate_180.png" width="50" height="50"></span>
-          <span id="rotate270_span"><img altzhtw="旋轉270度" alt="rotate 270" id="Rotate_270"
-              src="../image/icon/black/b_Rotate_270.png" width="50" height="50"></span>
+          <span id="rotate270_span"><img altzhtw="旋轉270度" alt="rotate 270" id="Rotate_90"
+              src="../image/icon/black/b_Rotate_270.png" width="50" height="50"></span>-->
         </div>
       </span>
 

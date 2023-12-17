@@ -80,8 +80,6 @@ var openDisplayMarkup = false;
 //數著這個Series有幾張影像
 var SeriesCount = 0;
 
-//代表目前載入影像的Series UID --*
-//var NowSeries = "";
 //邊框寬度
 var bordersize = 5;
 //label距離邊緣多遠
@@ -97,20 +95,11 @@ var dicomImageCount = 0;
 var textWC = getByid("textWC");
 //輸入WindowWidth的text
 var textWW = getByid("textWW");
-//顯示Window Center/Width的label
-var labelWC = getClass("labelWC");
-//顯示在左上角的label
-var labelLT = getClass("labelLT");
-//顯示在右上角的label
-var labelRT = getClass("labelRT");
-//顯示在右下角的label
-var labelRB = getClass("labelRB");
-//放大鏡元素
-var magnifierDiv = getByid("magnifierDiv");
+
 //代表現在視窗大小受到改變，須執行RWD
 //var NowResize = false;
 //裝DICOM階層樣式表等資訊的物件
-var Patient = {};
+//var Patient = {};
 //
 var getPatientbyImageID = {};
 //裝標記的物件
@@ -172,3 +161,5 @@ let set_BL_model = function (string) {
   }
   set_BL_model.onchange1();
 }
+
+let ViewPortList = [];

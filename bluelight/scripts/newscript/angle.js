@@ -58,16 +58,15 @@ function angle() {
             if (angle.angle_ == 2) {
                 let angle2point = rotateCalculation(e);
                 AngleXY2 = angle2point;
-                let Uid = SearchNowUid();
                 var dcm = {};
-                dcm.study = Uid.studyuid;
-                dcm.series = Uid.sreiesuid;
+                dcm.study = GetViewport().study;
+                dcm.series = GetViewport().series;
+                dcm.sop = GetViewport().sop;
                 dcm.color = "#FF0000";
                 dcm.mark = [];
                 dcm.showName = "ruler";
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
-                dcm.sop = Uid.sopuid;
                 //dcm.hideMark = function () { getClass("MeasureLabel").style.display = "none"; };
                 //dcm.displayMark = function () { getClass("MeasureLabel").style.display = ""; };
                 var DcmMarkLength = dcm.mark.length - 1;
@@ -111,16 +110,16 @@ function angle() {
                     let angle2point = rotateCalculation(e);
                     AngleXY1 = angle2point;
 
-                    let Uid = SearchNowUid();
                     var dcm = {};
-                    dcm.study = Uid.studyuid;
-                    dcm.series = Uid.sreiesuid;
+                    dcm.study = GetViewport().study;
+                    dcm.series = GetViewport().series;
+                    dcm.sop = GetViewport().sop;
                     dcm.color = "#FF0000";
                     dcm.mark = [];
                     dcm.showName = "ruler";
                     dcm.hideName = dcm.showName;
                     dcm.mark.push({});
-                    dcm.sop = Uid.sopuid;
+                   
                     //dcm.hideMark = function () { getClass("MeasureLabel").style.display = "none"; };
                     //dcm.displayMark = function () { getClass("MeasureLabel").style.display = ""; };
                     var DcmMarkLength = dcm.mark.length - 1;
@@ -173,16 +172,17 @@ function angle() {
             if (angle.angle_ == 2) {
                 let angle2point = rotateCalculation(e);
                 AngleXY2 = angle2point;
-                let Uid = SearchNowUid();
+                
                 var dcm = {};
-                dcm.study = Uid.studyuid;
-                dcm.series = Uid.sreiesuid;
+                dcm.study = GetViewport().study;
+                dcm.series = GetViewport().series;
+                dcm.sop = GetViewport().sop;
                 dcm.color = "#FF0000";
                 dcm.mark = [];
                 dcm.showName = "ruler";
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
-                dcm.sop = Uid.sopuid;
+               
                 /*dcm.hideMark = function () {
                     for (var m = 0; m < getClass("AngleLabel" + dcm.sop).length; m++)
                         getClass("AngleLabel" + dcm.sop)[m].style.display = "none";
@@ -303,7 +303,7 @@ function angle() {
             TouchDownCheck = false;
             rightTouchDown = false;
 
-            magnifierDiv.style.display = "none";
+            magnifierDiv.hide();
 
         }
         AddMouseEvent();
@@ -487,7 +487,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
         PatientMark.splice(PatientMark.indexOf(Angle_previous_choose.dcm), 1);
         displayMark();
         Angle_previous_choose = null;
-        refreshMarkFromSop(GetNowUid().sop);
+        refreshMarkFromSop(GetViewport().sop);
     }
     Angle_previous_choose = null;
 });

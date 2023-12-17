@@ -105,7 +105,7 @@ getByid("b_Scroll_MPR").onclick = function () {
     if (this.enable == false) return;
     //BL_mode = 'scroll';
     set_BL_model('scroll');
-    scroll(); 
+    scroll();
     Touchmove = function (e, e2) {
 
         var currX = getCurrPoint(e)[0];
@@ -131,25 +131,15 @@ getByid("b_Scroll_MPR").onclick = function () {
             }
             if (Math.abs(currY - GetViewport().originalPointY) < Math.abs(currX - GetViewport().originalPointX)) {
                 if (currX < GetViewport().originalPointX - 3) {
-                    nextFrame(viewportNumber, -1);
-                    if (l - 1 < 0) nextInstanceNumber = list.length - 1;
-                    else nextInstanceNumber = l - 1;
+                    GetViewport().obj.nextFrame(true);
                 } else if (currX > GetViewport().originalPointX + 3) {
-                    nextFrame(viewportNumber, 1);
-                    if (list[l].InstanceNumber == Onum) {
-                        if (l + 1 >= list.length) nextInstanceNumber = 0;
-                        else nextInstanceNumber = l + 1;
-                    }
+                    GetViewport().obj.nextFrame(false);
                 }
             } else {
                 if (currY < GetViewport().originalPointY - 3) {
-                    nextFrame(viewportNumber, -1);
-                    if (l - 1 < 0) nextInstanceNumber = list.length - 1;
-                    else nextInstanceNumber = l - 1;
+                    GetViewport().obj.nextFrame(true);
                 } else if (currY > GetViewport().originalPointY + 3) {
-                    nextFrame(viewportNumber, 1);
-                    if (l + 1 >= list.length) nextInstanceNumber = 0;
-                    else nextInstanceNumber = l + 1;
+                    GetViewport().obj.nextFrame(false);
                 }
             }
             GetViewport().originalPointX = currX;
@@ -188,9 +178,9 @@ getByid("MouseOperation_MPR").onclick = function () {
     GetViewport(2).removeEventListener("mousemove", Mousemove, false);
     GetViewport(2).removeEventListener("mousedown", Mousedown, false);
     GetViewport(2).removeEventListener("mouseup", Mouseup, false);
-   /// GetViewport(2).removeEventListener("touchstart", TouchstartF, false);
-   /// GetViewport(2).removeEventListener("touchmove", TouchmoveF, false);
-   /// GetViewport(2).removeEventListener("touchend", TouchendF, false);
+    /// GetViewport(2).removeEventListener("touchstart", TouchstartF, false);
+    /// GetViewport(2).removeEventListener("touchmove", TouchmoveF, false);
+    /// GetViewport(2).removeEventListener("touchend", TouchendF, false);
     GetViewport(2).removeEventListener("wheel", Wheel, false);
 
     Wheel = function (e) {
@@ -370,7 +360,7 @@ function Anatomical_Section2(nextInstanceNumber) {
     var buffer_mpr_Y_t = buffer_mpr_Y;
     var PointY_t = PointY;
     if (nextInstanceNumber >= 0) nowInstanceNumber = nextInstanceNumber;
-    else nowInstanceNumber = getNowInstance();
+    else nowInstanceNumber = GetViewport().InstanceNumber;
 
     if (getByid("mprLight").checked == true) {
         for (var l = 0; l < o3DListLength; l++) {
@@ -464,7 +454,7 @@ function Anatomical_Section(nextInstanceNumber) {
     var buffer_mpr_X_t = buffer_mpr_X;
     var PointX_t = PointX;
     if (nextInstanceNumber >= 0) nowInstanceNumber = nextInstanceNumber;
-    else nowInstanceNumber = getNowInstance();
+    else nowInstanceNumber = GetViewport().InstanceNumber;
     if (getByid("mprLight").checked == true) {
         for (var l = 0; l < o3DListLength; l++) {
             var canvas1 = getByid("3DDiv" + l).canvas();
@@ -541,8 +531,9 @@ function initMPR() {
                 delete elem;
             } catch (ex) { }
         }
-        VIEWPORT.lockViewportList = [];
-        window.removeEventListener("resize",resizeVR, false);
+        //VIEWPORT.lockViewportList = [];
+        ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = false;
+        window.removeEventListener("resize", resizeVR, false);
         GetViewport(3).removeEventListener("mousemove", mousemove3D, false);
         GetViewport(3).removeEventListener("mousedown", mousedown3D, false);
         GetViewport(3).removeEventListener("mouseup", mouseup3D, false);
@@ -618,8 +609,10 @@ function initMPR() {
             GetViewport(c).canvas().style.display = GetViewportMark(c).style.display = "none";
         viewportNumber = 2;
         loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId);
-        VIEWPORT.lockViewportList = [0, 1, 3];
-        window.addEventListener("resize",resizeVR, false);
+        //VIEWPORT.lockViewportList = [0, 1, 3];
+        ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
+
+        window.addEventListener("resize", resizeVR, false);
         for (var i1 = 0; i1 < Viewport_Total; i1++) {
             GetViewport(i1).removeEventListener("contextmenu", contextmenuF, false);
             GetViewport(i1).removeEventListener("mousemove", Mousemove, false);
@@ -896,7 +889,7 @@ function display3DLine(x0, y0, x1, y1, color) {
     }
     if (lineWid <= 1.5) lineWid = 1.5;
     tempctx.lineWidth = "" + ((Math.abs(lineWid)) * 1);
-    nowInstanceNumber = getNowInstance;
+    nowInstanceNumber = GetViewport().InstanceNumber;
 
     tempctx.beginPath();
     tempctx.strokeStyle = color;
