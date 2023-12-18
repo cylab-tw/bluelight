@@ -73,9 +73,44 @@ class BlueLightPatient {
         return SortArrayByElem(this.Study[QRLevel.study].Series[QRLevel.series].Sop, "InstanceNumber")[0];
     }
 
-    getSeriesBySeries(series) {//atient.Study[i].Series[j].SopAmount
+    findStudy(study) {
+        if (study == undefined) study = GetViewport().study;
+        if (this.Study[study]) return this.Study[study]
+        else return null;
+    }
+
+    findSeries(series) {//atient.Study[i].Series[j].SopAmount
+        if (series == undefined) series = GetViewport().series;
         for (var studyObj of this.Study) {
             if (studyObj.Series[series]) return studyObj.Series[series];
+        }
+        return null;
+    }
+
+    findSop(sop) {
+        if (sop == undefined) sop = GetViewport().sop;
+        for (var studyObj of this.Study) {
+            for (var seriesObj of studyObj.Series) {
+                if (seriesObj.Sop[sop]) return seriesObj.Sop[sop];
+            }
+        }
+        return null;
+    }
+
+    findSeriesBySop(sop) {
+        if (sop == undefined) sop = GetViewport().sop;
+        for (var studyObj of this.Study) {
+            for (var seriesObj of studyObj.Series) {
+                if (seriesObj.Sop[sop]) return seriesObj;
+            }
+        }
+        return null;
+    }
+
+    getSopAmountBySeries(series){
+        if (series == undefined) series = GetViewport().series;
+        for (var studyObj of this.Study) {
+            if (studyObj.Series[series]) return studyObj.Series.SopAmount;
         }
         return null;
     }
@@ -199,6 +234,7 @@ class BlueLightViewPort {
         div.openVerticalFlip = false;
         div.openMark = true;
         div.openPlay = false;
+        div.openInvert = false;
 
         div.enable = true;
         div.lockRender = false;
@@ -338,7 +374,7 @@ class BlueLightViewPort {
     }
 
     loadFirstImgBySeries(series) {
-        var Series = Patient.getSeriesBySeries(series);
+        var Series = Patient.findSeries(series);
         var Sop = Series.Sop[0];
         if (Sop.pdf) displayPDF(Sop.pdf);
         else loadAndViewImage(Sop.imageId, this.index);

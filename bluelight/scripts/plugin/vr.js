@@ -413,11 +413,9 @@ function initVR() {
         viewportNumber = 0;
         window.onresize();
         //SetTable();
-        var sop0 = GetViewport(0).sop;
-        var uid0 = SearchUid2Json(sop0);
 
-        if (uid0)
-            loadAndViewImage(Patient.Study[uid0.studyuid].Series[uid0.sreiesuid].Sop[uid0.sopuid].imageId, 0);
+        if (GetViewport(0).sop)
+            loadAndViewImage(Patient.findSop(GetViewport(0).sop).imageId, 0);
         o3DListLength = 0;
     } else if (openVR == true) {
         enterVR_UI();
@@ -435,10 +433,9 @@ function initVR() {
         getByid("ImgVR").src = "../image/icon/black/b_3D_on.png";
         var sop = GetViewport().sop;
         SetTable(1, 1);
-        var uid = SearchUid2Json(sop);
         //NowResize = true;
         GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
-        loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId);
+        loadAndViewImage(Patient.findSop(GetViewport().sop).imageId);
         GetViewport().canvas().style.display = "none";
         GetViewportMark().style.display = "none";
         GetViewport(0).canvas().style.display = "none";

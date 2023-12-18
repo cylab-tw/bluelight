@@ -205,8 +205,7 @@ function exitMPR2() {
     window.onresize();
     //SetTable();
 
-    var uid0 = SearchUid2Json(GetViewport(0).sop);
-    if (uid0) loadAndViewImage(Patient.Study[uid0.studyuid].Series[uid0.sreiesuid].Sop[uid0.sopuid].imageId, 0);
+    if (GetViewport(0).sop) loadAndViewImage(Patient.findSop(GetViewport(0).sop).imageId, 0);
 
     o3dPixelData = [];
     o3dPixelData2 = [];
@@ -232,14 +231,13 @@ function initMPR2() {
     getByid("ImgMPR2").src = "../image/icon/black/b_AdvancedMode_on.png";
     var sop = GetViewport().sop;
     SetTable(1, 3);//如果MPR2模式正在開啟，固定1x3
-    var uid = SearchUid2Json(sop);
     //NowResize = true;
     GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
     for (var c = 0; c < 3; c++)
         GetViewport(c).canvas().style.display = GetViewportMark(c).style.display = "none";
     viewportNumber = 0;
-    loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId);
-   // VIEWPORT.lockViewportList = [0, 1, 3];
+    loadAndViewImage(Patient.findSop(GetViewport().sop).imageId);
+    // VIEWPORT.lockViewportList = [0, 1, 3];
     ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
     window.addEventListener("resize", resizeVR, false);
     for (var i1 = 0; i1 < Viewport_Total; i1++) {

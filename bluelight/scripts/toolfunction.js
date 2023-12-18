@@ -94,9 +94,7 @@ function getViewprtStretchSize(width, height, element) {
     var wi = (parseFloat(element.clientWidth) - (bordersize * 2)) / parseFloat(width);
     var he = (parseFloat(element.clientHeight) - (bordersize * 2)) / parseFloat(height);
     var small = he < wi ? he : wi;
-    height *= small;
-    width *= small;
-    return [width, height];
+    return [width * small, height * small];
 }
 
 function getViewportFixSize(width, height, row, col) {
@@ -153,22 +151,6 @@ function GetmouseY(evt) {
     else return null;
 }
 
-function SearchUid2Json(sop) {
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
-                    return {
-                        studyuid: i,
-                        sreiesuid: j,
-                        sopuid: l
-                    }
-                }
-            }
-        }
-    }
-}
-
 function SearchUid2Index(sop) {
     for (var i = 0; i < Patient.StudyAmount; i++) {
         for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
@@ -176,27 +158,6 @@ function SearchUid2Index(sop) {
                 if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
                     return [i, j, l]
                 }
-            }
-        }
-    }
-}
-
-function getSopAmountFromSeriesBySop(series) {
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            if (Patient.Study[i].Series[j].SeriesUID == series) {
-                return Patient.Study[i].Series[j].SopAmount;
-            }
-        }
-    }
-    return 0;
-}
-
-function SearchUid2IndexBySeries(series) {
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            if (Patient.Study[i].Series[j].SeriesUID == series) {
-                return [i, j];
             }
         }
     }
@@ -224,40 +185,6 @@ function sortInstance(sop) {
             }
         }
         return list;
-    }
-}
-
-function getAllSop(sop0) {
-    let sop;
-    if (!sop0) sop = GetViewport().sop;
-    else sop = sop0;
-
-    function getSopList(i, j, l) {
-        var list = [];
-        for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-            list.push(Patient.Study[i].Series[j].Sop[l].SopUID);
-        }
-        return list;
-    }
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
-                    return getSopList(i, j, l);
-                }
-            }
-        }
-    }
-}
-
-function getImgaeIdFromSop(sop) {
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var k = 0; k < Patient.Study[i].Series[j].SopAmount; k++) {
-                if (sop == Patient.Study[i].Series[j].Sop[k].SopUID)
-                    return Patient.Study[i].Series[j].Sop[k].imageId;
-            }
-        }
     }
 }
 
@@ -298,47 +225,38 @@ function rotatePoint(point, RotationAngle, RotationPoint) {
 }
 
 function jump2UpOrEnd(number, choose) {
-    let index = SearchUid2Index(GetViewport().sop);
-    let i = index[0],
-        j = index[1],
-        k = index[2];
-    var min = 99999999;
-    var max = -9999999;
-    for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-        var instance = parseInt(Patient.Study[i].Series[j].Sop[l].InstanceNumber);
+
+    var SopList = Patient.findSeries(GetViewport().series);
+    var min = 99999999, max = -9999999;
+    for (var l = 0; l < SopList.SopAmount; l++) {
+        var instance = parseInt(SopList.Sop[l].InstanceNumber);
         if (instance < min) min = instance;
         else if (instance > max) max = instance;
     }
+
     if (choose == 'up') number = min;
     else if (choose == 'end') number = max;
     else {
         if (number > max) number = max;
         if (number < min) number = min;
     }
-    for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-        if (parseInt(Patient.Study[i].Series[j].Sop[l].InstanceNumber) == number) {
-            loadAndViewImage(getImgaeIdFromSop(Patient.Study[i].Series[j].Sop[l].SopUID));
-            return;
+
+    for (var l = 0; l < SopList.SopAmount; l++) {
+        if (parseInt(SopList.Sop[l].InstanceNumber) == number) {
+            loadAndViewImage(Patient.findSop(SopList.Sop[l].SopUID).imageId);
+            break;
         }
     }
 }
 
 function jump2Mark(showName) {
-    let index = SearchUid2Index(GetViewport().sop);
-    if (!index) return;
-    let i = index[0],
-        j = index[1],
-        k = index[2];
     for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
+        if (PatientMark[n].series == GetViewport().series) {
             if (PatientMark[n].showName == showName) {
                 for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                    let checkRtss = 0;
-                    //if (checkMark(i, j, n) == 0) continue;
-                    if (checkMarkEnabled(Patient.Study[i].Series[j].SeriesUID, PatientMark[n]) == 0) continue;
-                    if (checkRtss == 0) continue;
+                    if (checkMarkEnabled(GetViewport().series, PatientMark[n]) == 0) continue;
                     else {
-                        loadAndViewImage(getImgaeIdFromSop(PatientMark[n].sop));
+                        loadAndViewImage(Patient.findSop(PatientMark[n].sop).imageId);
                         return;
                     }
                 }
@@ -355,49 +273,13 @@ function checkMarkEnabled(seriesUID, Mark) {
 
 function refreshMark(dcm, refresh) {
     if (refresh == false) return;
-    var index = SearchUid2Index(dcm.sop);
-    if (!index) return;
-    var i3 = index[0],
-        j3 = index[1],
-        k3 = index[2];
-    var checkNum;
-    for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == Patient.Study[i3].Series[j3].SeriesUID) {
-            checkNum = dCount;
-        }
-    }
-    leftLayout.refleshMarkWithSeries(Patient.Study[i3].Series[j3].SeriesUID);
-    //SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
-
-    for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(i9);
+    leftLayout.refleshMarkWithSeries(dcm.series);
+    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
 }
 
 function refreshMarkFromSop(sop) {
-    var index = SearchUid2Index(sop);
-    if (!index) return;
-    var i3 = index[0],
-        j3 = index[1],
-        k3 = index[2];
-    var checkNum;
-    for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == Patient.Study[i3].Series[j3].SeriesUID) {
-            checkNum = dCount;
-        }
-    }
-    leftLayout.refleshMarkWithSeries(Patient.Study[i3].Series[j3].SeriesUID);
-    //SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
-    for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(i9);
-}
-
-function dropTable(num) {
-    if (getByid("DicomTagsTable" + (num + 1))) {
-        var elem = getByid("DicomTagsTable" + (num + 1));
-        elem.parentElement.removeChild(elem);
-    }
-    if (getByid("AimTable" + (num + 1))) {
-        var elem = getByid("AimTable" + (num + 1));
-        elem.parentElement.removeChild(elem);
-    }
+    leftLayout.refleshMarkWithSeries(Patient.findSeriesBySop(sop).SeriesUID);
+    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
 }
 
 function getDistance(x, y) {

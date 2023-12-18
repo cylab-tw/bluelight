@@ -97,11 +97,9 @@ window.onresize = function () {
     //刷新每個Viewport
     for (i = 0; i < Viewport_Total; i++) {
         try {
-            var sop = GetViewport(i).sop;
-            var uid = SearchUid2Json(sop);
             //NowResize = true;
             GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
-            loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId, i);
+            loadAndViewImage(Patient.findSop(GetViewport(i).sop).imageId, i);
         } catch (ex) { }
     }
 

@@ -27,17 +27,13 @@ var thisF = function () {
                 getByid('playvideo').src = '../image/icon/black/b_CinePause.png';
             }
             changeMarkImg();
-            var sop = GetViewport().sop;
-            var uid = SearchUid2Json(sop);
             //NowResize = true;
             //NowCanvasSizeWidth = NowCanvasSizeHeight = null;
-            if (uid)
-                loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/);
+            if (GetViewport().sop)
+                loadAndViewImage(Patient.findSop(GetViewport().sop).imageId /*, null, null, viewportNumber*/);
             else {
-                sop = GetViewport(viewportNum).sop;
-                uid = SearchUid2Json(sop);
                 try {
-                    loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/);
+                    loadAndViewImage(Patient.findSop(GetViewport(viewportNum).sop).imageId /*, null, null, viewportNumber*/);
                 } catch (ex) { }
             }
             break;

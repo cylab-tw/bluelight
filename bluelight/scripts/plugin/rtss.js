@@ -366,11 +366,13 @@ function set_RTSS_context() {
         if (len == true) temp = temp.replace("___" + replace + "(len)___", length);
         return temp;
     }
-    var sopList = getAllSop();
+
+    //此更動待驗證
+    var sopList = Patient.findSeries(GetViewport().series).Sop;
     for (var s = 0; s < sopList.length; s++) {
         let tail2 = "" + RTSS_format_tail_2;
         // tail2 = tail2.replace("___ReferencedSOPInstanceUID___", sopList[s]);
-        tail2 = setTag(tail2, "ReferencedSOPInstanceUID", sopList[s], true);
+        tail2 = setTag(tail2, "ReferencedSOPInstanceUID", sopList[s].SopUID, true);
         tail2_list += tail2;
     }
     for (var n = 0; n < PatientMark.length; n++) {
@@ -500,7 +502,7 @@ function writertss() {
                 }
                 currX02 = currX02 / viewport.PixelSpacingX + viewport.imagePositionX;
                 currY02 = currY02 / viewport.PixelSpacingY + viewport.imagePositionY;
-                
+
                 var dcm = {};
                 dcm.study = GetViewport().study;
                 dcm.series = GetViewport().sreies;
@@ -517,7 +519,7 @@ function writertss() {
                 dcm.showName = getByid('textROIName').value; //"" + getByid("xmlMarkNameText").value;
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
-                
+
                 var DcmMarkLength = dcm.mark.length - 1;
                 dcm.mark[DcmMarkLength].type = "RTSS";
                 dcm.mark[DcmMarkLength].markX = [];
@@ -574,7 +576,7 @@ function writertss() {
                 RTSS_now_choose.markX.push(angle2point[0] - Math.abs(currX02 - angle2point[0]));
                 RTSS_now_choose.markY.push(angle2point[1] - Math.abs(currY02 - angle2point[1]));
                 //PatientMark.push(RTSS_now_choose);
-                refreshMark(GetViewport().sop);
+                refreshMarkFromSop(GetViewport().sop);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
             }

@@ -341,11 +341,12 @@ function set_SEG_context() {
         return "" + (num < 10 ? '0' : '') + num;
     }
 
-    var sopList = getAllSop();
+    //此更動待驗證
+    var sopList = Patient.findSeries(GetViewport().series).Sop;
     for (var s = 0; s < sopList.length; s++) {
         let tail2 = "" + SEG_format_tail_2;
         // tail2 = tail2.replace("___ReferencedSOPInstanceUID___", sopList[s]);
-        tail2 = setTag(tail2, "ReferencedSOPInstanceUID", sopList[s], true);
+        tail2 = setTag(tail2, "ReferencedSOPInstanceUID", sopList[s].SopUID, true);
         tail2_list += tail2;
     }
     var segCount = 0;
@@ -547,7 +548,7 @@ function writeSeg() {
                     dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
                     dcm.hideName = dcm.showName;
                     dcm.mark.push({});
-                    
+
                     var DcmMarkLength = dcm.mark.length - 1;
                     dcm.mark[DcmMarkLength].type = "SEG";
                     dcm.mark[DcmMarkLength].pixelData = new Uint8ClampedArray(GetViewport().imageWidth * GetViewport().imageHeight);
@@ -595,7 +596,7 @@ function writeSeg() {
                     setSEG2PixelData(angle2point);
                     Line_setSEG2PixelData(Previous_angle2point, angle2point);
 
-                    refreshMark(GetViewport().sop);
+                    refreshMarkFromSop(GetViewport().sop);
                     for (var i = 0; i < Viewport_Total; i++)
                         displayMark(i);
                 }

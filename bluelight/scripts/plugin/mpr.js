@@ -580,12 +580,10 @@ function initMPR() {
         window.onresize();
         //SetTable();
         o3DListLength = 0;
-        var sop0 = GetViewport(0).sop;
-        var uid0 = SearchUid2Json(sop0);
         //set_BL_model('MouseTool');
         //mouseTool();
-        if (uid0)
-            loadAndViewImage(Patient.Study[uid0.studyuid].Series[uid0.sreiesuid].Sop[uid0.sopuid].imageId, 0);
+        if (GetViewport(0).sop)
+            loadAndViewImage(Patient.findSop(GetViewport(0).sop).imageId, 0);
         //canvas = GetViewport().canvas()
         getByid("MouseOperation").click();
     } else if (openMPR == true) {
@@ -602,13 +600,12 @@ function initMPR() {
         getByid("ImgMPR").src = "../image/icon/black/b_AdvancedMode_on.png";
         var sop = GetViewport().sop;
         SetTable(2, 2);//如果MPR模式正在開啟，固定2x2
-        var uid = SearchUid2Json(sop);
         //NowResize = true;
         GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
         for (var c = 0; c < 4; c++)
             GetViewport(c).canvas().style.display = GetViewportMark(c).style.display = "none";
         viewportNumber = 2;
-        loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId);
+        loadAndViewImage(Patient.findSop(GetViewport().sop).imageId);
         //VIEWPORT.lockViewportList = [0, 1, 3];
         ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
 

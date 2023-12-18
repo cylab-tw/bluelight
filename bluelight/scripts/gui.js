@@ -118,7 +118,7 @@ class LeftLayout {
         var showNameList = [];
         var colorList = [];
         var hideNameList = [];
-        var Series = Patient.getSeriesBySeries(series);
+        var Series = Patient.findSeries(series);
         for (var k = 0; k < Series.SopAmount; k++) {
             for (var n = 0; n < PatientMark.length; n++) {
                 if (PatientMark[n].sop == Series.Sop[k].SopUID) {

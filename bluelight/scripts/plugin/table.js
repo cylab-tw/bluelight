@@ -139,3 +139,14 @@ function displayAIM(viewportNum0) {
     GetViewport(viewportNum).style.overflowY = "scroll";
     GetViewport(viewportNum).style.overflowX = "scroll";
 }
+
+function dropTable(num) {
+    if (getByid("DicomTagsTable" + (num + 1))) {
+        var elem = getByid("DicomTagsTable" + (num + 1));
+        elem.parentElement.removeChild(elem);
+    }
+    if (getByid("AimTable" + (num + 1))) {
+        var elem = getByid("AimTable" + (num + 1));
+        elem.parentElement.removeChild(elem);
+    }
+}

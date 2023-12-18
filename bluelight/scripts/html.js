@@ -15,10 +15,11 @@ function html_onload() {
 
   function KeyDown(KeyboardKeys) {
     var key = KeyboardKeys.which
+    //修復key===33和34時，GetViewport().InstanceNumber為字串之問題
     if (key === 33) {
-      jump2UpOrEnd(GetViewport().InstanceNumber - parseInt(getAllSop().length / 10) + 1, undefined);
+      jump2UpOrEnd(parseInt(GetViewport().InstanceNumber) - parseInt(Patient.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
     } else if (key === 34) {
-      jump2UpOrEnd(GetViewport().InstanceNumber + parseInt(getAllSop().length / 10) + 1, undefined);
+      jump2UpOrEnd(parseInt(GetViewport().InstanceNumber) + parseInt(Patient.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
     } else if (key === 36) {
       jump2UpOrEnd(0, 'up');
     } else if (key === 35) {
