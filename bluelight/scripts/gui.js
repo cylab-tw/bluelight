@@ -28,7 +28,7 @@ class LeftLayout {
     constructor() {
         this.initLeftLayout();
     }
-    initLeftLayout() {}
+    initLeftLayout() { }
 
     findPatienID(PatientId) {
         for (var Patient_div of getClass("OutLeftImg")) {
@@ -76,8 +76,9 @@ class LeftLayout {
         ImgDiv.className = "LeftImgDiv";
         ImgDiv.style = "width:" + 65 + "px;height:" + 65 + "px;";
         ImgDiv.series = QRLevel.series;
+        ImgDiv.QRLevel = QRLevel;
         ImgDiv.onclick = function () {
-            PictureOnclick(this.series);
+            PictureOnclick(this.QRLevel);
         };
         ImgDiv.canvas = function () {
             if (!this.getElementsByClassName("LeftCanvas")[0]) return null;
@@ -190,15 +191,16 @@ class LeftLayout {
 }
 
 //此段原有Bug，若沒有載入滿Series，便載入最後一個，現在已修復
-function PictureOnclick(series) {console.log(series);
-    if (!openLeftImgClick) return;
+function PictureOnclick(QRLevel) {
+    //console.log(series);
+    if (!openLeftImgClick || !QRLevel) return;
     WindowOpen = false;
     cancelTools();
     resetViewport();
     //drawBorder(getByid("MouseOperation"));
 
-    GetViewport().obj.loadFirstImgBySeries(series);
-    GetViewport().obj.loadFirstImgBySeries(series);
+    if (QRLevel.series) GetNewViewport().loadFirstImgBySeries(QRLevel.series);
+    else if (QRLevel.sop) GetNewViewport().loadFirstImgBySop(QRLevel.sop);
 }
 
 function displayLeftCanvas(DicomCanvas, image, pixelData) {
@@ -274,7 +276,7 @@ function displayLeftCanvas(DicomCanvas, image, pixelData) {
         ctx.restore(); // restore the state as it was when this function was called
     }
     if (invert == true) {
-        mirrorImage(ctx2, DicomCanvas, 0, 0, GetViewport().openHorizontalFlip, GetViewport().openVerticalFlip);
+        mirrorImage(ctx2, DicomCanvas, 0, 0, GetNewViewport().HorizontalFlip, GetNewViewport().VerticalFlip);
     }
 }
 
@@ -307,4 +309,95 @@ function displayImg2LeftCanvas(DicomCanvas, image, pixelData) {
     ctx.fillText("PDF", 20, 59);
     ctx.closePath();
     ctx.fill();
+}
+
+
+//當視窗大小改變
+window.onresize = function () {
+    //設定左側面板的style
+    leftLayout.reflesh();
+    //刷新每個Viewport
+    for (i = 0; i < Viewport_Total; i++) {
+        try {
+            //NowResize = true;
+            GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
+            loadAndViewImage(Patient.findSop(GetViewport(i).sop).imageId, i);
+        } catch (ex) { }
+    }
+
+    EnterRWD();
+}
+
+//執行icon圖示的摺疊效果
+function EnterRWD() {
+
+    //if (openPenDraw == true) return;
+    //計算目前有幾個應被計算的icon在上方
+    var count = 1;
+    //計算上方icon的區塊有多少空間可以容納
+    var iconWidth = getClass("page-header")[0].offsetWidth; //window.innerWidth;
+    //檢查icon區塊的寬度是否足夠
+    var check = false;
+    for (let i = 0; i < getClass("page-header")[0].childNodes.length; i++) {
+        if (getClass("page-header")[0].childNodes[i].tagName == "IMG") count++;
+        if (getClass("page-header")[0].childNodes[i].alt == "輸出標記") continue;
+        if (getClass("page-header")[0].childNodes[i].alt == "3dDisplay") continue;
+        if (getClass("page-header")[0].childNodes[i].alt == "3dCave") continue;
+        if (getClass("page-header")[0].childNodes[i].tagName == "IMG") {
+            if (count >= parseInt(iconWidth / document.querySelector('.img').offsetWidth) - 2) {
+
+                if (openRWD == true) { //如果折疊功能開啟中，隱藏應被隱藏的icon
+                    getClass("page-header")[0].childNodes[i].style.display = "none";
+                } else {
+                    getClass("page-header")[0].childNodes[i].style.display = "";
+                }
+                //寬度足夠
+                check = true;
+            } else { //全部icon均顯示
+                getClass("page-header")[0].childNodes[i].style.display = "";
+            }
+        }
+    }
+    //如果寬度足夠而沒有觸發折疊，摺疊的icon應該不顯示
+    if (check == true) getByid("rwdImgTag").style.display = "";
+    else getByid("rwdImgTag").style.display = "none";
+    //刷新Viewport窗格
+    SetTable();
+    //刷新ScrollBar的Style
+    //for (var slider of getClass("rightSlider")) slider.setStyle();
+    if (GetViewport(0)) for (var i = 0; i < Viewport_Total; i++) GetViewport(i).ScrollBar.reflesh();
+}
+
+function SetTable(row0, col0) {
+    //取得Viewport的row與col數量
+    let row = Viewport_row,
+        col = Viewport_col;
+    //如果有傳入row與col的參數，則優先使用傳入的
+    if (row0 && col0) {
+        row = row0;
+        col = col0
+    }
+
+    if (VIEWPORT.fixRow) row = VIEWPORT.fixRow;
+    if (VIEWPORT.fixCol) col = VIEWPORT.fixCol;
+
+    //重置各個Viewport的長寬大小(有顯示時)
+    try {
+        var WandH = getViewportFixSize(window.innerWidth, window.innerHeight, row, col);
+        for (var i = 0; i < Viewport_Total; i++)
+            GetViewport(i).style = "position:relative;float: left;left:100px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;margin:0px";
+        for (var r = 0; r < row; r++) {
+            for (var c = 0; c < col; c++) {
+                GetViewport(r * col + c).style.width = "calc(" + parseInt(100 / col) + "% - " + (parseInt(100 / col) + (bordersize * 2)) + "px)";
+                GetViewport(r * col + c).style.height = (WandH[1] - (bordersize * 2)) + "px";
+            }
+        }
+    } catch (ex) { }
+    //重置各個Viewport的長寬大小(不顯示時)
+    for (var i = row * col; i < Viewport_Total; i++) {
+        try {
+            GetViewport(i).style = "position:relative;float: right;;width:0px;" + "height:" + 0 + "px;overflow:hidden;border:" + 0 + "px #D3D9FF groove;margin:0px";
+        } catch (ex) { }
+    }
+    // window.onresize();
 }

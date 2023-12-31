@@ -93,26 +93,33 @@ function setImageOrientation2MarkCanvas(viewport, ctx) {
     var mat = ctx.getTransform();
     var checkTransform = false;
     //標記套用image Orientation和image Position，之後將以反方向旋轉
-    if (CheckNull(viewport.imageOrientationX) == false && CheckNull(viewport.imageOrientationY) == false && CheckNull(viewport.imageOrientationZ) == false) {
+    if (CheckNull(viewport.transform.imageOrientationX) == false && CheckNull(viewport.transform.imageOrientationY) == false && CheckNull(viewport.transform.imageOrientationZ) == false) {
         ctx.setTransform(new DOMMatrix(
-            [viewport.imageOrientationX, -viewport.imageOrientationX2, 0, viewport.imagePositionX * viewport.PixelSpacingX,
-            -viewport.imageOrientationY, viewport.imageOrientationY2, 0, viewport.imagePositionY * viewport.PixelSpacingY,
-            viewport.imageOrientationZ, viewport.imageOrientationZ2, 0, viewport.imagePositionZ,
+            [viewport.transform.imageOrientationX, -viewport.transform.imageOrientationX2, 0, viewport.transform.imagePositionX * viewport.transform.PixelSpacingX,
+            -viewport.transform.imageOrientationY, viewport.transform.imageOrientationY2, 0, viewport.transform.imagePositionY * viewport.PixelSpacingY,
+            viewport.transform.imageOrientationZ, viewport.transform.imageOrientationZ2, 0, viewport.transform.imagePositionZ,
                 0, 0, 0, 1
             ]));
+        /*
+             ctx.setTransform(new DOMMatrix(
+            [viewport.transform.imageOrientationX, -viewport.transform.imageOrientationX2, 0, 0,
+            -viewport.transform.imageOrientationY, viewport.transform.imageOrientationY2, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 1
+        ])); */
         checkTransform = true;
     }
     mat = ctx.getTransform();
     //標記支援翻轉
-    if (viewport.openHorizontalFlip == true && viewport.openVerticalFlip == true) {
+    if (viewport.HorizontalFlip == true && viewport.VerticalFlip == true) {
         ctx.setTransform(mat.scaleSelf(-1, -1));
-        ctx.setTransform(mat.translateSelf(-parseInt(viewport.imageWidth), parseInt(-viewport.imageHeight)));
-    } else if (viewport.openHorizontalFlip == true) {
+        ctx.setTransform(mat.translateSelf(-parseInt(viewport.div.imageWidth), parseInt(-viewport.div.imageHeight)));
+    } else if (viewport.HorizontalFlip == true) {
         ctx.setTransform(mat.scaleSelf(-1, 1));
-        ctx.setTransform(mat.translateSelf(-parseInt(viewport.imageWidth), 0));
-    } else if (viewport.openVerticalFlip == true) {
+        ctx.setTransform(mat.translateSelf(-parseInt(viewport.div.imageWidth), 0));
+    } else if (viewport.VerticalFlip == true) {
         ctx.setTransform(mat.scaleSelf(1, -1, 1));
-        ctx.setTransform(mat.translateSelf(0, -parseInt(viewport.imageHeight)));
+        ctx.setTransform(mat.translateSelf(0, -parseInt(viewport.div.imageHeight)));
     } else {
         ctx.setTransform(mat.scaleSelf(1, 1, 1));
         ctx.setTransform(mat.translateSelf(0, 0));
@@ -142,13 +149,13 @@ function drawSEG(canvas, mark, viewport) {
         ctx.restore(); // restore the state as it was when this function was called
     }
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    mirrorImage(ctx, mark.canvas, 0, 0, viewport.openHorizontalFlip, viewport.openVerticalFlip)
+    mirrorImage(ctx, mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip)
     // ctx.drawImage(mark.canvas, 0, 0, viewport.imageWidth, viewport.imageHeight);
     ctx.globalAlpha = 1;
     var globalCompositeOperation = ctx.globalCompositeOperation;
 
     ctx.globalCompositeOperation = "source-in";
-    if (setMarkColor(ctx) == true) ctx.fillRect(0, 0, viewport.imageWidth, viewport.imageHeight);
+    if (setMarkColor(ctx) == true) ctx.fillRect(0, 0, viewport.div.imageWidth, viewport.div.imageHeight);
 
     ctx.globalCompositeOperation = globalCompositeOperation;
     ctx.restore();
@@ -169,12 +176,12 @@ function drawOverLay(canvas, mark, viewport) {
         ctx.restore(); // restore the state as it was when this function was called
     }
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    mirrorImage(ctx, mark.canvas, 0, 0, viewport.openHorizontalFlip, viewport.openVerticalFlip)
+    mirrorImage(ctx, mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip)
     // ctx.drawImage(mark.canvas, 0, 0, viewport.imageWidth, viewport.imageHeight);
     ctx.globalAlpha = 1;
     var globalCompositeOperation = ctx.globalCompositeOperation;
     ctx.globalCompositeOperation = "source-in";
-    if (setMarkColor(ctx) == true) ctx.fillRect(0, 0, viewport.imageWidth, viewport.imageHeight);
+    if (setMarkColor(ctx) == true) ctx.fillRect(0, 0, viewport.div.imageWidth, viewport.div.imageHeight);
     ctx.globalCompositeOperation = globalCompositeOperation;
     ctx.restore();
 }
@@ -381,10 +388,10 @@ function drawTwoDimensionPolyline(canvas, mark, viewport) {
     setMarkColor(ctx);
     for (var o = 0; o < mark.markX.length; o++) {
         ctx.beginPath();
-        x1 = mark.markX[o] /* * viewport.PixelSpacingX*/;
+        x1 = mark.markX[o] /* * viewport.transform.PixelSpacingX*/;
         y1 = mark.markY[o] /** viewport.PixelSpacingY*/;
         o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-        x2 = mark.markX[o2] /* * viewport.PixelSpacingX*/;
+        x2 = mark.markX[o2] /* * viewport.transform.PixelSpacingX*/;
         y2 = mark.markY[o2] /* * viewport.PixelSpacingY*/;
 
         ctx.moveTo(x1, y1);
@@ -405,10 +412,10 @@ function drawTwoDimensionMultiPoint(canvas, mark, viewport) {
 
     for (var o = 0; o < mark.markX.length; o++) {
         ctx.beginPath();
-        var x1 = mark.markX[o] /* * viewport.PixelSpacingX*/;
+        var x1 = mark.markX[o] /* * viewport.transform.PixelSpacingX*/;
         var y1 = mark.markY[o] /* * viewport.PixelSpacingY*/;
         var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-        var x2 = mark.markX[o2] /* * viewport.PixelSpacingX*/;
+        var x2 = mark.markX[o2] /* * viewport.transform.PixelSpacingX*/;
         var y2 = mark.markY[o2] /* * viewport.PixelSpacingY*/;
 
         ctx.moveTo(x1, y1);
@@ -455,11 +462,11 @@ function drawRTSS(canvas, mark, viewport) {
     setMarkColor(ctx);
     for (var o = 0; o < mark.markX.length; o++) {
         ctx.beginPath();
-        var x1 = Math.ceil((mark.markX[o] - viewport.imagePositionX) * viewport.PixelSpacingX);
-        var y1 = Math.ceil((mark.markY[o] - viewport.imagePositionY) * viewport.PixelSpacingY);
+        var x1 = Math.ceil((mark.markX[o] - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
+        var y1 = Math.ceil((mark.markY[o] - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
         var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-        var x2 = Math.ceil((mark.markX[o2] - viewport.imagePositionX) * viewport.PixelSpacingX);
-        var y2 = Math.ceil((mark.markY[o2] - viewport.imagePositionY) * viewport.PixelSpacingY);
+        var x2 = Math.ceil((mark.markX[o2] - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
+        var y2 = Math.ceil((mark.markY[o2] - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
 
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
@@ -472,11 +479,11 @@ function drawRTSS(canvas, mark, viewport) {
         ctx.beginPath();
         for (var o = 0; o < mark.markX.length; o++) {
             var mark = mark;
-            var x1 = Math.ceil((mark.markX[o] - viewport.imagePositionX) * viewport.PixelSpacingX);
-            var y1 = Math.ceil((mark.markY[o] - viewport.imagePositionY) * viewport.PixelSpacingY);
+            var x1 = Math.ceil((mark.markX[o] - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
+            var y1 = Math.ceil((mark.markY[o] - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
             var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-            var x2 = Math.ceil((mark.markX[o2] - viewport.imagePositionX) * viewport.PixelSpacingX);
-            var y2 = Math.ceil((mark.markY[o2] - viewport.imagePositionY) * viewport.PixelSpacingY);
+            var x2 = Math.ceil((mark.markX[o2] - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
+            var y2 = Math.ceil((mark.markY[o2] - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
 
             if (o == 0) {
                 ctx.moveTo(x1, y1);
@@ -538,16 +545,15 @@ function getMarkSize(MarkCanvas, sizeCheck) {
     return ((Math.abs(lineWid)) * 2 * lineSize);
 }
 
-function displayMark(viewportNum0) {
+function displayMark(viewportNum = viewportNumber) {
 
-    if (openLink) for (var z = 0; z < Viewport_Total; z++)  GetViewport(z).openMark = GetViewport().openMark;
+    if (openLink) for (var z = 0; z < Viewport_Total; z++)  GetNewViewport(z).drawMark = GetNewViewport().drawMark;
 
-    var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
-    var viewport = GetViewport(viewportNum), MarkCanvas = GetViewportMark(viewportNum);
-    if (!viewport.openMark) return;
+    var viewport = GetNewViewport(viewportNum), MarkCanvas = GetViewportMark(viewportNum);
+    if (!viewport.drawMark) return;
 
     var ctx = MarkCanvas.getContext("2d");
-    ctx.clearRect(0, 0, viewport.imageWidth, viewport.imageHeight);
+    ctx.clearRect(0, 0, viewport.div.imageWidth, viewport.div.imageHeight);
 
     //注意：標記顏色選擇紅色跟自動都會先初始化為紅色
     ctx.strokeStyle = ctx.fillStyle = "#FF0000";
@@ -555,8 +561,9 @@ function displayMark(viewportNum0) {
     ctx.lineWidth = "" + getMarkSize(MarkCanvas, false);
     setMarkColor(ctx);
     //try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
+    if (!viewport.tags) return;
     var patientMark_all = PatientMark.filter(M => M.sop == viewport.sop);
-    var patientMark_enable = patientMark_all.filter(M => checkMarkEnabled(viewport.SeriesInstanceUID, M));
+    var patientMark_enable = patientMark_all.filter(M => checkMarkEnabled(viewport.series, M));
 
     //compatibleMark
     for (var Mark of patientMark_all) {

@@ -229,14 +229,14 @@ function initMPR2() {
     getByid("SplitViewportDiv").style.display = "none";
     cancelTools();
     getByid("ImgMPR2").src = "../image/icon/black/b_AdvancedMode_on.png";
-    var sop = GetViewport().sop;
+    var sop = GetNewViewport().sop;
     SetTable(1, 3);//如果MPR2模式正在開啟，固定1x3
     //NowResize = true;
     GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
     for (var c = 0; c < 3; c++)
         GetViewport(c).canvas().style.display = GetViewportMark(c).style.display = "none";
     viewportNumber = 0;
-    loadAndViewImage(Patient.findSop(GetViewport().sop).imageId);
+    loadAndViewImage(Patient.findSop(GetNewViewport().sop).imageId);
     // VIEWPORT.lockViewportList = [0, 1, 3];
     ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
     window.addEventListener("resize", resizeVR, false);
@@ -317,7 +317,7 @@ function initMPR2() {
         Arr_ = loadImageDataForMPR(o3dImage[o3dImage.length - 1], o3dPixelData[o3dPixelData.length - 1], Arr_);
         o3dPixelData2.push(Arr_);
         try {
-            var thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetViewport().PixelSpacingX;
+            var thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetNewViewport().transform.PixelSpacingX;
             thicknessList_MPR.push(thickness);
             if (thickness < Thickness_MPR) Thickness_MPR = thickness;
             if (thickness < big) big = thickness;

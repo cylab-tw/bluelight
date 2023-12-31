@@ -9,7 +9,18 @@ function setTransform(viewportnum) {
         GetViewport(num).canvas().style.transform = "translate(" + Fpx(GetViewport(num).newMousePointX) + "," + Fpx(GetViewport(num).newMousePointY) + ")rotate(" + GetViewport(num).rotateValue + "deg)";
     }
 }
-
+/*function setTransform(viewportnum) {
+    var viewport = GetViewport();
+    var NewViewport = GetNewViewport();
+    if (viewportnum == undefined) {
+        GetViewportMark().style.transform = "translate(" + Fpx(viewport.newMousePointX) + "," + Fpx(viewport.newMousePointY) + ") scaleX(" + NewViewport.HorizontalFlip + ") scaleY(" + NewViewport.VerticalFlip + ") rotate(" + viewport.rotateValue + "deg)";
+        viewport.canvas().style.transform = "translate(" + Fpx(viewport.newMousePointX) + "," + Fpx(viewport.newMousePointY) + ") scaleX(" + NewViewport.HorizontalFlip + ") scaleY(" + NewViewport.VerticalFlip + ") rotate(" + viewport.rotateValue + "deg)";
+    } else {
+        var num = viewportnum;
+        GetViewportMark(num).style.transform = "translate(" + Fpx(GetViewport(num).newMousePointX) + "," + Fpx(GetViewport(num).newMousePointY) + ") scaleX(" + GetNewViewport(num).HorizontalFlip + ") scaleY(" + GetNewViewport(num).VerticalFlip + ") rotate(" + GetViewport(num).rotateValue + "deg)";
+        GetViewport(num).canvas().style.transform = "translate(" + Fpx(GetViewport(num).newMousePointX) + "," + Fpx(GetViewport(num).newMousePointY) + ") scaleX(" + GetNewViewport(num).HorizontalFlip + ") scaleY(" + GetNewViewport(num).VerticalFlip + ") rotate(" + GetViewport(num).rotateValue + "deg)";
+    }
+}*/
 function scale_size(e, currX, currY) {
     var viewport = GetViewport(), canvas = viewport.canvas();
     if (openLink == true) {

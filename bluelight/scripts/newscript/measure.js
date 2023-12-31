@@ -69,7 +69,7 @@ function measure() {
                     var dcm = {};
                     dcm.study = GetViewport().study;
                     dcm.series = GetViewport().series;
-                    dcm.sop = GetViewport().sop;
+                    dcm.sop = GetNewViewport().sop;
                     dcm.color = "#FF0000";
                     dcm.mark = [];
                     dcm.showName = "ruler";
@@ -129,7 +129,7 @@ function measure() {
                 var dcm = {};
                 dcm.study = GetViewport().study;
                 dcm.series = GetViewport().series;
-                dcm.sop = GetViewport().sop;
+                dcm.sop = GetNewViewport().sop;
                 dcm.color = "#FF0000";
                 dcm.mark = [];
                 dcm.showName = "ruler";
@@ -272,7 +272,7 @@ var Measure_now_choose = null;
 var Measure_previous_choose = null;
 function measure_pounch(currX, currY) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
-    let index = SearchUid2Index(GetViewport().sop);
+    let index = SearchUid2Index(GetNewViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -306,16 +306,16 @@ function measure_pounch(currX, currY) {
 
 function getMeasurelValueBy2Point(mark) {
     var value = parseInt(Math.sqrt(
-        Math.pow(mark.markX[0] / GetViewport().PixelSpacingX - mark.markX[1] / GetViewport().PixelSpacingX, 2) +
-        Math.pow(mark.markY[0] / GetViewport().PixelSpacingY - mark.markY[1] / GetViewport().PixelSpacingY, 2), 2)) +
+        Math.pow(mark.markX[0] / GetNewViewport().transform.PixelSpacingX - mark.markX[1] / GetNewViewport().transform.PixelSpacingX, 2) +
+        Math.pow(mark.markY[0] / GetNewViewport().transform.PixelSpacingY - mark.markY[1] / GetNewViewport().transform.PixelSpacingY, 2), 2)) +
         "mm";
     return value;
 }
 
 function getMeasurelValue(e) {
     var value = parseInt(Math.sqrt(
-        Math.pow(MeasureXY2[0] / GetViewport().PixelSpacingX - MeasureXY[0] / GetViewport().PixelSpacingX, 2) +
-        Math.pow(MeasureXY2[1] / GetViewport().PixelSpacingY - MeasureXY[1] / GetViewport().PixelSpacingY, 2), 2)) +
+        Math.pow(MeasureXY2[0] / GetNewViewport().transform.PixelSpacingX - MeasureXY[0] / GetNewViewport().transform.PixelSpacingX, 2) +
+        Math.pow(MeasureXY2[1] / GetNewViewport().transform.PixelSpacingY - MeasureXY[1] / GetNewViewport().transform.PixelSpacingY, 2), 2)) +
         "mm";
     return value;
 }
@@ -327,7 +327,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
         PatientMark.splice(PatientMark.indexOf(Measure_previous_choose.dcm), 1);
         displayMark();
         Measure_previous_choose = null;
-        refreshMarkFromSop(GetViewport().sop);
+        refreshMarkFromSop(GetNewViewport().sop);
     }
     Measure_previous_choose = null;
 });

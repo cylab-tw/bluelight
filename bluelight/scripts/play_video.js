@@ -1,7 +1,7 @@
 function playVideo(viewportNum) {
     getByid("MeasureLabel").style.display = "none";
     getByid("AngleLabel").style.display = "none";
-    GetViewport(viewportNum).obj.nextFrame(false);
+    GetNewViewport(viewportNum).nextFrame(false);
 }
 
 var PlayTimer = function () {

@@ -27,7 +27,7 @@ function initMagnifier() {
 }
 
 function magnifierIng(currX, currY) {
-    var canvas = GetViewport().canvas();
+    var canvas = GetNewViewport().canvas;
     var zoom = parseFloat(getByid('textZoom').value);
     if ((zoom <= 25)) getByid('textZoom').value = zoom = 25;
     if (zoom >= 400) getByid('textZoom').value = zoom = 400;
@@ -53,7 +53,7 @@ function zoom() {
     if (BL_mode == 'zoom') {
         DeleteMouseEvent();
         openZoom = true;
-        SetWindowWL(true);
+        refleshViewport();
         getByid('labelZoom').style.display = '';
         getByid('textZoom').style.display = '';
         SetTable();

@@ -61,7 +61,7 @@ function angle() {
                 var dcm = {};
                 dcm.study = GetViewport().study;
                 dcm.series = GetViewport().series;
-                dcm.sop = GetViewport().sop;
+                dcm.sop = GetNewViewport().sop;
                 dcm.color = "#FF0000";
                 dcm.mark = [];
                 dcm.showName = "ruler";
@@ -113,7 +113,7 @@ function angle() {
                     var dcm = {};
                     dcm.study = GetViewport().study;
                     dcm.series = GetViewport().series;
-                    dcm.sop = GetViewport().sop;
+                    dcm.sop = GetNewViewport().sop;
                     dcm.color = "#FF0000";
                     dcm.mark = [];
                     dcm.showName = "ruler";
@@ -176,7 +176,7 @@ function angle() {
                 var dcm = {};
                 dcm.study = GetViewport().study;
                 dcm.series = GetViewport().series;
-                dcm.sop = GetViewport().sop;
+                dcm.sop = GetNewViewport().sop;
                 dcm.color = "#FF0000";
                 dcm.mark = [];
                 dcm.showName = "ruler";
@@ -314,7 +314,7 @@ var Angle_now_choose = null;
 var Angle_previous_choose = null;
 function angle_pounch(currX, currY) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
-    let index = SearchUid2Index(GetViewport().sop);
+    let index = SearchUid2Index(GetNewViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -409,8 +409,8 @@ function displayAngleRuler() {
     return;
     if (!angle.angle_) return;
     if (parseInt(Math.sqrt(
-        Math.pow(AngleXY1[0] / GetViewport().PixelSpacingX - AngleXY0[0] / GetViewport().PixelSpacingX, 2) +
-        Math.pow(AngleXY1[1] / GetViewport().PixelSpacingY - AngleXY0[1] / GetViewport().PixelSpacingY, 2), 2)) <= 0) return;
+        Math.pow(AngleXY1[0] / GetNewViewport().transform.PixelSpacingX - AngleXY0[0] / GetNewViewport().transform.PixelSpacingX, 2) +
+        Math.pow(AngleXY1[1] / GetNewViewport().transform.PixelSpacingY - AngleXY0[1] / GetNewViewport().transform.PixelSpacingY, 2), 2)) <= 0) return;
 
     var MarkCanvas = GetViewportMark();
     var tempctx = MarkCanvas.getContext("2d");
@@ -487,7 +487,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
         PatientMark.splice(PatientMark.indexOf(Angle_previous_choose.dcm), 1);
         displayMark();
         Angle_previous_choose = null;
-        refreshMarkFromSop(GetViewport().sop);
+        refreshMarkFromSop(GetNewViewport().sop);
     }
     Angle_previous_choose = null;
 });

@@ -43,7 +43,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
         PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
         displayMark();
         Graphic_now_choose = null;
-        refreshMarkFromSop(GetViewport().sop);
+        refreshMarkFromSop(GetNewViewport().sop);
     }
 });
 
@@ -253,7 +253,7 @@ var temp_xml_format = "";
 
 function Graphic_pounch(currX, currY, dcm) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
-    let index = SearchUid2Index(GetViewport().sop);
+    let index = SearchUid2Index(GetNewViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -342,7 +342,7 @@ function set_Graphic_context() {
     Graphic_format_object_list = []
     let temp = ""
     let tail_list = "";
-    let index = SearchUid2Index(GetViewport().sop);
+    let index = SearchUid2Index(GetNewViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -439,7 +439,7 @@ function set_GSPS_context() {
     Graphic_format_object_list = []
     let temp = ""
     let tail_list = "";
-    let index = SearchUid2Index(GetViewport().sop);
+    let index = SearchUid2Index(GetNewViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -593,7 +593,7 @@ function writegsps() {
                 var dcm = {};
                 dcm.study = GetViewport().study;
                 dcm.series = GetViewport().series;
-                dcm.sop = GetViewport().sop;
+                dcm.sop = GetNewViewport().sop;
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
@@ -619,7 +619,7 @@ function writegsps() {
                 var dcm = {};
                 dcm.study = GetViewport().study;
                 dcm.series = GetViewport().series;
-                dcm.sop = GetViewport().sop;
+                dcm.sop = GetNewViewport().sop;
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = "" + getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
@@ -662,7 +662,7 @@ function writegsps() {
                     var dcm = {};
                     dcm.study = GetViewport().study;
                     dcm.series = GetViewport().series;
-                    dcm.sop = GetViewport().sop;
+                    dcm.sop = GetNewViewport().sop;
                     dcm.color = GetGraphicColor();
                     if (getByid("GspsPOLYLINE").selected == true) dcm.color = GetGSPSColor();
                     dcm.mark = [];
@@ -747,7 +747,7 @@ function writegsps() {
                 var dcm = {};
                 dcm.study = GetViewport().study;
                 dcm.series = GetViewport().series;
-                dcm.sop = GetViewport().sop;
+                dcm.sop = GetNewViewport().sop;
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = "" + getByid("xmlMarkNameText").value; //"" + getByid("xmlMarkNameText").value;
@@ -775,7 +775,7 @@ function writegsps() {
                 var dcm = {};
                 dcm.study = GetViewport().study;
                 dcm.series = GetViewport().series;
-                dcm.sop = GetViewport().sop;
+                dcm.sop = GetNewViewport().sop;
                 dcm.color = GetGSPSColor();
                 dcm.mark = [];
                 dcm.showName = getByid("GspsName").value;
@@ -819,7 +819,7 @@ function writegsps() {
                 var dcm = {};
                 dcm.study = GetViewport().study;
                 dcm.series = GetViewport().series;
-                dcm.sop = GetViewport().sop;
+                dcm.sop = GetNewViewport().sop;
                 dcm.color = GetGraphicColor();
                 if (getByid("GspsPOLYLINE").selected == true) dcm.color = GetGSPSColor();
                 dcm.mark = [];

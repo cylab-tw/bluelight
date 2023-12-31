@@ -127,7 +127,7 @@ getByid("writeTAG").onclick = function () {
             }
         }
     }
-    let index = SearchUid2Index(GetViewport().sop);
+    let index = SearchUid2Index(GetNewViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];

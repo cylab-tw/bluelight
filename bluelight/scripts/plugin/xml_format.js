@@ -52,7 +52,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
     PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
     displayMark();
     xml_now_choose = null;
-    refreshMarkFromSop(GetViewport().sop);
+    refreshMarkFromSop(GetNewViewport().sop);
   }
   xml_now_choose = null;
 });
@@ -264,7 +264,7 @@ function setXml_context() {
   xml_format_object_list = []
   let temp = ""
   // x1 = parseInt(x1); x2 = parseInt(x2); y1 = parseInt(y1); y2 = parseInt(y2);
-  let index = SearchUid2Index(GetViewport().sop);
+  let index = SearchUid2Index(GetNewViewport().sop);
   let i = index[0],
     j = index[1],
     k = index[2];
@@ -303,7 +303,7 @@ function getXml_context() {
 
 function xml_pounch(currX, currY) {
   let block_size = getMarkSize(GetViewportMark(), false) * 4;
-  let index = SearchUid2Index(GetViewport().sop);
+  let index = SearchUid2Index(GetNewViewport().sop);
   let i = index[0],
     j = index[1],
     k = index[2];
@@ -362,7 +362,7 @@ function xml_pounch(currX, currY) {
 }
 
 function deleteXml() {
-  let index = SearchUid2Index(GetViewport().sop);
+  let index = SearchUid2Index(GetNewViewport().sop);
   let i = index[0],
     j = index[1],
     k = index[2];
@@ -399,7 +399,7 @@ function importXml(url) {
         var dcm = {};
         dcm.study = GetViewport().study;
         dcm.series = GetViewport().series;
-        dcm.sop = GetViewport().sop;
+        dcm.sop = GetNewViewport().sop;
         dcm.color = "#0000FF";
         dcm.mark = [];
         dcm.showName = "" + objlist[i].getElementsByTagName("name")[0].childNodes[0].data;
@@ -478,7 +478,7 @@ function writexml() {
           var dcm = {};
           dcm.study = GetViewport().study;
           dcm.series = GetViewport().series;
-          dcm.sop = GetViewport().sop;
+          dcm.sop = GetNewViewport().sop;
           dcm.color = "#0000FF";
           dcm.mark = [];
           dcm.showName = "" + getByid("xmlMarkNameText").value;
@@ -524,7 +524,7 @@ function writexml() {
         var dcm = {};
         dcm.study = GetViewport().study;
         dcm.series = GetViewport().series;
-        dcm.sop = GetViewport().sop;
+        dcm.sop = GetNewViewport().sop;
         dcm.color = "#0000FF";
         dcm.mark = [];
         dcm.showName = "" + getByid("xmlMarkNameText").value;

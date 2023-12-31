@@ -17,7 +17,7 @@ var touchmoveF = function (e) {
 var thisF = function () {
     getByid("WindowDefault").selected = true;
     for (var i = 0; i < Viewport_Total; i++) {
-        if ("MyDicomDiv" + (i) == "" + this.id) {
+        if (i == this.viewportNum) {
             var viewportNum = viewportNumber;
             MeasureXY[0] = MeasureXY[1] = MeasureXY2[0] = MeasureXY2[1] = 0;
             viewportNumber = i;
@@ -29,8 +29,8 @@ var thisF = function () {
             changeMarkImg();
             //NowResize = true;
             //NowCanvasSizeWidth = NowCanvasSizeHeight = null;
-            if (GetViewport().sop)
-                loadAndViewImage(Patient.findSop(GetViewport().sop).imageId /*, null, null, viewportNumber*/);
+            if (GetNewViewport().sop)
+                loadAndViewImage(Patient.findSop(GetNewViewport().sop).imageId /*, null, null, viewportNumber*/);
             else {
                 try {
                     loadAndViewImage(Patient.findSop(GetViewport(viewportNum).sop).imageId /*, null, null, viewportNumber*/);
@@ -50,9 +50,9 @@ window.addEventListener("keydown", function (e) {
     if (!GetViewport() || nextInstanceNumber == 0) return;
 
     if (nextInstanceNumber == -1) {
-        GetViewport().obj.nextFrame(true);
+        GetNewViewport().nextFrame(true);
     } else if (nextInstanceNumber = 1) {
-        GetViewport().obj.nextFrame(false);
+        GetNewViewport().nextFrame(false);
     }
 });
 
@@ -91,13 +91,13 @@ function Wheel(e) {
 
     if (!(openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true)) return;
     if (openLink == false) {
-        if (e.deltaY < 0) GetViewport(viewportNum).obj.nextFrame(true);
-        else GetViewport(viewportNum).obj.nextFrame(false);
+        if (e.deltaY < 0) GetNewViewport(viewportNum).nextFrame(true);
+        else GetNewViewport(viewportNum).nextFrame(false);
     }
     else {
         for (var z = 0; z < Viewport_Total; z++) {
-            if (e.deltaY < 0) GetViewport(z).obj.nextFrame(true);
-            else GetViewport(z).obj.nextFrame(false);
+            if (e.deltaY < 0) GetNewViewport(z).nextFrame(true);
+            else GetNewViewport(z).nextFrame(false);
         }
     }
 }
@@ -106,15 +106,15 @@ function Mouseout(e) {
     magnifierDiv.hide();
 }
 
-interact('.LeftImgAndMark').draggable({
+interact('.LeftImgDiv').draggable({
     onmove(event) {
         if (!openLeftImgClick) return;
-        dragseries = event.target.series;
+        dragQRLevel = event.target.QRLevel;
     }
 })
 
 interact('.MyDicomDiv').dropzone({
-    accept: '.LeftImgAndMark',
+    accept: '.LeftImgDiv',
     ondropactivate: function (event) {
         event.target.classList.add('drop-active')
     },
@@ -131,7 +131,7 @@ interact('.MyDicomDiv').dropzone({
     ondrop: function (event) {
         if (!openLeftImgClick) return;
         viewportNumber = parseInt(event.target.viewportNum);
-        PictureOnclick(dragseries);
+        PictureOnclick(dragQRLevel);
     },
     ondropdeactivate: function (event) {
         event.target.classList.remove('drop-active')

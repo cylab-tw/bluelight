@@ -56,7 +56,7 @@ function invertDisplayById(id) {
 }
 
 function getCurrPoint(e) {
-    var canvas = GetViewport().canvas()
+    var canvas = GetNewViewport().canvas
     if (!canvas) return [0, 0];
     var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().imageWidth / parseFloat(canvas.style.width)));
     var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().imageHeight / parseFloat(canvas.style.height)));
@@ -189,7 +189,7 @@ function sortInstance(sop) {
 }
 
 function rotateCalculation(e) {
-    var canvas = GetViewport().canvas();
+    var canvas = GetNewViewport().canvas;
     if (!canvas) return [0, 0];
     let cx = (GetViewport().imageWidth / 2);
     let cy = (GetViewport().imageHeight / 2);
@@ -208,7 +208,26 @@ function rotateCalculation(e) {
     currY11 = ny;
     return [currX11, currY11];
 }
-
+/*function rotateCalculation(e) {
+    var canvas = GetNewViewport().canvas;
+    if (!canvas) return [0, 0];
+    let cx = (GetViewport().imageWidth / 2);
+    let cy = (GetViewport().imageHeight / 2);
+    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ") scaleX(" + (GetNewViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetNewViewport().VerticalFlip ? -1 : 1) + ")";
+    let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
+        (GetViewport().imageWidth / parseFloat(canvas.style.width));
+    let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
+        (GetViewport().imageHeight / parseFloat(canvas.style.height));
+    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ") scaleX(" + (GetNewViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetNewViewport().VerticalFlip ? -1 : 1) + ") " + "rotate(" + GetViewport().rotateValue + "deg)";
+    let radians = GetViewport().rotateValue * (Math.PI / 180),
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (currX11 - cx)) + (sin * (currY11 - cy)) + cx,
+        ny = (cos * (currY11 - cy)) - (sin * (currX11 - cx)) + cy;
+    currX11 = nx;
+    currY11 = ny;
+    return [currX11, currY11];
+}*/
 function rotatePoint(point, RotationAngle, RotationPoint) {
     let cx = RotationPoint[0];
     let cy = RotationPoint[1];

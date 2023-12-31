@@ -70,7 +70,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
         PatientMark.splice(PatientMark.indexOf(reference), 1);
         displayMark();
 
-        refreshMarkFromSop(GetViewport().sop);
+        refreshMarkFromSop(GetNewViewport().sop);
     }
 });
 
@@ -259,7 +259,7 @@ var temp_xml_format = "";
 
 function RTSS_pounch(currX, currY, dcm) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
-    let index = SearchUid2Index(GetViewport().sop);
+    let index = SearchUid2Index(GetNewViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -480,11 +480,11 @@ function writertss() {
             else if (e.which == 3) rightMouseDown = true;
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
-            var viewport = GetViewport();
+            var viewport = GetNewViewport();
             windowMouseX = GetmouseX(e);
             windowMouseY = GetmouseY(e);
-            viewport.originalPointX = getCurrPoint(e)[0];
-            viewport.originalPointY = getCurrPoint(e)[1];
+            viewport.div.originalPointX = getCurrPoint(e)[0];
+            viewport.div.originalPointY = getCurrPoint(e)[1];
             if (!rightMouseDown) {
                 var angle2point = rotateCalculation(e)
                 var currX11 = Math.floor(angle2point[0]);
@@ -492,21 +492,21 @@ function writertss() {
                 var currX02 = currX11;
                 var currY02 = currY11;
 
-                if (viewport.imageOrientationX && viewport.imageOrientationY && viewport.imageOrientationZ) {
-                    currX02 = (currX11 * viewport.imageOrientationX + currY11 * -viewport.imageOrientationY + 0);
-                    currY02 = (currX11 * -viewport.imageOrientationX2 + currY11 * viewport.imageOrientationY2 + 0);
-                    if ((viewport.openHorizontalFlip != viewport.openVerticalFlip)) {
+                /*if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
+                    currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
+                    currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
+                    if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
                         currX02 = currX02 - (currX02 - currX11) * 2;
                         currY02 = currY02 - (currY02 - currY11) * 2;
                     }
-                }
-                currX02 = currX02 / viewport.PixelSpacingX + viewport.imagePositionX;
-                currY02 = currY02 / viewport.PixelSpacingY + viewport.imagePositionY;
+                }*/
+                currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
+                currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
 
                 var dcm = {};
                 dcm.study = GetViewport().study;
                 dcm.series = GetViewport().sreies;
-                dcm.sop = GetViewport().sop;
+                dcm.sop = GetNewViewport().sop;
                 dcm.color = "rgb(0,0,128)";
                 for (var co = 0; co < getClass("RTSSColorSelectOption").length; co++) {
                     if (getClass("RTSSColorSelectOption")[co].selected == true) {
@@ -514,7 +514,7 @@ function writertss() {
                     }
                 }
 
-                dcm.imagePositionZ = viewport.imagePositionZ;
+                dcm.imagePositionZ = viewport.transform.imagePositionZ;
                 dcm.mark = [];
                 dcm.showName = getByid('textROIName').value; //"" + getByid("xmlMarkNameText").value;
                 dcm.hideName = dcm.showName;
@@ -537,7 +537,7 @@ function writertss() {
         Mousemove = function (e) {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
-            var viewport = GetViewport();
+            var viewport = GetNewViewport();
             var labelXY = getClass('labelXY'); {
                 let angle2point = rotateCalculation(e);
                 labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
@@ -548,8 +548,8 @@ function writertss() {
 
             if (openLink == true) {
                 for (var i = 0; i < Viewport_Total; i++) {
-                    GetViewport(i).newMousePointX = viewport.newMousePointX;
-                    GetViewport(i).newMousePointY = viewport.newMousePointY;
+                    GetViewport(i).newMousePointX = viewport.div.newMousePointX;
+                    GetViewport(i).newMousePointY = viewport.div.newMousePointY;
                 }
             }
             putLabel();
@@ -562,21 +562,21 @@ function writertss() {
                 var currX02 = currX11;
                 var currY02 = currY11;
 
-                if (viewport.imageOrientationX && viewport.imageOrientationY && viewport.imageOrientationZ) {
-                    currX02 = (currX11 * viewport.imageOrientationX + currY11 * -viewport.imageOrientationY + 0);
-                    currY02 = (currX11 * -viewport.imageOrientationX2 + currY11 * viewport.imageOrientationY2 + 0);
-                    if ((viewport.openHorizontalFlip != viewport.openVerticalFlip)) {
+                /*if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
+                    currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
+                    currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
+                    if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
                         currX02 = currX02 - (currX02 - currX11) * 2;
                         currY02 = currY02 - (currY02 - currY11) * 2;
                     }
-                }
-                currX02 = currX02 / viewport.PixelSpacingX + viewport.imagePositionX;
-                currY02 = currY02 / viewport.PixelSpacingY + viewport.imagePositionY;
+                }*/
+                currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
+                currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
                 // var DcmMarkLength = RTSS_now_choose.mark.length - 1;
                 RTSS_now_choose.markX.push(angle2point[0] - Math.abs(currX02 - angle2point[0]));
                 RTSS_now_choose.markY.push(angle2point[1] - Math.abs(currY02 - angle2point[1]));
                 //PatientMark.push(RTSS_now_choose);
-                refreshMarkFromSop(GetViewport().sop);
+                refreshMarkFromSop(GetNewViewport().sop);
                 for (var i = 0; i < Viewport_Total; i++)
                     displayMark(i);
             }

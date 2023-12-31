@@ -1,9 +1,9 @@
 
 var openTable = true;
 
-function displayDicomTagsList(viewportNum0) {
+function displayDicomTagsList(viewportNum = viewportNumber) {
     if (openTable == false) return;
-    var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
+
     dropTable(viewportNum);
     GetViewport(viewportNum).style.overflowY = "hidden";
     GetViewport(viewportNum).style.overflowX = "hidden";
@@ -60,9 +60,9 @@ function displayDicomTagsList(viewportNum0) {
     GetViewport(viewportNum).style.overflowX = "scroll";
 }
 
-function displayAIM(viewportNum0) {
+function displayAIM(viewportNum = viewportNumber) {
     if (openTable == false) return;
-    var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
+    
     var break1 = false;
     dropTable(viewportNum);
     GetViewport(viewportNum).style.overflowY = "hidden";
@@ -148,5 +148,67 @@ function dropTable(num) {
     if (getByid("AimTable" + (num + 1))) {
         var elem = getByid("AimTable" + (num + 1));
         elem.parentElement.removeChild(elem);
+    }
+}
+
+function createDicomTagsList2Viewport(viewport){
+    function getTag(tag) {
+        var group = tag.substring(1, 5);
+        var element = tag.substring(5, 9);
+        var tagIndex = ("(" + group + "," + element + ")").toUpperCase();
+        var attr = TAG_DICT[tagIndex];
+        return attr;
+    }
+
+    /*//清除之前的值
+    if (element.DicomTagsList) {
+        for (var elem of element.DicomTagsList) {
+            element[elem[1]] = undefined;
+        }
+    }*/
+    //取得DICOM Tags放入清單
+    viewport.DicomTagsList = [];
+    viewport.imageId = viewport.content.image.imageId ? viewport.content.image.imageId : "";
+
+    for (el in viewport.content.image.data.elements) {
+        try {
+            var tag = ("(" + el.substring(1, 5) + "," + el.substring(5, 9) + ")").toUpperCase();
+            var el1 = getTag(el);
+            el1.tag = "" + el;
+            var content = dicomParser.explicitElementToString(viewport.content.image.data, el1);
+            if (content) {
+                viewport.DicomTagsList.push([tag, el1.name, content]);
+                viewport.DicomTagsList[el1.name] = content;
+            } else {
+                var name = ("" + el1.name).toLowerCase();
+                if (!viewport.content.image[name]) {
+                    if (el1.vr == 'US') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.uint16(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.uint16(el);
+                    } else if (el1.vr === 'SS') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.int16(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.int16(el);
+                    } else if (el1.vr === 'UL') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.uint32(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.uint32(el);
+                    } else if (el1.vr === 'SL') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.int32(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.int32(el);
+                    } else if (el1.vr === 'FD') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.double(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.double(el);
+                    } else if (el1.vr === 'FL') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.float(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.float(el);
+                    } else {
+                        viewport.DicomTagsList.push([tag, el1.name, ""]);
+                        viewport.DicomTagsList[el1.name] = "";
+                    }
+                } else {
+                    viewport.DicomTagsList.push([tag, el1.name, viewport.content.image[name]]);
+                    viewport[el1.name] = viewport.content.image[name];
+                }
+            }
+        } catch (ex) {}
     }
 }

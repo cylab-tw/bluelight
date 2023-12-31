@@ -116,7 +116,7 @@ getByid("b_Scroll_MPR").onclick = function () {
         }
         if (TouchDownCheck == true && rightTouchDown == false) {
             var nextInstanceNumber = -1;
-            var sop = GetViewport().sop;
+            var sop = GetNewViewport().sop;
             let index = SearchUid2Index(sop);
             // if (!index) continue;
             let i = index[0],
@@ -131,15 +131,15 @@ getByid("b_Scroll_MPR").onclick = function () {
             }
             if (Math.abs(currY - GetViewport().originalPointY) < Math.abs(currX - GetViewport().originalPointX)) {
                 if (currX < GetViewport().originalPointX - 3) {
-                    GetViewport().obj.nextFrame(true);
+                    GetNewViewport().nextFrame(true);
                 } else if (currX > GetViewport().originalPointX + 3) {
-                    GetViewport().obj.nextFrame(false);
+                    GetNewViewport().nextFrame(false);
                 }
             } else {
                 if (currY < GetViewport().originalPointY - 3) {
-                    GetViewport().obj.nextFrame(true);
+                    GetNewViewport().nextFrame(true);
                 } else if (currY > GetViewport().originalPointY + 3) {
-                    GetViewport().obj.nextFrame(false);
+                    GetNewViewport().nextFrame(false);
                 }
             }
             GetViewport().originalPointX = currX;
@@ -193,8 +193,8 @@ getByid("MouseOperation_MPR").onclick = function () {
         for (var z = 0; z < Viewport_Total; z++) {
             var break1 = false;
             if (openLink == true) viewportNum = z;
-            var currX1 = (e.pageX - canvas.getBoundingClientRect().left - GetViewport().newMousePointX - 100) * (GetViewport().imageWidth / parseInt(GetViewport().canvas().style.width));
-            var currY1 = (e.pageY - canvas.getBoundingClientRect().top - GetViewport().newMousePointY - 100) * (GetViewport().imageHeight / parseInt(GetViewport().canvas().style.height));
+            var currX1 = (e.pageX - canvas.getBoundingClientRect().left - GetViewport().newMousePointX - 100) * (GetViewport().imageWidth / parseInt(GetNewViewport().canvas.style.width));
+            var currY1 = (e.pageY - canvas.getBoundingClientRect().top - GetViewport().newMousePointY - 100) * (GetViewport().imageHeight / parseInt(GetNewViewport().canvas.style.height));
             var sop = GetViewport(viewportNum).sop;
             try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
             var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
@@ -251,7 +251,7 @@ getByid("MouseOperation_MPR").onclick = function () {
     Mousemove = function (e) {
         if (BL_mode != 'mouseTool_MPR') return;
         var viewport = GetViewport(), canvas = viewport.canvas();
-        if (!viewport.openMark) GetViewportMark().getContext("2d").clearRect(0, 0, GetViewportMark().width, GetViewportMark().height);
+        if (!GetNewViewport().drawMark) GetViewportMark().getContext("2d").clearRect(0, 0, GetViewportMark().width, GetViewportMark().height);
         if (openMPR == true && openWindow != true && openChangeFile != true) {
             if (MouseDownCheck == true) {
                 viewportNumber = 2;
@@ -280,7 +280,7 @@ getByid("MouseOperation_MPR").onclick = function () {
     Touchmove = function (e, e2) {
         if (BL_mode != 'mouseTool_MPR') return;
         var viewport = GetViewport(), canvas = viewport.canvas();
-        if (!viewport.openMark) GetViewportMark().getContext("2d").clearRect(0, 0, GetViewportMark().width, GetViewportMark().height);
+        if (!GetNewViewport().drawMark) GetViewportMark().getContext("2d").clearRect(0, 0, GetViewportMark().width, GetViewportMark().height);
         if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
 
         if (openMPR == true) {
@@ -584,7 +584,7 @@ function initMPR() {
         //mouseTool();
         if (GetViewport(0).sop)
             loadAndViewImage(Patient.findSop(GetViewport(0).sop).imageId, 0);
-        //canvas = GetViewport().canvas()
+        //canvas = GetNewViewport().canvas
         getByid("MouseOperation").click();
     } else if (openMPR == true) {
         enterMPR_UI();
@@ -598,14 +598,14 @@ function initMPR() {
         getByid("SplitViewportDiv").style.display = "none";
         cancelTools();
         getByid("ImgMPR").src = "../image/icon/black/b_AdvancedMode_on.png";
-        var sop = GetViewport().sop;
+        var sop = GetNewViewport().sop;
         SetTable(2, 2);//如果MPR模式正在開啟，固定2x2
         //NowResize = true;
         GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
         for (var c = 0; c < 4; c++)
             GetViewport(c).canvas().style.display = GetViewportMark(c).style.display = "none";
         viewportNumber = 2;
-        loadAndViewImage(Patient.findSop(GetViewport().sop).imageId);
+        loadAndViewImage(Patient.findSop(GetNewViewport().sop).imageId);
         //VIEWPORT.lockViewportList = [0, 1, 3];
         ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
 
@@ -779,7 +779,7 @@ function initMPR() {
                     imgData2.data[i + 3] = 255;
                 }
             }
-            else if ((image.invert != true && GetViewport().openInvert == true) || (image.invert == true && GetViewport().openInvert == false)) {
+            else if ((image.invert != true && GetNewViewport().invert == true) || (image.invert == true && GetNewViewport().invert == false)) {
                 for (var i = 0, j = 0; i < imgData2.data.length; i += 4, j++) {
                     imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = 255 - parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255)
                     imgData2.data[i + 3] = 255;
@@ -819,7 +819,7 @@ function initMPR() {
                 NewDiv.height = image.height;
                 NewDiv.style.width = image.width + "px";
                 NewDiv.style.height = image.height + "px";
-                NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetViewport().PixelSpacingX;
+                NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetNewViewport().transform.PixelSpacingX;
                 if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
                 if (NewDiv.thickness < big) big = NewDiv.thickness;
 
@@ -904,7 +904,7 @@ function display3DLine(x0, y0, x1, y1, color) {
 }
 
 function o3dWindowLevel() {
-    var sop = GetViewport().sop;
+    var sop = GetNewViewport().sop;
     if (o3Dcount != o3DListLength) {
         for (var ll = o3DListLength - 1; ll >= o3Dcount; ll--) {
             var elem = getByid("3DDiv" + ll);
@@ -996,7 +996,7 @@ function o3dWindowLevel() {
         NewDiv.id = "3DDiv" + l2;
         NewDiv.className = "o3DDiv";
         NewDiv.sop = image.data.string('x00080018');
-        NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetViewport().PixelSpacingX;
+        NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetNewViewport().transform.PixelSpacingX;
         if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
         if (NewDiv.thickness < big) big = NewDiv.thickness;
         NewDiv.width = image.width;
@@ -1064,7 +1064,7 @@ Anatomical_SectionMouseMove = function (e) {
             AngleXY0 = [currX11M, 0];
             AngleXY1 = [currX11M, GetViewport(1).imageHeight];
             if (openMPR == true) {
-                var sop = GetViewport().sop;
+                var sop = GetNewViewport().sop;
                 var index = SearchUid2Index(sop);
                 var i = index[0],
                     j = index[1],
@@ -1106,7 +1106,7 @@ Anatomical_SectionMouseMove0 = function (e) {
             AngleXY1 = [currX11M, 0];
             AngleXY0 = [currX11M, GetViewport(0).imageHeight];
             if (openMPR == true) {
-                var sop = GetViewport().sop;
+                var sop = GetNewViewport().sop;
                 var index = SearchUid2Index(sop);
                 var i = index[0],
                     j = index[1],

@@ -1,38 +1,37 @@
-function displayWindowLevel(viewportNum0) {
-  var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
+function displayWindowLevel(viewportNum = viewportNumber) {
   getByid("textWC").value = "originWindowCenter";
   getByid("textWW").value = "originWindowWidth";
-  getByid("textWW").value = "" + parseInt(GetViewport(viewportNum).windowWidthList);
-  getByid("textWC").value = "" + parseInt(GetViewport(viewportNum).windowCenterList);
-  getClass("labelWC")[viewportNum].innerText = " WC: " + parseInt(GetViewport(viewportNum).windowCenterList) + " WW: " + parseInt(GetViewport(viewportNum).windowWidthList);
+  getByid("textWW").value = "" + parseInt(GetNewViewport(viewportNum).windowWidth);
+  getByid("textWC").value = "" + parseInt(GetNewViewport(viewportNum).windowCenter);
+  getClass("labelWC")[viewportNum].innerText = " WC: " + parseInt(GetNewViewport(viewportNum).windowCenter) + " WW: " + parseInt(GetNewViewport(viewportNum).windowWidth);
 }
 
-function DisplaySeriesCount(viewportNum0) {
-  var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
-  var viewport = GetViewport(viewportNum);
+function DisplaySeriesCount(viewportNum = viewportNumber) {
+  var viewport = GetNewViewport(viewportNum);
+  var tags = viewport.tags;
   var label_RB = getClass("labelRB")[viewportNum];
-  
+
   SeriesCount = 1;
   for (var i = 0; i < Patient.StudyAmount; i++) {
     for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-      if (Patient.Study[i].Series[j].SeriesUID == viewport.SeriesInstanceUID) {
+      if (Patient.Study[i].Series[j].SeriesUID == tags.SeriesInstanceUID) {
         SeriesCount = Patient.Study[i].Series[j].SopAmount;
         if (SeriesCount == 1) SeriesCount = 2;
-        if (viewport.InstanceNumber == null) {
+        if (tags.InstanceNumber == null) {
           if (label_RB.innerText.indexOf('/') >= 1) {
-            label_RB.innerText = label_RB.innerText.substr(0, label_RB.innerText.indexOf('/') + 1) + (SeriesCount - 1) + "\n" + viewport.StudyDate;
+            label_RB.innerText = label_RB.innerText.substr(0, label_RB.innerText.indexOf('/') + 1) + (SeriesCount - 1) + "\n" + tags.StudyDate;
             return;
           }
         } else {
-          if (viewport.NumberOfFrames && viewport.NumberOfFrames > 0) label_RB.innerText = "Im: " + viewport.framesNumber + "/" + (viewport.NumberOfFrames - 0) + "\n" + viewport.StudyDate;
-          else label_RB.innerText = "Im: " + viewport.InstanceNumber + "/" + (SeriesCount - 0) + "\n" + viewport.StudyDate;
+          if (tags.NumberOfFrames && tags.NumberOfFrames > 1) label_RB.innerText = "Im: " + GetViewport(viewportNum).framesNumber + "/" + (tags.NumberOfFrames - 0) + "\n" + tags.StudyDate;
+          else label_RB.innerText = "Im: " + tags.InstanceNumber + "/" + (SeriesCount - 0) + "\n" + tags.StudyDate;
           return;
         }
       }
     }
   }
-  if (viewport.NumberOfFrames && viewport.NumberOfFrames > 0) label_RB.innerText = "Im: " + viewport.framesNumber + "/" + viewport.NumberOfFrames + "\n" + viewport.StudyDate;
-  else label_RB.innerText = "Im: " + viewport.InstanceNumber + "/" + SeriesCount + "\n" + viewport.StudyDate;
+  if (tags.NumberOfFrames && tags.NumberOfFrames > 1) label_RB.innerText = "Im: " + GetViewport(viewportNum).framesNumber + "/" + tags.NumberOfFrames + "\n" + tags.StudyDate;
+  else label_RB.innerText = "Im: " + tags.InstanceNumber + "/" + SeriesCount + "\n" + tags.StudyDate;
 }
 
 function putLabel() {

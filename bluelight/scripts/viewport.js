@@ -1,205 +1,21 @@
-class QRLv {
-    constructor(data) {
-        if (data.constructor.name == 'DataSet') {
-            this.study = data.string('x0020000d');
-            this.series = data.string('x0020000e');
-            this.sop = data.string('x00080018');
-        }
-    }
-}
-let Patient;
+function CreateViewportSettings() {
+    var obj = {};
+    obj.invert = false;
+    obj.HorizontalFlip = false;
+    obj.VerticalFlip = false;
 
-onloadFunction.push2First(
-    function () {
-        leftLayout = new LeftLayout();
-        Patient = new BlueLightPatient();
-        //PatientMark = new BlueLightPatientMark();
-    }
-);
+    obj.windowCenter = null;
+    obj.windowWidth = null;
 
-/*class BlueLightPatientMark {
-    constructor() { }
-}*/
-class BlueLightPatient {
-    constructor() {
-        this.Study = [];
-        this.StudyAmount = 0;
-    }
+    obj.transform = null;
+    obj.drawMark = true;
+    obj.play = false;
 
-    getNextSopByQRLevelsAndInstanceNumber(QRLevel, InstanceNumber, invert = false) {
-        var SopList = this.Study[QRLevel.study].Series[QRLevel.series].Sop;
+    obj.enable = true;
+    obj.lockRender = false;
 
-        SopList = SortArrayByElem(SopList, "InstanceNumber");
-        var index = SopList.findIndex((S) => S.InstanceNumber == InstanceNumber);
-        if (invert == false) {
-            if (index >= SopList.length - 1) return SopList[0];
-            else return SopList[index + 1];
-        } else {
-            if (index <= 0) return SopList[SopList.length - 1];
-            else return SopList[index - 1];
-        }
-    }
-
-    getNextFrameByQRLevelsAndFrameNumber(QRLevel, index, invert = false) {
-        var SopList = this.Study[QRLevel.study].Series[QRLevel.series].Sop;
-        var FramesList = this.Study[QRLevel.study].Series[QRLevel.series].Sop[QRLevel.sop].frames;
-
-        if (SopList.length == 1 && FramesList.length > 1) {
-            if (invert == false) {
-                if (index >= FramesList.length - 1) return 0;
-                else return index + 1;
-            } else {
-                if (index <= 0) return FramesList.length - 1;
-                else return index - 1;
-            }
-        }
-
-        SopList = SortArrayByElem(SopList, "InstanceNumber");
-        var index = SopList.findIndex((S) => S.InstanceNumber == InstanceNumber);
-        if (invert == false) {
-            if (index >= SopList.length - 1) return SopList[0]
-            else return SopList[index + 1];
-        } else {
-            if (index <= 0) return SopList[SopList.length - 1];
-            else return SopList[index - 1];
-        }
-    }
-
-    getSopByQRLevels(QRLevel) {
-        return this.Study[QRLevel.study].Series[QRLevel.series].Sop[QRLevel.sop];
-    }
-
-    getFirstSopByQRLevels(QRLevel) {
-        return SortArrayByElem(this.Study[QRLevel.study].Series[QRLevel.series].Sop, "InstanceNumber")[0];
-    }
-
-    findStudy(study) {
-        if (study == undefined) study = GetViewport().study;
-        if (this.Study[study]) return this.Study[study]
-        else return null;
-    }
-
-    findSeries(series) {//atient.Study[i].Series[j].SopAmount
-        if (series == undefined) series = GetViewport().series;
-        for (var studyObj of this.Study) {
-            if (studyObj.Series[series]) return studyObj.Series[series];
-        }
-        return null;
-    }
-
-    findSop(sop) {
-        if (sop == undefined) sop = GetViewport().sop;
-        for (var studyObj of this.Study) {
-            for (var seriesObj of studyObj.Series) {
-                if (seriesObj.Sop[sop]) return seriesObj.Sop[sop];
-            }
-        }
-        return null;
-    }
-
-    findSeriesBySop(sop) {
-        if (sop == undefined) sop = GetViewport().sop;
-        for (var studyObj of this.Study) {
-            for (var seriesObj of studyObj.Series) {
-                if (seriesObj.Sop[sop]) return seriesObj;
-            }
-        }
-        return null;
-    }
-
-    getSopAmountBySeries(series){
-        if (series == undefined) series = GetViewport().series;
-        for (var studyObj of this.Study) {
-            if (studyObj.Series[series]) return studyObj.Series.SopAmount;
-        }
-        return null;
-    }
-}
-
-function loadUID(DICOM_obj) {
-    var study = DICOM_obj.study, series = DICOM_obj.series, sop = DICOM_obj.sop;
-    var instance = DICOM_obj.instance, imageId = DICOM_obj.imageId, patientId = DICOM_obj.patientId, image = DICOM_obj.image, pixelData = DICOM_obj.pixelData;
-    var frames = DICOM_obj.frames;
-    var pdf = DICOM_obj.pdf;
-    var Hierarchy = 0;
-    var NumberOfStudy = -1;
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        if (Patient.Study[i].StudyUID == study)
-            NumberOfStudy = i;
-    }
-    if (NumberOfStudy == -1) {
-        var Study = {};
-        Study.StudyUID = study;
-        Study.PatientId = patientId;
-        Study.SeriesAmount = 1;
-        Study.Series = [];
-        var Series = {};
-        Series.SeriesUID = series;
-        Series.SopAmount = 1;
-        Series.Sop = [];
-        var Sop = {};
-        Sop.InstanceNumber = instance;
-        Sop.SopUID = sop;
-        Sop.imageId = imageId;
-        Sop.image = image;
-        Sop.pixelData = pixelData;
-        Sop.pdf = pdf;
-        Sop.frames = frames;
-        getPatientbyImageID[imageId] = Sop;
-        Series.Sop.push(Sop); Series.Sop[Sop.SopUID] = Sop;
-        Study.Series.push(Series); Study.Series[Series.SeriesUID] = Series;
-        Patient.Study.push(Study); Patient.Study[Study.StudyUID] = Study;
-        Patient.StudyAmount += 1;
-    } else {
-        Hierarchy = 1;
-        var isSeries = -1;
-        for (var i = 0; i < Patient.Study[NumberOfStudy].SeriesAmount; i++) {
-            if (Patient.Study[NumberOfStudy].Series[i].SeriesUID == series)
-                isSeries = i;
-        }
-        if (isSeries == -1) {
-            var Series = {};
-            Series.SeriesUID = series;
-            Series.SopAmount = 1;
-            Series.Sop = [];
-            var Sop = {};
-            Sop.InstanceNumber = instance;
-            Sop.SopUID = sop;
-            Sop.imageId = imageId;
-            Sop.image = image;
-            Sop.pixelData = pixelData;
-            Sop.pdf = pdf;
-            Sop.frames = frames;
-            getPatientbyImageID[imageId] = Sop;
-            Series.Sop.push(Sop); Series.Sop[Sop.SopUID] = Sop;
-            Patient.Study[NumberOfStudy].Series.push(Series); Patient.Study[NumberOfStudy].Series[Series.SeriesUID] = Series;
-            Patient.Study[NumberOfStudy].SeriesAmount += 1;
-        } else {
-            Hierarchy = 2;
-            var isSop = -1;
-            for (var i = 0; i < Patient.Study[NumberOfStudy].Series[isSeries].SopAmount; i++) {
-                if (Patient.Study[NumberOfStudy].Series[isSeries].Sop[i].SopUID == sop)
-                    isSop = i;
-            }
-            if (isSop == -1) {
-                var Sop = {};
-                Sop.InstanceNumber = instance;
-                Sop.SopUID = sop;
-                Sop.imageId = imageId;
-                Sop.image = image;
-                Sop.pixelData = pixelData;
-                Sop.pdf = pdf;
-                Sop.frames = frames;
-                Patient.Study[NumberOfStudy].Series[isSeries].Sop.push(Sop); Patient.Study[NumberOfStudy].Series[isSeries].Sop[Sop.SopUID] = Sop;
-                Patient.Study[NumberOfStudy].Series[isSeries].SopAmount += 1;
-                getPatientbyImageID[imageId] = Sop;
-            } else {
-                //  console.log("重複載入");
-                Hierarchy = -1;
-            }
-        }
-    }
-    return Hierarchy;
+    obj.DicomTagsList = [];
+    return obj;
 }
 
 class BlueLightViewPort {
@@ -215,8 +31,8 @@ class BlueLightViewPort {
         document.getElementsByClassName("container")[0].appendChild(div);
         this.div = div;
         this.index = index;
-        this.div.obj = this;
         this.QRLevel = "series";
+        this.content = {};
         //this.dcm = null;
         this.initViewportOption(div, index);
         this.initLeftRule(div, index);
@@ -230,11 +46,27 @@ class BlueLightViewPort {
     }
 
     initViewportOption(div, index) {
+        //this.Settings = CreateViewportSettings();
+        this.invert = false;
+        this.HorizontalFlip = false;
+        this.VerticalFlip = false;
+
+        this.windowCenter = null;
+        this.windowWidth = null;
+
+        this.transform = {};
+        this.drawMark = true;
+        this.play = false;
+
+        this.enable = true;
+        this.lockRender = false;
+
+
         div.openHorizontalFlip = false;
         div.openVerticalFlip = false;
-        div.openMark = true;
+        //div.openMark = true;
         div.openPlay = false;
-        div.openInvert = false;
+        //div.openInvert = false;
 
         div.enable = true;
         div.lockRender = false;
@@ -247,12 +79,13 @@ class BlueLightViewPort {
     set enable(v) { this.div.enable = v };
     set lockRender(v) { this.div.lockRender = v };
 
-    get study() { return this.div.study };
-    get series() { return this.div.series };
-    get sop() { return this.div.sop };
+    get study() { return this.tags.StudyInstanceUID };
+    get series() { return this.tags.SeriesInstanceUID };
+    get sop() { return this.tags.SOPInstanceUID };
     get InstanceNumber() { return this.div.InstanceNumber };
     get framesNumber() { return this.div.framesNumber };
     get imageId() { return this.div.imageId };
+    get tags() { return this.DicomTagsList; }
 
     set study(v) { this.div.study = v };
     set series(v) { this.div.series = v };
@@ -260,12 +93,12 @@ class BlueLightViewPort {
     set InstanceNumber(v) { this.div.InstanceNumber = v };
     set framesNumber(v) { this.div.framesNumber = v };
     set imageId(v) { this.div.imageId = v };
-
     initViewportCanvas(div, index) {
         //一般的Canvas
         var dicmCanvas = document.createElement("CANVAS");
         dicmCanvas.className = "DicomCanvas";
         div.appendChild(dicmCanvas);
+        this.canvas = dicmCanvas;
         //只要取得canvas()就能快速取得該Viewport的影像
         div.canvas = function () {
             if (!this.getElementsByClassName("DicomCanvas")[0]) return null;
@@ -281,6 +114,8 @@ class BlueLightViewPort {
         MarkCanvas.id = "MarkCanvas" + index;
         div.appendChild(MarkCanvas);
     }
+
+    get ctx() { return this.canvas.getContext("2d"); }
 
     initLeftRule(div, index) {
         var leftRule = document.createElement("CANVAS");
@@ -349,11 +184,10 @@ class BlueLightViewPort {
         };
     }
     nextFrame(invert = false) {
-        if (this.study == undefined) return;
-        if (this.QRLevel == "series") {
-            var Sop = Patient.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.InstanceNumber, invert);
+        if (this.QRLevel == "series" && this.tags) {
+            var Sop = Patient.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.tags.InstanceNumber, invert);
             if (Sop != undefined) loadAndViewImage(Sop.imageId, this.index);
-        } else if (this.QRLevel == "frames") {
+        } else if (this.QRLevel == "frames" && this.framesNumber != undefined) {
             var framsNumber = Patient.getNextFrameByQRLevelsAndFrameNumber(this.QRLevels, this.framesNumber, invert);
             if (framsNumber != undefined) loadAndViewImage(this.imageId, this.index, framsNumber);
         }
@@ -379,6 +213,12 @@ class BlueLightViewPort {
         if (Sop.pdf) displayPDF(Sop.pdf);
         else loadAndViewImage(Sop.imageId, this.index);
     }
+
+    loadFirstImgBySop(sop) {
+        var Sop = Patient.findSop(sop);
+        if (Sop.pdf) displayPDF(Sop.pdf);
+        else loadAndViewImage(Sop.imageId, this.index);
+    }
 }
 
 function GetViewport(num) {
@@ -391,6 +231,16 @@ function GetViewport(num) {
     return getByid("MyDicomDiv" + (num + 0));
 }
 
+function GetNewViewport(num) {
+    if (!num) {
+        if (num === 0) {
+            return ViewPortList[0];
+        }
+        return ViewPortList[viewportNumber];
+    }
+    return ViewPortList[num];
+}
+
 function GetViewportMark(num) {
     if (!num) {
         if (num === 0) {
@@ -399,4 +249,128 @@ function GetViewportMark(num) {
         return getByid("MarkCanvas" + (viewportNumber - 0));
     }
     return getByid("MarkCanvas" + (num - 0));
+}
+
+//function refleshCanvas(DicomCanvas, image, viewport, pixelData) {
+function refleshCanvas(viewport) {
+    var canvas = viewport.canvas;
+    var image = viewport.content.image;
+    var pixelData = viewport.content.pixelData;
+
+    canvas.width = image.width;
+    canvas.height = image.height
+    var ctx = canvas.getContext("2d");
+    var imgData = ctx.createImageData(image.width, image.height);
+    //預先填充不透明度為255
+    new Uint32Array(imgData.data.buffer).fill(0xFF000000);
+
+    if (viewport.series && viewport.series != image.data.string("x0020000e"))
+        viewport.windowCenter = viewport.windowWidth = null;
+
+    if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
+        var max = -99999999999, min = 99999999999;
+        if (image.MinPixel == undefined || image.MaxPixel == undefined || (image.MinPixel == 0 && image.MaxPixel == 0)) {
+            for (var i = 0; i < pixelData.length; i++) {
+                if (pixelData[i] > max) max = pixelData[i];
+                if (pixelData[i] < min) min = pixelData[i];
+            }
+            image.MinPixel = min; image.MaxPixel = max;
+        }
+        min = image.MinPixel; max = image.MaxPixel;
+        if (min != max && min != undefined && max != undefined) {
+            const diff = (1 / (max - min)) * 255;
+            const data = imgData.data;
+            if (image.color == true) {
+                for (var i = data.length; i >= 0; i -= 4) {
+                    data[i + 0] = parseInt(pixelData[i] * diff);
+                    data[i + 1] = parseInt(pixelData[i + 1] * diff);
+                    data[i + 2] = parseInt(pixelData[i + 2] * diff);
+                }
+            } else {
+                for (var i = data.length, j = data.length / 4; i >= 0; i -= 4, j--) {
+                    data[i + 0] = data[i + 1] = data[i + 2] = parseInt(pixelData[j] * diff);
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        }
+    } else {
+        var windowCenter = viewport.windowCenter ? viewport.windowCenter : image.windowCenter;
+        var windowWidth = viewport.windowWidth ? viewport.windowWidth : image.windowWidth;
+        var high = windowCenter + (windowWidth / 2);
+        var low = windowCenter - (windowWidth / 2);
+        var intercept = image.intercept;
+        if (CheckNull(intercept)) intercept = 0;
+        var slope = image.slope;
+        if (CheckNull(slope)) slope = 1;
+
+        //未最佳化之版本
+        /*if (image.color == true) {
+            for (var i = imgData.data.length; i >=0 ; i -= 4) {
+                imgData.data[i + 0] = parseInt(((pixelData[i] * slope - low + intercept) / (high - low)) * 255);
+                imgData.data[i + 1] = parseInt(((pixelData[i + 1] * slope - low + intercept) / (high - low)) * 255);
+                imgData.data[i + 2] = parseInt(((pixelData[i + 2] * slope - low + intercept) / (high - low)) * 255);
+                imgData.data[i + 3] = 255;
+            }
+        } else {
+            for (var i = imgData.data.length, j = imgData.data.length/4; i>=0 ; i -= 4, j--) {
+                imgData.data[i + 0] = imgData.data[i + 1] = imgData.data[i + 2] = parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255);
+                imgData.data[i + 3] = 255;
+            }
+        }*/
+        var multiplication = 255 / ((high - low)) * slope;
+        var addition = (- low + intercept) / (high - low) * 255;
+        const data = imgData.data;
+        if (image.color == true) {
+            for (var i = data.length; i >= 0; i -= 4) {
+                data[i + 0] = pixelData[i] * multiplication + addition;
+                data[i + 1] = pixelData[i + 1] * multiplication + addition;
+                data[i + 2] = pixelData[i + 2] * multiplication + addition;
+            }
+        } else {
+            for (var i = data.length, j = data.length / 4; i >= 0; i -= 4, j--) {
+                data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
+            }
+        }
+        ctx.putImageData(imgData, 0, 0);
+    }
+
+    var shouldReDraw = false;
+    ctx.save();
+    /*if (CheckNull(viewport.transform.imageOrientationX) == false && CheckNull(viewport.transform.imageOrientationY) == false && CheckNull(viewport.transform.imageOrientationZ) == false) {
+        ctx.setTransform(new DOMMatrix(
+            [viewport.transform.imageOrientationX, -viewport.transform.imageOrientationX2, 0, viewport.transform.imagePositionX * viewport.transform.PixelSpacingX,
+            -viewport.transform.imageOrientationY, viewport.transform.imageOrientationY2, 0, viewport.transform.imagePositionY * viewport.transform.PixelSpacingY,
+            viewport.transform.imageOrientationZ, viewport.transform.imageOrientationZ2, 0, viewport.transform.imagePositionZ,
+                0, 0, 0, 1
+            ]
+        ));
+        shouldReDraw = true;
+    }*/
+
+    var invert = ((image.invert != true && viewport.invert == true) || (image.invert == true && viewport.invert == false));
+    if (invert == true) shouldReDraw = ctx.filter = "invert()";
+    if (viewport.HorizontalFlip == true || viewport.VerticalFlip == true) {
+        ctx.transform(
+            viewport.HorizontalFlip ? -1 : 1, 0, // set the direction of x axis
+            0, viewport.VerticalFlip ? -1 : 1,   // set the direction of y axis
+            (viewport.HorizontalFlip ? image.width : 0), // set the x origin
+            (viewport.VerticalFlip ? image.height : 0)   // set the y origin
+        );
+        shouldReDraw = true;
+    }
+
+    if (shouldReDraw != false) {
+        ctx.drawImage(cloneCanvas(canvas), 0, 0);
+    }
+    ctx.restore();
+
+    //setTransform(viewport.index);
+    //GetViewportMark(viewport.index).style = canvas.style.cssText;
+}
+
+function cloneCanvas(canvas) {
+    var newCanvas = document.createElement('canvas');
+    newCanvas.width = canvas.width, newCanvas.height = canvas.height;
+    newCanvas.getContext('2d').drawImage(canvas, 0, 0);
+    return newCanvas;
 }

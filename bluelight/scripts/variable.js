@@ -91,11 +91,6 @@ var bottomLabelPadding = labelPadding;
 //代表目前載入了多少次DICOM --*
 var dicomImageCount = 0;
 
-//輸入WindowCenter的text
-var textWC = getByid("textWC");
-//輸入WindowWidth的text
-var textWW = getByid("textWW");
-
 //代表現在視窗大小受到改變，須執行RWD
 //var NowResize = false;
 //裝DICOM階層樣式表等資訊的物件

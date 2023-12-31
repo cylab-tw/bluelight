@@ -45,18 +45,20 @@ function scroll() {
                 windowMouseX = GetmouseX(e);
                 windowMouseY = GetmouseY(e);
 
+                var nextBool = null;
                 if (Math.abs(currY - GetViewport().originalPointY) < Math.abs(currX - GetViewport().originalPointX)) {
-                    if (currX < GetViewport().originalPointX - 3) {
-                        GetViewport().obj.nextFrame(true);
-                    } else if (currX > GetViewport().originalPointX + 3) {
-                        GetViewport().obj.nextFrame(false);
-                    }
+                    if (currX < GetViewport().originalPointX - 3) nextBool = true;
+                    else if (currX > GetViewport().originalPointX + 3) nextBool = false;
                 } else {
-                    if (currY < GetViewport().originalPointY - 3) {
-                        GetViewport().obj.nextFrame(true);
-                    } else if (currY > GetViewport().originalPointY + 3) {
-                        GetViewport().obj.nextFrame(false);
-                    }
+                    if (currY < GetViewport().originalPointY - 3) nextBool = true;
+                    else if (currY > GetViewport().originalPointY + 3) nextBool = false;
+                }
+
+                if (nextBool != null && openLink == false) GetNewViewport().nextFrame(nextBool);
+                else if (nextBool != null && openLink == true) {
+                    for (var z = 0; z < Viewport_Total; z++)
+                        GetNewViewport(z).nextFrame(nextBool);
+
                 }
 
                 GetViewport().originalPointX = currX;
@@ -110,15 +112,15 @@ function scroll() {
                 {
                     if (Math.abs(currY - GetViewport().originalPointY) < Math.abs(currX - GetViewport().originalPointX)) {
                         if (currX < GetViewport().originalPointX - 3) {
-                            GetViewport().obj.nextFrame(true);
+                            GetNewViewport().nextFrame(true);
                         } else if (currX > GetViewport().originalPointX + 3) {
-                            GetViewport().obj.nextFrame(false);
+                            GetNewViewport().nextFrame(false);
                         }
                     } else {
                         if (currY < GetViewport().originalPointY - 3) {
-                            GetViewport().obj.nextFrame(true);
+                            GetNewViewport().nextFrame(true);
                         } else if (currY > GetViewport().originalPointY + 3) {
-                            GetViewport().obj.nextFrame(false);
+                            GetNewViewport().nextFrame(false);
                         }
                     }
                     GetViewport().originalPointX = currX;

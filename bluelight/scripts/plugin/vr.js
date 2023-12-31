@@ -189,24 +189,24 @@ getByid("MouseOperation_VR").onclick = function () {
 }
 
 getByid("textWC_VR").onchange = function () {
-    GetViewport().windowCenterList = parseInt(textWC_VR.value);
+    GetNewViewport().windowCenter = parseInt(textWC_VR.value);
     getByid("WindowCustom_VR").selected = true;
 }
 
 getByid("textWW_VR").onchange = function () {
-    GetViewport().windowWidthList = parseInt(textWW_VR.value);
+    GetNewViewport().windowWidth = parseInt(textWW_VR.value);
     getByid("WindowCustom_VR").selected = true;
 }
 
 getByid("WindowLevelSelect_VR").onchange = function () {
     if (getByid("WindowDefault").selected == true) {
-        getByid("textWC_VR").value = GetViewport().windowCenterList = GetViewport().windowCenter;
-        getByid("textWW_VR").value = GetViewport().windowWidthList = GetViewport().windowWidth;
+        getByid("textWC_VR").value = GetNewViewport().windowCenter = GetViewport().windowCenter;
+        getByid("textWW_VR").value = GetNewViewport().windowWidth = GetViewport().windowWidth;
     }
     for (var i = 0; i < getClass("WindowSelect_VR").length; i++) {
         if (getClass("WindowSelect_VR")[i].selected == true) {
-            GetViewport().windowCenterList = getByid("textWC_VR").value = parseInt(getClass("WindowSelect_VR")[i].getAttribute('wc'));
-            GetViewport().windowWidthList = getByid("textWW_VR").value = parseInt(getClass("WindowSelect_VR")[i].getAttribute('ww'));
+            GetNewViewport().windowCenter = getByid("textWC_VR").value = parseInt(getClass("WindowSelect_VR")[i].getAttribute('wc'));
+            GetNewViewport().windowWidth = getByid("textWW_VR").value = parseInt(getClass("WindowSelect_VR")[i].getAttribute('ww'));
         }
     }
 }
@@ -431,12 +431,12 @@ function initVR() {
         getByid("3dCave").style.display = "";
         cancelTools();
         getByid("ImgVR").src = "../image/icon/black/b_3D_on.png";
-        var sop = GetViewport().sop;
+        var sop = GetNewViewport().sop;
         SetTable(1, 1);
         //NowResize = true;
         GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
-        loadAndViewImage(Patient.findSop(GetViewport().sop).imageId);
-        GetViewport().canvas().style.display = "none";
+        loadAndViewImage(Patient.findSop(GetNewViewport().sop).imageId);
+        GetNewViewport().canvas.style.display = "none";
         GetViewportMark().style.display = "none";
         GetViewport(0).canvas().style.display = "none";
         GetViewportMark(0).style.display = "none";
@@ -576,7 +576,7 @@ function initVR() {
                 NewDiv.height = image.height;
                 NewDiv.style.width = image.width + "px";
                 NewDiv.style.height = image.height + "px";
-                NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetViewport().PixelSpacingX;
+                NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetNewViewport().transform.PixelSpacingX;
                 if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
                 if (NewDiv.thickness < big) big = NewDiv.thickness;
 
@@ -637,8 +637,8 @@ function displayCanvasFor3D(DicomCanvas, image, pixelData) {
     DicomCanvas.style.height = image.height + "px";
     var ctx2 = DicomCanvas.getContext("2d");
     var imgData2 = ctx2.createImageData(image.width, image.height);
-    var windowWidth = GetViewport().windowWidthList;
-    var windowCenter = GetViewport().windowCenterList;
+    var windowWidth = GetNewViewport().windowWidth;
+    var windowCenter = GetNewViewport().windowCenter;
     if (getByid("o3DAngio").selected == true) {
         windowWidth = 332;
         windowCenter = 287;
@@ -747,7 +747,7 @@ function displayCanvasFor3D(DicomCanvas, image, pixelData) {
                 imgData2.data[i + 3] = 255;
             }
         }
-        else if ((image.invert != true && GetViewport().openInvert == true) || (image.invert == true && GetViewport().openInvert == false)) {
+        else if ((image.invert != true && GetNewViewport().invert == true) || (image.invert == true && GetNewViewport().invert == false)) {
             for (var i = 0, j = 0; i < imgData2.data.length; i += 4, j++) {
                 imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = 255 - pixelData[j] * multiplication + addition;
                 imgData2.data[i + 3] = 255;
@@ -1938,7 +1938,7 @@ function get3dCurrPoint(e) {
 
 function display3DMark(MarkCanvas, sop) {
     var viewport = GetViewport();
-    if (!viewport.openMark) return;
+    if (!GetNewViewport().drawMark) return;
     var ctx = MarkCanvas.getContext("2d");
     ctx.clearRect(0, 0, viewport.imageWidth, viewport.imageHeight);
 

@@ -26,7 +26,7 @@ loadWriteSEG();
 
 getByid("overlay2seg").onclick = function () {
     getByid("overlay2seg").style.display = "none";
-    var sop = GetViewport().sop;
+    var sop = GetNewViewport().sop;
     //if (o3DElement) sop = o3DElement.sop;
     let index = SearchUid2Index(sop);
     if (!index) return;
@@ -64,7 +64,7 @@ getByid("overlay2seg").onclick = function () {
             }
         }
     }
-    refreshMarkFromSop(GetViewport().sop);
+    refreshMarkFromSop(GetNewViewport().sop);
 }
 
 getByid("writeSEG").onclick = function () {
@@ -316,7 +316,7 @@ function set_SEG_context() {
     let temp = ""
     let tail4_list = "";
     let tail2_list = "";
-    let index = SearchUid2Index(GetViewport().sop);
+    let index = SearchUid2Index(GetNewViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -519,7 +519,7 @@ function writeSeg() {
             GetViewport().originalPointX = getCurrPoint(e)[0];
             GetViewport().originalPointY = getCurrPoint(e)[1];
             if (openWindow != true) {
-                var sop = GetViewport().sop;
+                var sop = GetNewViewport().sop;
                 var index_Seg = SearchUid2Index(sop);
                 if (!index_Seg) return;
                 let i_s = index_Seg[0],
@@ -541,7 +541,7 @@ function writeSeg() {
                     var dcm = {};
                     dcm.study = GetViewport().study;
                     dcm.series = GetViewport().sreies;
-                    dcm.sop = GetViewport().sop;
+                    dcm.sop = GetNewViewport().sop;
 
                     dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
                     dcm.mark = [];
@@ -596,7 +596,7 @@ function writeSeg() {
                     setSEG2PixelData(angle2point);
                     Line_setSEG2PixelData(Previous_angle2point, angle2point);
 
-                    refreshMarkFromSop(GetViewport().sop);
+                    refreshMarkFromSop(GetNewViewport().sop);
                     for (var i = 0; i < Viewport_Total; i++)
                         displayMark(i);
                 }
@@ -606,7 +606,7 @@ function writeSeg() {
                 var rect = getByid("SegBrushSizeText").value;
                 rect = parseInt(rect);
                 if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
-                refreshMarkFromSop(GetViewport().sop);
+                refreshMarkFromSop(GetNewViewport().sop);
                 let angle2point = rotateCalculation(e);
                 var MarkCanvas = GetViewportMark();
                 var segCtx = MarkCanvas.getContext("2d");

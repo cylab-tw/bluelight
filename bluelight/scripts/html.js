@@ -180,9 +180,9 @@ function html_onload() {
         newCanvas.height = oldCanvas.height;
         return newCanvas;
       }
-      var newCanvas = BuildCanvas(GetViewport().canvas());
+      var newCanvas = BuildCanvas(GetNewViewport().canvas);
       var context = newCanvas.getContext('2d');
-      context.drawImage(GetViewport().canvas(), 0, 0);
+      context.drawImage(GetNewViewport().canvas, 0, 0);
       context.drawImage(GetViewportMark(), 0, 0);
       link.href = newCanvas.toDataURL()
       link.click();
@@ -226,7 +226,7 @@ function html_onload() {
   }
 
   getByid("Rotate_90").onclick = function () {
-    GetViewport().rotateValue +=90;
+    GetViewport().rotateValue += 90;
     setTransform();
     if (openLink == true) {
       for (var z = 0; z < Viewport_Total; z++) {
@@ -235,9 +235,9 @@ function html_onload() {
       }
     }
   }
-  
+
   getByid("Rotate_i90").onclick = function () {
-    GetViewport().rotateValue -=90;
+    GetViewport().rotateValue -= 90;
     setTransform();
     if (openLink == true) {
       for (var z = 0; z < Viewport_Total; z++) {
@@ -340,21 +340,21 @@ function html_onload() {
 
   getByid("horizontal_flip").onclick = function () {
     if (this.enable == false) return;
-    GetViewport().openHorizontalFlip = !GetViewport().openHorizontalFlip;
-    SetWindowWL(true);
+    GetNewViewport().HorizontalFlip = !GetNewViewport().HorizontalFlip;
+    refleshViewport();
     displayMark();
   }
 
   getByid("vertical_flip").onclick = function () {
     if (this.enable == false) return;
-    GetViewport().openVerticalFlip = !GetViewport().openVerticalFlip;
-    SetWindowWL(true);
+    GetNewViewport().VerticalFlip = !GetNewViewport().VerticalFlip;
+    refleshViewport();
     displayMark();
   }
   getByid("color_invert").onclick = function () {
     if (this.enable == false) return;
-    GetViewport().openInvert = !GetViewport().openInvert;
-    SetWindowWL(true);
+    GetNewViewport().invert = !GetNewViewport().invert;
+    refleshViewport();
   }
 
   getByid("unlink").onclick = function () {
@@ -401,7 +401,7 @@ function html_onload() {
   }
 
   getByid("MarkButton").onclick = function () {
-    GetViewport().openMark = !GetViewport().openMark;
+    GetNewViewport().drawMark = !GetNewViewport().drawMark;
     for (var i = 0; i < Viewport_Total; i++) GetViewportMark(i).getContext("2d").clearRect(0, 0, GetViewport(i).imageWidth, GetViewport(i).imageHeight);
     for (var i = 0; i < Viewport_Total; i++) displayMark(i);
     changeMarkImg();
@@ -456,17 +456,17 @@ function html_onload() {
 
   getByid("WindowLevelSelect").onchange = function () {
     if (getByid("WindowDefault").selected == true) {
-      getByid("textWC").value = GetViewport().windowCenterList = GetViewport().windowCenter;
-      getByid("textWW").value = GetViewport().windowWidthList = GetViewport().windowWidth;
-      SetWindowWL();
+      getByid("textWC").value = GetNewViewport().windowCenter;
+      getByid("textWW").value = GetNewViewport().windowWidth;
+      refleshViewport();
       WindowOpen = true;
       return;
     }
     for (var i = 0; i < getClass("WindowSelect").length; i++) {
       if (getClass("WindowSelect")[i].selected == true) {
-        GetViewport().windowCenterList = getByid("textWC").value = parseInt(getClass("WindowSelect")[i].getAttribute('wc'));
-        GetViewport().windowWidthList = getByid("textWW").value = parseInt(getClass("WindowSelect")[i].getAttribute('ww'));
-        SetWindowWL();
+        GetNewViewport().windowCenter = getByid("textWC").value = parseInt(getClass("WindowSelect")[i].getAttribute('wc'));
+        GetNewViewport().windowWidth = getByid("textWW").value = parseInt(getClass("WindowSelect")[i].getAttribute('ww'));
+        refleshViewport();
         WindowOpen = true;
         break;
       }
@@ -474,16 +474,16 @@ function html_onload() {
   }
 
   getByid("textWC").onchange = function () {
-    GetViewport().windowCenterList = parseInt(getByid("textWC").value);
+    GetNewViewport().windowCenter = parseInt(getByid("textWC").value);
     getByid("WindowCustom").selected = true;
-    SetWindowWL();
+    refleshViewport();
     WindowOpen = true;
   }
 
   getByid("textWW").onchange = function () {
-    GetViewport().windowWidthList = parseInt(getByid("textWW").value);
+    GetNewViewport().windowWidth = parseInt(getByid("textWW").value);
     getByid("WindowCustom").selected = true;
-    SetWindowWL();
+    refleshViewport();
     WindowOpen = true;
   }
 
@@ -497,7 +497,7 @@ function html_onload() {
   getByid("labelZoom").onchange = function () {
     if ((zoom <= 25)) getByid('textZoom').value = zoom = 25;
     if (zoom >= 400) getByid('textZoom').value = zoom = 400;
-    SetWindowWL();
+    refleshViewport();
   }
 
   getByid("markAlphaText").onchange = function () {
@@ -582,7 +582,7 @@ function addEvent2SplitViewport() {
 function changeMarkImg() {
   getByid("MeasureLabel").style.display = "none";
   getByid("AngleLabel").style.display = "none";
-  if (GetViewport().openMark == true) getByid("MarkButton").src = "../image/icon/black/fist0.png";
+  if (GetNewViewport().drawMark == true) getByid("MarkButton").src = "../image/icon/black/fist0.png";
   else getByid("MarkButton").src = "../image/icon/black/fist1.png";
 }
 

@@ -64,8 +64,8 @@ function rotate() {
                 if (openLink == true) {
                     for (var i = 0; i < Viewport_Total; i++) {
                         try {
-                            GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = GetViewport().canvas().style.width;
-                            GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = GetViewport().canvas().style.height;
+                            GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = GetNewViewport().canvas.style.width;
+                            GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = GetNewViewport().canvas.style.height;
                             setTransform(i);
                             GetViewport(i).newMousePointX = GetViewport().newMousePointX;
                             GetViewport(i).newMousePointX = GetViewport().newMousePointX;
@@ -130,8 +130,8 @@ function rotate() {
                         for (var i = 0; i < Viewport_Total; i++) {
                             if (i == viewportNumber) continue;
                             try {
-                                GetViewport(i).canvas().style.width = GetViewport().canvas().style.width;
-                                GetViewport(i).canvas().style.height = GetViewport().canvas().style.height;
+                                GetViewport(i).canvas().style.width = GetNewViewport().canvas.style.width;
+                                GetViewport(i).canvas().style.height = GetNewViewport().canvas.style.height;
                                 setTransform(i);
 
 
@@ -183,8 +183,8 @@ function rotate() {
                     if (openLink == true) {
                         for (var i = 0; i < Viewport_Total; i++) {
                             if (i == viewportNumber) continue;
-                            GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = GetViewport().canvas().style.width;
-                            GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = GetViewport().canvas().style.height;
+                            GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = GetNewViewport().canvas.style.width;
+                            GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = GetNewViewport().canvas.style.height;
                             setTransform(i);
 
 
@@ -228,8 +228,8 @@ function rotate() {
 
                 if (openLink == true) {
                     for (var i = 0; i < Viewport_Total; i++) {
-                        GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = GetViewport().canvas().style.width;
-                        GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = GetViewport().canvas().style.height;
+                        GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = GetNewViewport().canvas.style.width;
+                        GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = GetNewViewport().canvas.style.height;
                         setTransform(i);
 
 
