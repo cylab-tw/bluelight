@@ -320,8 +320,9 @@ window.onresize = function () {
     for (i = 0; i < Viewport_Total; i++) {
         try {
             //NowResize = true;
-            GetViewport().NowCanvasSizeWidth = GetViewport().NowCanvasSizeHeight = null;
-            loadAndViewImage(Patient.findSop(GetViewport(i).sop).imageId, i);
+            GetViewport(i).NowCanvasSizeWidth = GetViewport(i).NowCanvasSizeHeight = null;
+            setSopToViewport(GetNewViewport(i).sop, i);
+            //loadAndViewImage(Patient.findSop(GetViewport(i).sop).imageId, i);
         } catch (ex) { }
     }
 
@@ -398,6 +399,13 @@ function SetTable(row0, col0) {
         try {
             GetViewport(i).style = "position:relative;float: right;;width:0px;" + "height:" + 0 + "px;overflow:hidden;border:" + 0 + "px #D3D9FF groove;margin:0px";
         } catch (ex) { }
+    }
+
+    if (viewportNumber >= row * col) viewportNumber = 0;
+
+    if (GetNewViewport()) {
+        GetNewViewport().div.style.backgroundColor = "rgb(10,6,6)";
+        GetNewViewport().div.style.border = bordersize + "px #FFC3FF groove";
     }
     // window.onresize();
 }

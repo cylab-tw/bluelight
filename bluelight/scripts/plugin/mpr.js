@@ -175,13 +175,13 @@ getByid("MouseOperation_MPR").onclick = function () {
     var MPR_div = getClass("MPR_div");
     for (var i = 0; i < MPR_div.length; i++) MPR_div[i].style.display = "none";
     set_BL_model('mouseTool_MPR');
-    GetViewport(2).removeEventListener("mousemove", Mousemove, false);
-    GetViewport(2).removeEventListener("mousedown", Mousedown, false);
-    GetViewport(2).removeEventListener("mouseup", Mouseup, false);
-    /// GetViewport(2).removeEventListener("touchstart", TouchstartF, false);
-    /// GetViewport(2).removeEventListener("touchmove", TouchmoveF, false);
-    /// GetViewport(2).removeEventListener("touchend", TouchendF, false);
-    GetViewport(2).removeEventListener("wheel", Wheel, false);
+    GetNewViewport(2).div.removeEventListener("mousemove", Mousemove, false);
+    GetNewViewport(2).div.removeEventListener("mousedown", Mousedown, false);
+    GetNewViewport(2).div.removeEventListener("mouseup", Mouseup, false);
+    /// GetNewViewport(2).div.removeEventListener("touchstart", TouchstartF, false);
+    /// GetNewViewport(2).div.removeEventListener("touchmove", TouchmoveF, false);
+    /// GetNewViewport(2).div.removeEventListener("touchend", TouchendF, false);
+    GetNewViewport(2).div.removeEventListener("wheel", Wheel, false);
 
     Wheel = function (e) {
         if (!openMPR) return;
@@ -193,9 +193,9 @@ getByid("MouseOperation_MPR").onclick = function () {
         for (var z = 0; z < Viewport_Total; z++) {
             var break1 = false;
             if (openLink == true) viewportNum = z;
-            var currX1 = (e.pageX - canvas.getBoundingClientRect().left - GetViewport().newMousePointX - 100) * (GetViewport().imageWidth / parseInt(GetNewViewport().canvas.style.width));
-            var currY1 = (e.pageY - canvas.getBoundingClientRect().top - GetViewport().newMousePointY - 100) * (GetViewport().imageHeight / parseInt(GetNewViewport().canvas.style.height));
-            var sop = GetViewport(viewportNum).sop;
+            var currX1 = (e.pageX - canvas.getBoundingClientRect().left - GetViewport().newMousePointX - 100) * (GetNewViewport().width / parseInt(GetNewViewport().canvas.style.width));
+            var currY1 = (e.pageY - canvas.getBoundingClientRect().top - GetViewport().newMousePointY - 100) * (GetNewViewport().height / parseInt(GetNewViewport().canvas.style.height));
+            var sop = GetNewViewport(viewportNum).sop;
             try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
             var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
             var list = sortInstance(sop);
@@ -250,7 +250,7 @@ getByid("MouseOperation_MPR").onclick = function () {
 
     Mousemove = function (e) {
         if (BL_mode != 'mouseTool_MPR') return;
-        var viewport = GetViewport(), canvas = viewport.canvas();
+        var viewport = GetNewViewport();
         if (!GetNewViewport().drawMark) GetViewportMark().getContext("2d").clearRect(0, 0, GetViewportMark().width, GetViewportMark().height);
         if (openMPR == true && openWindow != true && openChangeFile != true) {
             if (MouseDownCheck == true) {
@@ -261,13 +261,13 @@ getByid("MouseOperation_MPR").onclick = function () {
                 o3DPointX = currX11M;
                 o3DPointY = currY11M;
                 AngleXY0 = [currX11M, 0];
-                AngleXY1 = [currX11M, viewport.imageHeight];
+                AngleXY1 = [currX11M, viewport.height];
                 if (openMPR == true) {
                     Anatomical_Section();
                     Anatomical_Section2();
                 }
-                display3DLine(currX11M, 0, currX11M, viewport.imageHeight, "rgb(38,140,191)");
-                display3DLine(0, currY11M, viewport.imageWidth, currY11M, "rgb(221,53,119)");
+                display3DLine(currX11M, 0, currX11M, viewport.height, "rgb(38,140,191)");
+                display3DLine(0, currY11M, viewport.width, currY11M, "rgb(221,53,119)");
             }
         }
     }
@@ -279,7 +279,7 @@ getByid("MouseOperation_MPR").onclick = function () {
 
     Touchmove = function (e, e2) {
         if (BL_mode != 'mouseTool_MPR') return;
-        var viewport = GetViewport(), canvas = viewport.canvas();
+        var viewport = GetNewViewport();
         if (!GetNewViewport().drawMark) GetViewportMark().getContext("2d").clearRect(0, 0, GetViewportMark().width, GetViewportMark().height);
         if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
 
@@ -292,23 +292,23 @@ getByid("MouseOperation_MPR").onclick = function () {
                 o3DPointX = currX11M;
                 o3DPointY = currY11M;
                 AngleXY0 = [currX11M, 0];
-                AngleXY1 = [currX11M, viewport.imageHeight];
+                AngleXY1 = [currX11M, viewport.height];
                 if (openMPR == true) {
                     Anatomical_Section();
                     Anatomical_Section2();
                 }
-                display3DLine(currX11M, 0, currX11M, viewport.imageHeight, "rgb(38,140,191)");
-                display3DLine(0, currY11M, viewport.imageWidth, currY11M, "rgb(221,53,119)");
+                display3DLine(currX11M, 0, currX11M, viewport.height, "rgb(38,140,191)");
+                display3DLine(0, currY11M, viewport.width, currY11M, "rgb(221,53,119)");
             }
         }
     }
-    GetViewport(2).addEventListener("mousemove", Mousemove, false);
-    GetViewport(2).addEventListener("mousedown", Mousedown, false);
-    GetViewport(2).addEventListener("mouseup", Mouseup, false);
-    ///GetViewport(2).addEventListener("touchstart", TouchstartF, false);
-    ///GetViewport(2).addEventListener("touchmove", TouchmoveF, false);
-    //GetViewport(2).addEventListener("touchend", TouchendF, false);
-    GetViewport(2).addEventListener("wheel", Wheel, false);
+    GetNewViewport(2).div.addEventListener("mousemove", Mousemove, false);
+    GetNewViewport(2).div.addEventListener("mousedown", Mousedown, false);
+    GetNewViewport(2).div.addEventListener("mouseup", Mouseup, false);
+    ///GetNewViewport(2).div.addEventListener("touchstart", TouchstartF, false);
+    ///GetNewViewport(2).div.addEventListener("touchmove", TouchmoveF, false);
+    //GetNewViewport(2).div.addEventListener("touchend", TouchendF, false);
+    GetNewViewport(2).div.addEventListener("wheel", Wheel, false);
     drawBorderMPR(this);
 }
 
@@ -339,7 +339,7 @@ function Anatomical_Section2(nextInstanceNumber) {
     if (VrDistance == 0) VrDistance = 1;
     if (VrDistance < 0) VrDistance *= -1;
     NewCanvas.style = "position: absolute;top: 50%;left:50%; margin: -" +
-        (o3DListLength * (parseInt(canvas.style.height) / parseFloat(GetViewport().imageHeight)) * VrDistance / 2) +
+        (o3DListLength * (parseInt(canvas.style.height) / parseFloat(GetNewViewport().height)) * VrDistance / 2) +
         "px 0 0 -" + (parseInt(canvas.style.width) / 2) + "px;transform:scaleY(" + (-1 * Direction_VR) + ");";
     GetViewport(1).appendChild(NewCanvas);
     try {
@@ -352,7 +352,7 @@ function Anatomical_Section2(nextInstanceNumber) {
     NewCanvas.width = o3Dcanvas.width;
 
     //NewCanvas.style.imageRendering = "-moz-crisp-edges";
-    NewCanvas.style.height = (NewCanvas.height * (parseInt(canvas.style.height) / parseFloat(GetViewport().imageHeight)) * VrDistance) + "px"; // + "px";
+    NewCanvas.style.height = (NewCanvas.height * (parseInt(canvas.style.height) / parseFloat(GetNewViewport().height)) * VrDistance) + "px"; // + "px";
     NewCanvas.style.width = canvas.style.width;
     var imgData2 = NewCanvas.getContext("2d").getImageData(0, 0, NewCanvas.width, NewCanvas.height);
     var PointY = parseInt(o3DPointY);
@@ -430,7 +430,7 @@ function Anatomical_Section(nextInstanceNumber) {
     if (VrDistance < 0) VrDistance *= -1;
     if (VrDistance == 0) VrDistance = 1;
     NewCanvas.style = "position: absolute;top: 50%;left:50%; margin: -" + (parseInt(canvas.style.height) / 2) +
-        "px 0 0 -" + (o3DListLength * (parseInt(canvas.style.height) / parseFloat(GetViewport().imageHeight)) * VrDistance / 2) + "px;" +
+        "px 0 0 -" + (o3DListLength * (parseInt(canvas.style.height) / parseFloat(GetNewViewport().height)) * VrDistance / 2) + "px;" +
         "transform:rotate(" + (-90) + "deg) scaleY(" + (1) + ") scaleX(" + (Direction_VR) + ");";
 
     GetViewport(0).appendChild(NewCanvas);
@@ -445,7 +445,7 @@ function Anatomical_Section(nextInstanceNumber) {
     NewCanvas.width = o3DListLength;
     NewCanvas.style.height = canvas.style.height;
 
-    NewCanvas.style.width = (NewCanvas.width * (parseInt(canvas.style.height) / parseFloat(GetViewport().imageHeight)) * VrDistance) + "px";
+    NewCanvas.style.width = (NewCanvas.width * (parseInt(canvas.style.height) / parseFloat(GetNewViewport().height)) * VrDistance) + "px";
 
 
     var imgData2 = NewCanvas.getContext("2d").getImageData(0, 0, NewCanvas.width, NewCanvas.height);
@@ -534,20 +534,20 @@ function initMPR() {
         //VIEWPORT.lockViewportList = [];
         ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = false;
         window.removeEventListener("resize", resizeVR, false);
-        GetViewport(3).removeEventListener("mousemove", mousemove3D, false);
-        GetViewport(3).removeEventListener("mousedown", mousedown3D, false);
-        GetViewport(3).removeEventListener("mouseup", mouseup3D, false);
-        GetViewport(3).removeEventListener("touchstart", touchstart3D, false);
-        GetViewport(3).removeEventListener("touchmove", touchmove3D, false);
-        GetViewport(3).removeEventListener("touchend", touchend3D, false);
-        GetViewport(0).removeEventListener("mousemove", Anatomical_SectionMouseMove0, false);
-        GetViewport(0).removeEventListener("mousedown", Anatomical_SectionMouseDown0, false);
-        GetViewport(0).removeEventListener("mouseup", Anatomical_SectionMouseMouseup0, false);
-        GetViewport(0).removeEventListener("wheel", Wheel, false);
-        GetViewport(1).removeEventListener("mousemove", Anatomical_SectionMouseMove, false);
-        GetViewport(1).removeEventListener("mousedown", Anatomical_SectionMouseDown, false);
-        GetViewport(1).removeEventListener("mouseup", Anatomical_SectionMouseMouseup, false);
-        GetViewport(1).removeEventListener("wheel", Wheel, false);
+        GetNewViewport(3).div.removeEventListener("mousemove", mousemove3D, false);
+        GetNewViewport(3).div.removeEventListener("mousedown", mousedown3D, false);
+        GetNewViewport(3).div.removeEventListener("mouseup", mouseup3D, false);
+        GetNewViewport(3).div.removeEventListener("touchstart", touchstart3D, false);
+        GetNewViewport(3).div.removeEventListener("touchmove", touchmove3D, false);
+        GetNewViewport(3).div.removeEventListener("touchend", touchend3D, false);
+        GetNewViewport(0).div.removeEventListener("mousemove", Anatomical_SectionMouseMove0, false);
+        GetNewViewport(0).div.removeEventListener("mousedown", Anatomical_SectionMouseDown0, false);
+        GetNewViewport(0).div.removeEventListener("mouseup", Anatomical_SectionMouseMouseup0, false);
+        GetNewViewport(0).div.removeEventListener("wheel", Wheel, false);
+        GetNewViewport(1).div.removeEventListener("mousemove", Anatomical_SectionMouseMove, false);
+        GetNewViewport(1).div.removeEventListener("mousedown", Anatomical_SectionMouseDown, false);
+        GetNewViewport(1).div.removeEventListener("mouseup", Anatomical_SectionMouseMouseup, false);
+        GetNewViewport(1).div.removeEventListener("wheel", Wheel, false);
         cancelTools();
         openMouseTool = true;
         drawBorder(getByid("MouseOperation"));
@@ -563,17 +563,17 @@ function initMPR() {
             getByid("OutSide3dDiv").parentElement.removeChild(getByid("OutSide3dDiv"));
         }
         for (var i = 0; i < Viewport_Total; i++) {
-            GetViewport(i).removeEventListener("contextmenu", contextmenuF, false);
-            GetViewport(i).removeEventListener("mousemove", Mousemove, false);
-            GetViewport(i).removeEventListener("mousedown", Mousedown, false);
-            GetViewport(i).removeEventListener("mouseup", Mouseup, false);
-            GetViewport(i).removeEventListener("mouseout", Mouseout, false);
-            GetViewport(i).removeEventListener("wheel", Wheel, false);
-            GetViewport(i).removeEventListener("mousedown", thisF, false);
-            GetViewport(i).removeEventListener("touchstart", touchstartF, false);
-            GetViewport(i).removeEventListener("touchend", touchendF, false);
-            GetViewport(i).addEventListener("touchstart", thisF, false);
-            GetViewport(i).addEventListener("mousedown", thisF, false);
+            GetNewViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
+            GetNewViewport(i).div.removeEventListener("mousemove", Mousemove, false);
+            GetNewViewport(i).div.removeEventListener("mousedown", Mousedown, false);
+            GetNewViewport(i).div.removeEventListener("mouseup", Mouseup, false);
+            GetNewViewport(i).div.removeEventListener("mouseout", Mouseout, false);
+            GetNewViewport(i).div.removeEventListener("wheel", Wheel, false);
+            GetNewViewport(i).div.removeEventListener("mousedown", thisF, false);
+            GetNewViewport(i).div.removeEventListener("touchstart", touchstartF, false);
+            GetNewViewport(i).div.removeEventListener("touchend", touchendF, false);
+            GetNewViewport(i).div.addEventListener("touchstart", thisF, false);
+            GetNewViewport(i).div.addEventListener("mousedown", thisF, false);
 
         }
         viewportNumber = 0;
@@ -611,43 +611,43 @@ function initMPR() {
 
         window.addEventListener("resize", resizeVR, false);
         for (var i1 = 0; i1 < Viewport_Total; i1++) {
-            GetViewport(i1).removeEventListener("contextmenu", contextmenuF, false);
-            GetViewport(i1).removeEventListener("mousemove", Mousemove, false);
-            GetViewport(i1).removeEventListener("mousedown", Mousedown, false);
-            GetViewport(i1).removeEventListener("mouseup", Mouseup, false);
-            GetViewport(i1).removeEventListener("mouseout", Mouseout, false);
-            GetViewport(i1).removeEventListener("wheel", Wheel, false);
-            GetViewport(i1).removeEventListener("mousedown", thisF, false);
-            GetViewport(i1).removeEventListener("touchstart", touchstartF, false);
-            GetViewport(i1).removeEventListener("touchend", touchendF, false);
-            GetViewport(i1).removeEventListener("touchstart", thisF, false);
-            //GetViewport(i1).removeEventListener("mousedown", thisF, false);
-            //GetViewport(i).addEventListener("wheel", wheelF, false);
+            GetNewViewport(i1).div.removeEventListener("contextmenu", contextmenuF, false);
+            GetNewViewport(i1).div.removeEventListener("mousemove", Mousemove, false);
+            GetNewViewport(i1).div.removeEventListener("mousedown", Mousedown, false);
+            GetNewViewport(i1).div.removeEventListener("mouseup", Mouseup, false);
+            GetNewViewport(i1).div.removeEventListener("mouseout", Mouseout, false);
+            GetNewViewport(i1).div.removeEventListener("wheel", Wheel, false);
+            GetNewViewport(i1).div.removeEventListener("mousedown", thisF, false);
+            GetNewViewport(i1).div.removeEventListener("touchstart", touchstartF, false);
+            GetNewViewport(i1).div.removeEventListener("touchend", touchendF, false);
+            GetNewViewport(i1).div.removeEventListener("touchstart", thisF, false);
+            //GetNewViewport(i1).div.removeEventListener("mousedown", thisF, false);
+            //GetNewViewport(i).div.addEventListener("wheel", wheelF, false);
         }
-        //GetViewport().removeEventListener("touchstart", thisF, false);
-        //GetViewport().removeEventListener("mousedown", thisF, false);
-        GetViewport().addEventListener("contextmenu", contextmenuF, false);
-        GetViewport().addEventListener("mouseout", Mouseout, false);
-        GetViewport().addEventListener("touchstart", touchstartF, false);
-        GetViewport().addEventListener("touchmove", touchmoveF, false);
-        GetViewport().addEventListener("touchend", touchendF, false);
-        GetViewport().addEventListener("wheel", Wheel, false);
-        GetViewport(3).addEventListener("mousemove", mousemove3D, false);
-        GetViewport(3).addEventListener("mousedown", mousedown3D, false);
-        GetViewport(3).addEventListener("mouseup", mouseup3D, false);
-        GetViewport(3).addEventListener("touchstart", touchstart3D, false);
-        GetViewport(3).addEventListener("touchmove", touchmove3D, false);
-        GetViewport(3).addEventListener("touchend", touchend3D, false);
-        GetViewport(3).addEventListener("contextmenu", contextmenuF, false);
+        //GetNewViewport().div.removeEventListener("touchstart", thisF, false);
+        //GetNewViewport().div.removeEventListener("mousedown", thisF, false);
+        GetNewViewport().div.addEventListener("contextmenu", contextmenuF, false);
+        GetNewViewport().div.addEventListener("mouseout", Mouseout, false);
+        GetNewViewport().div.addEventListener("touchstart", touchstartF, false);
+        GetNewViewport().div.addEventListener("touchmove", touchmoveF, false);
+        GetNewViewport().div.addEventListener("touchend", touchendF, false);
+        GetNewViewport().div.addEventListener("wheel", Wheel, false);
+        GetNewViewport(3).div.addEventListener("mousemove", mousemove3D, false);
+        GetNewViewport(3).div.addEventListener("mousedown", mousedown3D, false);
+        GetNewViewport(3).div.addEventListener("mouseup", mouseup3D, false);
+        GetNewViewport(3).div.addEventListener("touchstart", touchstart3D, false);
+        GetNewViewport(3).div.addEventListener("touchmove", touchmove3D, false);
+        GetNewViewport(3).div.addEventListener("touchend", touchend3D, false);
+        GetNewViewport(3).div.addEventListener("contextmenu", contextmenuF, false);
 
-        GetViewport(0).addEventListener("mousemove", Anatomical_SectionMouseMove0, false);
-        GetViewport(0).addEventListener("mousedown", Anatomical_SectionMouseDown0, false);
-        GetViewport(0).addEventListener("mouseup", Anatomical_SectionMouseMouseup0, false);
-        GetViewport(0).addEventListener("wheel", Wheel, false);
-        GetViewport(1).addEventListener("mousemove", Anatomical_SectionMouseMove, false);
-        GetViewport(1).addEventListener("mousedown", Anatomical_SectionMouseDown, false);
-        GetViewport(1).addEventListener("mouseup", Anatomical_SectionMouseMouseup, false);
-        GetViewport(1).addEventListener("wheel", Wheel, false);
+        GetNewViewport(0).div.addEventListener("mousemove", Anatomical_SectionMouseMove0, false);
+        GetNewViewport(0).div.addEventListener("mousedown", Anatomical_SectionMouseDown0, false);
+        GetNewViewport(0).div.addEventListener("mouseup", Anatomical_SectionMouseMouseup0, false);
+        GetNewViewport(0).div.addEventListener("wheel", Wheel, false);
+        GetNewViewport(1).div.addEventListener("mousemove", Anatomical_SectionMouseMove, false);
+        GetNewViewport(1).div.addEventListener("mousedown", Anatomical_SectionMouseDown, false);
+        GetNewViewport(1).div.addEventListener("mouseup", Anatomical_SectionMouseMouseup, false);
+        GetNewViewport(1).div.addEventListener("wheel", Wheel, false);
 
         for (var ll = 0; ll < o3DListLength; ll++) {
             var elem = getByid("3DDiv" + ll);
@@ -1062,7 +1062,7 @@ Anatomical_SectionMouseMove = function (e) {
             o3DPointX = currX11M;
             o3DPointY = currY11M;
             AngleXY0 = [currX11M, 0];
-            AngleXY1 = [currX11M, GetViewport(1).imageHeight];
+            AngleXY1 = [currX11M, GetNewViewport(1).height];
             if (openMPR == true) {
                 var sop = GetNewViewport().sop;
                 var index = SearchUid2Index(sop);
@@ -1074,7 +1074,7 @@ Anatomical_SectionMouseMove = function (e) {
                 // Anatomical_Section2(1);
             }
             //console.log(currX11M, currY11M);
-            display3DLine(currX11M, 0, currX11M, GetViewport().imageHeight, "rgb(38,140,191)");
+            display3DLine(currX11M, 0, currX11M, GetNewViewport().height, "rgb(38,140,191)");
             //  display3DLine(0, currY11M, GetViewport(0).imageWidth, currY11M, "rgb(221,53,119)");
         }
     }
@@ -1104,7 +1104,7 @@ Anatomical_SectionMouseMove0 = function (e) {
             o3DPointX = currX11M;
             o3DPointY = currY11M;
             AngleXY1 = [currX11M, 0];
-            AngleXY0 = [currX11M, GetViewport(0).imageHeight];
+            AngleXY0 = [currX11M, GetNewViewport(0).height];
             if (openMPR == true) {
                 var sop = GetNewViewport().sop;
                 var index = SearchUid2Index(sop);
@@ -1116,8 +1116,8 @@ Anatomical_SectionMouseMove0 = function (e) {
                 Anatomical_Section2(Onum);
             }
             //console.log(currX11M, currY11M);
-            //  display3DLine(currX11M, 0, currX11M, GetViewport(0).imageHeight, "rgb(38,140,191)");
-            display3DLine(0, currY11M, GetViewport().imageWidth, currY11M, "rgb(221,53,119)");
+            //  display3DLine(currX11M, 0, currX11M, GetNewViewport(0).height, "rgb(38,140,191)");
+            display3DLine(0, currY11M, GetNewViewport().width, currY11M, "rgb(221,53,119)");
         }
     }
 }

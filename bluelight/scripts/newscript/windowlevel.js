@@ -23,8 +23,7 @@ function windowlevel() {
             else if (e.which == 3) rightMouseDown = true;
             windowMouseX = GetmouseX(e);
             windowMouseY = GetmouseY(e);
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
         };
 
 
@@ -46,8 +45,7 @@ function windowlevel() {
                 }
             }
             putLabel();
-            for (var i = 0; i < Viewport_Total; i++)
-                displayRuler(i);
+            displayAllRuler();
 
             if (MouseDownCheck) {
                 var MouseX = GetmouseX(e);
@@ -94,14 +92,10 @@ function windowlevel() {
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
                 displayMark();
-            MouseDownCheck = false;
-            rightMouseDown = false;
+            MouseDownCheck = rightMouseDown = false;
             magnifierDiv.hide();
 
-            if (openLink) {
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayRuler(i);
-            }
+            if (openLink) displayAllRuler();
         }
         Touchstart = function (e, e2) {
 
@@ -113,8 +107,7 @@ function windowlevel() {
                 windowMouseX2 = GetmouseX(e2);
                 windowMouseY2 = GetmouseY(e2);
             }
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
             if (rightTouchDown == true && e2) {
                 GetViewport().originalPointX2 = getCurrPoint(e2)[0];
                 GetViewport().originalPointY2 = getCurrPoint(e2)[1];

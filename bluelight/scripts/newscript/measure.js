@@ -22,8 +22,7 @@ function measure() {
 
             windowMouseX = GetmouseX(e);
             windowMouseY = GetmouseY(e);
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
             measure_pounch(getCurrPoint(e)[0], getCurrPoint(e)[1]);
             Measure_previous_choose = null;
 
@@ -31,8 +30,7 @@ function measure() {
             let angle2point = rotateCalculation(e);
             MeasureXY = angle2point;
             MeasureXY2 = angle2point;
-            for (var i = 0; i < Viewport_Total; i++)
-                displayMark(i);
+            displayAllMark();
 
         };
 
@@ -54,8 +52,7 @@ function measure() {
                 }
             }
             putLabel();
-            for (var i = 0; i < Viewport_Total; i++)
-                displayRuler(i);
+            displayAllRuler();
 
             if (MouseDownCheck) {
                 if (Measure_now_choose) {
@@ -67,8 +64,8 @@ function measure() {
                     return;
                 } else {
                     var dcm = {};
-                    dcm.study = GetViewport().study;
-                    dcm.series = GetViewport().series;
+                    dcm.study = GetNewViewport().study;
+                    dcm.series = GetNewViewport().series;
                     dcm.sop = GetNewViewport().sop;
                     dcm.color = "#FF0000";
                     dcm.mark = [];
@@ -90,8 +87,7 @@ function measure() {
                     dcm.mark[DcmMarkLength].Text = getMeasurelValue(e);
                     PatientMark.push(dcm);
                     refreshMark(dcm);
-                    //for (var i = 0; i < Viewport_Total; i++)
-                    //     displayMark(i);
+                    displayAllMark();
                     //  displayAngleRuler();
                     PatientMark.splice(PatientMark.indexOf(dcm), 1);
                     return;
@@ -103,8 +99,7 @@ function measure() {
 
                 let angle2point = rotateCalculation(e);
                 MeasureXY2 = angle2point;
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                displayAllMark();
                 
                 return;
             }*/
@@ -127,8 +122,8 @@ function measure() {
             }
             else {
                 var dcm = {};
-                dcm.study = GetViewport().study;
-                dcm.series = GetViewport().series;
+                dcm.study = GetNewViewport().study;
+                dcm.series = GetNewViewport().series;
                 dcm.sop = GetNewViewport().sop;
                 dcm.color = "#FF0000";
                 dcm.mark = [];
@@ -170,8 +165,7 @@ function measure() {
             }
             if (Measure_now_choose) Measure_previous_choose = Measure_now_choose;
             Measure_now_choose = null;
-            for (var i = 0; i < Viewport_Total; i++)
-                displayMark(i);
+            displayAllMark();
             displayAngleRuler();
 
 
@@ -179,14 +173,10 @@ function measure() {
 
             if (openMouseTool == true && rightMouseDown == true)
                 displayMark();
-            MouseDownCheck = false;
-            rightMouseDown = false;
+            MouseDownCheck = rightMouseDown = false;
             magnifierDiv.hide();
 
-            if (openLink) {
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayRuler(i);
-            }
+            if (openLink) displayAllRuler();
         }
         Touchstart = function (e, e2) {
 
@@ -198,8 +188,7 @@ function measure() {
                 windowMouseX2 = GetmouseX(e2);
                 windowMouseY2 = GetmouseY(e2);
             }
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
             if (rightTouchDown == true && e2) {
                 GetViewport().originalPointX2 = getCurrPoint(e2)[0];
                 GetViewport().originalPointY2 = getCurrPoint(e2)[1];
@@ -210,8 +199,7 @@ function measure() {
                 let angle2point = rotateCalculation(e);
                 MeasureXY = angle2point;
                 MeasureXY2 = angle2point;
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                displayAllMark();
 
             }
             //if (openMeasure == true)
@@ -221,8 +209,7 @@ function measure() {
                 var currY11 = angle2point[1];
                 MeasureXY = [currX11, currY11];
                 MeasureXY2 = [currX11, currY11];
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                displayAllMark();
 
             }
         }
@@ -246,8 +233,7 @@ function measure() {
                     var currX11 = angle2point[0];
                     var currY11 = angle2point[1];
                     MeasureXY2 = [currX11, currY11];
-                    for (var i = 0; i < Viewport_Total; i++)
-                        displayMark(i);
+                    displayAllMark();
 
                     return;
                 }

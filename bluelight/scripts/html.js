@@ -17,9 +17,9 @@ function html_onload() {
     var key = KeyboardKeys.which
     //修復key===33和34時，GetViewport().InstanceNumber為字串之問題
     if (key === 33) {
-      jump2UpOrEnd(parseInt(GetViewport().InstanceNumber) - parseInt(Patient.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
+      jump2UpOrEnd(parseInt(GetViewport().InstanceNumber) - parseInt(Patient.findSeries(GetNewViewport().series).Sop.length / 10) + 0, undefined);
     } else if (key === 34) {
-      jump2UpOrEnd(parseInt(GetViewport().InstanceNumber) + parseInt(Patient.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
+      jump2UpOrEnd(parseInt(GetViewport().InstanceNumber) + parseInt(Patient.findSeries(GetNewViewport().series).Sop.length / 10) + 0, undefined);
     } else if (key === 36) {
       jump2UpOrEnd(0, 'up');
     } else if (key === 35) {
@@ -49,7 +49,7 @@ function html_onload() {
           setTransform(i);
         }
       }
-      for (var i = 0; i < Viewport_Total; i++)  displayRuler(i);
+      displayAllRuler();
     } else if (KeyboardKeys.key == '+') {
       var viewport = GetViewport(), canvas = viewport.canvas();
       var tempWidth = parseFloat(canvas.style.width);
@@ -73,7 +73,7 @@ function html_onload() {
           setTransform(i);
         }
       }
-      for (var i = 0; i < Viewport_Total; i++)  displayRuler(i);
+      displayAllRuler();
     }
   }
 
@@ -226,44 +226,44 @@ function html_onload() {
   }
 
   getByid("Rotate_90").onclick = function () {
-    GetViewport().rotateValue += 90;
+    GetNewViewport().rotate += 90;
     setTransform();
     if (openLink == true) {
       for (var z = 0; z < Viewport_Total; z++) {
-        GetViewport(z).rotateValue = GetViewport().rotateValue;
+        GetNewViewport(z).rotate = GetNewViewport().rotate;
         setTransform(z);
       }
     }
   }
 
   getByid("Rotate_i90").onclick = function () {
-    GetViewport().rotateValue -= 90;
+    GetNewViewport().rotate -= 90;
     setTransform();
     if (openLink == true) {
       for (var z = 0; z < Viewport_Total; z++) {
-        GetViewport(z).rotateValue = GetViewport().rotateValue;
+        GetNewViewport(z).rotate = GetNewViewport().rotate;
         setTransform(z);
       }
     }
   }
 
   /*getByid("Rotate_180").onclick = function () {
-    GetViewport().rotateValue = 180;
+    GetNewViewport().rotate = 180;
     setTransform();
     if (openLink == true) {
       for (var z = 0; z < Viewport_Total; z++) {
-        GetViewport(z).rotateValue = GetViewport().rotateValue;
+        GetNewViewport(z).rotate = GetNewViewport().rotate;
         setTransform(z);
       }
     }
   }
 
   getByid("Rotate_270").onclick = function () {
-    GetViewport().rotateValue = 270;
+    GetNewViewport().rotate = 270;
     setTransform();
     if (openLink == true) {
       for (var z = 0; z < Viewport_Total; z++) {
-        GetViewport(z).rotateValue = GetViewport().rotateValue;
+        GetNewViewport(z).rotate = GetNewViewport().rotate;
         setTransform(z);
       }
     }
@@ -341,19 +341,20 @@ function html_onload() {
   getByid("horizontal_flip").onclick = function () {
     if (this.enable == false) return;
     GetNewViewport().HorizontalFlip = !GetNewViewport().HorizontalFlip;
+    if (openLink) SetAllViewport("HorizontalFlip", GetNewViewport().HorizontalFlip);
     refleshViewport();
-    displayMark();
   }
 
   getByid("vertical_flip").onclick = function () {
     if (this.enable == false) return;
     GetNewViewport().VerticalFlip = !GetNewViewport().VerticalFlip;
+    if (openLink) SetAllViewport("VerticalFlip", GetNewViewport().VerticalFlip);
     refleshViewport();
-    displayMark();
   }
   getByid("color_invert").onclick = function () {
     if (this.enable == false) return;
     GetNewViewport().invert = !GetNewViewport().invert;
+    if (openLink) SetAllViewport("invert", GetNewViewport().invert);
     refleshViewport();
   }
 
@@ -388,8 +389,8 @@ function html_onload() {
     if (this.enable == false) return;
     openAngle = 0;
     drawBorder(this);
-    GetViewport().openPlay = !GetViewport().openPlay;
-    if (GetViewport().openPlay) {
+    GetNewViewport().cine = !GetNewViewport().cine;
+    if (GetNewViewport().cine) {
       getByid('labelPlay').style.display = '';
       getByid('textPlay').style.display = '';
     }
@@ -402,8 +403,8 @@ function html_onload() {
 
   getByid("MarkButton").onclick = function () {
     GetNewViewport().drawMark = !GetNewViewport().drawMark;
-    for (var i = 0; i < Viewport_Total; i++) GetViewportMark(i).getContext("2d").clearRect(0, 0, GetViewport(i).imageWidth, GetViewport(i).imageHeight);
-    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
+    for (var i = 0; i < Viewport_Total; i++) GetViewportMark(i).getContext("2d").clearRect(0, 0, GetNewViewport(i).width, GetNewViewport(i).height);
+    displayAllMark()
     changeMarkImg();
   }
 
@@ -447,17 +448,19 @@ function html_onload() {
   }
 
   getByid("markFillCheck").onclick = function () {
-    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
+    displayAllMark()
   }
 
   getByid("MarkcolorSelect").onchange = function () {
-    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
+    displayAllMark()
   }
 
   getByid("WindowLevelSelect").onchange = function () {
     if (getByid("WindowDefault").selected == true) {
-      getByid("textWC").value = GetNewViewport().windowCenter;
-      getByid("textWW").value = GetNewViewport().windowWidth;
+      getByid("textWC").value = GetNewViewport().windowCenter = GetNewViewport().content.image.windowCenter;
+      getByid("textWW").value = GetNewViewport().windowWidth = GetNewViewport().content.image.windowWidth;
+      if (openLink) SetAllViewport("windowCenter", GetNewViewport().windowCenter);
+      if (openLink) SetAllViewport("windowWidth", GetNewViewport().windowWidth);
       refleshViewport();
       WindowOpen = true;
       return;
@@ -466,6 +469,8 @@ function html_onload() {
       if (getClass("WindowSelect")[i].selected == true) {
         GetNewViewport().windowCenter = getByid("textWC").value = parseInt(getClass("WindowSelect")[i].getAttribute('wc'));
         GetNewViewport().windowWidth = getByid("textWW").value = parseInt(getClass("WindowSelect")[i].getAttribute('ww'));
+        if (openLink) SetAllViewport("windowCenter", GetNewViewport().windowCenter);
+        if (openLink) SetAllViewport("windowWidth", GetNewViewport().windowWidth);
         refleshViewport();
         WindowOpen = true;
         break;
@@ -476,6 +481,7 @@ function html_onload() {
   getByid("textWC").onchange = function () {
     GetNewViewport().windowCenter = parseInt(getByid("textWC").value);
     getByid("WindowCustom").selected = true;
+    if (openLink) SetAllViewport("windowCenter", GetNewViewport().windowCenter);
     refleshViewport();
     WindowOpen = true;
   }
@@ -483,6 +489,7 @@ function html_onload() {
   getByid("textWW").onchange = function () {
     GetNewViewport().windowWidth = parseInt(getByid("textWW").value);
     getByid("WindowCustom").selected = true;
+    if (openLink) SetAllViewport("windowWidth", GetNewViewport().windowWidth);
     refleshViewport();
     WindowOpen = true;
   }
@@ -505,7 +512,7 @@ function html_onload() {
     else if ((parseInt(getByid('markAlphaText').value) >= 100)) getByid('markAlphaText').value = 100;
     else if ((parseInt(getByid('markAlphaText').value) < 100));
     else getByid('markAlphaText').value = 100;
-    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
+    displayAllMark()
   }
 
   getByid("markSizeText").onchange = function () {
@@ -513,7 +520,7 @@ function html_onload() {
     else if ((parseInt(getByid('markSizeText').value) >= 10)) getByid('markSizeText').value = 10;
     else if ((parseInt(getByid('markSizeText').value) < 10));
     else getByid('markSizeText').value = 1;
-    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
+    displayAllMark()
   }
 
   getByid("myfile").onchange = function () {

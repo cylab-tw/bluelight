@@ -1,18 +1,18 @@
 function playVideo(viewportNum) {
     getByid("MeasureLabel").style.display = "none";
     getByid("AngleLabel").style.display = "none";
-    GetNewViewport(viewportNum).nextFrame(false);
+    if (!(parseInt(GetViewport(viewportNum).style.height) <= 1)) GetNewViewport(viewportNum).nextFrame(false);
 }
 
 var PlayTimer = function () {
-    if (GetViewport().openPlay == false) {
+    if (GetNewViewport().cine == false) {
         getByid('playvideo').src = '../image/icon/black/b_CinePlay.png';
     } else {
         getByid('playvideo').src = '../image/icon/black/b_CinePause.png';
     }
-    if (openLink == true || GetViewport().openPlay == false) {
+    if (openLink == true || GetNewViewport().cine  == false) {
         for (var i = 0; i < Viewport_Total; i++) {
-            GetViewport(i).openPlay = GetViewport().openPlay;
+            GetNewViewport(i).cine  = GetNewViewport().cine ;
         }
     }
     for (var i = 0; i < Viewport_Total; i++) {
@@ -21,7 +21,7 @@ var PlayTimer = function () {
     var fps = parseInt((1 / parseFloat(getByid("textPlay").value) * 1000));
     for (var i = 0; i < Viewport_Total; i++) {
         let i1 = i;
-        if (GetViewport(i).openPlay != true) {
+        if (GetNewViewport(i).cine  != true) {
             clearInterval(PlayTimer1[i]);
             continue;
         };

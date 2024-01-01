@@ -27,8 +27,7 @@ function angle() {
 
             windowMouseX = GetmouseX(e);
             windowMouseY = GetmouseY(e);
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
             angle_pounch(getCurrPoint(e)[0], getCurrPoint(e)[1]);
             Angle_previous_choose = null;
             if (Angle_now_choose) return;
@@ -39,8 +38,7 @@ function angle() {
                 let angle2point = rotateCalculation(e);
                 AngleXY0 = angle2point;
                 AngleXY1 = angle2point;
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                displayAllMark();
                 displayAngleRuler();
             }
         };
@@ -59,8 +57,8 @@ function angle() {
                 let angle2point = rotateCalculation(e);
                 AngleXY2 = angle2point;
                 var dcm = {};
-                dcm.study = GetViewport().study;
-                dcm.series = GetViewport().series;
+                dcm.study = GetNewViewport().study;
+                dcm.series = GetNewViewport().series;
                 dcm.sop = GetNewViewport().sop;
                 dcm.color = "#FF0000";
                 dcm.mark = [];
@@ -86,8 +84,7 @@ function angle() {
                 dcm.mark[DcmMarkLength].Text = getAnglelValue(e);
                 PatientMark.push(dcm);
                 refreshMark(dcm);
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                displayAllMark();
                 PatientMark.splice(PatientMark.indexOf(dcm), 1);
                 //displayAngleRuler();
                 //return;
@@ -100,8 +97,7 @@ function angle() {
                 }
             }
             putLabel();
-            for (var i = 0; i < Viewport_Total; i++)
-                displayRuler(i);
+            displayAllRuler();
 
             if (MouseDownCheck) {
                 windowMouseX = GetmouseX(e);
@@ -111,15 +107,15 @@ function angle() {
                     AngleXY1 = angle2point;
 
                     var dcm = {};
-                    dcm.study = GetViewport().study;
-                    dcm.series = GetViewport().series;
+                    dcm.study = GetNewViewport().study;
+                    dcm.series = GetNewViewport().series;
                     dcm.sop = GetNewViewport().sop;
                     dcm.color = "#FF0000";
                     dcm.mark = [];
                     dcm.showName = "ruler";
                     dcm.hideName = dcm.showName;
                     dcm.mark.push({});
-                   
+
                     //dcm.hideMark = function () { getClass("MeasureLabel").style.display = "none"; };
                     //dcm.displayMark = function () { getClass("MeasureLabel").style.display = ""; };
                     var DcmMarkLength = dcm.mark.length - 1;
@@ -137,8 +133,7 @@ function angle() {
                     PatientMark.push(dcm);
                     refreshMark(dcm);
 
-                    for (var i = 0; i < Viewport_Total; i++)
-                        displayMark(i);
+                    displayAllMark();
                     PatientMark.splice(PatientMark.indexOf(dcm), 1);
                     //return;
                 }
@@ -172,17 +167,17 @@ function angle() {
             if (angle.angle_ == 2) {
                 let angle2point = rotateCalculation(e);
                 AngleXY2 = angle2point;
-                
+
                 var dcm = {};
-                dcm.study = GetViewport().study;
-                dcm.series = GetViewport().series;
+                dcm.study = GetNewViewport().study;
+                dcm.series = GetNewViewport().series;
                 dcm.sop = GetNewViewport().sop;
                 dcm.color = "#FF0000";
                 dcm.mark = [];
                 dcm.showName = "ruler";
                 dcm.hideName = dcm.showName;
                 dcm.mark.push({});
-               
+
                 /*dcm.hideMark = function () {
                     for (var m = 0; m < getClass("AngleLabel" + dcm.sop).length; m++)
                         getClass("AngleLabel" + dcm.sop)[m].style.display = "none";
@@ -216,8 +211,7 @@ function angle() {
                 dcm.mark[DcmMarkLength].Text = getAnglelValue(e);
                 PatientMark.push(dcm);
                 refreshMark(dcm);
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                displayAllMark();
                 //PatientMark.splice(PatientMark.indexOf(dcm), 1);
                 //displayAngleRuler();
                 //return;
@@ -229,8 +223,7 @@ function angle() {
             }
             if (Angle_now_choose) Angle_previous_choose = Angle_now_choose;
             Angle_now_choose = null;
-            MouseDownCheck = false;
-            rightMouseDown = false;
+            MouseDownCheck = rightMouseDown = false;
         }
         Touchstart = function (e, e2) {
 
@@ -242,8 +235,7 @@ function angle() {
                 windowMouseX2 = GetmouseX(e2);
                 windowMouseY2 = GetmouseY(e2);
             }
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
             if (rightTouchDown == true && e2) {
                 GetViewport().originalPointX2 = getCurrPoint(e2)[0];
                 GetViewport().originalPointY2 = getCurrPoint(e2)[1];
@@ -257,8 +249,7 @@ function angle() {
 
                 AngleXY0 = [currX11, currY11];
                 AngleXY1 = [currX11, currY11];
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                displayAllMark();
                 displayAngleRuler();
             }
         }
@@ -278,8 +269,7 @@ function angle() {
                 var currX11 = angle2point[0];
                 var currY11 = angle2point[1];
                 AngleXY2 = [currX11, currY11];
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                displayAllMark();
                 displayAngleRuler();
                 return;
             }
@@ -289,8 +279,7 @@ function angle() {
                 var currX11 = angle2point[0];
                 var currY11 = angle2point[1];
                 AngleXY0 = [currX11, currY11];
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                displayAllMark();
                 displayAngleRuler();
                 return;
             }

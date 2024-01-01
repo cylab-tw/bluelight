@@ -32,15 +32,15 @@ function magnifierIng(currX, currY) {
     if ((zoom <= 25)) getByid('textZoom').value = zoom = 25;
     if (zoom >= 400) getByid('textZoom').value = zoom = 400;
     zoom /= 100;
-    magnifierWidth = parseFloat(GetViewport().imageWidth / parseFloat(canvas.style.width)) * (magnifierWidth0 / zoom);
-    magnifierHeight = parseFloat(GetViewport().imageHeight / parseFloat(canvas.style.height)) * (magnifierHeight0 / zoom);
+    magnifierWidth = parseFloat(GetNewViewport().width / parseFloat(canvas.style.width)) * (magnifierWidth0 / zoom);
+    magnifierHeight = parseFloat(GetNewViewport().height / parseFloat(canvas.style.height)) * (magnifierHeight0 / zoom);
     var magnifierCanvas = document.getElementById("magnifierCanvas");
     var magnifierCtx = magnifierCanvas.getContext("2d");
     magnifierCanvas.width = magnifierWidth;
     magnifierCanvas.height = magnifierHeight;
     magnifierCanvas.style.width = magnifierWidth0 + "px";
     magnifierCanvas.style.height = magnifierHeight0 + "px";
-    magnifierCanvas.style.transform = "rotate(" + GetViewport().rotateValue + "deg)";
+    magnifierCanvas.style.transform = "rotate(" + GetNewViewport().rotate + "deg)";
     magnifierCtx.clearRect(0, 0, magnifierWidth, magnifierHeight);
 
     var currX02 = Math.floor(currX) - magnifierWidth / 2;
@@ -59,9 +59,11 @@ function zoom() {
         SetTable();
         document.documentElement.onmousemove = displayZoom;
         document.documentElement.ontouchmove = displayZoom;
+        document.documentElement.onmousedown = displayZoom;
         set_BL_model.onchange1 = function () {
             document.documentElement.onmousemove = DivDraw;
             document.documentElement.ontouchmove = DivDraw;
+            document.documentElement.onmousedown = null;
             getByid('labelZoom').style.display = 'none';
             getByid('textZoom').style.display = 'none';
             openZoom = false;
@@ -74,11 +76,11 @@ function zoom() {
 
             windowMouseX = GetmouseX(e);
             windowMouseY = GetmouseY(e);
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
-            if (MouseDownCheck == true) magnifierDiv.show();
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
+
             let angle2point = rotateCalculation(e);
             magnifierIng(angle2point[0], angle2point[1]);
+            if (MouseDownCheck == true) magnifierDiv.show();
         };
 
 
@@ -100,11 +102,10 @@ function zoom() {
                 }
             }
             putLabel();
-            for (var i = 0; i < Viewport_Total; i++)
-                displayRuler(i);
+            displayAllRuler();
 
             if (MouseDownCheck) {
-                magnifierDiv.show();;
+                magnifierDiv.show();
                 let angle2point = rotateCalculation(e);
                 magnifierIng(angle2point[0], angle2point[1]);
 
@@ -119,14 +120,10 @@ function zoom() {
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
                 displayMark();
-            MouseDownCheck = false;
-            rightMouseDown = false;
+            MouseDownCheck = rightMouseDown = false;
             magnifierDiv.hide();
 
-            if (openLink) {
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayRuler(i);
-            }
+            if (openLink) displayAllRuler();
         }
 
         Touchstart = function (e, e2) {
@@ -139,8 +136,7 @@ function zoom() {
                 windowMouseX2 = GetmouseX(e2);
                 windowMouseY2 = GetmouseY(e2);
             }
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
             if (rightTouchDown == true && e2) {
                 GetViewport().originalPointX2 = getCurrPoint(e2)[0];
                 GetViewport().originalPointY2 = getCurrPoint(e2)[1];

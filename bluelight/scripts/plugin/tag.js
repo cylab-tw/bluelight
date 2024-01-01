@@ -93,7 +93,7 @@ getByid("writeTAG").onclick = function () {
         getByid('TagStyleDiv').style.display = '';
         set_BL_model('writeTAG');
     } else getByid('TagStyleDiv').style.display = 'none';
-    displayMark(viewportNumber);
+    displayMark();
     if (openWriteTAG == true) return;
 
     function download(text, name, type) {

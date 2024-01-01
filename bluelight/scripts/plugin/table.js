@@ -80,7 +80,7 @@ function displayAIM(viewportNum = viewportNumber) {
     //Table.style.right = "0px";
     Table.style['zIndex'] = "20";
     //SearchUid2Index
-    var sop = GetViewport(viewportNum).sop;
+    var sop = GetNewViewport(viewportNum).sop;
     let index = SearchUid2Index(sop);
     if (!index) return;
     let i = index[0],

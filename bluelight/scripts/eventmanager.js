@@ -16,30 +16,25 @@ var touchmoveF = function (e) {
 };
 var thisF = function () {
     getByid("WindowDefault").selected = true;
-    for (var i = 0; i < Viewport_Total; i++) {
-        if (i == this.viewportNum) {
-            var viewportNum = viewportNumber;
-            MeasureXY[0] = MeasureXY[1] = MeasureXY2[0] = MeasureXY2[1] = 0;
-            viewportNumber = i;
-            if (GetViewport().openPlay == false) {
-                getByid('playvideo').src = '../image/icon/black/b_CinePlay.png';
-            } else {
-                getByid('playvideo').src = '../image/icon/black/b_CinePause.png';
-            }
-            changeMarkImg();
-            //NowResize = true;
-            //NowCanvasSizeWidth = NowCanvasSizeHeight = null;
-            if (GetNewViewport().sop)
-                loadAndViewImage(Patient.findSop(GetNewViewport().sop).imageId /*, null, null, viewportNumber*/);
-            else {
-                try {
-                    loadAndViewImage(Patient.findSop(GetViewport(viewportNum).sop).imageId /*, null, null, viewportNumber*/);
-                } catch (ex) { }
-            }
-            break;
-        }
+    MeasureXY[0] = MeasureXY[1] = MeasureXY2[0] = MeasureXY2[1] = 0;
+    var viewportNum = viewportNumber;
+
+    viewportNumber = isNaN(this.viewportNum) ? viewportNumber : this.viewportNum;
+
+    if (GetNewViewport().cine) getByid('playvideo').src = '../image/icon/black/b_CinePause.png';
+    else getByid('playvideo').src = '../image/icon/black/b_CinePlay.png';
+
+    changeMarkImg();
+    if (GetNewViewport().sop) setSopToViewport(GetNewViewport().sop);
+    //loadAndViewImage(Patient.findSop(GetNewViewport().sop).imageId /*, null, null, viewportNumber*/);
+    else {
+        try {
+            setSopToViewport(GetNewViewport(viewportNum).sop);
+            //loadAndViewImage(Patient.findSop(GetNewViewport(viewportNum).sop).imageId /*, null, null, viewportNumber*/);
+        } catch (ex) { }
     }
 }
+
 window.addEventListener("keydown", function (e) {
     e = e || window.event;
     var nextInstanceNumber = 0;
@@ -96,6 +91,7 @@ function Wheel(e) {
     }
     else {
         for (var z = 0; z < Viewport_Total; z++) {
+            if (parseInt(GetViewport(z).style.height) <= 1) continue;
             if (e.deltaY < 0) GetNewViewport(z).nextFrame(true);
             else GetNewViewport(z).nextFrame(false);
         }

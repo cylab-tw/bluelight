@@ -1,12 +1,13 @@
 function setTransform(viewportnum) {
     var viewport = GetViewport();
+    var NewViewport = GetNewViewport();
     if (viewportnum == undefined) {
-        GetViewportMark().style.transform = "translate(" + Fpx(viewport.newMousePointX) + "," + Fpx(viewport.newMousePointY) + ")rotate(" + viewport.rotateValue + "deg)";
-        viewport.canvas().style.transform = "translate(" + Fpx(viewport.newMousePointX) + "," + Fpx(viewport.newMousePointY) + ")rotate(" + viewport.rotateValue + "deg)";
+        GetViewportMark().style.transform = "translate(" + Fpx(viewport.newMousePointX) + "," + Fpx(viewport.newMousePointY) + ")rotate(" + NewViewport.rotate + "deg)";
+        viewport.canvas().style.transform = "translate(" + Fpx(viewport.newMousePointX) + "," + Fpx(viewport.newMousePointY) + ")rotate(" + NewViewport.rotate + "deg)";
     } else {
         var num = viewportnum;
-        GetViewportMark(num).style.transform = "translate(" + Fpx(GetViewport(num).newMousePointX) + "," + Fpx(GetViewport(num).newMousePointY) + ")rotate(" + GetViewport(num).rotateValue + "deg)";
-        GetViewport(num).canvas().style.transform = "translate(" + Fpx(GetViewport(num).newMousePointX) + "," + Fpx(GetViewport(num).newMousePointY) + ")rotate(" + GetViewport(num).rotateValue + "deg)";
+        GetViewportMark(num).style.transform = "translate(" + Fpx(GetViewport(num).newMousePointX) + "," + Fpx(GetViewport(num).newMousePointY) + ")rotate(" + GetNewViewport(num).rotate + "deg)";
+        GetViewport(num).canvas().style.transform = "translate(" + Fpx(GetViewport(num).newMousePointX) + "," + Fpx(GetViewport(num).newMousePointY) + ")rotate(" + GetNewViewport(num).rotate + "deg)";
     }
 }
 /*function setTransform(viewportnum) {
@@ -94,8 +95,7 @@ function mouseTool() {
             else if (e.which == 3) rightMouseDown = true;
             windowMouseX = GetmouseX(e);
             windowMouseY = GetmouseY(e);
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
         };
 
         Mousemove = function (e) {
@@ -117,8 +117,7 @@ function mouseTool() {
                 }
             }
             putLabel();
-            for (var i = 0; i < Viewport_Total; i++)
-                displayRuler(i);
+            displayAllRuler();
             if (MouseDownCheck) {
                 var MouseX = GetmouseX(e);
                 var MouseY = GetmouseY(e);
@@ -140,8 +139,7 @@ function mouseTool() {
                     }
                 }
                 putLabel();
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayRuler(i);
+                displayAllRuler();
             }
         }
         Mouseup = function (e) {
@@ -149,14 +147,10 @@ function mouseTool() {
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
                 displayMark();
-            MouseDownCheck = false;
-            rightMouseDown = false;
+            MouseDownCheck = rightMouseDown = false;
             magnifierDiv.hide();
-            
-            if (openLink) {
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayRuler(i);
-            }
+
+            if (openLink) displayAllRuler();
         }
         Touchstart = function (e, e2) {
             var viewport = GetViewport();
@@ -171,8 +165,8 @@ function mouseTool() {
                 windowMouseX2 = GetmouseX(e2);
                 windowMouseY2 = GetmouseY(e2);
             }
-            viewport.originalPointX = getCurrPoint(e)[0];
-            viewport.originalPointY = getCurrPoint(e)[1];
+            [viewport.originalPointX, viewport.originalPointY] = getCurrPoint(e);
+
             if (rightTouchDown == true && e2) {
                 viewport.originalPointX2 = getCurrPoint(e2)[0];
                 viewport.originalPointY2 = getCurrPoint(e2)[1];
@@ -284,13 +278,11 @@ function mouseTool() {
                 /* for (var i = 0; i < 4; i++)
                    displayMark(i);*/
                 putLabel();
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayRuler(i);
+                displayAllRuler();
 
             }
             putLabel();
-            for (var i = 0; i < Viewport_Total; i++)
-                displayRuler(i);
+            displayAllRuler();
         }
         Touchend = function (e, e2) {
             if (TouchDownCheck == true) {
@@ -301,7 +293,7 @@ function mouseTool() {
             rightTouchDown = false;
 
             magnifierDiv.hide();
-            
+
         }
         AddMouseEvent();
     }

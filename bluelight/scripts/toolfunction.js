@@ -58,8 +58,8 @@ function invertDisplayById(id) {
 function getCurrPoint(e) {
     var canvas = GetNewViewport().canvas
     if (!canvas) return [0, 0];
-    var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().imageWidth / parseFloat(canvas.style.width)));
-    var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().imageHeight / parseFloat(canvas.style.height)));
+    var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetNewViewport().width / parseFloat(canvas.style.width)));
+    var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetNewViewport().height / parseFloat(canvas.style.height)));
     return [currX, currY];
 }
 
@@ -78,6 +78,10 @@ function getByid(str) {
 
 function getClass(str) {
     return document.getElementsByClassName(str);
+}
+
+function log(value){
+    console.log(value);
 }
 
 function CheckNull(str) {
@@ -191,15 +195,15 @@ function sortInstance(sop) {
 function rotateCalculation(e) {
     var canvas = GetNewViewport().canvas;
     if (!canvas) return [0, 0];
-    let cx = (GetViewport().imageWidth / 2);
-    let cy = (GetViewport().imageHeight / 2);
+    let cx = (GetNewViewport().width / 2);
+    let cy = (GetNewViewport().height / 2);
     canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")";
     let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
-        (GetViewport().imageWidth / parseFloat(canvas.style.width));
+        (GetNewViewport().width / parseFloat(canvas.style.width));
     let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
-        (GetViewport().imageHeight / parseFloat(canvas.style.height));
-    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-    let radians = GetViewport().rotateValue * (Math.PI / 180),
+        (GetNewViewport().height / parseFloat(canvas.style.height));
+    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetNewViewport().rotate + "deg)";
+    let radians = GetNewViewport().rotate * (Math.PI / 180),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
         nx = (cos * (currX11 - cx)) + (sin * (currY11 - cy)) + cx,
@@ -211,15 +215,15 @@ function rotateCalculation(e) {
 /*function rotateCalculation(e) {
     var canvas = GetNewViewport().canvas;
     if (!canvas) return [0, 0];
-    let cx = (GetViewport().imageWidth / 2);
-    let cy = (GetViewport().imageHeight / 2);
+    let cx = (GetNewViewport().width / 2);
+    let cy = (GetNewViewport().height / 2);
     canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ") scaleX(" + (GetNewViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetNewViewport().VerticalFlip ? -1 : 1) + ")";
     let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
-        (GetViewport().imageWidth / parseFloat(canvas.style.width));
+        (GetNewViewport().width / parseFloat(canvas.style.width));
     let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
-        (GetViewport().imageHeight / parseFloat(canvas.style.height));
-    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ") scaleX(" + (GetNewViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetNewViewport().VerticalFlip ? -1 : 1) + ") " + "rotate(" + GetViewport().rotateValue + "deg)";
-    let radians = GetViewport().rotateValue * (Math.PI / 180),
+        (GetNewViewport().height / parseFloat(canvas.style.height));
+    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ") scaleX(" + (GetNewViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetNewViewport().VerticalFlip ? -1 : 1) + ") " + "rotate(" + GetNewViewport().rotate + "deg)";
+    let radians = GetNewViewport().rotate * (Math.PI / 180),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
         nx = (cos * (currX11 - cx)) + (sin * (currY11 - cy)) + cx,
@@ -245,7 +249,7 @@ function rotatePoint(point, RotationAngle, RotationPoint) {
 
 function jump2UpOrEnd(number, choose) {
 
-    var SopList = Patient.findSeries(GetViewport().series);
+    var SopList = Patient.findSeries(GetNewViewport().series);
     var min = 99999999, max = -9999999;
     for (var l = 0; l < SopList.SopAmount; l++) {
         var instance = parseInt(SopList.Sop[l].InstanceNumber);
@@ -262,7 +266,8 @@ function jump2UpOrEnd(number, choose) {
 
     for (var l = 0; l < SopList.SopAmount; l++) {
         if (parseInt(SopList.Sop[l].InstanceNumber) == number) {
-            loadAndViewImage(Patient.findSop(SopList.Sop[l].SopUID).imageId);
+            setSopToViewport(SopList.Sop[l].SopUID);
+            //loadAndViewImage(Patient.findSop(SopList.Sop[l].SopUID).imageId);
             break;
         }
     }
@@ -270,12 +275,13 @@ function jump2UpOrEnd(number, choose) {
 
 function jump2Mark(showName) {
     for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].series == GetViewport().series) {
+        if (PatientMark[n].series == GetNewViewport().series) {
             if (PatientMark[n].showName == showName) {
                 for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                    if (checkMarkEnabled(GetViewport().series, PatientMark[n]) == 0) continue;
+                    if (checkMarkEnabled(GetNewViewport().series, PatientMark[n]) == 0) continue;
                     else {
-                        loadAndViewImage(Patient.findSop(PatientMark[n].sop).imageId);
+                        setSopToViewport(PatientMark[n].sop);
+                        //loadAndViewImage(Patient.findSop(PatientMark[n].sop).imageId);
                         return;
                     }
                 }
@@ -293,12 +299,12 @@ function checkMarkEnabled(seriesUID, Mark) {
 function refreshMark(dcm, refresh) {
     if (refresh == false) return;
     leftLayout.refleshMarkWithSeries(dcm.series);
-    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
+    displayAllMark()
 }
 
 function refreshMarkFromSop(sop) {
     leftLayout.refleshMarkWithSeries(Patient.findSeriesBySop(sop).SeriesUID);
-    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
+    displayAllMark()
 }
 
 function getDistance(x, y) {

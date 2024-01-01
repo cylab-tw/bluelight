@@ -113,13 +113,13 @@ function setImageOrientation2MarkCanvas(viewport, ctx) {
     //標記支援翻轉
     if (viewport.HorizontalFlip == true && viewport.VerticalFlip == true) {
         ctx.setTransform(mat.scaleSelf(-1, -1));
-        ctx.setTransform(mat.translateSelf(-parseInt(viewport.div.imageWidth), parseInt(-viewport.div.imageHeight)));
+        ctx.setTransform(mat.translateSelf(-parseInt(viewport.width), parseInt(-viewport.height)));
     } else if (viewport.HorizontalFlip == true) {
         ctx.setTransform(mat.scaleSelf(-1, 1));
-        ctx.setTransform(mat.translateSelf(-parseInt(viewport.div.imageWidth), 0));
+        ctx.setTransform(mat.translateSelf(-parseInt(viewport.width), 0));
     } else if (viewport.VerticalFlip == true) {
         ctx.setTransform(mat.scaleSelf(1, -1, 1));
-        ctx.setTransform(mat.translateSelf(0, -parseInt(viewport.div.imageHeight)));
+        ctx.setTransform(mat.translateSelf(0, -parseInt(viewport.height)));
     } else {
         ctx.setTransform(mat.scaleSelf(1, 1, 1));
         ctx.setTransform(mat.translateSelf(0, 0));
@@ -150,12 +150,12 @@ function drawSEG(canvas, mark, viewport) {
     }
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     mirrorImage(ctx, mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip)
-    // ctx.drawImage(mark.canvas, 0, 0, viewport.imageWidth, viewport.imageHeight);
+    // ctx.drawImage(mark.canvas, 0, 0, viewport.width, viewport.height);
     ctx.globalAlpha = 1;
     var globalCompositeOperation = ctx.globalCompositeOperation;
 
     ctx.globalCompositeOperation = "source-in";
-    if (setMarkColor(ctx) == true) ctx.fillRect(0, 0, viewport.div.imageWidth, viewport.div.imageHeight);
+    if (setMarkColor(ctx) == true) ctx.fillRect(0, 0, viewport.width, viewport.height);
 
     ctx.globalCompositeOperation = globalCompositeOperation;
     ctx.restore();
@@ -177,11 +177,11 @@ function drawOverLay(canvas, mark, viewport) {
     }
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     mirrorImage(ctx, mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip)
-    // ctx.drawImage(mark.canvas, 0, 0, viewport.imageWidth, viewport.imageHeight);
+    // ctx.drawImage(mark.canvas, 0, 0, viewport.width, viewport.height);
     ctx.globalAlpha = 1;
     var globalCompositeOperation = ctx.globalCompositeOperation;
     ctx.globalCompositeOperation = "source-in";
-    if (setMarkColor(ctx) == true) ctx.fillRect(0, 0, viewport.div.imageWidth, viewport.div.imageHeight);
+    if (setMarkColor(ctx) == true) ctx.fillRect(0, 0, viewport.width, viewport.height);
     ctx.globalCompositeOperation = globalCompositeOperation;
     ctx.restore();
 }
@@ -545,6 +545,10 @@ function getMarkSize(MarkCanvas, sizeCheck) {
     return ((Math.abs(lineWid)) * 2 * lineSize);
 }
 
+function displayAllMark() {
+    for (var i = 0; i < Viewport_Total; i++)displayMark(i);
+}
+
 function displayMark(viewportNum = viewportNumber) {
 
     if (openLink) for (var z = 0; z < Viewport_Total; z++)  GetNewViewport(z).drawMark = GetNewViewport().drawMark;
@@ -553,7 +557,7 @@ function displayMark(viewportNum = viewportNumber) {
     if (!viewport.drawMark) return;
 
     var ctx = MarkCanvas.getContext("2d");
-    ctx.clearRect(0, 0, viewport.div.imageWidth, viewport.div.imageHeight);
+    ctx.clearRect(0, 0, viewport.width, viewport.height);
 
     //注意：標記顏色選擇紅色跟自動都會先初始化為紅色
     ctx.strokeStyle = ctx.fillStyle = "#FF0000";

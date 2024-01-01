@@ -129,21 +129,21 @@ getByid("MouseOperation_MPR2").onclick = function () {
     if (BL_mode == 'mouseTool_MPR2') return;
     set_BL_model('mouseTool_MPR2');
     for (var c = 0; c < 3; c++) {
-        GetViewport(c).removeEventListener("mousemove", Mousemove, false);
-        GetViewport(c).removeEventListener("mousedown", Mousedown, false);
-        GetViewport(c).removeEventListener("mouseup", Mouseup, false);
-        GetViewport(c).removeEventListener("touchstart", touchstartF, false);
-        GetViewport(c).removeEventListener("touchmove", touchmoveF, false);
-        GetViewport(c).removeEventListener("touchend", touchendF, false);
-        GetViewport(c).removeEventListener("wheel", Wheel, false);
+        GetNewViewport(c).div.removeEventListener("mousemove", Mousemove, false);
+        GetNewViewport(c).div.removeEventListener("mousedown", Mousedown, false);
+        GetNewViewport(c).div.removeEventListener("mouseup", Mouseup, false);
+        GetNewViewport(c).div.removeEventListener("touchstart", touchstartF, false);
+        GetNewViewport(c).div.removeEventListener("touchmove", touchmoveF, false);
+        GetNewViewport(c).div.removeEventListener("touchend", touchendF, false);
+        GetNewViewport(c).div.removeEventListener("wheel", Wheel, false);
     }
-    //GetViewport(2).addEventListener("mousemove", Mousemove, false);
-    //GetViewport(2).addEventListener("mousedown", Mousedown, false);
-    //GetViewport(2).addEventListener("mouseup", Mouseup, false);
-    //GetViewport(2).addEventListener("touchstart", TouchstartF, false);
-    ///GetViewport(2).addEventListener("touchmove", TouchmoveF, false);
-    //GetViewport(2).addEventListener("touchend", TouchendF, false);
-    for (var c = 0; c < 3; c++)  GetViewport(c).addEventListener("wheel", MPRWheel, false);
+    //GetNewViewport(2).div.addEventListener("mousemove", Mousemove, false);
+    //GetNewViewport(2).div.addEventListener("mousedown", Mousedown, false);
+    //GetNewViewport(2).div.addEventListener("mouseup", Mouseup, false);
+    //GetNewViewport(2).div.addEventListener("touchstart", TouchstartF, false);
+    ///GetNewViewport(2).div.addEventListener("touchmove", TouchmoveF, false);
+    //GetNewViewport(2).div.addEventListener("touchend", TouchendF, false);
+    for (var c = 0; c < 3; c++)  GetNewViewport(c).div.addEventListener("wheel", MPRWheel, false);
     drawBorderMPR(this);
 }
 
@@ -175,9 +175,9 @@ function exitMPR2() {
     //VIEWPORT.lockViewportList = [];
     ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = false;
     window.removeEventListener("resize", resizeVR, false);
-    GetViewport(0).removeEventListener("wheel", MPRWheel, false);
-    GetViewport(1).removeEventListener("wheel", MPRWheel, false);
-    GetViewport(2).removeEventListener("wheel", MPRWheel, false);
+    GetNewViewport(0).div.removeEventListener("wheel", MPRWheel, false);
+    GetNewViewport(1).div.removeEventListener("wheel", MPRWheel, false);
+    GetNewViewport(2).div.removeEventListener("wheel", MPRWheel, false);
     GetViewport(2).removeChild(getByid("canvas0_MPR"));
     GetViewport(1).removeChild(getByid("canvas1_MPR"));
     GetViewport(0).removeChild(getByid("canvas2_MPR"));
@@ -189,23 +189,23 @@ function exitMPR2() {
     //getByid("mprLightLabel").style.display = "none";
 
     for (var i = 0; i < Viewport_Total; i++) {
-        GetViewport(i).removeEventListener("contextmenu", contextmenuF, false);
-        GetViewport(i).removeEventListener("mousemove", Mousemove, false);
-        GetViewport(i).removeEventListener("mousedown", Mousedown, false);
-        GetViewport(i).removeEventListener("mouseup", Mouseup, false);
-        GetViewport(i).removeEventListener("mouseout", Mouseout, false);
-        GetViewport(i).removeEventListener("wheel", Wheel, false);
-        GetViewport(i).removeEventListener("mousedown", thisF, false);
-        GetViewport(i).removeEventListener("touchstart", touchstartF, false);
-        GetViewport(i).removeEventListener("touchend", touchendF, false);
-        GetViewport(i).addEventListener("touchstart", thisF, false);
-        GetViewport(i).addEventListener("mousedown", thisF, false);
+        GetNewViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
+        GetNewViewport(i).div.removeEventListener("mousemove", Mousemove, false);
+        GetNewViewport(i).div.removeEventListener("mousedown", Mousedown, false);
+        GetNewViewport(i).div.removeEventListener("mouseup", Mouseup, false);
+        GetNewViewport(i).div.removeEventListener("mouseout", Mouseout, false);
+        GetNewViewport(i).div.removeEventListener("wheel", Wheel, false);
+        GetNewViewport(i).div.removeEventListener("mousedown", thisF, false);
+        GetNewViewport(i).div.removeEventListener("touchstart", touchstartF, false);
+        GetNewViewport(i).div.removeEventListener("touchend", touchendF, false);
+        GetNewViewport(i).div.addEventListener("touchstart", thisF, false);
+        GetNewViewport(i).div.addEventListener("mousedown", thisF, false);
     }
     viewportNumber = 0;
     window.onresize();
     //SetTable();
 
-    if (GetViewport(0).sop) loadAndViewImage(Patient.findSop(GetViewport(0).sop).imageId, 0);
+    if (GetViewport(0).sop) setSopToViewport(GetViewport(0).sop,0);//loadAndViewImage(Patient.findSop(GetViewport(0).sop).imageId, 0);
 
     o3dPixelData = [];
     o3dPixelData2 = [];
@@ -236,28 +236,28 @@ function initMPR2() {
     for (var c = 0; c < 3; c++)
         GetViewport(c).canvas().style.display = GetViewportMark(c).style.display = "none";
     viewportNumber = 0;
-    loadAndViewImage(Patient.findSop(GetNewViewport().sop).imageId);
+    setSopToViewport(GetNewViewport().sop,0);//loadAndViewImage(Patient.findSop(GetNewViewport().sop).imageId);
     // VIEWPORT.lockViewportList = [0, 1, 3];
     ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
     window.addEventListener("resize", resizeVR, false);
     for (var i1 = 0; i1 < Viewport_Total; i1++) {
-        GetViewport(i1).removeEventListener("contextmenu", contextmenuF, false);
-        GetViewport(i1).removeEventListener("mousemove", Mousemove, false);
-        GetViewport(i1).removeEventListener("mousedown", Mousedown, false);
-        GetViewport(i1).removeEventListener("mouseup", Mouseup, false);
-        GetViewport(i1).removeEventListener("mouseout", Mouseout, false);
-        GetViewport(i1).removeEventListener("wheel", Wheel, false);
-        GetViewport(i1).removeEventListener("mousedown", thisF, false);
-        GetViewport(i1).removeEventListener("touchstart", touchstartF, false);
-        GetViewport(i1).removeEventListener("touchend", touchendF, false);
-        GetViewport(i1).removeEventListener("touchstart", thisF, false);
+        GetNewViewport(i1).div.removeEventListener("contextmenu", contextmenuF, false);
+        GetNewViewport(i1).div.removeEventListener("mousemove", Mousemove, false);
+        GetNewViewport(i1).div.removeEventListener("mousedown", Mousedown, false);
+        GetNewViewport(i1).div.removeEventListener("mouseup", Mouseup, false);
+        GetNewViewport(i1).div.removeEventListener("mouseout", Mouseout, false);
+        GetNewViewport(i1).div.removeEventListener("wheel", Wheel, false);
+        GetNewViewport(i1).div.removeEventListener("mousedown", thisF, false);
+        GetNewViewport(i1).div.removeEventListener("touchstart", touchstartF, false);
+        GetNewViewport(i1).div.removeEventListener("touchend", touchendF, false);
+        GetNewViewport(i1).div.removeEventListener("touchstart", thisF, false);
     }
-    GetViewport().addEventListener("contextmenu", contextmenuF, false);
-    GetViewport().addEventListener("mouseout", Mouseout, false);
-    GetViewport(3).addEventListener("mousemove", mousemove3D, false);
-    GetViewport(3).addEventListener("mousedown", mousedown3D, false);
-    GetViewport(3).addEventListener("mouseup", mouseup3D, false);
-    GetViewport(3).addEventListener("contextmenu", contextmenuF, false);
+    GetNewViewport().div.addEventListener("contextmenu", contextmenuF, false);
+    GetNewViewport().div.addEventListener("mouseout", Mouseout, false);
+    GetNewViewport(3).div.addEventListener("mousemove", mousemove3D, false);
+    GetNewViewport(3).div.addEventListener("mousedown", mousedown3D, false);
+    GetNewViewport(3).div.addEventListener("mouseup", mouseup3D, false);
+    GetNewViewport(3).div.addEventListener("contextmenu", contextmenuF, false);
 
     var list = sortInstance(sop);
 
@@ -400,7 +400,7 @@ function display3dImage2Canvas() {
     var canvas1 = document.createElement("CANVAS");
     canvas1.id = "canvas1_MPR";
     canvas1.width = o3dMaxLen.x
-    canvas1.height = VrDistance * o3dPixelData2.length;//GetViewport().imageHeight;
+    canvas1.height = VrDistance * o3dPixelData2.length;//GetNewViewport().height;
 
     GetViewport(1).appendChild(canvas1);
 
@@ -416,7 +416,7 @@ function display3dImage2Canvas() {
     var canvas2 = document.createElement("CANVAS");
     canvas2.id = "canvas2_MPR";
     canvas2.width = o3dMaxLen.y;//o3dPixelData2.length;
-    canvas2.height = VrDistance * o3dPixelData2.length;// GetViewport().imageHeight;
+    canvas2.height = VrDistance * o3dPixelData2.length;// GetNewViewport().height;
 
     GetViewport(0).appendChild(canvas2);
 

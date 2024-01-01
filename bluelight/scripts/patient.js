@@ -74,13 +74,13 @@ class BlueLightPatient {
     }
 
     findStudy(study) {
-        if (study == undefined) study = GetViewport().study;
+        if (study == undefined) study = GetNewViewport().study;
         if (this.Study[study]) return this.Study[study]
         else return null;
     }
 
     findSeries(series) {//atient.Study[i].Series[j].SopAmount
-        if (series == undefined) series = GetViewport().series;
+        if (series == undefined) series = GetNewViewport().series;
         for (var studyObj of this.Study) {
             if (studyObj.Series[series]) return studyObj.Series[series];
         }
@@ -108,7 +108,7 @@ class BlueLightPatient {
     }
 
     getSopAmountBySeries(series){
-        if (series == undefined) series = GetViewport().series;
+        if (series == undefined) series = GetNewViewport().series;
         for (var studyObj of this.Study) {
             if (studyObj.Series[series]) return studyObj.Series.SopAmount;
         }

@@ -50,6 +50,7 @@ class BlueLightViewPort {
         this.invert = false;
         this.HorizontalFlip = false;
         this.VerticalFlip = false;
+        this.rotate = 0;
 
         this.windowCenter = null;
         this.windowWidth = null;
@@ -60,12 +61,11 @@ class BlueLightViewPort {
 
         this.enable = true;
         this.lockRender = false;
+        this.cine = false;
 
-
-        div.openHorizontalFlip = false;
-        div.openVerticalFlip = false;
+        div.newMousePointX = 0;
+        div.newMousePointY = 0;
         //div.openMark = true;
-        div.openPlay = false;
         //div.openInvert = false;
 
         div.enable = true;
@@ -75,13 +75,15 @@ class BlueLightViewPort {
         this.initViewportCanvas(div, index);
     }
     get enable() { return this.div.enable };
+    get width() { return this.content.image ? this.content.image.width : undefined };
+    get height() { return this.content.image ? this.content.image.height : undefined };
     get lockRender() { return this.div.lockRender };
     set enable(v) { this.div.enable = v };
     set lockRender(v) { this.div.lockRender = v };
 
-    get study() { return this.tags.StudyInstanceUID };
-    get series() { return this.tags.SeriesInstanceUID };
-    get sop() { return this.tags.SOPInstanceUID };
+    get study() { if (this.tags) return this.tags.StudyInstanceUID };
+    get series() { if (this.tags) return this.tags.SeriesInstanceUID };
+    get sop() { if (this.tags) return this.tags.SOPInstanceUID };
     get InstanceNumber() { return this.div.InstanceNumber };
     get framesNumber() { return this.div.framesNumber };
     get imageId() { return this.div.imageId };
@@ -113,6 +115,7 @@ class BlueLightViewPort {
         var MarkCanvas = document.createElement("CANVAS");
         MarkCanvas.id = "MarkCanvas" + index;
         div.appendChild(MarkCanvas);
+        this.MarkCanvas = MarkCanvas;
     }
 
     get ctx() { return this.canvas.getContext("2d"); }
@@ -186,10 +189,10 @@ class BlueLightViewPort {
     nextFrame(invert = false) {
         if (this.QRLevel == "series" && this.tags) {
             var Sop = Patient.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.tags.InstanceNumber, invert);
-            if (Sop != undefined) loadAndViewImage(Sop.imageId, this.index);
+            if (Sop != undefined) setSopToViewport(Sop, this.index);//loadAndViewImage(Sop.imageId, this.index);
         } else if (this.QRLevel == "frames" && this.framesNumber != undefined) {
             var framsNumber = Patient.getNextFrameByQRLevelsAndFrameNumber(this.QRLevels, this.framesNumber, invert);
-            if (framsNumber != undefined) loadAndViewImage(this.imageId, this.index, framsNumber);
+            if (framsNumber != undefined) setSopToViewport(this.sop, this.index, framsNumber);//loadAndViewImage(this.imageId, this.index, framsNumber);
         }
     }
 
@@ -197,27 +200,27 @@ class BlueLightViewPort {
         if (this.study == undefined) return;
         var Sop = Patient.getSopByQRLevels(this.QRLevels);
         if (Sop.pdf) displayPDF(Sop.pdf);
-        else loadAndViewImage(Sop.imageId, this.index);
+        else setSopToViewport(Sop, this.index);//loadAndViewImage(Sop.imageId, this.index);
     }
 
     reloadFirstImg() {
         if (this.study == undefined) return;
         var Sop = Patient.getSopByQRLevels(this.QRLevels);
         if (Sop.pdf) displayPDF(Sop.pdf);
-        else loadAndViewImage(Patient.getFirstSopByQRLevels(this.QRLevels).imageId, this.index);
+        else setSopToViewport(Patient.getFirstSopByQRLevels(this.QRLevels), this.index, 0);//loadAndViewImage(Patient.getFirstSopByQRLevels(this.QRLevels).imageId, this.index);
     }
 
     loadFirstImgBySeries(series) {
         var Series = Patient.findSeries(series);
         var Sop = Series.Sop[0];
         if (Sop.pdf) displayPDF(Sop.pdf);
-        else loadAndViewImage(Sop.imageId, this.index);
+        else setSopToViewport(Sop, this.index, 0);//loadAndViewImage(Sop.imageId, this.index);
     }
 
     loadFirstImgBySop(sop) {
         var Sop = Patient.findSop(sop);
         if (Sop.pdf) displayPDF(Sop.pdf);
-        else loadAndViewImage(Sop.imageId, this.index);
+        else setSopToViewport(Sop, this.index, 0);//loadAndViewImage(Sop.imageId, this.index);
     }
 }
 
@@ -241,6 +244,13 @@ function GetNewViewport(num) {
     return ViewPortList[num];
 }
 
+function SetAllViewport(key, value) {
+    if (!key) return;
+    for (var i = 0; i < Viewport_Total; i++) {
+        GetNewViewport(i)[key] = value;
+    }
+}
+
 function GetViewportMark(num) {
     if (!num) {
         if (num === 0) {
@@ -256,7 +266,7 @@ function refleshCanvas(viewport) {
     var canvas = viewport.canvas;
     var image = viewport.content.image;
     var pixelData = viewport.content.pixelData;
-
+    if (!image) return;
     canvas.width = image.width;
     canvas.height = image.height
     var ctx = canvas.getContext("2d");

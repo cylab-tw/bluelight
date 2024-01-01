@@ -112,35 +112,35 @@ let KeyCode_ctrl = false;
 let BL_mode = 'MouseTool';
 let AddMouseEvent = function () {
   try {
-    GetViewport().removeEventListener("touchstart", thisF, false);
-    GetViewport().removeEventListener("mousedown", thisF, false);
-    GetViewport().addEventListener("contextmenu", contextmenuF, false);
-    GetViewport().addEventListener("mousemove", Mousemove, false);
-    GetViewport().addEventListener("mousedown", Mousedown, false);
-    GetViewport().addEventListener("mouseup", Mouseup, false);
-    GetViewport().addEventListener("mouseout", Mouseout, false);
-    GetViewport().addEventListener("touchstart", touchstartF, false);
-    GetViewport().addEventListener("touchmove", touchmoveF, false);
-    GetViewport().addEventListener("touchend", touchendF, false);
-    GetViewport().addEventListener("wheel", Wheel, false);
+    GetNewViewport().div.removeEventListener("touchstart", thisF, false);
+    GetNewViewport().div.removeEventListener("mousedown", thisF, false);
+    GetNewViewport().div.addEventListener("contextmenu", contextmenuF, false);
+    GetNewViewport().div.addEventListener("mousemove", Mousemove, false);
+    GetNewViewport().div.addEventListener("mousedown", Mousedown, false);
+    GetNewViewport().div.addEventListener("mouseup", Mouseup, false);
+    GetNewViewport().div.addEventListener("mouseout", Mouseout, false);
+    GetNewViewport().div.addEventListener("touchstart", touchstartF, false);
+    GetNewViewport().div.addEventListener("touchmove", touchmoveF, false);
+    GetNewViewport().div.addEventListener("touchend", touchendF, false);
+    GetNewViewport().div.addEventListener("wheel", Wheel, false);
   } catch (ex) { console.log(ex); }
 }
 let DeleteMouseEvent = function () {
   try {
     for (var i = 0; i < Viewport_Total; i++) {
-      GetViewport(i).removeEventListener("contextmenu", contextmenuF, false);
-      GetViewport(i).removeEventListener("mousemove", Mousemove, false);
-      GetViewport(i).removeEventListener("mousedown", Mousedown, false);
-      GetViewport(i).removeEventListener("mouseup", Mouseup, false);
-      GetViewport(i).removeEventListener("mouseout", Mouseout, false);
-      GetViewport(i).removeEventListener("wheel", Wheel, false);
-      GetViewport(i).removeEventListener("mousedown", thisF, false);
-      GetViewport(i).removeEventListener("touchstart", touchstartF, false);
-      GetViewport(i).removeEventListener("touchend", touchendF, false);
-      GetViewport(i).removeEventListener("wheel", Wheel, false);
-      GetViewport(i).addEventListener("touchstart", thisF, false);
-      GetViewport(i).addEventListener("mousedown", thisF, false);
-      GetViewport(i).addEventListener("wheel", Wheel, false);
+      GetNewViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
+      GetNewViewport(i).div.removeEventListener("mousemove", Mousemove, false);
+      GetNewViewport(i).div.removeEventListener("mousedown", Mousedown, false);
+      GetNewViewport(i).div.removeEventListener("mouseup", Mouseup, false);
+      GetNewViewport(i).div.removeEventListener("mouseout", Mouseout, false);
+      GetNewViewport(i).div.removeEventListener("wheel", Wheel, false);
+      GetNewViewport(i).div.removeEventListener("mousedown", thisF, false);
+      GetNewViewport(i).div.removeEventListener("touchstart", touchstartF, false);
+      GetNewViewport(i).div.removeEventListener("touchend", touchendF, false);
+      GetNewViewport(i).div.removeEventListener("wheel", Wheel, false);
+      GetNewViewport(i).div.addEventListener("touchstart", thisF, false);
+      GetNewViewport(i).div.addEventListener("mousedown", thisF, false);
+      GetNewViewport(i).div.addEventListener("wheel", Wheel, false);
     }
   } catch (ex) { }
 }

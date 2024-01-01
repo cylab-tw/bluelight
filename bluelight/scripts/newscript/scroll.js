@@ -17,8 +17,7 @@ function scroll() {
             }
             windowMouseX = GetmouseX(e);
             windowMouseY = GetmouseY(e);
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
         };
 
         Mousemove = function (e) {
@@ -38,8 +37,7 @@ function scroll() {
                 }
             }
             putLabel();
-            for (var i = 0; i < Viewport_Total; i++)
-                displayRuler(i);
+            displayAllRuler();
 
             if (MouseDownCheck) {
                 windowMouseX = GetmouseX(e);
@@ -57,7 +55,7 @@ function scroll() {
                 if (nextBool != null && openLink == false) GetNewViewport().nextFrame(nextBool);
                 else if (nextBool != null && openLink == true) {
                     for (var z = 0; z < Viewport_Total; z++)
-                        GetNewViewport(z).nextFrame(nextBool);
+                        if (!(parseInt(GetViewport(z).style.height) <= 1)) GetNewViewport(z).nextFrame(nextBool);
 
                 }
 
@@ -70,14 +68,10 @@ function scroll() {
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
                 displayMark();
-            MouseDownCheck = false;
-            rightMouseDown = false;
+            MouseDownCheck = rightMouseDown = false;
             magnifierDiv.hide();
 
-            if (openLink) {
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayRuler(i);
-            }
+            if (openLink) displayAllRuler();
         }
         Touchstart = function (e, e2) {
 
@@ -89,8 +83,7 @@ function scroll() {
                 windowMouseX2 = GetmouseX(e2);
                 windowMouseY2 = GetmouseY(e2);
             }
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
             if (rightTouchDown == true && e2) {
                 GetViewport().originalPointX2 = getCurrPoint(e2)[0];
                 GetViewport().originalPointY2 = getCurrPoint(e2)[1];
@@ -128,8 +121,7 @@ function scroll() {
                 }
             }
             // putLabel();
-            //  for (var i = 0; i < Viewport_Total; i++)
-            //     displayRuler(i);
+            //  displayAllRuler();
         }
         Touchend = function (e, e2) {
             if (TouchDownCheck == true) {

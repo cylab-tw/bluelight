@@ -16,8 +16,7 @@ function rotate() {
 
             windowMouseX = GetmouseX(e);
             windowMouseY = GetmouseY(e);
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
         };
 
         Mousemove = function (e) {
@@ -30,14 +29,14 @@ function rotate() {
             if (rightMouseDown == true) {
                 if (Math.abs(currY - GetViewport().originalPointY) > Math.abs(currX - GetViewport().originalPointX)) {
                     if (currY < GetViewport().originalPointY - 3)
-                        GetViewport().rotateValue += 2;
+                        GetNewViewport().rotate += 2;
                     else if (currY > GetViewport().originalPointY + 3)
-                        GetViewport().rotateValue -= 2;
+                        GetNewViewport().rotate -= 2;
                 }
                 setTransform();
                 if (openLink == true) {
                     for (var z = 0; z < 4; z++) {
-                        GetViewport(z).rotateValue = GetViewport().rotateValue;
+                        GetNewViewport(z).rotate = GetNewViewport().rotate;
                         setTransform(z);
                     }
                 }
@@ -49,8 +48,7 @@ function rotate() {
                 }
             }
             putLabel();
-            for (var i = 0; i < Viewport_Total; i++)
-                displayRuler(i);
+            displayAllRuler();
 
             if (MouseDownCheck) {
                 var MouseX = GetmouseX(e);
@@ -73,8 +71,7 @@ function rotate() {
                     }
                 }
                 putLabel();
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayRuler(i);
+                displayAllRuler();
             }
             GetViewport().originalPointX = currX;
             GetViewport().originalPointY = currY;
@@ -84,14 +81,10 @@ function rotate() {
             var currY = getCurrPoint(e)[1];
             if (openMouseTool == true && rightMouseDown == true)
                 displayMark();
-            MouseDownCheck = false;
-            rightMouseDown = false;
+            MouseDownCheck = rightMouseDown = false;
             magnifierDiv.hide();
-            
-            if (openLink) {
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayRuler(i);
-            }
+
+            if (openLink) displayAllRuler();
         }
         Touchstart = function (e, e2) {
 
@@ -103,8 +96,7 @@ function rotate() {
                 windowMouseX2 = GetmouseX(e2);
                 windowMouseY2 = GetmouseY(e2);
             }
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
+            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
             if (rightTouchDown == true && e2) {
                 GetViewport().originalPointX2 = getCurrPoint(e2)[0];
                 GetViewport().originalPointY2 = getCurrPoint(e2)[1];
@@ -199,9 +191,9 @@ function rotate() {
                         Math.abs(currY2 - GetViewport().originalPointY2) > Math.abs(currX2 - GetViewport().originalPointX2)
                     ) {
                         if (currY < GetViewport().originalPointY - 3)
-                            GetViewport().rotateValue += 2;
+                            GetNewViewport().rotate += 2;
                         else if (currY > GetViewport().originalPointY + 3)
-                            GetViewport().rotateValue -= 2;
+                            GetNewViewport().rotate -= 2;
                     }
                     setTransform();
 
@@ -209,10 +201,8 @@ function rotate() {
 
                     if (openLink == true) {
                         for (var z = 0; z < Viewport_Total; z++) {
-                            rotateValue[z] = GetViewport().rotateValue;
+                            GetNewViewport(z).rotate = GetNewViewport().rotate;
                             setTransform(z);
-
-
                         }
                     }
                 }
@@ -234,14 +224,13 @@ function rotate() {
 
 
                         newMousePointX[i] = GetViewport().newMousePointX;
-                        newMousePointX[i] = GetViewport().newMousePointX;
+                        newMousePointY[i] = GetViewport().newMousePointY;
                     }
                 }
                 /* for (var i = 0; i < 4; i++)
                    displayMark(i);*/
                 putLabel();
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayRuler(i);
+                displayAllRuler();
             }
         }
         Touchend = function (e, e2) {
@@ -253,7 +242,7 @@ function rotate() {
             rightTouchDown = false;
 
             magnifierDiv.hide();
-            
+
         }
         AddMouseEvent();
     }

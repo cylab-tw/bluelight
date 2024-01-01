@@ -64,8 +64,7 @@ getByid("xmlMarkNameText").onchange = function () {
     refreshMark(xml_now_choose.reference);
     xml_now_choose = null;
     //this.value = '';
-    for (var i = 0; i < Viewport_Total; i++)
-      displayMark(i);
+    displayAllMark();
   }
 }
 
@@ -297,7 +296,7 @@ function getXml_context() {
   for (var i = 0; i < xml_format_object_list.length; i++) {
     temp_str += xml_format_object_list[i];
   }
-  return xml_format_title.replace("_width_", GetViewport().imageWidth).replace("_height_", GetViewport().imageHeight) +
+  return xml_format_title.replace("_width_", GetNewViewport().width).replace("_height_", GetNewViewport().height) +
     temp_str + xml_format_tail;
 }
 
@@ -397,8 +396,8 @@ function importXml(url) {
 
       for (var i = 0; i < objlist.length; i++) {
         var dcm = {};
-        dcm.study = GetViewport().study;
-        dcm.series = GetViewport().series;
+        dcm.study = GetNewViewport().study;
+        dcm.series = GetNewViewport().series;
         dcm.sop = GetNewViewport().sop;
         dcm.color = "#0000FF";
         dcm.mark = [];
@@ -468,16 +467,15 @@ function writexml() {
         }
       }
       putLabel();
-      for (var i = 0; i < Viewport_Total; i++)
-        displayRuler(i);
+      displayAllRuler();
 
       if (MouseDownCheck) {
         windowMouseX = GetmouseX(e);
         windowMouseY = GetmouseY(e);
         if (!xml_now_choose) {
           var dcm = {};
-          dcm.study = GetViewport().study;
-          dcm.series = GetViewport().series;
+          dcm.study = GetNewViewport().study;
+          dcm.series = GetNewViewport().series;
           dcm.sop = GetNewViewport().sop;
           dcm.color = "#0000FF";
           dcm.mark = [];
@@ -494,8 +492,7 @@ function writexml() {
           dcm.mark[DcmMarkLength].markY.push(currY);
           PatientMark.push(dcm);
           refreshMark(dcm);
-          for (var i = 0; i < Viewport_Total; i++)
-            displayMark(i);
+          displayAllMark();
           displayAngleRuler();
           PatientMark.splice(PatientMark.indexOf(dcm), 1);
         } else {
@@ -509,8 +506,7 @@ function writexml() {
             xml_now_choose.mark.markX[1] = currX;
           }
           //setXml_context();
-          for (var i = 0; i < Viewport_Total; i++)
-            displayMark(i);
+          displayAllMark();
 
         }
       }
@@ -522,8 +518,8 @@ function writexml() {
       rightMouseDown = false;
       if (openWriteXML == true && !xml_now_choose) {
         var dcm = {};
-        dcm.study = GetViewport().study;
-        dcm.series = GetViewport().series;
+        dcm.study = GetNewViewport().study;
+        dcm.series = GetNewViewport().series;
         dcm.sop = GetNewViewport().sop;
         dcm.color = "#0000FF";
         dcm.mark = [];
@@ -541,8 +537,7 @@ function writexml() {
         dcm.mark[DcmMarkLength].markY.push(currY);
         PatientMark.push(dcm);
         refreshMark(dcm);
-        for (var i = 0; i < Viewport_Total; i++)
-          displayMark(i);
+        displayAllMark();
         displayAngleRuler();
         //setXml_context();
       }

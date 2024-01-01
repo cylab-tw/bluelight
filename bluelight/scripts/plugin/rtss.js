@@ -368,7 +368,7 @@ function set_RTSS_context() {
     }
 
     //此更動待驗證
-    var sopList = Patient.findSeries(GetViewport().series).Sop;
+    var sopList = Patient.findSeries(GetNewViewport().series).Sop;
     for (var s = 0; s < sopList.length; s++) {
         let tail2 = "" + RTSS_format_tail_2;
         // tail2 = tail2.replace("___ReferencedSOPInstanceUID___", sopList[s]);
@@ -492,20 +492,20 @@ function writertss() {
                 var currX02 = currX11;
                 var currY02 = currY11;
 
-                /*if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
+                if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
                     currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
                     currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
                     if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
                         currX02 = currX02 - (currX02 - currX11) * 2;
                         currY02 = currY02 - (currY02 - currY11) * 2;
                     }
-                }*/
+                }
                 currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
                 currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
 
                 var dcm = {};
-                dcm.study = GetViewport().study;
-                dcm.series = GetViewport().sreies;
+                dcm.study = GetNewViewport().study;
+                dcm.series = GetNewViewport().sreies;
                 dcm.sop = GetNewViewport().sop;
                 dcm.color = "rgb(0,0,128)";
                 for (var co = 0; co < getClass("RTSSColorSelectOption").length; co++) {
@@ -529,8 +529,7 @@ function writertss() {
                 PatientMark.push(dcm);
                 refreshMark(dcm);
                 RTSS_now_choose = dcm.mark[DcmMarkLength];
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                displayAllMark();
             }
         };
 
@@ -553,8 +552,7 @@ function writertss() {
                 }
             }
             putLabel();
-            for (var i = 0; i < Viewport_Total; i++)
-                displayRuler(i);
+            displayAllRuler();
             if (!rightMouseDown && RTSS_now_choose) {
                 var angle2point = rotateCalculation(e)
                 var currX11 = Math.floor(angle2point[0]);
@@ -562,14 +560,14 @@ function writertss() {
                 var currX02 = currX11;
                 var currY02 = currY11;
 
-                /*if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
+                if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
                     currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
                     currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
                     if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
                         currX02 = currX02 - (currX02 - currX11) * 2;
                         currY02 = currY02 - (currY02 - currY11) * 2;
                     }
-                }*/
+                }
                 currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
                 currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
                 // var DcmMarkLength = RTSS_now_choose.mark.length - 1;
@@ -577,16 +575,14 @@ function writertss() {
                 RTSS_now_choose.markY.push(angle2point[1] - Math.abs(currY02 - angle2point[1]));
                 //PatientMark.push(RTSS_now_choose);
                 refreshMarkFromSop(GetNewViewport().sop);
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayMark(i);
+                displayAllMark();
             }
 
         }
         Mouseup = function (e) {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
-            MouseDownCheck = false;
-            rightMouseDown = false;
+            MouseDownCheck = rightMouseDown = false;
             if (RTSS_now_choose) {
                 RTSS_now_choose = null;
             }

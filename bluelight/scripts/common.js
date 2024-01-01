@@ -21,9 +21,14 @@ function cancelTools() {
     displayWindowLevel();
     displayMark();
     for (var i = 0; i < Viewport_Total; i++) {
-        GetViewport(i).openPlay = false;
+        GetNewViewport(i).cine = false;
     }
     PlayTimer();
+}
+
+function displayAllRuler() {
+    for (var i = 0; i < Viewport_Total; i++)
+        displayRuler(i);
 }
 
 function displayRuler(viewportNum = viewportNumber) {
@@ -42,13 +47,13 @@ function displayRuler(viewportNum = viewportNumber) {
         var x1 = 0;
         var y1 = 0;
         var canvas = GetViewport(viewportNum).canvas();
-        tempctx.moveTo(0 + (offsetWidth / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetViewport(viewportNum).imageWidth), 10);
-        tempctx.lineTo((90 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetViewport(viewportNum).imageWidth) + (offsetWidth / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetViewport(viewportNum).imageWidth), 10);
+        tempctx.moveTo(0 + (offsetWidth / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetNewViewport(viewportNum).width), 10);
+        tempctx.lineTo((90 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetNewViewport(viewportNum).width) + (offsetWidth / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetNewViewport(viewportNum).width), 10);
         for (var i = 0; i < 10; i++) {
-            tempctx.moveTo(x1 + (offsetWidth / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetViewport(viewportNum).imageWidth), y1);
-            tempctx.lineTo(x1 + (offsetWidth / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetViewport(viewportNum).imageWidth), y1 + 20);
+            tempctx.moveTo(x1 + (offsetWidth / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetNewViewport(viewportNum).width), y1);
+            tempctx.lineTo(x1 + (offsetWidth / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetNewViewport(viewportNum).width), y1 + 20);
             tempctx.stroke();
-            x1 += (10 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetViewport(viewportNum).imageWidth);
+            x1 += (10 * GetNewViewport(viewportNum).transform.PixelSpacingX) * (parseFloat(canvas.style.width) / GetNewViewport(viewportNum).width);
         }
         tempctx.closePath();
     } catch (ex) { }
@@ -72,14 +77,14 @@ function displayRuler2(viewportNum = viewportNumber) {
         tempctx.beginPath();
         var x1 = 0;
         var y1 = 0;
-        tempctx.moveTo(0, 0 + (offsetHeight / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetViewport(viewportNum).imageHeight));
-        tempctx.lineTo(0, (90 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetViewport(viewportNum).imageHeight) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetViewport(viewportNum).imageHeight) + (offsetHeight / 2));
+        tempctx.moveTo(0, 0 + (offsetHeight / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetNewViewport(viewportNum).height));
+        tempctx.lineTo(0, (90 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetNewViewport(viewportNum).height) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetNewViewport(viewportNum).height) + (offsetHeight / 2));
         tempctx.stroke();
         for (var i = 0; i < 10; i++) {
-            tempctx.moveTo(x1, y1 + (offsetHeight / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetViewport(viewportNum).imageHeight));
-            tempctx.lineTo(x1 + 20, y1 + (offsetHeight / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetViewport(viewportNum).imageHeight));
+            tempctx.moveTo(x1, y1 + (offsetHeight / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetNewViewport(viewportNum).height));
+            tempctx.lineTo(x1 + 20, y1 + (offsetHeight / 2) - (40 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetNewViewport(viewportNum).height));
             tempctx.stroke();
-            y1 += (10 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetViewport(viewportNum).imageHeight);
+            y1 += (10 * GetNewViewport(viewportNum).transform.PixelSpacingY) * (parseFloat(canvas.style.height) / GetNewViewport(viewportNum).height);
         }
         tempctx.closePath();
     } catch (ex) { }
@@ -87,7 +92,7 @@ function displayRuler2(viewportNum = viewportNumber) {
 
 function resetViewport(viewportNum = viewportNumber) {
     GetViewport(viewportNum).NowCanvasSizeWidth = GetViewport(viewportNum).NowCanvasSizeHeight = null;
-    GetViewport(viewportNum).newMousePointX = GetViewport(viewportNum).newMousePointY = GetViewport().rotateValue = 0;
+    GetViewport(viewportNum).newMousePointX = GetViewport(viewportNum).newMousePointY = GetNewViewport().rotate = 0;
     GetNewViewport(viewportNum).windowCenter = GetNewViewport(viewportNum).windowWidth = null;
     GetNewViewport(viewportNum).invert = GetNewViewport(viewportNum).HorizontalFlip = GetNewViewport(viewportNum).VerticalFlip = false;
     GetNewViewport(viewportNum).transform = {};
@@ -104,7 +109,7 @@ function resetAndLoadImg(viewportNum = viewportNumber, dontLoad = false) {
 
         viewport.NowCanvasSizeWidth = viewport.NowCanvasSizeHeight = null;
         Newviewport.windowCenter = Newviewport.windowWidth = null;
-        viewport.newMousePointX = viewport.newMousePointY = GetViewport().rotateValue = 0;
+        viewport.newMousePointX = viewport.newMousePointY = GetNewViewport().rotate = 0;
 
         GetNewViewport(z).VerticalFlip = GetNewViewport(z).HorizontalFlip = GetNewViewport(z).invert = false;
         if (getByid("removeRuler")) getByid("removeRuler").onclick();
@@ -116,16 +121,19 @@ function resetAndLoadImg(viewportNum = viewportNumber, dontLoad = false) {
 
 function refleshViewport() {
     if (openLink == true) {
-        for (var z = 0; z < Viewport_Total; z++) {
+        /*for (var z = 0; z < Viewport_Total; z++) {
             GetNewViewport(z).VerticalFlip = GetNewViewport().VerticalFlip;
             GetNewViewport(z).HorizontalFlip = GetNewViewport().HorizontalFlip;
             GetNewViewport(z).windowCenter = GetNewViewport().windowCenter;
             GetNewViewport(z).windowWidth = GetNewViewport().windowWidth;
             GetNewViewport(z).invert = GetNewViewport().invert;
-        }
-        for (var z = 0; z < Viewport_Total; z++)
+        }*/
+        for (var z = 0; z < Viewport_Total; z++) {
             refleshCanvas(GetNewViewport(z));
+            displayMark(z);
+        }
     } else {
         refleshCanvas(GetNewViewport());
+        displayMark();
     }
 }
