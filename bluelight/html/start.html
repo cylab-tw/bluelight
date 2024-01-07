@@ -26,7 +26,7 @@
   <script src="../scripts/external/threejs/customWebWorkersConfig.js"></script>
   <script src="../scripts/external/threejs/initializeWebWorkers.js"></script>
 
-  
+
   <script src="../scripts/onload.js"></script>
   <script src="../scripts/patient.js"></script>
   <script src="../scripts/viewport.js"></script>
@@ -70,6 +70,14 @@
       min-width: 35px;
       width: 100%;
       height: 100%;
+    }
+
+    .img:hover {
+      filter: invert(80%);
+    }
+
+    .innerimg:hover {
+      filter: invert(80%);
     }
 
     .innerLabel {
@@ -141,13 +149,15 @@
         <div id="openMeasureDIv" class="imgListDiv" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
         width: 500; display: none;background-color: black;">
           <span id="removeRuler_span">
-            <img alt="清除測量" id="removeRuler" src="../image/icon/black/X.png" width="50" height="50">
+            <img alt="清除測量" class="innerimg" id="removeRuler" src="../image/icon/black/X.png" width="50" height="50">
           </span>
           <span id="MeasureRuler_span">
-            <img alt="測量" id="MeasureRuler" src="../image/icon/black/b_DistanceMeasurement.png" width="50" height="50">
+            <img alt="測量" class="innerimg" id="MeasureRuler" src="../image/icon/black/b_DistanceMeasurement.png"
+              width="50" height="50">
           </span>
           <span id="AngleRuler_span">
-            <img alt="角度" id="AngleRuler" src="../image/icon/black/b_AngleMeasurement.png" width="50" height="50">
+            <img alt="角度" class="innerimg" id="AngleRuler" src="../image/icon/black/b_AngleMeasurement.png" width="50"
+              height="50">
           </span>
         </div>
       </span>

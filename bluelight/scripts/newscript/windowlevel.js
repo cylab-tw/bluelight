@@ -18,34 +18,14 @@ function windowlevel() {
         }
 
         SetTable();
-        Mousedown = function (e) {
-            if (e.which == 1) MouseDownCheck = true;
-            else if (e.which == 3) rightMouseDown = true;
-            windowMouseX = GetmouseX(e);
-            windowMouseY = GetmouseY(e);
-            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
-        };
 
-
+        BlueLightMousedownList = [];
 
         Mousemove = function (e) {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
-            var labelXY = getClass('labelXY'); {
-                let angle2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
-            }
-            if (rightMouseDown == true) {
-                scale_size(e, currX, currY);
-            }
-            if (openLink == true) {
-                for (var i = 0; i < Viewport_Total; i++) {
-                    GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-                    GetViewport(i).newMousePointY = GetViewport().newMousePointY;
-                }
-            }
-            putLabel();
-            displayAllRuler();
+
+            if (rightMouseDown == true) scale_size(e, currX, currY);
 
             if (MouseDownCheck) {
                 var MouseX = GetmouseX(e);
@@ -97,33 +77,14 @@ function windowlevel() {
 
             if (openLink) displayAllRuler();
         }
-        Touchstart = function (e, e2) {
 
-            if (!e2) TouchDownCheck = true;
-            else rightTouchDown = true;
-            windowMouseX = GetmouseX(e);
-            windowMouseY = GetmouseY(e);
-            if (rightTouchDown == true && e2) {
-                windowMouseX2 = GetmouseX(e2);
-                windowMouseY2 = GetmouseY(e2);
-            }
-            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
-            if (rightTouchDown == true && e2) {
-                GetViewport().originalPointX2 = getCurrPoint(e2)[0];
-                GetViewport().originalPointY2 = getCurrPoint(e2)[1];
-            }
-        }
+        BlueLightTouchstartList = [];
+
         Touchmove = function (e, e2) {
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
 
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
-            if (e2) {
-                var currX2 = getCurrPoint(e2)[0];
-                var currY2 = getCurrPoint(e2)[1];
-            }
-            var labelXY = getClass('labelXY');
-            labelXY[viewportNumber].innerText = "X: " + Math.floor(currX) + " Y: " + Math.floor(currY);
             //尚未完成
 
             if (/*openWindow == true && */rightTouchDown == false) {

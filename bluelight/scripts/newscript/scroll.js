@@ -2,42 +2,23 @@
 function scroll() {
     if (BL_mode == 'scroll') {
         DeleteMouseEvent();
-        Mousedown = function (e) {
+
+        BlueLightMousedownList = [];
+        BlueLightMousedownList.push(function (e) {
             switch (e.which) {
-                case 1:
-                    MouseDownCheck = true;
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    rightMouseDown = true;
-                    break;
-                default:
-                    break
+                case 1: MouseDownCheck = true; break;
+                case 2: break;
+                case 3: rightMouseDown = true; break;
+                default: break;
             }
-            windowMouseX = GetmouseX(e);
-            windowMouseY = GetmouseY(e);
-            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
-        };
+        });
 
         Mousemove = function (e) {
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
-            var labelXY = getClass('labelXY'); {
-                let angle2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
-            }
-            if (rightMouseDown == true) {
-                scale_size(e, currX, currY);
-            }
-            if (openLink == true) {
-                for (var i = 0; i < Viewport_Total; i++) {
-                    GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-                    GetViewport(i).newMousePointY = GetViewport().newMousePointY;
-                }
-            }
-            putLabel();
-            displayAllRuler();
+
+
+            if (rightMouseDown == true) scale_size(e, currX, currY);
 
             if (MouseDownCheck) {
                 windowMouseX = GetmouseX(e);
@@ -73,33 +54,14 @@ function scroll() {
 
             if (openLink) displayAllRuler();
         }
-        Touchstart = function (e, e2) {
+        BlueLightTouchstartList = [];
 
-            if (!e2) TouchDownCheck = true;
-            else rightTouchDown = true;
-            windowMouseX = GetmouseX(e);
-            windowMouseY = GetmouseY(e);
-            if (rightTouchDown == true && e2) {
-                windowMouseX2 = GetmouseX(e2);
-                windowMouseY2 = GetmouseY(e2);
-            }
-            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
-            if (rightTouchDown == true && e2) {
-                GetViewport().originalPointX2 = getCurrPoint(e2)[0];
-                GetViewport().originalPointY2 = getCurrPoint(e2)[1];
-            }
-        }
         Touchmove = function (e, e2) {
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
 
             var currX = getCurrPoint(e)[0];
             var currY = getCurrPoint(e)[1];
-            if (e2) {
-                var currX2 = getCurrPoint(e2)[0];
-                var currY2 = getCurrPoint(e2)[1];
-            }
-            var labelXY = getClass('labelXY');
-            labelXY[viewportNumber].innerText = "X: " + Math.floor(currX) + " Y: " + Math.floor(currY);
+
             if (TouchDownCheck == true && rightTouchDown == false) {
                 //if (openChangeFile == true) 
                 {
@@ -120,8 +82,6 @@ function scroll() {
                     GetViewport().originalPointY = currY;
                 }
             }
-            // putLabel();
-            //  displayAllRuler();
         }
         Touchend = function (e, e2) {
             if (TouchDownCheck == true) {

@@ -321,6 +321,8 @@ function html_onload() {
     for (var n in PatientMark) { refreshMark(PatientMark[n]); }
     //for (var s = 0; s < sopList.length; s++)
     //   refreshMarkFromSop(sopList[s]);
+
+    getByid("openMeasureImg").click();
   }
 
   for (var element of getClass("img")) {
@@ -373,8 +375,8 @@ function html_onload() {
     if (this.enable == false) return;
     set_BL_model('measure');
     measure();
-
-    drawBorder(this);
+    drawBorder(getByid("openMeasureImg"));
+    getByid("openMeasureImg").click();
   }
 
   getByid("AngleRuler").onclick = function () {
@@ -382,7 +384,8 @@ function html_onload() {
     //cancelTools();
     set_BL_model('angle');
     angle();
-    drawBorder(this);
+    drawBorder(getByid("openMeasureImg"));
+    getByid("openMeasureImg").click();
   }
 
   getByid("playvideo").onclick = function () {
@@ -579,6 +582,7 @@ function addEvent2SplitViewport() {
         Viewport_row = 1;
         Viewport_col = 1;
       }
+      getByid("SplitViewportDiv").style.display = "none";
       getByid("MouseOperation").click();
       SetTable();
       window.onresize();
@@ -601,7 +605,7 @@ function changeLinkImg() {
 function drawBorder(element) {
   if (element != getByid("b_Scroll")) openChangeFile = false;
 
-  var list = ["MouseOperation", "WindowRevision", "MeasureRuler", "MouseRotate", "playvideo", "zoom", "b_Scroll", "AngleRuler"]
+  var list = ["MouseOperation", "WindowRevision", "MeasureRuler", "MouseRotate", "playvideo", "zoom", "b_Scroll", "AngleRuler", "openMeasureImg"]
   for (elemID of list) getByid(elemID).style['border'] = "";
 
   element.style["border"] = 3 + "px #FFFFFF solid"

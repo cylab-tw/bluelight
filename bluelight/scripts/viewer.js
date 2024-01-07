@@ -662,12 +662,12 @@ function initNewCanvas(newCanvas) {
         for (var i = 0; i < Viewport_Total; i++) {
             GetNewViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
             GetNewViewport(i).div.removeEventListener("mousemove", Mousemove, false);
-            GetNewViewport(i).div.removeEventListener("mousedown", Mousedown, false);
+            GetNewViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
             GetNewViewport(i).div.removeEventListener("mouseup", Mouseup, false);
             GetNewViewport(i).div.removeEventListener("mouseout", Mouseout, false);
             GetNewViewport(i).div.removeEventListener("wheel", Wheel, false);
             GetNewViewport(i).div.removeEventListener("mousedown", thisF, false);
-            GetNewViewport(i).div.removeEventListener("touchstart", touchstartF, false);
+            GetNewViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
             GetNewViewport(i).div.removeEventListener("touchend", touchendF, false);
             GetNewViewport(i).div.addEventListener("touchstart", thisF, false);
             GetNewViewport(i).div.addEventListener("mousedown", thisF, false);
@@ -677,10 +677,10 @@ function initNewCanvas(newCanvas) {
         GetNewViewport().div.removeEventListener("mousedown", thisF, false);
         GetNewViewport().div.addEventListener("contextmenu", contextmenuF, false);
         GetNewViewport().div.addEventListener("mousemove", Mousemove, false);
-        GetNewViewport().div.addEventListener("mousedown", Mousedown, false);
+        GetNewViewport().div.addEventListener("mousedown", BlueLightMousedown, false);
         GetNewViewport().div.addEventListener("mouseup", Mouseup, false);
         GetNewViewport().div.addEventListener("mouseout", Mouseout, false);
-        GetNewViewport().div.addEventListener("touchstart", touchstartF, false);
+        GetNewViewport().div.addEventListener("touchstart", BlueLightTouchstart, false);
         GetNewViewport().div.addEventListener("touchmove", touchmoveF, false);
         GetNewViewport().div.addEventListener("touchend", touchendF, false);
     } catch (ex) { console.log(ex); }

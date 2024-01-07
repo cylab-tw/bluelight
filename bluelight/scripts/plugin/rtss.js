@@ -256,105 +256,12 @@ var RTSS_format_tail_6 = `
 var RTSS_now_choose = null;
 var temp_xml_format = "";
 
-
-function RTSS_pounch(currX, currY, dcm) {
-    let block_size = getMarkSize(GetViewportMark(), false) * 4;
-    let index = SearchUid2Index(GetNewViewport().sop);
-    let i = index[0],
-        j = index[1],
-        k = index[2];
-    for (var n = 0; n < PatientMark.length; n++) {
-        if (dcm && PatientMark[n] != dcm) continue;
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (PatientMark[n].mark[m].type == "POLYLINE") {
-                    var tempMark = PatientMark[n].mark[m];
-                    var Max_X = -999999,
-                        Max_Y = -999999,
-                        Min_X = 999999,
-                        Min_Y = 999999;
-                    var Max_X_list = [],
-                        Max_Y_list = [],
-                        Min_X_list = [],
-                        Min_Y_list = [];
-                    for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 1) {
-                        if (parseInt(tempMark.markX[o]) >= Max_X) Max_X = parseInt(tempMark.markX[o]);
-                        if (parseInt(tempMark.markX[o]) <= Min_X) Min_X = parseInt(tempMark.markX[o]);
-                    }
-                    for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 1) {
-                        if (equal_TOL(Max_X, parseInt(tempMark.markX[o]), block_size)) Max_X_list.push(o);
-                        if (equal_TOL(Min_X, parseInt(tempMark.markX[o]), block_size)) Min_X_list.push(o);
-                    }
-                    for (var o = 0; o < PatientMark[n].mark[m].markY.length; o += 1) {
-                        if (parseInt(tempMark.markY[o]) >= Max_Y) Max_Y = parseInt(tempMark.markY[o]);
-                        if (parseInt(tempMark.markY[o]) <= Min_Y) Min_Y = parseInt(tempMark.markY[o]);
-                    }
-                    for (var o = 0; o < PatientMark[n].mark[m].markX.length; o += 1) {
-                        if (equal_TOL(Max_Y, parseInt(tempMark.markY[o]), block_size)) Max_Y_list.push(o);
-                        if (equal_TOL(Min_Y, parseInt(tempMark.markY[o]), block_size)) Min_Y_list.push(o);
-                    }
-                    for (var o = 0; o < PatientMark[n].mark[m].markX.length - 1; o += 1) {
-                        var x_middle = (parseInt(tempMark.markX[o]) + parseInt(tempMark.markX[o + 1])) / 2;
-                        var y_middle = (parseInt(tempMark.markY[o]) + parseInt(tempMark.markY[o + 1])) / 2;
-                        if (currY + block_size >= y_middle && currX + block_size >= x_middle && currY < y_middle + block_size && currX < x_middle + block_size) {
-                            if (equal_TOL(y_middle, Max_Y, block_size)) {
-                                Graphic_now_choose = {
-                                    reference: PatientMark[n],
-                                    point: Max_Y_list,
-                                    mark: tempMark,
-                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
-                                    value: 'up'
-                                };
-                                return true;
-                            } else if (equal_TOL(y_middle, Min_Y, block_size)) {
-                                Graphic_now_choose = {
-                                    reference: PatientMark[n],
-                                    point: Min_Y_list,
-                                    mark: tempMark,
-                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
-                                    value: 'down'
-                                };
-                                return true;
-                            } else if (equal_TOL(x_middle, Min_X, block_size)) {
-                                Graphic_now_choose = {
-                                    reference: PatientMark[n],
-                                    point: Min_X_list,
-                                    mark: tempMark,
-                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
-                                    value: 'left'
-                                };
-                                return true;
-                            } else if (equal_TOL(x_middle, Max_X, block_size)) {
-                                Graphic_now_choose = {
-                                    reference: PatientMark[n],
-                                    point: Max_X_list,
-                                    mark: tempMark,
-                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
-                                    value: 'right'
-                                };
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    Graphic_now_choose = null;
-    return false;
-}
-
 function set_RTSS_context() {
     RTSS_format_object_list = []
     let temp = ""
-    let tail6_list = "";
-    let tail2_list = "";
-    let tail4_list = "";
-    var viewport = GetViewport();
-    let index = SearchUid2Index(viewport.sop);
-    let i = index[0],
-        j = index[1],
-        k = index[2];
+    let tail6_list = tail2_list = tail4_list = "";
+
+    var viewport = GetNewViewport();
     temp = "" + RTSS_format;
 
     function setTag(temp, replace, str, len) {
@@ -376,27 +283,27 @@ function set_RTSS_context() {
         tail2_list += tail2;
     }
     for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (PatientMark[n].mark[m].type == "RTSS") {
+        if (PatientMark[n].series == viewport.series) {
+            for (var m = 0; m < PatientMark[n].length; m++) {
+                if (PatientMark[n].type == "RTSS") {
                     var tail6 = "" + RTSS_format_tail_6;
                     var tail4 = "" + RTSS_format_tail_4;
                     tail4 = setTag(tail4, "ROIName", PatientMark[n].showName, true);
-                    var tempMark = PatientMark[n].mark[m];
+                    var tempMark = PatientMark[n].pointArray;
                     var mark_xy = "";
-                    for (var o = 0; o < tempMark.markX.length; o += 1) {
+                    for (var o = 0; o < tempMark.length; o += 1) {
                         var tempX = 0,
                             tempY = 0;
-                        [tempX, tempY] = [tempMark.markX[o], tempMark.markY[o]];
+                        [tempX, tempY] = [tempMark[o].x, tempMark[o].y];
                         tempX = parseFloat(tempX);
                         tempY = parseFloat(tempY);
                         if (o != 0) mark_xy += "\\";
                         mark_xy += tempX + "\\" + tempY + "\\" + PatientMark[n].imagePositionZ;
                     }
                     tail6 = tail6.replace("___ContourData___", mark_xy);
-                    tail6 = tail6.replace("___vm___", "" + (tempMark.markX.length * 3));
-                    tail6 = tail6.replace("___len___", (tempMark.markX.length * 3 * 16));
-                    tail6 = setTag(tail6, "NumberOfContourPoints", (tempMark.markX.length), true);
+                    tail6 = tail6.replace("___vm___", "" + (tempMark.length * 3));
+                    tail6 = tail6.replace("___len___", (tempMark.length * 3 * 16));
+                    tail6 = setTag(tail6, "NumberOfContourPoints", (tempMark.length), true);
                     tail6 = setTag(tail6, "ContourNumber", n + 1, true);
                     tail6 = setTag(tail6, "ReferencedSOPInstanceUID", PatientMark[n].sop, true);
                     var color = getColorFromRGB(PatientMark[n].color);
@@ -411,30 +318,31 @@ function set_RTSS_context() {
         }
         var createSopUid = CreateUid("sop");
         var createSeriesUid = CreateUid("series");
+        var tags = viewport.tags;
         for (var c = 0; c < 5; c++) {
-            temp = setTag(temp, "StudyDate", viewport.StudyDate, true);
-            temp = setTag(temp, "StudyTime", viewport.StudyTime, true);
-            temp = setTag(temp, "StudyInstanceUID", Patient.Study[i].StudyUID, true);
+            temp = setTag(temp, "StudyDate", tags.StudyDate, true);
+            temp = setTag(temp, "StudyTime", tags.StudyTime, true);
+            temp = setTag(temp, "StudyInstanceUID", viewport.study, true);
             temp = setTag(temp, "SeriesInstanceUID", createSeriesUid, true);
             temp = setTag(temp, "SOPInstanceUID", createSopUid, true);
-            temp = setTag(temp, "PatientID", viewport.PatientID, true);
-            temp = setTag(temp, "PatientName", viewport.PatientName, true);
+            temp = setTag(temp, "PatientID", tags.PatientID, true);
+            temp = setTag(temp, "PatientName", tags.PatientName, true);
             temp = setTag(temp, "ReferencedSOPInstanceUID", PatientMark[n].sop, true);
-            temp = setTag(temp, "ReferencedSeriesInstanceUID", Patient.Study[i].Series[j].SeriesUID, true);
-            temp = setTag(temp, "ReferencedStudyInstanceUID", Patient.Study[i].StudyUID, true);
-            temp = setTag(temp, "AccessionNumber", viewport.AccessionNumber, true);
-            temp = setTag(temp, "StudyDescription", viewport.StudyDescription, true);
-            temp = setTag(temp, "StudyID", viewport.StudyID, true);
+            temp = setTag(temp, "ReferencedSeriesInstanceUID", viewport.series, true);
+            temp = setTag(temp, "ReferencedStudyInstanceUID", viewport.study, true);
+            temp = setTag(temp, "AccessionNumber", tags.AccessionNumber, true);
+            temp = setTag(temp, "StudyDescription", tags.StudyDescription, true);
+            temp = setTag(temp, "StudyID", tags.StudyID, true);
 
-            temp = setTag(temp, "ModalitiesInStudy", viewport.ModalitiesInStudy, true);
-            temp = setTag(temp, "Manufacturer", viewport.Manufacture, true);
-            temp = setTag(temp, "InstitutionName", viewport.InstitutionName, true);
-            temp = setTag(temp, "InstitutionAddress", viewport.InstitutionAddress, true);
-            temp = setTag(temp, "ReferringPhysicianName", viewport.ReferringPhysicianName, true);
-            temp = setTag(temp, "StationName", viewport.StationName, true);
-            temp = setTag(temp, "SeriesDescription", viewport.SeriesDescription, true);
-            temp = setTag(temp, "SeriesNumber", "" + viewport.SeriesNumber + "01", true);
-            temp = setTag(temp, "RequestingPhysician", "" + viewport.RequestingPhysician, true);
+            temp = setTag(temp, "ModalitiesInStudy", tags.ModalitiesInStudy, true);
+            temp = setTag(temp, "Manufacturer", tags.Manufacture, true);
+            temp = setTag(temp, "InstitutionName", tags.InstitutionName, true);
+            temp = setTag(temp, "InstitutionAddress", tags.InstitutionAddress, true);
+            temp = setTag(temp, "ReferringPhysicianName", tags.ReferringPhysicianName, true);
+            temp = setTag(temp, "StationName", tags.StationName, true);
+            temp = setTag(temp, "SeriesDescription", tags.SeriesDescription, true);
+            temp = setTag(temp, "SeriesNumber", "" + tags.SeriesNumber + "01", true);
+            temp = setTag(temp, "RequestingPhysician", "" + tags.RequestingPhysician, true);
 
             temp = setTag(temp, "StructureSetLabel", getByid('textStructureSetLabel').value, true);
             temp = setTag(temp, "StructureSetName", getByid('textStructureSetName').value, true);
@@ -474,23 +382,14 @@ function writertss() {
     if (BL_mode == 'writertss') {
         DeleteMouseEvent();
 
-        //return;
-        Mousedown = function (e) {
-            if (e.which == 1) MouseDownCheck = true;
-            else if (e.which == 3) rightMouseDown = true;
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
+        BlueLightMousedownList = [];
+        BlueLightMousedownList.push(function (e) {
             var viewport = GetNewViewport();
-            windowMouseX = GetmouseX(e);
-            windowMouseY = GetmouseY(e);
-            viewport.div.originalPointX = getCurrPoint(e)[0];
-            viewport.div.originalPointY = getCurrPoint(e)[1];
+
             if (!rightMouseDown) {
                 var angle2point = rotateCalculation(e)
-                var currX11 = Math.floor(angle2point[0]);
-                var currY11 = Math.floor(angle2point[1]);
-                var currX02 = currX11;
-                var currY02 = currY11;
+                var [currX11, currY11] = [Math.floor(angle2point[0]), Math.floor(angle2point[1])];
+                var currX02 = currX11, currY02 = currY11;
 
                 if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
                     currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
@@ -503,56 +402,35 @@ function writertss() {
                 currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
                 currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
 
-                var dcm = {};
-                dcm.study = GetNewViewport().study;
-                dcm.series = GetNewViewport().sreies;
-                dcm.sop = GetNewViewport().sop;
-                dcm.color = "rgb(0,0,128)";
+
+                var RtssMark = new BlueLightMark();
+                RtssMark.setQRLevels(GetNewViewport().QRLevels);
+                RtssMark.color = "rgb(0,0,128)";
+                RtssMark.hideName = RtssMark.showName = getByid('textROIName').value;
+                RtssMark.type = "RTSS";
+                RtssMark.imagePositionZ = viewport.transform.imagePositionZ;
+
                 for (var co = 0; co < getClass("RTSSColorSelectOption").length; co++) {
                     if (getClass("RTSSColorSelectOption")[co].selected == true) {
-                        dcm.color = getClass("RTSSColorSelectOption")[co].style.color;
+                        RtssMark.color = getClass("RTSSColorSelectOption")[co].style.color;
                     }
                 }
 
-                dcm.imagePositionZ = viewport.transform.imagePositionZ;
-                dcm.mark = [];
-                dcm.showName = getByid('textROIName').value; //"" + getByid("xmlMarkNameText").value;
-                dcm.hideName = dcm.showName;
-                dcm.mark.push({});
+                RtssMark.pointArray = [];
+                RtssMark.setPoint2D(angle2point[0] - Math.abs(currX02 - angle2point[0]), angle2point[1] - Math.abs(currY02 - angle2point[1]));
 
-                var DcmMarkLength = dcm.mark.length - 1;
-                dcm.mark[DcmMarkLength].type = "RTSS";
-                dcm.mark[DcmMarkLength].markX = [];
-                dcm.mark[DcmMarkLength].markY = [];
-                dcm.mark[DcmMarkLength].markX.push(angle2point[0] - Math.abs(currX02 - angle2point[0]));
-                dcm.mark[DcmMarkLength].markY.push(angle2point[1] - Math.abs(currY02 - angle2point[1]));
-                PatientMark.push(dcm);
-                refreshMark(dcm);
-                RTSS_now_choose = dcm.mark[DcmMarkLength];
+                PatientMark.push(RtssMark);
+                RTSS_now_choose = RtssMark;
+                refreshMark(RtssMark);
                 displayAllMark();
             }
-        };
+        });
 
         Mousemove = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
             var viewport = GetNewViewport();
-            var labelXY = getClass('labelXY'); {
-                let angle2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
-            }
-            if (rightMouseDown == true) {
-                scale_size(e, currX, currY);
-            }
 
-            if (openLink == true) {
-                for (var i = 0; i < Viewport_Total; i++) {
-                    GetViewport(i).newMousePointX = viewport.div.newMousePointX;
-                    GetViewport(i).newMousePointY = viewport.div.newMousePointY;
-                }
-            }
-            putLabel();
-            displayAllRuler();
+            if (rightMouseDown == true) scale_size(e, getCurrPoint(e)[0], getCurrPoint(e)[1]);
+
             if (!rightMouseDown && RTSS_now_choose) {
                 var angle2point = rotateCalculation(e)
                 var currX11 = Math.floor(angle2point[0]);
@@ -570,22 +448,17 @@ function writertss() {
                 }
                 currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
                 currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
-                // var DcmMarkLength = RTSS_now_choose.mark.length - 1;
-                RTSS_now_choose.markX.push(angle2point[0] - Math.abs(currX02 - angle2point[0]));
-                RTSS_now_choose.markY.push(angle2point[1] - Math.abs(currY02 - angle2point[1]));
-                //PatientMark.push(RTSS_now_choose);
+
+                var RtssMark = RTSS_now_choose;
+                RtssMark.setPoint2D(angle2point[0] - Math.abs(currX02 - angle2point[0]), angle2point[1] - Math.abs(currY02 - angle2point[1]));
+
                 refreshMarkFromSop(GetNewViewport().sop);
                 displayAllMark();
             }
-
         }
         Mouseup = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
             MouseDownCheck = rightMouseDown = false;
-            if (RTSS_now_choose) {
-                RTSS_now_choose = null;
-            }
+            if (RTSS_now_choose) RTSS_now_choose = null;
         }
         AddMouseEvent();
     }

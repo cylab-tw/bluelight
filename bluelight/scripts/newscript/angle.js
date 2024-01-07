@@ -1,258 +1,146 @@
 
 //存放量角器
-var AngleXY0 = [];
-var AngleXY1 = [];
-var AngleXY2 = [];
+var Angle_Point0 = [];
+var Angle_Point1 = [];
+var Angle_Point2 = [];
+
+//正在選取的Angle
+var Angle_now_choose = null;
+//正在繪製的Angle
+var Angle_previous_choose = null;
 
 function angle() {
     if (BL_mode == 'angle') {
         DeleteMouseEvent();
         //this.angle_=1;
         //cancelTools();
-        document.documentElement.onmousemove = displayAngleLabel;
-        document.documentElement.ontouchmove = displayAngleLabel;
         openAngle = 0;
-        angle.angle_ = 1;
+        angle.angle_ = "stop";
         set_BL_model.onchange1 = function () {
             getByid("AngleLabel").style.display = "none";
             displayMark();
-            angle.angle_ = false;
+            angle.angle_ = null;
             // document.documentElement.onmousemove = DivDraw;
             // document.documentElement.ontouchmove = DivDraw;
             set_BL_model.onchange1 = function () { return 0; };
         }
-        Mousedown = function (e) {
-            if (e.which == 1) MouseDownCheck = true;
-            else if (e.which == 3) rightMouseDown = true;
 
-            windowMouseX = GetmouseX(e);
-            windowMouseY = GetmouseY(e);
-            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
-            angle_pounch(getCurrPoint(e)[0], getCurrPoint(e)[1]);
+        BlueLightMousedownList = [];
+        BlueLightMousedownList.push(function (e) {
+            angle_pounch(rotateCalculation(e)[0], rotateCalculation(e)[1]);
             Angle_previous_choose = null;
             if (Angle_now_choose) return;
-            if (angle.angle_ == 3) angle.angle_ = 1;
-            //if (angle.angle_ == 2) getByid("AngleLabel").style.display = '';
+            if (angle.angle_ == "rotate") angle.angle_ = "stop";
+            if (angle.angle_ == "stop" && !Angle_previous_choose) {
+                Angle_Point0 = Angle_Point1 = rotateCalculation(e);
+                var AngleMark = new BlueLightMark();
 
-            if (angle.angle_ == 1) {
-                let angle2point = rotateCalculation(e);
-                AngleXY0 = angle2point;
-                AngleXY1 = angle2point;
-                displayAllMark();
-                displayAngleRuler();
+                AngleMark.setQRLevels(GetNewViewport().QRLevels);
+                AngleMark.color = "#FF0000";
+                AngleMark.hideName = AngleMark.showName = "ruler";
+                AngleMark.type = "AngleRuler";
+
+                PatientMark.push(AngleMark);
+                Angle_previous_choose = AngleMark;
+                angle.angle_ = "line";
             }
-        };
+            //if (angle.angle_ == "rotate") getByid("AngleLabel").style.display = '';
+
+        });
 
         Mousemove = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-            var labelXY = getClass('labelXY'); {
-                let angle2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
-            }
-            if (rightMouseDown == true) {
-                scale_size(e, currX, currY);
-            }
-            if (angle.angle_ == 2) {
-                let angle2point = rotateCalculation(e);
-                AngleXY2 = angle2point;
-                var dcm = {};
-                dcm.study = GetNewViewport().study;
-                dcm.series = GetNewViewport().series;
-                dcm.sop = GetNewViewport().sop;
-                dcm.color = "#FF0000";
-                dcm.mark = [];
-                dcm.showName = "ruler";
-                dcm.hideName = dcm.showName;
-                dcm.mark.push({});
-                //dcm.hideMark = function () { getClass("MeasureLabel").style.display = "none"; };
-                //dcm.displayMark = function () { getClass("MeasureLabel").style.display = ""; };
-                var DcmMarkLength = dcm.mark.length - 1;
-                dcm.mark[DcmMarkLength].type = "AngleRuler";
-                dcm.mark[DcmMarkLength].markX = [];
-                dcm.mark[DcmMarkLength].markY = [];
-                dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
-                dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
+            var [currX, currY] = getCurrPoint(e);
+            let angle2point = rotateCalculation(e);
 
-                dcm.mark[DcmMarkLength].markY.push(AngleXY1[1]);
-                dcm.mark[DcmMarkLength].markX.push(AngleXY1[0]);
-                dcm.mark[DcmMarkLength].markY.push(AngleXY0[1]);
-                dcm.mark[DcmMarkLength].markX.push(AngleXY0[0]);
-                dcm.mark[DcmMarkLength].markY.push(AngleXY2[1]);
-                dcm.mark[DcmMarkLength].markX.push(AngleXY2[0]);
+            if (rightMouseDown == true) scale_size(e, currX, currY);
 
-                dcm.mark[DcmMarkLength].Text = getAnglelValue(e);
-                PatientMark.push(dcm);
-                refreshMark(dcm);
+            if (angle.angle_ == "rotate") {
+                Angle_Point2 = angle2point;
+
+                if (!Angle_previous_choose) return;
+                var AngleMark = Angle_previous_choose;
+
+                AngleMark.pointArray = [];
+                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+                AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+                AngleMark.Text = getAnglelValue(e);
+
+                refreshMark(AngleMark);
                 displayAllMark();
-                PatientMark.splice(PatientMark.indexOf(dcm), 1);
-                //displayAngleRuler();
-                //return;
             }
-
-            if (openLink == true) {
-                for (var i = 0; i < Viewport_Total; i++) {
-                    GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-                    GetViewport(i).newMousePointY = GetViewport().newMousePointY;
-                }
-            }
-            putLabel();
-            displayAllRuler();
-
-            if (MouseDownCheck) {
+            else if (MouseDownCheck && Angle_previous_choose) {
                 windowMouseX = GetmouseX(e);
                 windowMouseY = GetmouseY(e);
-                if (angle.angle_ == 1) {
-                    let angle2point = rotateCalculation(e);
-                    AngleXY1 = angle2point;
+                if (angle.angle_ == "line") {
+                    Angle_Point1 = angle2point;
 
-                    var dcm = {};
-                    dcm.study = GetNewViewport().study;
-                    dcm.series = GetNewViewport().series;
-                    dcm.sop = GetNewViewport().sop;
-                    dcm.color = "#FF0000";
-                    dcm.mark = [];
-                    dcm.showName = "ruler";
-                    dcm.hideName = dcm.showName;
-                    dcm.mark.push({});
+                    AngleMark = Angle_previous_choose;
+                    AngleMark.pointArray = [];
+                    AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+                    AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+                    AngleMark.Text = "";
 
-                    //dcm.hideMark = function () { getClass("MeasureLabel").style.display = "none"; };
-                    //dcm.displayMark = function () { getClass("MeasureLabel").style.display = ""; };
-                    var DcmMarkLength = dcm.mark.length - 1;
-                    dcm.mark[DcmMarkLength].type = "AngleRuler";
-                    dcm.mark[DcmMarkLength].markX = [];
-                    dcm.mark[DcmMarkLength].markY = [];
-                    dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
-                    dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
-                    dcm.mark[DcmMarkLength].markY.push(AngleXY1[1]);
-                    dcm.mark[DcmMarkLength].markX.push(AngleXY1[0]);
-                    dcm.mark[DcmMarkLength].markY.push(AngleXY0[1]);
-                    dcm.mark[DcmMarkLength].markX.push(AngleXY0[0]);
-
-                    dcm.mark[DcmMarkLength].Text = "";//getAnglelValue(e);
-                    PatientMark.push(dcm);
-                    refreshMark(dcm);
-
+                    refreshMark(AngleMark);
                     displayAllMark();
-                    PatientMark.splice(PatientMark.indexOf(dcm), 1);
-                    //return;
-                }
-                if (Angle_now_choose) {
-                    Angle_now_choose.mark.markX[Angle_now_choose.order] = currX;
-                    Angle_now_choose.mark.markY[Angle_now_choose.order] = currY;
-                    Angle_now_choose.mark.markX[3] = Angle_now_choose.mark.markX[0];
-                    Angle_now_choose.mark.markY[3] = Angle_now_choose.mark.markY[0];
-                    Angle_now_choose.mark.Text = getAnglelValueBy2Point(Angle_now_choose.mark);
-                    refreshMark(Angle_now_choose.dcm);
-                    //PatientMark.splice(PatientMark.indexOf(Angle_now_choose.dcm), 1);
-                    return;
                 }
             }
-            GetViewport().originalPointX = currX;
-            GetViewport().originalPointY = currY;
+            else if (Angle_now_choose) {
+                Angle_now_choose.pointArray[Angle_now_choose.order].x = angle2point[0];
+                Angle_now_choose.pointArray[Angle_now_choose.order].y = angle2point[1];
+                Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+                refreshMark(Angle_now_choose.dcm);
+                return;
+            }
         }
+
         Mouseup = function (e) {
-            if (openMouseTool == true && rightMouseDown == true)
-                displayMark();
+            if (openMouseTool == true && rightMouseDown == true) displayMark();
 
             if (Angle_now_choose) {
-                Angle_now_choose.mark.markX[Angle_now_choose.order] = getCurrPoint(e)[0];
-                Angle_now_choose.mark.markY[Angle_now_choose.order] = getCurrPoint(e)[1];
-                Angle_now_choose.mark.markX[3] = Angle_now_choose.mark.markX[0];
-                Angle_now_choose.mark.markY[3] = Angle_now_choose.mark.markY[0];
-                Angle_now_choose.mark.Text = getAnglelValueBy2Point(Angle_now_choose.mark);
+                Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e)[0];
+                Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e)[1];
+                Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
                 refreshMark(Angle_now_choose.dcm);
-                angle.angle_ = 3;
+                angle.angle_ = "stop";
             }
-            if (angle.angle_ == 2) {
+            if (angle.angle_ == "rotate") {
                 let angle2point = rotateCalculation(e);
-                AngleXY2 = angle2point;
+                Angle_Point2 = angle2point;
 
-                var dcm = {};
-                dcm.study = GetNewViewport().study;
-                dcm.series = GetNewViewport().series;
-                dcm.sop = GetNewViewport().sop;
-                dcm.color = "#FF0000";
-                dcm.mark = [];
-                dcm.showName = "ruler";
-                dcm.hideName = dcm.showName;
-                dcm.mark.push({});
+                if (!Angle_previous_choose) return;
+                var AngleMark = Angle_previous_choose;
 
-                /*dcm.hideMark = function () {
-                    for (var m = 0; m < getClass("AngleLabel" + dcm.sop).length; m++)
-                        getClass("AngleLabel" + dcm.sop)[m].style.display = "none";
-                }
-                dcm.displayMark = function () {
-                    for (var m = 0; m < getClass("AngleLabel" + dcm.sop).length; m++)
-                        getClass("AngleLabel" + dcm.sop)[m].style.display = "";
-                }
-                dcm.deleteMark = function () {
-                    var AngleLabelClass = getClass("AngleLabel" + dcm.sop);
-                    for (var m = 0; m < AngleLabelClass.length; m++) {
-                        AngleLabelClass[m].remove();
-                    }
-                }*/
-                //dcm.hideMark = function () { getClass("MeasureLabel").style.display = "none"; };
-                //dcm.displayMark = function () { getClass("MeasureLabel").style.display = ""; };
-                var DcmMarkLength = dcm.mark.length - 1;
-                dcm.mark[DcmMarkLength].type = "AngleRuler";
-                dcm.mark[DcmMarkLength].markX = [];
-                dcm.mark[DcmMarkLength].markY = [];
-                dcm.mark[DcmMarkLength].markX.push(GetViewport().originalPointX);
-                dcm.mark[DcmMarkLength].markY.push(GetViewport().originalPointY);
-
-                dcm.mark[DcmMarkLength].markY.push(AngleXY1[1]);
-                dcm.mark[DcmMarkLength].markX.push(AngleXY1[0]);
-                dcm.mark[DcmMarkLength].markY.push(AngleXY0[1]);
-                dcm.mark[DcmMarkLength].markX.push(AngleXY0[0]);
-                dcm.mark[DcmMarkLength].markY.push(AngleXY2[1]);
-                dcm.mark[DcmMarkLength].markX.push(AngleXY2[0]);
-
-                dcm.mark[DcmMarkLength].Text = getAnglelValue(e);
-                PatientMark.push(dcm);
-                refreshMark(dcm);
+                AngleMark.pointArray = [];
+                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+                AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+                AngleMark.Text = getAnglelValue(e);
+                refreshMark(AngleMark);
                 displayAllMark();
-                //PatientMark.splice(PatientMark.indexOf(dcm), 1);
-                //displayAngleRuler();
-                //return;
-                Angle_previous_choose = dcm;
             }
             if (MouseDownCheck == true) {
-                if (angle.angle_ == 1) angle.angle_ = 2;
-                else if (angle.angle_ == 2) angle.angle_ = 3;
+                if (angle.angle_ == "line") angle.angle_ = "rotate";
+                else if (angle.angle_ == "rotate") angle.angle_ = "stop";
             }
             if (Angle_now_choose) Angle_previous_choose = Angle_now_choose;
             Angle_now_choose = null;
             MouseDownCheck = rightMouseDown = false;
         }
-        Touchstart = function (e, e2) {
 
-            if (!e2) TouchDownCheck = true;
-            else rightTouchDown = true;
-            windowMouseX = GetmouseX(e);
-            windowMouseY = GetmouseY(e);
-            if (rightTouchDown == true && e2) {
-                windowMouseX2 = GetmouseX(e2);
-                windowMouseY2 = GetmouseY(e2);
-            }
-            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
-            if (rightTouchDown == true && e2) {
-                GetViewport().originalPointX2 = getCurrPoint(e2)[0];
-                GetViewport().originalPointY2 = getCurrPoint(e2)[1];
-            }
-            if (angle.angle_ == 3) angle.angle_ = 1;
-            if (angle.angle_ == 2) getByid("AngleLabel").style.display = '';
-            if (angle.angle_ == 1) {
+        BlueLightTouchstartList = [];
+        BlueLightTouchstartList.push(function (e, e2) {
+            if (angle.angle_ == "stop") angle.angle_ = "line";
+            if (angle.angle_ == "rotate") getByid("AngleLabel").style.display = '';
+            if (angle.angle_ == "line") {
                 let angle2point = rotateCalculation(e);
-                var currX11 = angle2point[0];
-                var currY11 = angle2point[1];
+                var [currX11, currY11] = angle2point;
 
-                AngleXY0 = [currX11, currY11];
-                AngleXY1 = [currX11, currY11];
+                Angle_Point1 = Angle_Point0 = [currX11, currY11];
                 displayAllMark();
-                displayAngleRuler();
             }
-        }
+        });
+
         Touchmove = function (e, e2) {
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
 
@@ -262,32 +150,29 @@ function angle() {
                 var currX2 = getCurrPoint(e2)[0];
                 var currY2 = getCurrPoint(e2)[1];
             }
-            var labelXY = getClass('labelXY');
-            labelXY[viewportNumber].innerText = "X: " + Math.floor(currX) + " Y: " + Math.floor(currY);
-            if (angle.angle_ == 2) {
+
+            if (angle.angle_ == "rotate") {
                 let angle2point = rotateCalculation(e);
                 var currX11 = angle2point[0];
                 var currY11 = angle2point[1];
-                AngleXY2 = [currX11, currY11];
+                Angle_Point2 = [currX11, currY11];
                 displayAllMark();
-                displayAngleRuler();
                 return;
             }
-            if (angle.angle_ == 1) {
-                // AngleXY0 = [getCurrPoint(e)[0], getCurrPoint(e)[1]];
+            if (angle.angle_ == "line") {
+                // Angle_Point0 = [getCurrPoint(e)[0], getCurrPoint(e)[1]];
                 let angle2point = rotateCalculation(e);
                 var currX11 = angle2point[0];
                 var currY11 = angle2point[1];
-                AngleXY0 = [currX11, currY11];
+                Angle_Point0 = [currX11, currY11];
                 displayAllMark();
-                displayAngleRuler();
                 return;
             }
         }
         Touchend = function (e, e2) {
             if (TouchDownCheck == true) {
-                if (angle.angle_ == 1) angle.angle_ = 2;
-                else if (angle.angle_ == 2) angle.angle_ = 3;
+                if (angle.angle_ == "line") angle.angle_ = "rotate";
+                else if (angle.angle_ == "rotate") angle.angle_ = "stop";
             }
             TouchDownCheck = false;
             rightTouchDown = false;
@@ -299,159 +184,115 @@ function angle() {
     }
 }
 
-var Angle_now_choose = null;
-var Angle_previous_choose = null;
 function angle_pounch(currX, currY) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
-    let index = SearchUid2Index(GetNewViewport().sop);
-    let i = index[0],
-        j = index[1],
-        k = index[2];
+
     for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (PatientMark[n].mark[m].type == "AngleRuler") {
-                    var tempMark = PatientMark[n].mark[m];
-                    var x1 = parseInt(tempMark.markX[0]);
-                    var y1 = parseInt(tempMark.markY[0]);
+        if (PatientMark[n].sop == GetNewViewport().sop) {
+            if (PatientMark[n].type == "AngleRuler") {
+                var tempMark = PatientMark[n].pointArray;
 
-                    PatientMark[n].mark[m].markX[0];
-                    if (currY + block_size >= y1 && currY - block_size <= y1 && currX + block_size >= x1 && currX - block_size <= x1) {
-                        Angle_now_choose = { dcm: PatientMark[n], mark: PatientMark[n].mark[m], order: 0 };
-                    }
-
-                    var x2 = parseInt(tempMark.markX[1]);
-                    var y2 = parseInt(tempMark.markY[1]);
-                    if (currY + block_size >= y2 && currY - block_size <= y2 && currX + block_size >= x2 && currX - block_size <= x2) {
-                        Angle_now_choose = { dcm: PatientMark[n], mark: PatientMark[n].mark[m], order: 1 };
-                    }
-
-                    var x3 = parseInt(tempMark.markX[2]);
-                    var y3 = parseInt(tempMark.markY[2]);
-                    if (currY + block_size >= y3 && currY - block_size <= y3 && currX + block_size >= x3 && currX - block_size <= x3) {
-                        Angle_now_choose = { dcm: PatientMark[n], mark: PatientMark[n].mark[m], order: 2 };
-                    }
-                    /*if (currY + block_size >= y1 && currX + block_size >= x1 / 2 + x2 / 2 && currY < y1 + block_size && currX < x1 / 2 + x2 / 2 + block_size) {
-
-                    }*/
-
+                var x1 = parseInt(tempMark[0].x), y1 = parseInt(tempMark[0].y);
+                if (currY + block_size >= y1 && currY - block_size <= y1 && currX + block_size >= x1 && currX - block_size <= x1) {
+                    Angle_now_choose = { dcm: PatientMark[n], pointArray: PatientMark[n].pointArray, order: 0 };
                 }
+
+                var x2 = parseInt(tempMark[1].x), y2 = parseInt(tempMark[1].y);
+                if (currY + block_size >= y2 && currY - block_size <= y2 && currX + block_size >= x2 && currX - block_size <= x2) {
+                    Angle_now_choose = { dcm: PatientMark[n], pointArray: PatientMark[n].pointArray, order: 1 };
+                }
+
+                var x3 = parseInt(tempMark[2].x), y3 = parseInt(tempMark[2].y);
+                if (currY + block_size >= y3 && currY - block_size <= y3 && currX + block_size >= x3 && currX - block_size <= x3) {
+                    Angle_now_choose = { dcm: PatientMark[n], pointArray: PatientMark[n].pointArray, order: 2 };
+                }
+                /*if (currY + block_size >= y1 && currX + block_size >= x1 / 2 + x2 / 2 && currY < y1 + block_size && currX < x1 / 2 + x2 / 2 + block_size) {
+
+                }*/
             }
         }
     }
 }
 
 function drawAngleRuler(obj) {
-    var canvas = obj.canvas, mark = obj.mark;
-    if (mark.type != "AngleRuler") return;
-    var ctx = canvas.getContext("2d");
-    ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    setMarkColor(ctx);
+    try {
 
-    var tempAlpha2 = ctx.globalAlpha;
-    ctx.globalAlpha = 1.0;
-    ctx.beginPath();
-    ctx.strokeStyle = "#00FF00";
-    ctx.fillStyle = "#00FF00";
+        var canvas = obj.canvas, Mark = obj.Mark;
+        if (!Mark) return;
+        if (Mark.type != "AngleRuler") return;
+        var ctx = canvas.getContext("2d");
+        ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
+        setMarkColor(ctx);
 
-    ctx.moveTo(mark.markX[0], mark.markY[0]);
-    ctx.lineTo(mark.markX[1], mark.markY[1]);
-    ctx.stroke();
-    if (mark.markX.length > 2) {
-        ctx.moveTo(mark.markX[1], mark.markY[1]);
-        ctx.lineTo(mark.markX[2], mark.markY[2]);
-    }
-    ctx.stroke();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.strokeStyle = "#FF0000";
-    ctx.fillStyle = "#FF0000";
-    ctx.arc(mark.markX[0], mark.markY[0], 3, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.arc(mark.markX[1], mark.markY[1], 3, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.closePath();
-    ctx.beginPath();
-    if (mark.markX.length > 2) {
+        var tempAlpha2 = ctx.globalAlpha;
+        ctx.globalAlpha = 1.0;
+        ctx.beginPath();
+        ctx.strokeStyle = "#00FF00";
+        ctx.fillStyle = "#00FF00";
+
+        ctx.moveTo(Mark.pointArray[0].x, Mark.pointArray[0].y);
+        ctx.lineTo(Mark.pointArray[1].x, Mark.pointArray[1].y);
+        ctx.stroke();
+        if (Mark.pointArray.length > 2) {
+            ctx.moveTo(Mark.pointArray[1].x, Mark.pointArray[1].y);
+            ctx.lineTo(Mark.pointArray[2].x, Mark.pointArray[2].y);
+            ctx.stroke();
+        }
+        /*if (Mark.pointArray.length > 3) {
+            ctx.moveTo(Mark.pointArray[1].x, Mark.pointArray[1].y);
+            ctx.lineTo(Mark.pointArray[3].x, Mark.pointArray[3].y);
+            ctx.stroke();
+        }*/
+        ctx.closePath();
         ctx.strokeStyle = "#FF0000";
         ctx.fillStyle = "#FF0000";
-        ctx.arc(mark.markX[1], mark.markY[1], 3, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.arc(mark.markX[2], mark.markY[2], 3, 0, 2 * Math.PI);
-        ctx.fill();
-    }
-    ctx.closePath();
-
-    if (mark.Text) {
+        if (Mark.pointArray.length > 0) {
+            ctx.beginPath();
+            ctx.arc(Mark.pointArray[0].x, Mark.pointArray[0].y, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+        }
+        if (Mark.pointArray.length > 1) {
+            ctx.beginPath();
+            ctx.arc(Mark.pointArray[1].x, Mark.pointArray[1].y, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+        }
+        /*if (Mark.pointArray.length > 3) {
+            ctx.beginPath();
+            ctx.arc(Mark.pointArray[3].x, Mark.pointArray[3].y, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+        }*/
         ctx.beginPath();
-        ctx.font = "" + (22) + "px Arial";
-        ctx.fillStyle = "#FF0000";
-        ctx.fillText("" + mark.Text, mark.markX[mark.markX.length - 1], mark.markY[mark.markY.length - 1]);
+        if (Mark.pointArray.length > 2) {
+            ctx.strokeStyle = "#FF0000";
+            ctx.fillStyle = "#FF0000";
+            ctx.arc(Mark.pointArray[1].x, Mark.pointArray[1].y, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.arc(Mark.pointArray[2].x, Mark.pointArray[2].y, 3, 0, 2 * Math.PI);
+            ctx.fill();
+        }
         ctx.closePath();
-    }
-    ctx.globalAlpha = tempAlpha2;
+
+        if (Mark.Text) {
+            ctx.beginPath();
+            ctx.font = "" + (22) + "px Arial";
+            ctx.fillStyle = "#FF0000";
+            ctx.fillText("" + Mark.Text, Mark.lastMark.x, Mark.lastMark.y);
+            ctx.closePath();
+        }
+        ctx.globalAlpha = tempAlpha2;
+    } catch (ex) { }
 }
 PLUGIN.PushMarkList(drawAngleRuler);
-function displayAngleRuler() {
-    return;
-    if (!angle.angle_) return;
-    if (parseInt(Math.sqrt(
-        Math.pow(AngleXY1[0] / GetNewViewport().transform.PixelSpacingX - AngleXY0[0] / GetNewViewport().transform.PixelSpacingX, 2) +
-        Math.pow(AngleXY1[1] / GetNewViewport().transform.PixelSpacingY - AngleXY0[1] / GetNewViewport().transform.PixelSpacingY, 2), 2)) <= 0) return;
 
-    var MarkCanvas = GetViewportMark();
-    var tempctx = MarkCanvas.getContext("2d");
-
-    var lineWid = parseFloat(MarkCanvas.width) / parseFloat(Css(MarkCanvas, 'width'));
-
-    if (lineWid <= 0) lineWid = parseFloat(Css(MarkCanvas, 'width')) / parseFloat(MarkCanvas.width);
-    if (lineWid <= 1.5) lineWid = 1.5;
-
-    tempctx.lineWidth = "" + ((Math.abs(lineWid)) * 1);
-
-    tempctx.beginPath();
-    tempctx.strokeStyle = "#00FF00";
-    tempctx.fillStyle = "#00FF00";
-
-    tempctx.moveTo(AngleXY0[0], AngleXY0[1]);
-    tempctx.lineTo(AngleXY1[0], AngleXY1[1]);
-    tempctx.stroke();
-    if (angle.angle_ == 2) {
-        tempctx.moveTo(AngleXY0[0], AngleXY0[1]);
-        tempctx.lineTo(AngleXY2[0], AngleXY2[1]);
-    }
-    tempctx.stroke();
-    tempctx.closePath();
-    tempctx.beginPath();
-    tempctx.strokeStyle = "#FF0000";
-    tempctx.fillStyle = "#FF0000";
-    tempctx.arc(AngleXY0[0], AngleXY0[1], 3, 0, 2 * Math.PI);
-    tempctx.fill();
-
-    tempctx.arc(AngleXY1[0], AngleXY1[1], 3, 0, 2 * Math.PI);
-    tempctx.fill();
-    if (angle.angle_ == 2) {
-        tempctx.strokeStyle = "#FF0000";
-        tempctx.fillStyle = "#FF0000";
-        tempctx.arc(AngleXY0[0], AngleXY0[1], 3, 0, 2 * Math.PI);
-        tempctx.fill();
-        tempctx.arc(AngleXY2[0], AngleXY2[1], 3, 0, 2 * Math.PI);
-        tempctx.fill();
-    }
-    tempctx.closePath();
-    //displayAngleLabel();
-}
-
-function getAnglelValueBy2Point(mark) {
-    if (!angle.angle_) return;
+function getAnglelValueBy2Point(pointArray) {
+    //if (!angle.angle_) return;
     var getAngle = ({
-        x: x1,
-        y: y1
+        x: x1, y: y1
     }, {
-        x: x2,
-        y: y2
+        x: x2, y: y2
     }) => {
         const dot = x1 * x2 + y1 * y2
         const det = x1 * y2 - y1 * x2
@@ -459,11 +300,11 @@ function getAnglelValueBy2Point(mark) {
         return (angle + 360) % 360
     }
     var angle1 = getAngle({
-        x: mark.markX[1] - mark.markX[2],
-        y: mark.markY[1] - mark.markY[2],
+        x: pointArray[1].x - pointArray[2].x,
+        y: pointArray[1].y - pointArray[2].y,
     }, {
-        x: mark.markX[1] - mark.markX[0],
-        y: mark.markY[1] - mark.markY[0],
+        x: pointArray[1].x - pointArray[0].x,
+        y: pointArray[1].y - pointArray[0].y,
     });
     if (angle1 > 180) angle1 = 360 - angle1;
     return parseInt(angle1) + "°";
@@ -484,11 +325,9 @@ window.addEventListener('keydown', (KeyboardKeys) => {
 function getAnglelValue(e, Label) {
     if (!angle.angle_) return;
     var getAngle = ({
-        x: x1,
-        y: y1
+        x: x1, y: y1
     }, {
-        x: x2,
-        y: y2
+        x: x2, y: y2
     }) => {
         const dot = x1 * x2 + y1 * y2
         const det = x1 * y2 - y1 * x2
@@ -496,11 +335,11 @@ function getAnglelValue(e, Label) {
         return (angle + 360) % 360
     }
     var angle1 = getAngle({
-        x: AngleXY1[0] - AngleXY2[0],
-        y: AngleXY1[1] - AngleXY2[1],
+        x: Angle_Point1[0] - Angle_Point2[0],
+        y: Angle_Point1[1] - Angle_Point2[1],
     }, {
-        x: AngleXY1[0] - AngleXY0[0],
-        y: AngleXY1[1] - AngleXY0[1],
+        x: Angle_Point1[0] - Angle_Point0[0],
+        y: Angle_Point1[1] - Angle_Point0[1],
     });
     if (angle1 > 180) angle1 = 360 - angle1;
     if (!Label) return parseInt(angle1) + "°";
@@ -509,10 +348,10 @@ function getAnglelValue(e, Label) {
     y_out = -parseInt(magnifierCanvas.style.height) / 2; // 與游標座標之垂直距離
     if (angle.angle_ >= 2) {
         Label.style.display = '';
-        if (AngleXY2[0] > AngleXY0[0])
+        if (Angle_Point2[0] > Angle_Point0[0])
             x_out = 20; // 與游標座標之水平距離
         else x_out = -20;
-        if (AngleXY2[1] > AngleXY0[1])
+        if (Angle_Point2[1] > Angle_Point0[1])
             y_out = 20; // 與游標座標之水平距離
         else y_out = -20;
     } else {
@@ -536,67 +375,12 @@ function getAnglelValue(e, Label) {
     dgs.left = x + dbsl + x_out + "px";
 
     var angle1 = getAngle({
-        x: AngleXY0[0] - AngleXY2[0],
-        y: AngleXY0[1] - AngleXY2[1],
+        x: Angle_Point0[0] - Angle_Point2[0],
+        y: Angle_Point0[1] - Angle_Point2[1],
     }, {
-        x: AngleXY0[0] - AngleXY1[0],
-        y: AngleXY0[1] - AngleXY1[1],
+        x: Angle_Point0[0] - Angle_Point1[0],
+        y: Angle_Point0[1] - Angle_Point1[1],
     });
     if (angle1 > 180) angle1 = 360 - angle1;
     return parseInt(angle1) + "°";
-}
-
-function displayAngleLabel(e) {
-    return;
-    if (!angle.angle_) return;
-    x_out = -parseInt(magnifierCanvas.style.width) / 2; // 與游標座標之水平距離
-    y_out = -parseInt(magnifierCanvas.style.height) / 2; // 與游標座標之垂直距離
-    if (angle.angle_ >= 2) {
-        getByid("AngleLabel").style.display = '';
-        if (AngleXY2[0] > AngleXY0[0])
-            x_out = 20; // 與游標座標之水平距離
-        else x_out = -20;
-        if (AngleXY2[1] > AngleXY0[1])
-            y_out = 20; // 與游標座標之水平距離
-        else y_out = -20;
-    } else {
-        getByid("AngleLabel").style.display = 'none';
-    }
-    if (document.body.scrollTop && document.body.scrollTop != 0) {
-        dbst = document.body.scrollTop;
-        dbsl = document.body.scrollLeft;
-    } else {
-        dbst = document.getElementsByTagName("html")[0].scrollTop;
-        dbsl = document.getElementsByTagName("html")[0].scrollLeft;
-    }
-    dgs = document.getElementById("AngleLabel").style;
-    y = e.clientY;
-    x = e.clientX;
-    if (!y || !x) {
-        y = e.touches[0].clientY;
-        x = e.touches[0].clientX;
-    }
-    dgs.top = y + dbst + y_out + "px";
-    dgs.left = x + dbsl + x_out + "px";
-    var getAngle = ({
-        x: x1,
-        y: y1
-    }, {
-        x: x2,
-        y: y2
-    }) => {
-        const dot = x1 * x2 + y1 * y2
-        const det = x1 * y2 - y1 * x2
-        const angle = Math.atan2(det, dot) / Math.PI * 180
-        return (angle + 360) % 360
-    }
-    var angle1 = getAngle({
-        x: AngleXY0[0] - AngleXY2[0],
-        y: AngleXY0[1] - AngleXY2[1],
-    }, {
-        x: AngleXY0[0] - AngleXY1[0],
-        y: AngleXY0[1] - AngleXY1[1],
-    });
-    if (angle1 > 180) angle1 = 360 - angle1;
-    getByid("AngleLabel").innerText = parseInt(angle1) + "°";
 }

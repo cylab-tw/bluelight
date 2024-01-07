@@ -26,43 +26,23 @@ loadWriteSEG();
 
 getByid("overlay2seg").onclick = function () {
     getByid("overlay2seg").style.display = "none";
-    var sop = GetNewViewport().sop;
-    //if (o3DElement) sop = o3DElement.sop;
-    let index = SearchUid2Index(sop);
-    if (!index) return;
-    let i = index[0],
-        j = index[1],
-        k = index[2];
+
     for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
-            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                    if (PatientMark[n].mark[m].type == "Overlay" && PatientMark[n].sop == Patient.Study[i].Series[j].Sop[l].SopUID) {
-                        var dcm = {};
-                        dcm.study = GetNewViewport().study;
-                        dcm.series = GetNewViewport().sreies;
+        if (PatientMark[n].type == "Overlay" && PatientMark[n].sop == GetNewViewport().sop) {
 
-                        dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
-                        dcm.mark = [];
-                        dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
-                        dcm.hideName = dcm.showName;
-                        dcm.mark.push({});
-                        dcm.sop = Patient.Study[i].Series[j].Sop[l].SopUID;
-                        var DcmMarkLength = dcm.mark.length - 1;
-                        dcm.mark[DcmMarkLength].type = "SEG";
-                        function jsonDeepClone(obj) {
-                            return JSON.parse(JSON.stringify(obj));
-                        }
-                        dcm.mark[DcmMarkLength].canvas = PatientMark[n].mark[m].canvas;
-                        PatientMark.push(dcm);
-                        refreshMark(dcm);
-                        SEG_now_choose = dcm.mark[DcmMarkLength];
+            var SegMark = new BlueLightMark();
+            SegMark.setQRLevels(GetNewViewport().QRLevels);
+            SegMark.type = SegMark.hideName = SegMark.showName = "SEG";
+            SegMark.ImagePositionPatient = GetNewViewport().tags.ImagePositionPatient;
 
-                        // PatientMark.splice(PatientMark.indexOf(temp_overlay), 1);
-                    }
-                }
-            }
+            SegMark.canvas = PatientMark[n].canvas;
+            PatientMark.push(SegMark);
+            refreshMark(SegMark);
+            SEG_now_choose = SegMark;
+            function jsonDeepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+            // PatientMark.splice(PatientMark.indexOf(temp_overlay), 1);
         }
+
     }
     refreshMarkFromSop(GetNewViewport().sop);
 }
@@ -313,14 +293,8 @@ var temp_SEG_format = "";
 //0062,0004
 function set_SEG_context() {
     SEG_format_object_list = []
-    let temp = ""
-    let tail4_list = "";
-    let tail2_list = "";
-    let index = SearchUid2Index(GetNewViewport().sop);
-    let i = index[0],
-        j = index[1],
-        k = index[2];
-    temp = "" + SEG_format;
+    let temp = "" + SEG_format;
+    let tail2_list = "", tail4_list = "";
 
     function setTag(temp, replace, str, len) {
         str = Null2Empty(str);
@@ -351,13 +325,13 @@ function set_SEG_context() {
     }
     var segCount = 0;
     for (var n = 0; n < PatientMark.length; n++) {
-        for (var m = 0; m < PatientMark[n].mark.length; m++) {
-            if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
-                if (PatientMark[n].mark[m].type == "SEG") {
-                    segCount++;
-                }
+        //for (var m = 0; m < PatientMark[n].mark.length; m++) {
+        if (PatientMark[n].series == GetNewViewport().series) {
+            if (PatientMark[n].type == "SEG") {
+                segCount++;
             }
         }
+        // }
     }
     if (segCount == 0) return;
     temp = setTag(temp, "NumberOfFrames", segCount, true);
@@ -365,36 +339,36 @@ function set_SEG_context() {
     var mark_xy = "";
     var temp_segCount = 0;
     for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                if (PatientMark[n].mark[m].type == "SEG") {
-                    temp_segCount++;
-                    var tail4 = "" + SEG_format_tail_4;
-                    var tempMark = PatientMark[n].mark[m];
-                    for (var o = 0; o < tempMark.pixelData.length; o += 1) {
-                        if (o == 0 && temp_segCount == 1) mark_xy += "0" + tempMark.pixelData[o];
-                        else mark_xy += "\\" + "0" + tempMark.pixelData[o];
-                    }
-                    tail4 = setTag(tail4, "ReferencedSOPInstanceUID", PatientMark[n].sop, true);
-                    tail4 = setTag(tail4, "ImagePositionPatient", "" + PatientMark[n].ImagePositionPatient, true);
-                    tail4 = setTag(tail4, "DimensionIndexValues", "1\\" + temp_segCount, true);
-                    tail4_list += tail4;
+        if (PatientMark[n].series == GetNewViewport().series) {
+            //for (var m = 0; m < PatientMark[n].mark.length; m++) {
+            if (PatientMark[n].type == "SEG") {
+                temp_segCount++;
+                var tail4 = "" + SEG_format_tail_4;
+                var tempMark = PatientMark[n];
+                for (var o = 0; o < tempMark.pixelData.length; o += 1) {
+                    if (o == 0 && temp_segCount == 1) mark_xy += "0" + tempMark.pixelData[o];
+                    else mark_xy += "\\" + "0" + tempMark.pixelData[o];
                 }
+                tail4 = setTag(tail4, "ReferencedSOPInstanceUID", PatientMark[n].sop, true);
+                tail4 = setTag(tail4, "ImagePositionPatient", "" + PatientMark[n].ImagePositionPatient, true);
+                tail4 = setTag(tail4, "DimensionIndexValues", "1\\" + temp_segCount, true);
+                tail4_list += tail4;
             }
+            //}
         }
         var createSopUid = CreateUid("sop");
         var createSeriesUid = CreateUid("series");
         for (var c = 0; c < 5; c++) {
             temp = setTag(temp, "StudyDate", GetNewViewport().studyDate, true);
             temp = setTag(temp, "StudyTime", GetNewViewport().studyTime, true);
-            temp = setTag(temp, "StudyInstanceUID", Patient.Study[i].StudyUID, true);
+            temp = setTag(temp, "StudyInstanceUID", GetNewViewport().study, true);
             temp = setTag(temp, "SeriesInstanceUID", createSeriesUid, true);
             temp = setTag(temp, "SOPInstanceUID", createSopUid, true);
             temp = setTag(temp, "PatientID", GetViewport().PatientID, true);
             temp = setTag(temp, "PatientName", GetViewport().PatientName, true);
-            temp = setTag(temp, "ReferencedSOPInstanceUID", PatientMark[n].sop, true);
+            temp = setTag(temp, "ReferencedSOPInstanceUID", GetNewViewport().sop, true);
             temp = setTag(temp, "ImageType", GetViewport().ImageType, true);
-            temp = setTag(temp, "ReferencedSeriesInstanceUID", Patient.Study[i].Series[j].SeriesUID, true);
+            temp = setTag(temp, "ReferencedSeriesInstanceUID", GetNewViewport().series, true);
             temp = setTag(temp, "AccessionNumber", GetViewport().AccessionNumber, true);
 
             temp = setTag(temp, "StudyID", GetNewViewport().studyID, true);
@@ -511,83 +485,60 @@ function Line_setSEG2PixelData(point1, point2) {
 function writeSeg() {
     if (BL_mode == 'writeSeg') {
         DeleteMouseEvent();
-        Mousedown = function (e) {
-            if (e.which == 1) MouseDownCheck = true;
-            else if (e.which == 3) rightMouseDown = true;
-            windowMouseX = GetmouseX(e);
-            windowMouseY = GetmouseY(e);
-            [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
+
+        BlueLightMousedownList = [];
+        BlueLightMousedownList.push(function (e) {
             if (openWindow != true) {
-                var sop = GetNewViewport().sop;
-                var index_Seg = SearchUid2Index(sop);
-                if (!index_Seg) return;
-                let i_s = index_Seg[0],
-                    j_s = index_Seg[1],
-                    k_s = index_Seg[2];
                 var break1 = false;
                 for (var n_s = 0; n_s < PatientMark.length; n_s++) {
-                    if (PatientMark[n_s].sop == Patient.Study[i_s].Series[j_s].Sop[k_s].SopUID) {
-                        for (var m_s = 0; m_s < PatientMark[n_s].mark.length; m_s++) {
-                            if (break1 == true) break;
-                            if (PatientMark[n_s].mark[m_s].type == "SEG") {
-                                SEG_now_choose = PatientMark[n_s].mark[m_s];
-                                break1 = true;
-                            }
+                    if (PatientMark[n_s].sop == GetNewViewport().sop) {
+                        if (break1 == true) break;
+                        if (PatientMark[n_s].type == "SEG") {
+                            SEG_now_choose = PatientMark[n_s];
+                            break1 = true;
                         }
+
                     }
                 }
                 if (break1 == false) {
-                    var dcm = {};
-                    dcm.study = GetNewViewport().study;
-                    dcm.series = GetNewViewport().sreies;
-                    dcm.sop = GetNewViewport().sop;
+                    var SegMark = new BlueLightMark();
+                    SegMark.setQRLevels(GetNewViewport().QRLevels);
+                    SegMark.type = SegMark.hideName = SegMark.showName = "SEG";
+                    SegMark.ImagePositionPatient = GetNewViewport().tags.ImagePositionPatient;
+                    SegMark.pixelData = new Uint8ClampedArray(GetNewViewport().canvas.width * GetNewViewport().canvas.height);
 
-                    dcm.ImagePositionPatient = GetViewport().ImagePositionPatient;
-                    dcm.mark = [];
-                    dcm.showName = "SEG"; //"" + getByid("xmlMarkNameText").value;
-                    dcm.hideName = dcm.showName;
-                    dcm.mark.push({});
+                    if (!SegMark.canvas) {
+                        SegMark.canvas = document.createElement("CANVAS");
+                        SegMark.canvas.width = GetNewViewport().canvas.width;
+                        SegMark.canvas.height = GetNewViewport().canvas.height;
+                        SegMark.ctx = SegMark.canvas.getContext('2d');
 
-                    var DcmMarkLength = dcm.mark.length - 1;
-                    dcm.mark[DcmMarkLength].type = "SEG";
-                    dcm.mark[DcmMarkLength].pixelData = new Uint8ClampedArray(GetNewViewport().width * GetNewViewport().height);
-                    if (!dcm.mark[DcmMarkLength].canvas) {
-                        dcm.mark[DcmMarkLength].canvas = document.createElement("CANVAS");
-                        dcm.mark[DcmMarkLength].canvas.width = GetNewViewport().width;
-                        dcm.mark[DcmMarkLength].canvas.height = GetNewViewport().height;
-                        dcm.mark[DcmMarkLength].ctx = dcm.mark[DcmMarkLength].canvas.getContext('2d');
-
-                        var pixelData = dcm.mark[DcmMarkLength].ctx.getImageData(0, 0, dcm.mark[DcmMarkLength].canvas.width, dcm.mark[DcmMarkLength].canvas.height);
+                        var pixelData = SegMark.ctx.getImageData(0, 0, SegMark.canvas.width, SegMark.canvas.height);
 
                         for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
-                            if (dcm.mark[DcmMarkLength].pixelData[j] != 0) {
+                            if (SegMark.pixelData[j] != 0) {
                                 pixelData.data[i] = 0;
                                 pixelData.data[i + 1] = 0;
                                 pixelData.data[i + 2] = 255;
                                 pixelData.data[i + 3] = 255;
                             }
                         }
-                        dcm.mark[DcmMarkLength].ctx.putImageData(pixelData, 0, 0);
+                        SegMark.ctx.putImageData(pixelData, 0, 0);
                     }
                     let angle2point = rotateCalculation(e);
-                    PatientMark.push(dcm);
-                    refreshMark(dcm);
-                    SEG_now_choose = dcm.mark[DcmMarkLength];
+                    PatientMark.push(SegMark);
+                    SEG_now_choose = SegMark;
                     setSEG2PixelData(angle2point);
-                    refreshMark(dcm);
+                    refreshMark(SegMark);
                 }
                 displayAllMark();
             }
-        };
+        });
+
         var Previous_angle2point;
 
         Mousemove = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-            var labelXY = getClass('labelXY'); {
-                let angle2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
-            }
+
             if (MouseDownCheck && !rightMouseDown && SEG_now_choose && openWindow != true) {
                 let angle2point = rotateCalculation(e);
                 if (Previous_angle2point && (Previous_angle2point[0] != angle2point[0] || Previous_angle2point[1] != angle2point[1])) {

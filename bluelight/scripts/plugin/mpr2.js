@@ -130,9 +130,9 @@ getByid("MouseOperation_MPR2").onclick = function () {
     set_BL_model('mouseTool_MPR2');
     for (var c = 0; c < 3; c++) {
         GetNewViewport(c).div.removeEventListener("mousemove", Mousemove, false);
-        GetNewViewport(c).div.removeEventListener("mousedown", Mousedown, false);
+        GetNewViewport(c).div.removeEventListener("mousedown", BlueLightMousedown, false);
         GetNewViewport(c).div.removeEventListener("mouseup", Mouseup, false);
-        GetNewViewport(c).div.removeEventListener("touchstart", touchstartF, false);
+        GetNewViewport(c).div.removeEventListener("touchstart", BlueLightTouchstart, false);
         GetNewViewport(c).div.removeEventListener("touchmove", touchmoveF, false);
         GetNewViewport(c).div.removeEventListener("touchend", touchendF, false);
         GetNewViewport(c).div.removeEventListener("wheel", Wheel, false);
@@ -191,12 +191,12 @@ function exitMPR2() {
     for (var i = 0; i < Viewport_Total; i++) {
         GetNewViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
         GetNewViewport(i).div.removeEventListener("mousemove", Mousemove, false);
-        GetNewViewport(i).div.removeEventListener("mousedown", Mousedown, false);
+        GetNewViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
         GetNewViewport(i).div.removeEventListener("mouseup", Mouseup, false);
         GetNewViewport(i).div.removeEventListener("mouseout", Mouseout, false);
         GetNewViewport(i).div.removeEventListener("wheel", Wheel, false);
         GetNewViewport(i).div.removeEventListener("mousedown", thisF, false);
-        GetNewViewport(i).div.removeEventListener("touchstart", touchstartF, false);
+        GetNewViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
         GetNewViewport(i).div.removeEventListener("touchend", touchendF, false);
         GetNewViewport(i).div.addEventListener("touchstart", thisF, false);
         GetNewViewport(i).div.addEventListener("mousedown", thisF, false);
@@ -243,12 +243,12 @@ function initMPR2() {
     for (var i1 = 0; i1 < Viewport_Total; i1++) {
         GetNewViewport(i1).div.removeEventListener("contextmenu", contextmenuF, false);
         GetNewViewport(i1).div.removeEventListener("mousemove", Mousemove, false);
-        GetNewViewport(i1).div.removeEventListener("mousedown", Mousedown, false);
+        GetNewViewport(i1).div.removeEventListener("mousedown", BlueLightMousedown, false);
         GetNewViewport(i1).div.removeEventListener("mouseup", Mouseup, false);
         GetNewViewport(i1).div.removeEventListener("mouseout", Mouseout, false);
         GetNewViewport(i1).div.removeEventListener("wheel", Wheel, false);
         GetNewViewport(i1).div.removeEventListener("mousedown", thisF, false);
-        GetNewViewport(i1).div.removeEventListener("touchstart", touchstartF, false);
+        GetNewViewport(i1).div.removeEventListener("touchstart", BlueLightTouchstart, false);
         GetNewViewport(i1).div.removeEventListener("touchend", touchendF, false);
         GetNewViewport(i1).div.removeEventListener("touchstart", thisF, false);
     }

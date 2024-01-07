@@ -3,7 +3,9 @@ MARKER.drawMarkList = [];
 
 MARKER.drawMark = function (obj) {
     for (var i = 0; i < MARKER.drawMarkList.length; i++) {
-        MARKER[MARKER.drawMarkList[i]](obj);
+        try {
+            MARKER[MARKER.drawMarkList[i]](obj);
+        } catch (ex) { }
     }
 }
 
@@ -134,7 +136,7 @@ function restoreImageOrientation2MarkCanvas(ctx) {
     ctx.globalAlpha = 1.0;
 }
 
-function drawSEG(canvas, mark, viewport) {
+function drawSEG(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     //Css(MarkCanvas, 'zIndex', "8");
     function mirrorImage(ctx, image, x = 0, y = 0, horizontal = false, vertical = false) {
@@ -149,7 +151,7 @@ function drawSEG(canvas, mark, viewport) {
         ctx.restore(); // restore the state as it was when this function was called
     }
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    mirrorImage(ctx, mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip)
+    mirrorImage(ctx, Mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip)
     // ctx.drawImage(mark.canvas, 0, 0, viewport.width, viewport.height);
     ctx.globalAlpha = 1;
     var globalCompositeOperation = ctx.globalCompositeOperation;
@@ -161,7 +163,7 @@ function drawSEG(canvas, mark, viewport) {
     ctx.restore();
 }
 
-function drawOverLay(canvas, mark, viewport) {
+function drawOverLay(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     //Css(MarkCanvas, 'zIndex', "8");
     function mirrorImage(ctx, image, x = 0, y = 0, horizontal = false, vertical = false) {
@@ -176,7 +178,7 @@ function drawOverLay(canvas, mark, viewport) {
         ctx.restore(); // restore the state as it was when this function was called
     }
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    mirrorImage(ctx, mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip)
+    mirrorImage(ctx, Mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip)
     // ctx.drawImage(mark.canvas, 0, 0, viewport.width, viewport.height);
     ctx.globalAlpha = 1;
     var globalCompositeOperation = ctx.globalCompositeOperation;
@@ -186,21 +188,20 @@ function drawOverLay(canvas, mark, viewport) {
     ctx.restore();
 }
 
-function drawXML_mark(canvas, mark, showName) {
+function drawXML_mark(canvas, Mark, showName) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     var tempAlpha = ctx.globalAlpha;
     ctx.globalAlpha = 1.0;
     ctx.font = "" + (parseInt(ctx.lineWidth) * 12) + "px Arial";
     ctx.fillStyle = "red";
-    for (var o = 0; o < mark.markX.length; o += 2) {
-        ctx.strokeStyle = "" + mark.parent.color;
+    for (var o = 0; o < Mark.pointArray.length; o += 2) {
+        ctx.strokeStyle = "" + Mark.color;
         ctx.beginPath();
-        var x1 = mark.markX[o] * 1;
-        var y1 = mark.markY[o] * 1;
-        var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-        var x2 = mark.markX[o + 1] * 1;
-        var y2 = mark.markY[o + 1] * 1;
+        var x1 = Mark.pointArray[o].x * 1;
+        var y1 = Mark.pointArray[o].y * 1;
+        var x2 = Mark.pointArray[o + 1].x * 1;
+        var y2 = Mark.pointArray[o + 1].y * 1;
         ctx.fillText("" + showName, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 5 : y2 - 5);
 
         ctx.rect(x1, y1, x2 - x1, y2 - y1);
@@ -210,20 +211,20 @@ function drawXML_mark(canvas, mark, showName) {
     ctx.globalAlpha = tempAlpha;
 }
 
-function drawTEXT(canvas, mark, viewport) {
+function drawTEXT(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     setMarkColor(ctx, "#FFFF00");
-    if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
+    if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
     try {
-        for (var o = 0; o < mark.markX.length; o += 1) {
+        for (var o = 0; o < Mark.pointArray.length; o += 1) {
             ctx.beginPath();
 
-            var x1 = mark.markX[o] * 1;
-            var y1 = mark.markY[o + 1] * 1;
+            var x1 = Mark.pointArray[o].x * 1;
+            var y1 = Mark.pointArray[o + 1].y * 1;
             var offsetX_Text = 0;
             var offsetY_Text = 0;
-            var lines = mark.GSPS_Text.split('\n');
+            var lines = Mark.GSPS_Text.split('\n');
             for (var i2 = 0; i2 < lines.length; i2++) {
                 var offsetX_temp = x1 + (3 * 4 * lines[i2].length) > canvas.width ? (x1 + (3 * 4 * lines[i2].length)) - canvas.width : 0;
                 var offsetY_temp = y1 + (3 * 4 * lines[i2].length) > canvas.height ? (y1 + (3 * 4 * lines[i2].length)) - canvas.height : 0;
@@ -233,12 +234,12 @@ function drawTEXT(canvas, mark, viewport) {
 
             x1 -= offsetX_Text;
             y1 -= offsetY_Text;
-            if (mark.GSPS_Text && o == 0) {
+            if (Mark.GSPS_Text && o == 0) {
                 ctx.font = "" + (3 * 4) + "px Arial";
                 ctx.fillStyle = "red";
                 var tempAlpha = ctx.globalAlpha;
                 ctx.globalAlpha = 1.0;
-                var lines = mark.GSPS_Text.split('\n');
+                var lines = Mark.GSPS_Text.split('\n');
                 for (var i2 = 0; i2 < lines.length; i2++) {
                     ctx.fillText(lines[i2], x1, y1 - 7 - ((lines.length - 1) * 3 * 4) + (i2 * 3 * 4));
                 }
@@ -250,31 +251,31 @@ function drawTEXT(canvas, mark, viewport) {
     } catch (ex) { console.log(ex); }
 }
 
-function drawPOLYLINE(canvas, mark, viewport) {
+function drawPOLYLINE(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     setMarkColor(ctx);
-    if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
+    if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
 
-    for (var o = 0; o < mark.markX.length; o += 1) {
+    for (var o = 0; o < Mark.pointArray.length - 1; o += 1) {
         ctx.beginPath();
 
-        var x1 = mark.markX[o] * 1;
-        var y1 = mark.markY[o] * 1;
-        var x2 = mark.markX[o + 1] * 1;
-        var y2 = mark.markY[o + 1] * 1;
+        var x1 = Mark.pointArray[o].x * 1;
+        var y1 = Mark.pointArray[o].y * 1;
+        var x2 = Mark.pointArray[o + 1].x * 1;
+        var y2 = Mark.pointArray[o + 1].y * 1;
 
-        if (mark.RotationAngle && mark.RotationPoint) {
-            [x1, y1] = rotatePoint([x1, y1], mark.RotationAngle, mark.RotationPoint);
-            [x2, y2] = rotatePoint([x2, y2], mark.RotationAngle, mark.RotationPoint);
+        if (Mark.RotationAngle && Mark.RotationPoint) {
+            [x1, y1] = rotatePoint([x1, y1], Mark.RotationAngle, Mark.RotationPoint);
+            [x2, y2] = rotatePoint([x2, y2], Mark.RotationAngle, Mark.RotationPoint);
         }
 
-        if (mark.GSPS_Text && o == 0) {
+        if (Mark.GSPS_Text && o == 0) {
             ctx.font = "" + (parseInt(ctx.lineWidth) * 4) + "px Arial";
             ctx.fillStyle = "red";
             var tempAlpha = ctx.globalAlpha;
             ctx.globalAlpha = 1.0;
-            ctx.fillText("" + mark.GSPS_Text, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 7 : y2 - 7);
+            ctx.fillText("" + Mark.GSPS_Text, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 7 : y2 - 7);
             ctx.globalAlpha = tempAlpha;
         }
         var tempAlpha2 = ctx.globalAlpha;
@@ -283,7 +284,7 @@ function drawPOLYLINE(canvas, mark, viewport) {
         ctx.lineTo(x2, y2);
         ctx.stroke();
         ctx.globalAlpha = tempAlpha2;
-        if (mark.GraphicFilled && mark.GraphicFilled == 'Y') {
+        if (Mark.GraphicFilled && Mark.GraphicFilled == 'Y') {
             ctx.fillStyle = "#FFFF88";
             ctx.fill();
             console.log(x1, y1, x2, y2)
@@ -292,25 +293,25 @@ function drawPOLYLINE(canvas, mark, viewport) {
     }
 }
 
-function drawINTERPOLATED(canvas, mark, viewport) {
+function drawINTERPOLATED(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     setMarkColor(ctx);
-    if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
+    if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
 
-    var middleX = (mark.markX[0] + mark.markX[2]) / 2;
-    var middleY = (mark.markY[0] + mark.markY[2]) / 2;
+    var middleX = (Mark.pointArray[0].x + Mark.pointArray[2].x) / 2;
+    var middleY = (Mark.pointArray[0].y + Mark.pointArray[2].y) / 2;
 
-    for (var o = 0; o < mark.markX.length - 1; o += 1) {
+    for (var o = 0; o < Mark.pointArray.length - 1; o += 1) {
         ctx.beginPath();
-        var x1 = mark.markX[o] * 1;
-        var y1 = mark.markY[o] * 1;
-        var x2 = mark.markX[o + 1] * 1;
-        var y2 = mark.markY[o + 1] * 1;
+        var x1 = Mark.pointArray[o].x * 1;
+        var y1 = Mark.pointArray[o].y * 1;
+        var x2 = Mark.pointArray[o + 1].x * 1;
+        var y2 = Mark.pointArray[o + 1].y * 1;
 
-        if (mark.RotationAngle && mark.RotationPoint) {
-            [x1, y1] = rotatePoint([x1, y1], mark.RotationAngle, mark.RotationPoint);
-            [x2, y2] = rotatePoint([x2, y2], mark.RotationAngle, mark.RotationPoint);
+        if (Mark.RotationAngle && Mark.RotationPoint) {
+            [x1, y1] = rotatePoint([x1, y1], Mark.RotationAngle, Mark.RotationPoint);
+            [x2, y2] = rotatePoint([x2, y2], Mark.RotationAngle, Mark.RotationPoint);
         }
 
         var tempAlpha2 = ctx.globalAlpha;
@@ -323,32 +324,32 @@ function drawINTERPOLATED(canvas, mark, viewport) {
         ctx.globalAlpha = tempAlpha2;
         ctx.closePath();
 
-        if (mark.GSPS_Text && o == 0) {
+        if (Mark.GSPS_Text && o == 0) {
             ctx.font = "" + (parseInt(ctx.lineWidth) * 4) + "px Arial";
             ctx.fillStyle = "red";
             var tempAlpha = ctx.globalAlpha;
             ctx.globalAlpha = 1.0;
-            ctx.fillText("" + mark.GSPS_Text, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 7 : y2 - 7);
+            ctx.fillText("" + Mark.GSPS_Text, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 7 : y2 - 7);
             ctx.globalAlpha = tempAlpha;
         }
     }
 }
 
-function drawELLIPSE(canvas, mark, viewport) {
+function drawELLIPSE(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    for (var o = 0; o < mark.markX.length; o += 1) {
+    for (var o = 0; o < Mark.pointArray.length; o += 1) {
         ctx.beginPath();
 
-        var x1 = mark.markX[o] * 1;
-        var y1 = mark.markY[o] * 1;
-        var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-        var x2 = mark.markX[o + 1] * 1;
-        var y2 = mark.markY[o + 1] * 1;
-        var x3 = mark.markX[o + 2] * 1;
-        var y3 = mark.markY[o + 2] * 1;
-        var x4 = mark.markX[o + 3] * 1;
-        var y4 = mark.markY[o + 3] * 1;
+        var x1 = Mark.pointArray[o].x * 1;
+        //var y1 = mark.markY[o] * 1;
+        //var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
+        //var x2 = mark.markX[o + 1] * 1;
+        var y2 = Mark.pointArray[o + 1].y * 1;
+        var x3 = Mark.pointArray[o + 2].x * 1;
+        //var y3 = mark.markY[o + 2] * 1;
+        //var x4 = mark.markX[o + 3] * 1;
+        var y4 = Mark.pointArray[o + 3].y * 1;
 
         ctx.ellipse((x1 + x3) / 2, (y2 + y4) / 2, Math.abs(x1 - x3), Math.abs(y2 - y4), 0 * Math.PI / 180, 0, 2 * Math.PI);
         ctx.stroke();
@@ -357,16 +358,16 @@ function drawELLIPSE(canvas, mark, viewport) {
     }
 }
 
-function drawCIRCLE(canvas, mark, viewport) {
+function drawCIRCLE(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     setMarkColor(ctx);
-    if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
-    for (var o = 0; o < mark.markX.length; o += 2) {
-        var x1 = mark.markX[o] * 1;
-        var y1 = mark.markY[o] * 1;
-        var x2 = mark.markX[o + 1] * 1;
-        var y2 = mark.markY[o + 1] * 1;
+    if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
+    for (var o = 0; o < Mark.pointArray.length; o += 2) {
+        var x1 = Mark.pointArray[o].x * 1;
+        var y1 = Mark.pointArray[o].y * 1;
+        var x2 = Mark.pointArray[o + 1].x * 1;
+        var y2 = Mark.pointArray[o + 1].y * 1;
 
         ctx.beginPath();
         var tempAlpha = ctx.globalAlpha;
@@ -451,53 +452,55 @@ function drawTwoDimensionEllipse(canvas, mark, viewport) {
     }
 }
 
-function drawRTSS(canvas, mark, viewport) {
-    var ctx = canvas.getContext("2d");
-    setImageOrientation2MarkCanvas(viewport, ctx);
+function drawRTSS(canvas, Mark, viewport) {
+    try {
+        var ctx = canvas.getContext("2d");
+        setImageOrientation2MarkCanvas(viewport, ctx);
 
-    ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    //ctx.setTransform(1, 0, 0, 1, 0, 0);
-    //ctx.scale(1, 1);
-    if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
-    setMarkColor(ctx);
-    for (var o = 0; o < mark.markX.length; o++) {
-        ctx.beginPath();
-        var x1 = Math.ceil((mark.markX[o] - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
-        var y1 = Math.ceil((mark.markY[o] - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
-        var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-        var x2 = Math.ceil((mark.markX[o2] - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
-        var y2 = Math.ceil((mark.markY[o2] - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
-
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.globalAlpha = 1.0;
-        ctx.stroke();
         ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-        ctx.closePath();
-    }
-    if (getByid("markFillCheck").checked) {
-        ctx.beginPath();
-        for (var o = 0; o < mark.markX.length; o++) {
-            var mark = mark;
-            var x1 = Math.ceil((mark.markX[o] - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
-            var y1 = Math.ceil((mark.markY[o] - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
-            var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-            var x2 = Math.ceil((mark.markX[o2] - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
-            var y2 = Math.ceil((mark.markY[o2] - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
+        //ctx.setTransform(1, 0, 0, 1, 0, 0);
+        //ctx.scale(1, 1);
+        if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
+        setMarkColor(ctx);
+        for (var o = 0; o < Mark.pointArray.length; o++) {
+            ctx.beginPath();
+            var x1 = Math.ceil((Mark.pointArray[o].x - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
+            var y1 = Math.ceil((Mark.pointArray[o].y - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
+            var o2 = o == Mark.pointArray.length - 1 ? 0 : o + 1;
+            var x2 = Math.ceil((Mark.pointArray[o2].x - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
+            var y2 = Math.ceil((Mark.pointArray[o2].y - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
 
-            if (o == 0) {
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-            } else {
-                ctx.lineTo(x1, y1);
-                ctx.lineTo(x2, y2);
-            }
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.globalAlpha = 1.0;
+            ctx.stroke();
+            ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
+            ctx.closePath();
         }
-        ctx.fill();
-        ctx.closePath();
-    }
+        if (getByid("markFillCheck").checked) {
+            ctx.beginPath();
+            for (var o = 0; o < Mark.pointArray.length; o++) {
+                var x1 = Math.ceil((Mark.pointArray[o].x - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
+                var y1 = Math.ceil((Mark.pointArray[o].y - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
+                var o2 = o == Mark.pointArray.length - 1 ? 0 : o + 1;
+                var x2 = Math.ceil((Mark.pointArray[o2].x - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
+                var y2 = Math.ceil((Mark.pointArray[o2].y - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
 
-    restoreImageOrientation2MarkCanvas(ctx);
+                if (o == 0) {
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                } else {
+                    ctx.lineTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                }
+            }
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        restoreImageOrientation2MarkCanvas(ctx);
+    }
+    catch (ex) { console.log(ex) };
 }
 
 function drawTextAnnotationEntity(canvas, mark, viewport) {
@@ -570,47 +573,88 @@ function displayMark(viewportNum = viewportNumber) {
     var patientMark_enable = patientMark_all.filter(M => checkMarkEnabled(viewport.series, M));
 
     //compatibleMark
-    for (var Mark of patientMark_all) {
+    /*for (var Mark of patientMark_all) {
         for (var mark of Mark.mark) {
             if (!mark.point) mark = compatibleMark(mark);
         }
+    }*/
+
+    for (var Mark of patientMark_enable) {
+        if (Mark.type == "SEG") drawSEG(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "Overlay") drawOverLay(MarkCanvas, Mark, viewport);
+    }
+
+    for (var Mark of patientMark_enable) {
+        if (Mark.type == "XML_mark") drawXML_mark(MarkCanvas, Mark, Mark.showName);
+        else if (Mark.type == "TEXT") drawTEXT(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "POLYLINE") drawPOLYLINE(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "INTERPOLATED") drawINTERPOLATED(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "ELLIPSE") drawELLIPSE(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "CIRCLE") drawCIRCLE(MarkCanvas, Mark, viewport);
     }
 
     for (var Mark of patientMark_enable) {
         for (var mark of Mark.mark) {
             mark.parent = Mark;
-            if (mark.type == "SEG") drawSEG(MarkCanvas, mark, viewport);
-            else if (mark.type == "Overlay") drawOverLay(MarkCanvas, mark, viewport);
-        }
-    }
-
-    for (var Mark of patientMark_enable) {
-        for (var mark of Mark.mark) {
-            mark.parent = Mark;
-            if (mark.type == "XML_mark") drawXML_mark(MarkCanvas, mark, Mark.showName);
-            else if (mark.type == "TEXT") drawTEXT(MarkCanvas, mark, viewport);
-            else if (mark.type == "POLYLINE") drawPOLYLINE(MarkCanvas, mark, viewport);
-            else if (mark.type == "INTERPOLATED") drawINTERPOLATED(MarkCanvas, mark, viewport);
-            else if (mark.type == "ELLIPSE") drawELLIPSE(MarkCanvas, mark, viewport);
-            else if (mark.type == "CIRCLE") drawCIRCLE(MarkCanvas, mark, viewport);
-            else if (mark.type == "TwoDimensionPolyline") drawTwoDimensionPolyline(MarkCanvas, mark, viewport);
+            if (mark.type == "TwoDimensionPolyline") drawTwoDimensionPolyline(MarkCanvas, mark, viewport);
             else if (mark.type == "TwoDimensionMultiPoint") drawTwoDimensionMultiPoint(MarkCanvas, mark, viewport);
             else if (mark.type == "TwoDimensionEllipse") drawTwoDimensionEllipse(MarkCanvas, mark, viewport);
-        }
-    }
-
-    for (var Mark of patientMark_enable) {
-        for (var mark of Mark.mark) {
-            mark.parent = Mark;
-            if (mark.type == "RTSS") drawRTSS(MarkCanvas, mark, viewport);
             else if (mark.type == "TextAnnotationEntity") drawTextAnnotationEntity(MarkCanvas, mark, viewport);
         }
     }
 
     for (var Mark of patientMark_enable) {
-        for (var mark of Mark.mark) {
-            mark.parent = Mark;
-            MARKER.drawMark({ "canvas": MarkCanvas, "mark": mark, "showName": Mark.showName });//MarkCanvas, mark, viewport
+        if (Mark.type == "RTSS") drawRTSS(MarkCanvas, Mark, viewport);
+    }
+
+    for (var Mark of patientMark_enable) {
+        if (Mark.constructor.name == "BlueLightMark") {
+            MARKER.drawMark({ "canvas": MarkCanvas, "Mark": Mark, "showName": Mark.showName });
+            continue;
+        }
+        else {
+            for (var mark of Mark.mark) {
+                mark.parent = Mark;
+                MARKER.drawMark({ "canvas": MarkCanvas, "mark": mark, "showName": Mark.showName });//MarkCanvas, mark, viewport
+            }
         }
     }
+}
+
+class BlueLightMark {
+    constructor() {
+        this.mark = [];
+        this.pointArray = [];
+        this.study = null;
+        this.series = null;
+        this.sop = null;
+        this.color = null;
+        this.imagePositionZ = null;
+        this.ImagePositionPatient = null;
+        this.width = null;
+        this.height = null;
+        this.showName = "";
+        this.hideName = "";
+        this.type = "";
+        this.Text = "";
+        //Point3D
+    }
+
+    setQR(study, series, sop) {
+        this.study = study;
+        this.series = series;
+        this.sop = sop;
+    }
+    setQRLevels(QRLevels) {
+        this.study = QRLevels.study;
+        this.series = QRLevels.series;
+        this.sop = QRLevels.sop;
+    }
+    setPoint2D(x, y) {
+        this.pointArray.push(new Point2D(x, y));
+    }
+    setPoint3D(x, y, z) {
+        this.pointArray.push(new Point3D(x, y, z));
+    }
+    get lastMark() { if (this.pointArray.length) return this.pointArray[this.pointArray.length - 1] };
 }

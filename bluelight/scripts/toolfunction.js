@@ -80,7 +80,7 @@ function getClass(str) {
     return document.getElementsByClassName(str);
 }
 
-function log(value){
+function log(value) {
     console.log(value);
 }
 
@@ -153,6 +153,10 @@ function GetmouseY(evt) {
     else if (evt.clientY)
         return evt.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
     else return null;
+}
+
+function GetmouseXY(evt) {
+    return [GetmouseX(evt), GetmouseY(evt)];
 }
 
 function SearchUid2Index(sop) {
@@ -311,18 +315,18 @@ function getDistance(x, y) {
     return Math.sqrt(x * x + y * y);
 }
 
-function getRotationPoint(mark, middle) {
+function getRotationPoint(Mark, middle) {
     var Max_X = -999999,
         Max_Y = -999999,
         Min_X = 999999,
         Min_Y = 999999;
-    for (var o = 0; o < mark.markX.length; o += 1) {
-        if (parseInt(mark.markX[o]) >= Max_X) Max_X = parseInt(mark.markX[o]);
-        if (parseInt(mark.markX[o]) <= Min_X) Min_X = parseInt(mark.markX[o]);
+    for (var o = 0; o < Mark.pointArray.length; o += 1) {
+        if (parseInt(Mark.pointArray[o].x) >= Max_X) Max_X = parseInt(Mark.pointArray[o].x);
+        if (parseInt(Mark.pointArray[o].x) <= Min_X) Min_X = parseInt(Mark.pointArray[o].x);
     }
-    for (var o = 0; o < mark.markY.length; o += 1) {
-        if (parseInt(mark.markY[o]) >= Max_Y) Max_Y = parseInt(mark.markY[o]);
-        if (parseInt(mark.markY[o]) <= Min_Y) Min_Y = parseInt(mark.markY[o]);
+    for (var o = 0; o < Mark.pointArray.length; o += 1) {
+        if (parseInt(Mark.pointArray[o].y) >= Max_Y) Max_Y = parseInt(Mark.pointArray[o].y);
+        if (parseInt(Mark.pointArray[o].y) <= Min_Y) Min_Y = parseInt(Mark.pointArray[o].y);
     }
     if (middle == true) return [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2];
     return [Max_X, Min_X, Max_Y, Min_Y];

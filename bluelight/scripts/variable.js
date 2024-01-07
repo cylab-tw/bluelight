@@ -43,10 +43,6 @@ var windowMouseX2 = 0,
 var MousePointX = 0,
   MousePointY = 0;
 
-//紀錄測量工具座標
-var MeasureXY = [0, 0];
-var MeasureXY2 = [0, 0];
-
 //放大鏡預設長寬
 var magnifierWidth0 = 200;
 var magnifierHeight0 = 200;
@@ -110,16 +106,110 @@ let decodeImageFrame;
 //代表按下ctrl
 let KeyCode_ctrl = false;
 let BL_mode = 'MouseTool';
+
+class Point2D {
+  constructor(x, y) { this.x = x, this.y = y; }
+  get 0() { return this.x }; set 0(v) { this.x = v };
+  get 1() { return this.y }; set 1(v) { this.y = v };
+  set(x, y) { this.x = x, this.y = y; };
+  get() { return [this.x, this.y] };
+  point() { return [this.x, this.y] };
+  setPoint(arr) { this.x = arr[0], this.y = arr[1]; };
+}
+
+class Point3D {
+  constructor(x, y, z) { this.x = x, this.y = y, this.z = z; }
+  get 0() { return this.x }; set 0(v) { this.x = v };
+  get 1() { return this.y }; set 1(v) { this.y = v };
+  get 2() { return this.z }; set 2(v) { this.z = v };
+  set(x, y, z) { this.x = x, this.y = y, this.z = z; };
+  get() { return [this.x, this.y, , this.z] };
+  point() { return [this.x, this.y, this.z] };
+  setPoint(arr) { this.x = arr[0], this.y = arr[1], this.z = arr[2]; };
+}
+
+let MouseDownPointByWindow = new Point2D(0, 0);
+let MouseMovePointByWindow = new Point2D(0, 0);
+let MouseUpPointByWindow = new Point2D(0, 0);
+let MouseDownPointByCanvas = new Point2D(0, 0);
+let MouseMovePointByCanvas = new Point2D(0, 0);
+let MouseUpPointByCanvas = new Point2D(0, 0);
+
+let BlueLightMousedownList = [];
+let BlueLightMousedown = function (e) {
+  if (e.which == 1) MouseDownCheck = true;
+  else if (e.which == 3) rightMouseDown = true;
+
+  MouseDownPointByWindow.setPoint(GetmouseXY(e));
+  MouseDownPointByCanvas.setPoint(rotateCalculation(e));
+  [windowMouseX, windowMouseY] = GetmouseXY(e);
+  [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
+  for (var i = 0; i < BlueLightMousedownList.length; i++) {
+    if (BlueLightMousedownList[i].constructor.name == "Function")
+      BlueLightMousedownList[i](e);
+  }
+  //console.log(GetmouseXY(e), getCurrPoint(e), rotateCalculation(e));
+}
+
+
+let BlueLightTouchstartList = [];
+let BlueLightTouchstart = function (E) {
+  var e = null, e2 = null, viewport = GetViewport();
+  if (E.touches[1]) e = E.touches[0], e2 = E.touches[1]
+  else e = E.touches[0];
+
+  if (!e2) TouchDownCheck = true;
+  else rightTouchDown = true;
+
+  [windowMouseX, windowMouseY] = GetmouseXY(e);
+  [viewport.originalPointX, viewport.originalPointY] = getCurrPoint(e);
+
+  if (rightTouchDown == true && e2) {
+    [windowMouseX2, windowMouseY2] = GetmouseXY(e2);
+    [viewport.originalPointX2, viewport.originalPointY2] = getCurrPoint(e2);
+  }
+
+  for (var i = 0; i < BlueLightTouchstartList.length; i++) {
+    if (BlueLightTouchstartList[i].constructor.name == "Function")
+      BlueLightTouchstartList[i](e, e2);
+  }
+}
+
+
+let BlueLightMousemoveList = [];
+let BlueLightMousemove = function (e) {
+  if (e.which == 1) MouseDownCheck = true;
+  else if (e.which == 3) rightMouseDown = true;
+  [windowMouseX, windowMouseY] = GetmouseXY(e);
+
+  [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
+  for (var i = 0; i < BlueLightMousedownList.length; i++) {
+    if (BlueLightMousedownList[i].constructor.name == "Function")
+      BlueLightMousedownList[i](e);
+  }
+
+  getClass('labelXY')[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
+  if (openLink == true) {
+    for (var i = 0; i < Viewport_Total; i++) {
+      GetViewport(i).newMousePointX = GetViewport().newMousePointX;
+      GetViewport(i).newMousePointY = GetViewport().newMousePointY;
+    }
+  }
+  putLabel();
+  displayAllRuler();
+}
+
+
 let AddMouseEvent = function () {
   try {
     GetNewViewport().div.removeEventListener("touchstart", thisF, false);
     GetNewViewport().div.removeEventListener("mousedown", thisF, false);
     GetNewViewport().div.addEventListener("contextmenu", contextmenuF, false);
     GetNewViewport().div.addEventListener("mousemove", Mousemove, false);
-    GetNewViewport().div.addEventListener("mousedown", Mousedown, false);
+    GetNewViewport().div.addEventListener("mousedown", BlueLightMousedown, false);
     GetNewViewport().div.addEventListener("mouseup", Mouseup, false);
     GetNewViewport().div.addEventListener("mouseout", Mouseout, false);
-    GetNewViewport().div.addEventListener("touchstart", touchstartF, false);
+    GetNewViewport().div.addEventListener("touchstart", BlueLightTouchstart, false);
     GetNewViewport().div.addEventListener("touchmove", touchmoveF, false);
     GetNewViewport().div.addEventListener("touchend", touchendF, false);
     GetNewViewport().div.addEventListener("wheel", Wheel, false);
@@ -130,12 +220,12 @@ let DeleteMouseEvent = function () {
     for (var i = 0; i < Viewport_Total; i++) {
       GetNewViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
       GetNewViewport(i).div.removeEventListener("mousemove", Mousemove, false);
-      GetNewViewport(i).div.removeEventListener("mousedown", Mousedown, false);
+      GetNewViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
       GetNewViewport(i).div.removeEventListener("mouseup", Mouseup, false);
       GetNewViewport(i).div.removeEventListener("mouseout", Mouseout, false);
       GetNewViewport(i).div.removeEventListener("wheel", Wheel, false);
       GetNewViewport(i).div.removeEventListener("mousedown", thisF, false);
-      GetNewViewport(i).div.removeEventListener("touchstart", touchstartF, false);
+      GetNewViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
       GetNewViewport(i).div.removeEventListener("touchend", touchendF, false);
       GetNewViewport(i).div.removeEventListener("wheel", Wheel, false);
       GetNewViewport(i).div.addEventListener("touchstart", thisF, false);
