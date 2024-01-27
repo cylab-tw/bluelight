@@ -127,7 +127,7 @@ getByid("writeTAG").onclick = function () {
             }
         }
     }
-    let index = SearchUid2Index(GetNewViewport().sop);
+    let index = SearchUid2Index(GetViewport().sop);
     let i = index[0],
         j = index[1],
         k = index[2];
@@ -172,7 +172,7 @@ function set_TAG_context(index) {
         k = index[2];
 
     function setTag(temp, replace, str, len) {
-        str = Null2Empty(str);
+        if (str == undefined || str == null) str = "";
         str = "" + str;
         temp = temp.replace("___" + replace + "___", "" + str);
         var length = ("" + str).length;

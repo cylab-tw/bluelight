@@ -1,3 +1,7 @@
+
+var openDisplayMarkup = false;
+//裝標記的物件
+var PatientMark = [];
 let MARKER = {};
 MARKER.drawMarkList = [];
 
@@ -138,7 +142,6 @@ function restoreImageOrientation2MarkCanvas(ctx) {
 
 function drawSEG(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
-    //Css(MarkCanvas, 'zIndex', "8");
     function mirrorImage(ctx, image, x = 0, y = 0, horizontal = false, vertical = false) {
         ctx.save();  // save the current canvas state
         ctx.setTransform(
@@ -165,7 +168,6 @@ function drawSEG(canvas, Mark, viewport) {
 
 function drawOverLay(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
-    //Css(MarkCanvas, 'zIndex', "8");
     function mirrorImage(ctx, image, x = 0, y = 0, horizontal = false, vertical = false) {
         ctx.save();  // save the current canvas state
         ctx.setTransform(
@@ -532,17 +534,18 @@ function drawTextAnnotationEntity(canvas, mark, viewport) {
     restoreImageOrientation2MarkCanvas(ctx);
 }
 
-function getMarkSize(MarkCanvas, sizeCheck) {
+function getMarkSize(MarkCanvas, sizeCheck, viewport) {
+    if (!viewport) viewport = GetViewport();
     var lineSize = parseFloat(getByid('markSizeText').value);
-    var lineWid = 2 * parseFloat(MarkCanvas.width) / parseFloat(MarkCanvas.style.width);
+    var lineWid = 2 * 1.0 / viewport.scale;
     if (sizeCheck == true && lineWid <= 0) {
-        lineWid = parseFloat(MarkCanvas.style.width) / parseFloat(MarkCanvas.width);
+        lineWid = viewport.scale;
         if (lineWid <= 1.5) lineWid = 1.5;
-        lineWid *= Math.abs(parseFloat(MarkCanvas.width) / parseFloat(MarkCanvas.style.width));
+        lineWid *= Math.abs(1.0 / viewport.scale);
     } else if (sizeCheck == true) {
-        lineWid *= Math.abs(parseFloat(MarkCanvas.style.width) / parseFloat(MarkCanvas.width));
+        lineWid *= Math.abs(viewport.scale);
     } else if (lineWid <= 0) {
-        lineWid = parseFloat(MarkCanvas.style.width) / parseFloat(MarkCanvas.width);
+        lineWid = viewport.scale;
     }
     if (lineWid <= 1.5) lineWid = 1.5;
     return ((Math.abs(lineWid)) * 2 * lineSize);
@@ -554,9 +557,9 @@ function displayAllMark() {
 
 function displayMark(viewportNum = viewportNumber) {
 
-    if (openLink) for (var z = 0; z < Viewport_Total; z++)  GetNewViewport(z).drawMark = GetNewViewport().drawMark;
+    if (openLink) for (var z = 0; z < Viewport_Total; z++)  GetViewport(z).drawMark = GetViewport().drawMark;
 
-    var viewport = GetNewViewport(viewportNum), MarkCanvas = GetViewportMark(viewportNum);
+    var viewport = GetViewport(viewportNum), MarkCanvas = GetViewportMark(viewportNum);
     if (!viewport.drawMark) return;
 
     var ctx = MarkCanvas.getContext("2d");
@@ -565,7 +568,7 @@ function displayMark(viewportNum = viewportNumber) {
     //注意：標記顏色選擇紅色跟自動都會先初始化為紅色
     ctx.strokeStyle = ctx.fillStyle = "#FF0000";
     ctx.lineJoin = ctx.lineCap = 'round';
-    ctx.lineWidth = "" + getMarkSize(MarkCanvas, false);
+    ctx.lineWidth = "" + getMarkSize(MarkCanvas, false, viewport);
     setMarkColor(ctx);
     //try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
     if (!viewport.tags) return;

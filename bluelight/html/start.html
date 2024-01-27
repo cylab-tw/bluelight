@@ -72,6 +72,22 @@
       height: 100%;
     }
 
+    .img:active:hover {
+      filter: invert(80%);
+    }
+
+    .innerimg:active:hover {
+      filter: invert(80%);
+    }
+
+    .activeImg {
+      border: dashed white;
+    }
+
+    .activeImg:hover {
+      border: dashed black;
+    }
+
     .img:hover {
       filter: invert(80%);
     }
@@ -82,6 +98,26 @@
 
     .innerLabel {
       font-size: calc(0.4rem + 0.1*((5vw)));
+    }
+
+    .DicomCanvas {
+      top: 50%;
+      left: 50%;
+    }
+
+    .MarkCanvas {
+      top: 50%;
+      left: 50%;
+    }
+
+    .leftRule {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .downRule {
+      left: 50%;
+      transform: translateX(-50%);
     }
   </style>
   <style>
@@ -113,18 +149,22 @@
       <span id="TransformationsImgParent">
         <img class="img" id="openTransformationsImg" altzhtw="Transformations" alt="Measure"
           src="../image/icon/black/b_Transformations.png" width="50" height="50">
-        <div id="openTransformationsDiv" class="imgListDiv" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+        <div id="openTransformationsDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
           width: 500; display: none;background-color: black;">
-          <span id="horizontal_flip_span"><img alt="Horizontal Flip" altzhtw="水平翻轉" id="horizontal_flip"
-              src="../image/icon/black/b_FlipHorizontally.png" width="50" height="50"></span>
-          <span id="vertical_flip_span"><img altzhtw="垂直翻轉" alt="Vertical Flip" id="vertical_flip"
+          <span id="horizontal_flip_span"><img alt="Horizontal Flip" class="innerimg" altzhtw="水平翻轉"
+              id="horizontal_flip" src="../image/icon/black/b_FlipHorizontally.png" width="50" height="50"></span>
+          <span id="vertical_flip_span"><img altzhtw="垂直翻轉" class="innerimg" alt="Vertical Flip" id="vertical_flip"
               src="../image/icon/black/b_FlipVertically.png" width="50" height="50"></span>
-          <span id="MouseRotate_span"><img class="MPR" alt="rotate" altzhtw="旋轉" id="MouseRotate"
+          <span id="MouseRotate_span"><img class="innerimg" alt="rotate" altzhtw="旋轉" id="MouseRotate"
               src="../image/icon/black/b_Rotate 90 degrees clockwise.png" width="50" height="50"></span>
-          <span id="rotatei90_span"><img altzhtw="旋轉-90度" alt="rotate 90" id="Rotate_i90"
+          <br>
+          <span id="rotate0_span"><img class="innerimg" altzhtw="旋轉0度" alt="rotate 0" id="Rotate_0"
+              src="../image/icon/black/b_Rotate_0.png" width="50" height="50"></span>
+          <span id="rotatei90_span"><img class="innerimg" altzhtw="旋轉-90度" alt="rotate 90" id="Rotate_i90"
               src="../image/icon/black/b_Rotate_90.png" width="50" height="50"></span>
-          <span id="rotate90_span"><img altzhtw="旋轉90度" alt="rotate 90" id="Rotate_90" class="filpx"
-              src="../image/icon/black/b_Rotate_90.png" width="50" height="50"></span>
+          <span id="rotate90_span"><img class="innerimg" altzhtw="旋轉90度" alt="rotate 90" id="Rotate_90" class="filpx"
+              src="../image/icon/black/b_Rotate_i90.png" width="50" height="50"></span>
+
           <!--<span id="rotate180_span"><img altzhtw="旋轉180度" alt="rotate 180" id="Rotate_180"
               src="../image/icon/black/b_Rotate_180.png" width="50" height="50"></span>
           <span id="rotate270_span"><img altzhtw="旋轉270度" alt="rotate 270" id="Rotate_90"
@@ -146,7 +186,7 @@
       <span id="MeasureImgParent">
         <img class="img" id="openMeasureImg" altzhtw="測量" alt="Measure" src="../image/icon/black/M.png" width="50"
           height="50">
-        <div id="openMeasureDIv" class="imgListDiv" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+        <div id="openMeasureDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
         width: 500; display: none;background-color: black;">
           <span id="removeRuler_span">
             <img alt="清除測量" class="innerimg" id="removeRuler" src="../image/icon/black/X.png" width="50" height="50">
@@ -170,11 +210,31 @@
           src="../image/icon/black/b_Annotation.png" width="50" height="50"></span>
       <span id="MarkupImg_span"><img class="img VR MPR" alt="Markup & Annotation" id="MarkupImg"
           src="../image/icon/black/b_ShowReport.png" width="50" height="50"></span>
+      <span id="OtherImgParent">
+        <img class="img" altzhtw="其他" alt="other" id="OtherImg" src="../image/icon/black/b_CineTools.png" width="50"
+          height="50">
+        <div id="othereDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+           width: 500; display: none;background-color: black;">
+          <span id="clearViewport_span">
+            <img altzhtw="清除視窗" alt="clear viewport" class="innerimg" id="clearviewportImg"
+              src="../image/icon/black/b_trashcan.png" width="50" height="50">
+          </span>
+          <!--<span id="downloadImg_span">
+            <img altzhtw="下載圖片" alt="download image" class="innerimg" id="downloadImg_Img"
+              src="../image/icon/black/download.png" width="50" height="50">
+          </span>
+          <span id="downloadDcm_span">
+            <img altzhtw="下載DICOM" alt="download DICOM" class="innerimg" id="downloadDcm_Img"
+              src="../image/icon/black/download.png" width="50" height="50">
+          </span>-->
+      </span>
+      </div>
+    </span>
     </span>
     <span id="rwdImgTag_span"> <img class="img VR MPR XML PEN" alt="RWD" id="rwdImgTag"
         src="../image/icon/black/b_CineTools.png" style="display:none;" width="50" height="50"></span>
 
-    <div id="GraphicStyleDiv" style="background-color:#30306044;">
+    <div id="GraphicStyleDiv" style="background-color:#30306044;" class="drawer">
       <label style="color: #ffffff;" id="GraphicColorLabel">Color：</label>
       <select id="GraphiccolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
         <!--<option id="Graphicselected" selected="selected">Auto</option>-->
@@ -191,7 +251,7 @@
         <option id="GraphicWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White(L5)</option>
       </select>
     </div>
-    <div id="MarkStyleDiv" style="background-color:#00306044;">
+    <div id="MarkStyleDiv" style="background-color:#00306044;" class="drawer">
       <label style="color: #ffffff;" id="markColorLabel">Color：</label>
       <select id="MarkcolorSelect">
         <option selected="selected">Auto</option>
@@ -220,7 +280,7 @@
       <!--<button id="remove__ClearMarkupButton__remove" sytle="">Clear Markup</button>-->
     </div>
 
-    <div id="SplitViewportDiv" style="background-color:#4D000044;">
+    <div id="SplitViewportDiv" style="background-color:#4D000044;" class="drawer">
       <font color="white">1x1:<input type="radio" class="split_radio" name="split_radio" id="radio_1x1"
           checked="true" />　</font>
       <font color="white">1x2:<input type="radio" class="split_radio" name="split_radio" id="radio_1x2" />　</font>
@@ -230,7 +290,7 @@
       <font color="white">4x4:<input type="radio" class="split_radio" name="split_radio" id="radio_4x4" />　</font>
     </div>
     <span id="WindowLevelDiv_span">
-      <div id="WindowLevelDiv" style="background-color:#33666644;">
+      <div id="WindowLevelDiv" style="background-color:#33666644;" class="drawer">
         <font color="white" id="myWC">WC：</font><input type="text" id="textWC" value="520" />
         <font color="white" id="myWW">WW：</font><input type="text" id="textWW" value="50" />
         <select id="WindowLevelSelect">
@@ -245,8 +305,10 @@
         </select>
       </div>
     </span>
-    <font color="white" id="labelZoom">Zoom：</font><input type="text" id="textZoom" value="200" />
-    <font color="white" id="labelPlay">fps：</font><input type="text" id="textPlay" value="15" />
+    <font color="white" class="drawer" id="labelZoom">Zoom：</font><input type="text" class="drawer" id="textZoom"
+      value="200" />
+    <font color="white" class="drawer" id="labelPlay">fps：</font><input type="text" class="drawer" id="textPlay"
+      value="15" />
 
     <input type="file" id="myfile" multiple="multiple" style='display:none'>
   </header>
@@ -258,14 +320,6 @@
         width="100">
       </div>
     </div>
-    <label id="MeasureLabel"
-      style="display:none;color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none; ">
-      0cm
-    </label>
-    <label id="AngleLabel"
-      style="display:none;color:red;z-index:20;position: absolute;pointer-events: none;-webkit-user-select: none; ">
-      0cm
-    </label>
     <div id="magnifierDiv" style="z-index:40;position: absolute;pointer-events: none;"><canvas
         id="magnifierCanvas"></canvas></div>
 </body>

@@ -70,7 +70,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
         PatientMark.splice(PatientMark.indexOf(reference), 1);
         displayMark();
 
-        refreshMarkFromSop(GetNewViewport().sop);
+        refreshMarkFromSop(GetViewport().sop);
     }
 });
 
@@ -261,11 +261,11 @@ function set_RTSS_context() {
     let temp = ""
     let tail6_list = tail2_list = tail4_list = "";
 
-    var viewport = GetNewViewport();
+    var viewport = GetViewport();
     temp = "" + RTSS_format;
 
     function setTag(temp, replace, str, len) {
-        str = Null2Empty(str);
+        if (str == undefined || str == null) str = "";
         str = "" + str;
         temp = temp.replace("___" + replace + "___", "" + str);
         var length = ("" + str).length;
@@ -275,7 +275,7 @@ function set_RTSS_context() {
     }
 
     //此更動待驗證
-    var sopList = Patient.findSeries(GetNewViewport().series).Sop;
+    var sopList = Patient.findSeries(GetViewport().series).Sop;
     for (var s = 0; s < sopList.length; s++) {
         let tail2 = "" + RTSS_format_tail_2;
         // tail2 = tail2.replace("___ReferencedSOPInstanceUID___", sopList[s]);
@@ -284,37 +284,37 @@ function set_RTSS_context() {
     }
     for (var n = 0; n < PatientMark.length; n++) {
         if (PatientMark[n].series == viewport.series) {
-            for (var m = 0; m < PatientMark[n].length; m++) {
-                if (PatientMark[n].type == "RTSS") {
-                    var tail6 = "" + RTSS_format_tail_6;
-                    var tail4 = "" + RTSS_format_tail_4;
-                    tail4 = setTag(tail4, "ROIName", PatientMark[n].showName, true);
-                    var tempMark = PatientMark[n].pointArray;
-                    var mark_xy = "";
-                    for (var o = 0; o < tempMark.length; o += 1) {
-                        var tempX = 0,
-                            tempY = 0;
-                        [tempX, tempY] = [tempMark[o].x, tempMark[o].y];
-                        tempX = parseFloat(tempX);
-                        tempY = parseFloat(tempY);
-                        if (o != 0) mark_xy += "\\";
-                        mark_xy += tempX + "\\" + tempY + "\\" + PatientMark[n].imagePositionZ;
-                    }
-                    tail6 = tail6.replace("___ContourData___", mark_xy);
-                    tail6 = tail6.replace("___vm___", "" + (tempMark.length * 3));
-                    tail6 = tail6.replace("___len___", (tempMark.length * 3 * 16));
-                    tail6 = setTag(tail6, "NumberOfContourPoints", (tempMark.length), true);
-                    tail6 = setTag(tail6, "ContourNumber", n + 1, true);
-                    tail6 = setTag(tail6, "ReferencedSOPInstanceUID", PatientMark[n].sop, true);
-                    var color = getColorFromRGB(PatientMark[n].color);
-                    tail6 = setTag(tail6, "ROIDisplayColor", "" + color[0] + "\\" + color[1] + "\\" + color[2], true);
-                    //tail6 = tail6.replace("___ReferencedSOPInstanceUID___", PatientMark[n].sop);
-                    //tail = tail.replace("___PatternOnColorCIELabValue___", "" + SetGraphicColor(PatientMark[n].color));
-                    //tail = tail.replace("___GraphicType___", "POLYLINE"); 
-                    tail6_list += tail6;
-                    tail4_list += tail4;
+            //for (var m = 0; m < PatientMark[n].length; m++) {
+            if (PatientMark[n].type == "RTSS") {
+                var tail6 = "" + RTSS_format_tail_6;
+                var tail4 = "" + RTSS_format_tail_4;
+                tail4 = setTag(tail4, "ROIName", PatientMark[n].showName, true);
+                var tempMark = PatientMark[n].pointArray;
+                var mark_xy = "";
+                for (var o = 0; o < tempMark.length; o += 1) {
+                    var tempX = 0,
+                        tempY = 0;
+                    [tempX, tempY] = [tempMark[o].x, tempMark[o].y];
+                    tempX = parseFloat(tempX);
+                    tempY = parseFloat(tempY);
+                    if (o != 0) mark_xy += "\\";
+                    mark_xy += tempX + "\\" + tempY + "\\" + PatientMark[n].imagePositionZ;
                 }
+                tail6 = tail6.replace("___ContourData___", mark_xy);
+                tail6 = tail6.replace("___vm___", "" + (tempMark.length * 3));
+                tail6 = tail6.replace("___len___", (tempMark.length * 3 * 16));
+                tail6 = setTag(tail6, "NumberOfContourPoints", (tempMark.length), true);
+                tail6 = setTag(tail6, "ContourNumber", n + 1, true);
+                tail6 = setTag(tail6, "ReferencedSOPInstanceUID", PatientMark[n].sop, true);
+                var color = getColorFromRGB(PatientMark[n].color);
+                tail6 = setTag(tail6, "ROIDisplayColor", "" + color[0] + "\\" + color[1] + "\\" + color[2], true);
+                //tail6 = tail6.replace("___ReferencedSOPInstanceUID___", PatientMark[n].sop);
+                //tail = tail.replace("___PatternOnColorCIELabValue___", "" + SetGraphicColor(PatientMark[n].color));
+                //tail = tail.replace("___GraphicType___", "POLYLINE"); 
+                tail6_list += tail6;
+                tail4_list += tail4;
             }
+            //}
         }
         var createSopUid = CreateUid("sop");
         var createSeriesUid = CreateUid("series");
@@ -384,7 +384,7 @@ function writertss() {
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
-            var viewport = GetNewViewport();
+            var viewport = GetViewport();
 
             if (!rightMouseDown) {
                 var angle2point = rotateCalculation(e)
@@ -404,7 +404,7 @@ function writertss() {
 
 
                 var RtssMark = new BlueLightMark();
-                RtssMark.setQRLevels(GetNewViewport().QRLevels);
+                RtssMark.setQRLevels(GetViewport().QRLevels);
                 RtssMark.color = "rgb(0,0,128)";
                 RtssMark.hideName = RtssMark.showName = getByid('textROIName').value;
                 RtssMark.type = "RTSS";
@@ -426,8 +426,9 @@ function writertss() {
             }
         });
 
-        Mousemove = function (e) {
-            var viewport = GetNewViewport();
+        BlueLightMousemoveList = [];
+        BlueLightMousemoveList.push(function (e) {
+            var viewport = GetViewport();
 
             if (rightMouseDown == true) scale_size(e, getCurrPoint(e)[0], getCurrPoint(e)[1]);
 
@@ -452,14 +453,16 @@ function writertss() {
                 var RtssMark = RTSS_now_choose;
                 RtssMark.setPoint2D(angle2point[0] - Math.abs(currX02 - angle2point[0]), angle2point[1] - Math.abs(currY02 - angle2point[1]));
 
-                refreshMarkFromSop(GetNewViewport().sop);
+                refreshMarkFromSop(GetViewport().sop);
                 displayAllMark();
             }
-        }
-        Mouseup = function (e) {
-            MouseDownCheck = rightMouseDown = false;
+        });
+
+        BlueLightMouseupList = [];
+        BlueLightMouseupList.push(function (e) {
             if (RTSS_now_choose) RTSS_now_choose = null;
-        }
+        });
+
         AddMouseEvent();
     }
 }

@@ -3,13 +3,14 @@ let VIEWPORT = {};
 VIEWPORT.fixRow = null;
 VIEWPORT.fixCol = null;
 VIEWPORT.delPDFView = function (viewport) {
-    if (viewport.div && viewport.div.PDFView) {
-        viewport.div.removeChild(viewport.div.PDFView);
-        viewport.div.PDFView = undefined;
+    if (viewport && viewport.PDFView) {
+        viewport.div.removeChild(viewport.PDFView);
+        viewport.PDFView = undefined;
     }
 }
 
-VIEWPORT.initPixelSpacing = function (viewport) {
+VIEWPORT.initPixelSpacing = function (viewport, image) {
+    if (!image) return;
     if (viewport.tags.PixelSpacing) {
         viewport.transform.PixelSpacingX = 1.0 / parseFloat(viewport.tags.PixelSpacing.split("\\")[0]);
         viewport.transform.PixelSpacingY = 1.0 / parseFloat(viewport.tags.PixelSpacing.split("\\")[1]);
@@ -18,7 +19,8 @@ VIEWPORT.initPixelSpacing = function (viewport) {
     }
 }
 
-VIEWPORT.initImageOrientation = function (viewport) {
+VIEWPORT.initImageOrientation = function (viewport, image) {
+    if (!image) return;
     if (viewport.tags.ImageOrientationPatient) {
         viewport.transform.imageOrientationX = viewport.tags.ImageOrientationPatient.split("\\")[0];
         viewport.transform.imageOrientationY = viewport.tags.ImageOrientationPatient.split("\\")[1];
@@ -32,7 +34,8 @@ VIEWPORT.initImageOrientation = function (viewport) {
     }
 }
 
-VIEWPORT.initImagePosition = function (viewport) {
+VIEWPORT.initImagePosition = function (viewport, image) {
+    if (!image) return;
     if (viewport.tags.ImagePositionPatient) {
         viewport.transform.imagePositionX = parseFloat(viewport.tags.ImagePositionPatient.split("\\")[0]);
         viewport.transform.imagePositionY = parseFloat(viewport.tags.ImagePositionPatient.split("\\")[1]);
@@ -45,18 +48,21 @@ VIEWPORT.initImagePosition = function (viewport) {
 VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
     var label_LT = getClass("labelLT")[viewportNum];
     var label_RT = getClass("labelRT")[viewportNum];
+    label_LT.innerHTML = label_RT.innerHTML = "";
+    if (!image) return;
     var date = element.StudyDate;
     var time = element.StudyTime;
     date = ("" + date).replace(/^(\d{4})(\d\d)(\d\d)$/, '$1/$2/$3');
     time = ("" + time).replace(/^(\d{2})(\d\d)(\d\d)/, '$1:$2:$3');
     date = date + " " + time.substr(0, 8);
     //清空label的數值
-    label_LT.innerHTML = label_RT.innerHTML = "";
+
     //依照dicom tags設定檔載入影像
     function htmlEntities(str) {
-        str = Null2Empty(str);
+        if (str == undefined || str == null) str = "";
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace("\r\n", "<br/>").replace("\n", "<br/>");
     }
+
     for (var i = 0; i < DicomTags.LT.name.length; i++)
         label_LT.innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
     for (var i = 0; i < DicomTags.RT.name.length; i++) {
@@ -212,13 +218,14 @@ function displayPDF(pdf) {
     getClass("DicomCanvas")[viewportNumber].width = getClass("DicomCanvas")[viewportNumber].height = 1;
     GetViewportMark().width = GetViewportMark().height = 1;
     var element = GetViewport();
-    var NewElement = GetNewViewport();
-    for (var tag in element.DicomTagsList) element[element.DicomTagsList[tag][1]] = undefined;
+    //for (var tag in element.DicomTagsList) element[element.DicomTagsList[tag][1]] = undefined;
+    element.DicomTagsList = [];
     //element.image Width = element.image Height = 
-    element.newMousePointX = element.newMousePointY = NewElement.rotate = element.NowCanvasSizeWidth = element.NowCanvasSizeHeight =
-        NewElement.windowCenter = NewElement.windowWidth = NewElement.sop = undefined;
+    element.translate.x = element.translate.y = element.rotate =
+        element.windowCenter = element.windowWidth = element.sop = undefined;
+    element.scale = null;
 
-    VIEWPORT.delPDFView(element);
+    VIEWPORT.delPDFView(element.div);
     var iFrame = document.createElement("iframe");
     iFrame.className = "PDFView";
     iFrame.id = "PDFView_" + viewportNumber;
@@ -226,7 +233,7 @@ function displayPDF(pdf) {
     iFrame.style.width = iFrame.style.height = "100%";
     iFrame.style.left = "0px";
     iFrame.style.position = "absolute";
-    element.appendChild(iFrame);
+    element.div.appendChild(iFrame);
     element.PDFView = iFrame;
 
     getClass("labelWC")[viewportNumber].style.display = "none";
@@ -260,18 +267,8 @@ function parseDicomWithoutImage(dataSet, imageId) {
         };
         loadUID(DICOM_obj);
 
-        var checkleftCanvas = -1;
-        //如果有，checkleftCanvas就指向該series
-        for (var checkSeries in leftCanvasStudy) {
-            if (leftCanvasStudy[checkSeries] == dataSet.string('x0020000e')) {
-                checkleftCanvas = checkSeries;
-            }
-        }
-
         //改成無論是否曾出現在左側面板，都嘗試加到左側面板
         leftLayout.setImg2Left(new QRLv(dataSet), "patientID:" + securePassword(0, 99999, 1));
-
-        dicomImageCount += 1;
         displayPDF(pdf);
     }
 }
@@ -325,84 +322,78 @@ function loadDicomMultiFrame(image, imageId, viewportNum0) {
 
 function setSopToViewport(Sop, viewportNum = viewportNumber, framesNumber) {
     if (Sop.constructor.name == "String") Sop = Patient.findSop(Sop);
-    var NewElement = GetNewViewport(viewportNum);
+    var element = GetViewport(viewportNum);
 
-    if (NewElement.div.enable == false || NewElement.div.lockRender == true) return;
+    if (element.div.enable == false || element.div.lockRender == true) return;
 
     var image = Sop.image, pixelData = Sop.pixelData;
-    var MainCanvas = NewElement.canvas, MarkCanvas = NewElement.MarkCanvas;
-    NewElement.content.image = image;
+    var MainCanvas = element.canvas, MarkCanvas = element.MarkCanvas;
+    element.content.image = image;
 
-    if (image.data.intString("x00280008") > 1) NewElement.QRLevel = "frames";
-    else NewElement.QRLevel = "series";
+    if (image.data.intString("x00280008") > 1) element.QRLevel = "frames";
+    else element.QRLevel = "series";
 
-    createDicomTagsList2Viewport(NewElement);
-    if (NewElement.QRLevel == "frames") {
+    createDicomTagsList2Viewport(element);
+    if (element.QRLevel == "frames") {
         if (framesNumber != undefined) {
             GetViewport(viewportNum).framesNumber = framesNumber;
-            NewElement.content.pixelData = Sop.frames[framesNumber];
+            element.content.pixelData = Sop.frames[framesNumber];
         }
-        else NewElement.content.pixelData = getPatientbyImageID[NewElement.content.image.imageId].pixelData;
+        else element.content.pixelData = getPatientbyImageID[element.content.image.imageId].pixelData;
     }
-    else NewElement.content.pixelData = Sop.pixelData;//QRLevel is "series"
+    else element.content.pixelData = Sop.pixelData;//QRLevel is "series"
 
-    refleshCanvas(NewElement);
+    refleshCanvas(element);
 
-    VIEWPORT.loadViewport(NewElement, image, viewportNum);
+    VIEWPORT.loadViewport(element, image, viewportNum);
 
     //改成無論是否曾出現在左側面板，都嘗試加到左側面板
     leftLayout.setImg2Left(new QRLv(image.data), image.data.string('x00100020'));
-    leftLayout.appendCanvasBySeries(NewElement.tags.SeriesInstanceUID, image, pixelData);
-    leftLayout.refleshMarkWithSeries(NewElement.tags.SeriesInstanceUID);
+    leftLayout.appendCanvasBySeries(element.tags.SeriesInstanceUID, image, pixelData);
+    leftLayout.refleshMarkWithSeries(element.tags.SeriesInstanceUID);
 
-    var HandW = getStretchSize(NewElement.width, NewElement.height, NewElement.div);
-    NewElement.div.style = "position:block;left:100px;width:" + NewElement.width + "px;height:" + NewElement.height + "px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;";
-    NewElement.div.study = NewElement.tags.StudyInstanceUID;
-    NewElement.div.series = NewElement.tags.SeriesInstanceUID;
-    NewElement.div.sop = NewElement.tags.SOPInstanceUID;
+    //var HandW = getStretchSize(element.width, element.height, element.div);
+    //element.div.style = "position:block;left:100px;width:" + element.width + "px;height:" + element.height + "px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;";
+    //element.div.study = element.tags.StudyInstanceUID;
+    //element.div.series = element.tags.SeriesInstanceUID;
+    //element.div.sop = element.tags.SOPInstanceUID;
 
     //渲染影像到viewport和原始影像
     // showTheImage(element, image, 'normal', ifNowSeries, viewportNum);
     // showTheImage(originelement, image, 'origin', null, viewportNum);
 
     //紀錄Window Level
-    if (!NewElement.windowCenter) NewElement.windowCenter = image.windowCenter;
-    if (!NewElement.windowWidth) NewElement.windowWidth = image.windowWidth;
+    if (!element.windowCenter) element.windowCenter = image.windowCenter;
+    if (!element.windowWidth) element.windowWidth = image.windowWidth;
 
     SetTable();
 
-    GetViewport().style.backgroundColor = "rgb(10,6,6)";
-    GetViewport().style.border = bordersize + "px #FFC3FF groove";
+    GetViewport().div.style.backgroundColor = "rgb(10,6,6)";
+    GetViewport().div.style.border = bordersize + "px #FFC3FF groove";
 
     //渲染上去後畫布應該從原始大小縮小為適當大小
-    var HandW = getViewprtStretchSize(NewElement.width, NewElement.height, NewElement.div);
-    MainCanvas.style = "width:" + HandW[0] + "px;height:" + HandW[1] + "px;display:block;position:absolute;top:50%;left:50%";
-    MainCanvas.style.margin = "-" + (HandW[1] / 2) + "px 0 0 -" + (HandW[0] / 2) + "px";
+    var HandW = getViewprtStretchSize(element.width, element.height, element.div);
+    if (!element.scale && (image.width / HandW[0])) element.scale = (1.0 / (image.width / HandW[0]));
+    //MainCanvas.style = "width:" + HandW[0] + "px;height:" + HandW[1] + "px;display:block;position:absolute;top:50%;left:50%";
+    //MainCanvas.style.margin = "-" + (HandW[1] / 2) + "px 0 0 -" + (HandW[0] / 2) + "px";
 
     MarkCanvas.width = MainCanvas.width;
     MarkCanvas.height = MainCanvas.height;
 
     MarkCanvas.getContext("2d").save();
-    Css(MainCanvas, 'zIndex', "6");
+    MainCanvas.style["zIndex"] = "6";
     MarkCanvas.style = MainCanvas.style.cssText;
-    Css(MarkCanvas, 'zIndex', "8");
-    Css(MarkCanvas, 'pointerEvents', "none");
+    MarkCanvas.style["zIndex"] = "8";
+    MarkCanvas.style["pointerEvents"] = "none";
     /*BlueLight2//if (!(viewportNum0 >= 0))*/initNewCanvas(MainCanvas);
-    dicomImageCount += 1;
 
-    // if (!(viewportNum0 >= 0)) { --*
-    if (!(isNaN(NewElement.div.NowCanvasSizeHeight) || isNaN(NewElement.div.NowCanvasSizeWidth))) {
-        Css(MainCanvas, 'width', Fpx(NewElement.div.NowCanvasSizeWidth));
-        Css(MainCanvas, 'height', Fpx(NewElement.div.NowCanvasSizeHeight));
-        Css(MarkCanvas, 'width', Fpx(NewElement.div.NowCanvasSizeWidth));
-        Css(MarkCanvas, 'height', Fpx(NewElement.div.NowCanvasSizeHeight));
-    }
     setTransform(viewportNum);
 
     if (openWindow == false && openZoom == false) openMouseTool = true;
 
     //顯示資訊到label
     DisplaySeriesCount(viewportNum);
+    displayWindowLevel(viewportNum);
     //隱藏Table
     getByid("TableSelectNone").selected = true;
 
@@ -414,16 +405,17 @@ function setSopToViewport(Sop, viewportNum = viewportNumber, framesNumber) {
     displayAllRuler();
 
     //ScrollBar
-    if (NewElement.tags.NumberOfFrames && NewElement.tags.NumberOfFrames > 0 && NewElement.tags.framesNumber != undefined && NewElement.tags.framesNumber != null) {
-        NewElement.div.ScrollBar.setTotal(parseInt(NewElement.tags.NumberOfFrames));
-        NewElement.div.ScrollBar.setIndex(parseInt(NewElement.tags.framesNumber));
-        NewElement.div.ScrollBar.reflesh();
+    if (element.tags.NumberOfFrames && element.tags.NumberOfFrames > 0 && element.tags.framesNumber != undefined && element.tags.framesNumber != null) {
+        element.ScrollBar.setTotal(parseInt(element.tags.NumberOfFrames));
+        element.ScrollBar.setIndex(parseInt(element.tags.framesNumber));
+        element.ScrollBar.reflesh();
     } else {
-        var sopList = sortInstance(NewElement.sop);
-        NewElement.div.ScrollBar.setTotal(sopList.length);
-        NewElement.div.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == NewElement.tags.InstanceNumber));
-        NewElement.div.ScrollBar.reflesh();
+        var sopList = sortInstance(element.sop);
+        element.ScrollBar.setTotal(sopList.length);
+        element.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == element.tags.InstanceNumber));
+        element.ScrollBar.reflesh();
     }
+    refleshGUI();
 }
 
 function parseDicom(image, pixelData, viewportNum = viewportNumber) {
@@ -431,29 +423,28 @@ function parseDicom(image, pixelData, viewportNum = viewportNumber) {
     //if (VIEWPORT.lockViewportList && VIEWPORT.lockViewportList.includes(viewportNum)) return;
 
     var element = GetViewport(viewportNum);
-    var NewElement = GetNewViewport(viewportNum);
     if (element.enable == false || element.lockRender == true) return;
     var MarkCanvas = GetViewportMark(viewportNum);
     //原始影像，通常被用於放大鏡的參考
 
-    if (image.data.intString("x00280008") > 1) NewElement.QRLevel = "frames";
-    else NewElement.QRLevel = "series";
+    if (image.data.intString("x00280008") > 1) element.QRLevel = "frames";
+    else element.QRLevel = "series";
 
     //var PreviousSeriesInstanceUID = element.SeriesInstanceUID == undefined ? "undefined" : element.SeriesInstanceUID;
 
-    NewElement.content.image = image;
-    NewElement.content.pixelData = pixelData;
-    //需要setimage到NewElement
-    createDicomTagsList2Viewport(NewElement);
+    element.content.image = image;
+    element.content.pixelData = pixelData;
+    //需要setimage到element
+    createDicomTagsList2Viewport(element);
 
-    refleshCanvas(NewElement);
+    refleshCanvas(element);
 
     //StudyUID:x0020000d,Series UID:x0020000e,SOP UID:x00080018,
     //Instance Number:x00200013,影像檔編碼資料:imageId,PatientId:x00100020
 
 
 
-    VIEWPORT.loadViewport(NewElement, image, viewportNum);
+    VIEWPORT.loadViewport(element, image, viewportNum);
     /*//載入image Position
     initImagePosition(element);
     //載入Pixel Spacing
@@ -483,72 +474,55 @@ function parseDicom(image, pixelData, viewportNum = viewportNumber) {
         if (element.newMousePointX == null) element.newMousePointX = element.newMousePointY = 0;
     }*/
 
-
-    //BlueLight2
-    //表示目前的影像在左側的面板是否已經有了
-    /*var checkleftCanvas = -1;
-    //如果有，checkleftCanvas就指向該series
-    for (var checkSeries in leftCanvasStudy) {
-        if (leftCanvasStudy[checkSeries] == image.data.string('x0020000e')) {
-            checkleftCanvas = checkSeries;
-        }
-    }*/
-
     //改成無論是否曾出現在左側面板，都嘗試加到左側面板
     leftLayout.setImg2Left(new QRLv(image.data), image.data.string('x00100020'));
-    leftLayout.appendCanvasBySeries(NewElement.tags.SeriesInstanceUID, image, pixelData);
-    leftLayout.refleshMarkWithSeries(NewElement.tags.SeriesInstanceUID);
+    leftLayout.appendCanvasBySeries(element.tags.SeriesInstanceUID, image, pixelData);
+    leftLayout.refleshMarkWithSeries(element.tags.SeriesInstanceUID);
 
     //顯示資訊到label
     DisplaySeriesCount(viewportNum);
-    var HandW = getStretchSize(NewElement.width, NewElement.height, NewElement.div);
-    element.style = "position:block;left:100px;width:" + NewElement.width + "px;height:" + NewElement.height + "px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;";
-    element.study = NewElement.tags.StudyInstanceUID;
-    element.series = NewElement.tags.SeriesInstanceUID;
-    element.sop = NewElement.tags.SOPInstanceUID;
+    displayWindowLevel(viewportNum);
+    //var HandW = getStretchSize(element.width, element.height, element.div);
+    //element.div.style = "position:block;left:100px;width:" + element.width + "px;height:" + element.height + "px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;";
+    //element.study = element.tags.StudyInstanceUID;
+    //element.series = element.tags.SeriesInstanceUID;
+    //element.sop = element.tags.SOPInstanceUID;
 
     //渲染影像到viewport和原始影像
     // showTheImage(element, image, 'normal', ifNowSeries, viewportNum);
     // showTheImage(originelement, image, 'origin', null, viewportNum);
 
     //紀錄Window Level
-    if (!NewElement.windowCenter) NewElement.windowCenter = image.windowCenter;
-    if (!NewElement.windowWidth) NewElement.windowWidth = image.windowWidth;
+    if (!element.windowCenter) element.windowCenter = image.windowCenter;
+    if (!element.windowWidth) element.windowWidth = image.windowWidth;
 
-    var MainCanvas = element.canvas();
+    var MainCanvas = element.canvas;
     SetTable();
 
-    GetViewport().style.backgroundColor = "rgb(10,6,6)";
-    GetViewport().style.border = bordersize + "px #FFC3FF groove";
+    element.div.style.backgroundColor = "rgb(10,6,6)";
+    element.div.style.border = bordersize + "px #FFC3FF groove";
 
     //渲染上去後畫布應該從原始大小縮小為適當大小
-    var HandW = getViewprtStretchSize(NewElement.width, NewElement.height, element);
-    MainCanvas.style = "width:" + HandW[0] + "px;height:" + HandW[1] + "px;display:block;position:absolute;top:50%;left:50%";
-    MainCanvas.style.margin = "-" + (HandW[1] / 2) + "px 0 0 -" + (HandW[0] / 2) + "px";
+    var HandW = getViewprtStretchSize(element.width, element.height, element.div);
+    if (!element.scale && (image.width / HandW[0])) element.scale = (1.0 / (image.width / HandW[0]));
+    //MainCanvas.style = "width:" + HandW[0] + "px;height:" + HandW[1] + "px;display:block;position:absolute;top:50%;left:50%";
+    //MainCanvas.style.margin = "-" + (HandW[1] / 2) + "px 0 0 -" + (HandW[0] / 2) + "px";
 
     MarkCanvas.width = MainCanvas.width;
     MarkCanvas.height = MainCanvas.height;
 
     MarkCanvas.getContext("2d").save();
-    Css(MainCanvas, 'zIndex', "6");
+    MainCanvas.style["zIndex"] = "6";
     MarkCanvas.style = MainCanvas.style.cssText;
-    Css(MarkCanvas, 'zIndex', "8");
-    Css(MarkCanvas, 'pointerEvents', "none");
+    MarkCanvas.style["zIndex"] = "8";
+    MarkCanvas.style["pointerEvents"] = "none";
     /*BlueLight2//if (!(viewportNum0 >= 0))*/initNewCanvas(MainCanvas);
-    dicomImageCount += 1;
     //BlueLight2//if (!(viewportNum0 >= 0)) displayWindowLevel();
     //BlueLight2//else displayWindowLevel(viewportNum);
 
-    // if (!(viewportNum0 >= 0)) { --*
-    if (!(isNaN(element.NowCanvasSizeHeight) || isNaN(element.NowCanvasSizeWidth))) {
-        Css(MainCanvas, 'width', Fpx(element.NowCanvasSizeWidth));
-        Css(MainCanvas, 'height', Fpx(element.NowCanvasSizeHeight));
-        Css(MarkCanvas, 'width', Fpx(element.NowCanvasSizeWidth));
-        Css(MarkCanvas, 'height', Fpx(element.NowCanvasSizeHeight));
-    }
     setTransform(viewportNum);
-    //Css(MainCanvas, 'transform', "translate(" + ToPx(element.newMousePointX) + "," + ToPx(element.newMousePointY) + ")rotate(" + element.rotateValue + "deg)");
-    //Css(MarkCanvas, 'transform', "translate(" + ToPx(element.newMousePointX) + "," + ToPx(element.newMousePointY) + ")rotate(" + element.rotateValue + "deg)");
+    //MainCanvas.style['transform']="translate(" + ToPx(element.translate.x) + "," + ToPx(element.translate.y) + ")rotate(" + element.rotateValue + "deg)";
+    //MarkCanvas.style['transform']="translate(" + ToPx(element.translate.x) + "," + ToPx(element.translate.y) + ")rotate(" + element.rotateValue + "deg)";
 
     if (openWindow == false && openZoom == false) openMouseTool = true;
     //openChangeFile = true;
@@ -566,16 +540,17 @@ function parseDicom(image, pixelData, viewportNum = viewportNumber) {
     displayAllRuler();
 
     //ScrollBar
-    if (NewElement.tags.NumberOfFrames && NewElement.tags.NumberOfFrames > 0 && NewElement.tags.framesNumber != undefined && NewElement.tags.framesNumber != null) {
-        NewElement.div.ScrollBar.setTotal(parseInt(NewElement.tags.NumberOfFrames));
-        NewElement.div.ScrollBar.setIndex(parseInt(NewElement.tags.framesNumber));
-        NewElement.div.ScrollBar.reflesh();
+    if (element.tags.NumberOfFrames && element.tags.NumberOfFrames > 0 && element.tags.framesNumber != undefined && element.tags.framesNumber != null) {
+        element.ScrollBar.setTotal(parseInt(element.tags.NumberOfFrames));
+        element.ScrollBar.setIndex(parseInt(element.tags.framesNumber));
+        element.ScrollBar.reflesh();
     } else {
-        var sopList = sortInstance(NewElement.sop);
-        NewElement.div.ScrollBar.setTotal(sopList.length);
-        NewElement.div.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == NewElement.tags.InstanceNumber));
-        NewElement.div.ScrollBar.reflesh();
+        var sopList = sortInstance(element.sop);
+        element.ScrollBar.setTotal(sopList.length);
+        element.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == element.tags.InstanceNumber));
+        element.ScrollBar.reflesh();
     }
+    refleshGUI();
 }
 
 function onlyLoadImage(imageId) {
@@ -660,114 +635,29 @@ function initNewCanvas(newCanvas) {
     if (viewportNumber2 > 3) viewportNumber2 = 0
     try {
         for (var i = 0; i < Viewport_Total; i++) {
-            GetNewViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
-            GetNewViewport(i).div.removeEventListener("mousemove", Mousemove, false);
-            GetNewViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
-            GetNewViewport(i).div.removeEventListener("mouseup", Mouseup, false);
-            GetNewViewport(i).div.removeEventListener("mouseout", Mouseout, false);
-            GetNewViewport(i).div.removeEventListener("wheel", Wheel, false);
-            GetNewViewport(i).div.removeEventListener("mousedown", thisF, false);
-            GetNewViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
-            GetNewViewport(i).div.removeEventListener("touchend", touchendF, false);
-            GetNewViewport(i).div.addEventListener("touchstart", thisF, false);
-            GetNewViewport(i).div.addEventListener("mousedown", thisF, false);
-            GetNewViewport(i).div.addEventListener("wheel", Wheel, false);
+            GetViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
+            GetViewport(i).div.removeEventListener("mousemove", BlueLightMousemove, false);
+            GetViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
+            GetViewport(i).div.removeEventListener("mouseup", BlueLightMouseup, false);
+            GetViewport(i).div.removeEventListener("mouseout", Mouseout, false);
+            GetViewport(i).div.removeEventListener("wheel", Wheel, false);
+            GetViewport(i).div.removeEventListener("mousedown", thisF, false);
+            GetViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
+            GetViewport(i).div.removeEventListener("touchend", BlueLightTouchend, false);
+            GetViewport(i).div.addEventListener("touchstart", thisF, false);
+            GetViewport(i).div.addEventListener("mousedown", thisF, false);
+            GetViewport(i).div.addEventListener("wheel", Wheel, false);
         }
-        GetNewViewport().div.removeEventListener("touchstart", thisF, false);
-        GetNewViewport().div.removeEventListener("mousedown", thisF, false);
-        GetNewViewport().div.addEventListener("contextmenu", contextmenuF, false);
-        GetNewViewport().div.addEventListener("mousemove", Mousemove, false);
-        GetNewViewport().div.addEventListener("mousedown", BlueLightMousedown, false);
-        GetNewViewport().div.addEventListener("mouseup", Mouseup, false);
-        GetNewViewport().div.addEventListener("mouseout", Mouseout, false);
-        GetNewViewport().div.addEventListener("touchstart", BlueLightTouchstart, false);
-        GetNewViewport().div.addEventListener("touchmove", touchmoveF, false);
-        GetNewViewport().div.addEventListener("touchend", touchendF, false);
+        GetViewport().div.removeEventListener("touchstart", thisF, false);
+        GetViewport().div.removeEventListener("mousedown", thisF, false);
+        GetViewport().div.addEventListener("contextmenu", contextmenuF, false);
+        GetViewport().div.addEventListener("mousemove", BlueLightMousemove, false);
+        GetViewport().div.addEventListener("mousedown", BlueLightMousedown, false);
+        GetViewport().div.addEventListener("mouseup", BlueLightMouseup, false);
+        GetViewport().div.addEventListener("mouseout", Mouseout, false);
+        GetViewport().div.addEventListener("touchstart", BlueLightTouchstart, false);
+        GetViewport().div.addEventListener("touchmove", BlueLightTouchmove, false);
+        GetViewport().div.addEventListener("touchend", BlueLightTouchend, false);
     } catch (ex) { console.log(ex); }
-    //GetNewViewport().div.addEventListener("wheel", wheelF, false); --*
-}
-
-//按下滑鼠或觸控要做的事情 --*
-function DivDraw(e) {
-    //if (MouseDownCheck == false) getByid("MeasureLabel").style.display = "none";
-    if (openZoom == false && openMeasure == false && MouseDownCheck == false && openAngle == 0) return;
-    //magnifierDiv.style.display="none";
-    // x_out = -magnifierWidth / 2; // 與游標座標之水平距離
-    // y_out = -magnifierHeight / 2; // 與游標座標之垂直距離
-    x_out = -parseInt(magnifierCanvas.style.width) / 2; // 與游標座標之水平距離
-    y_out = -parseInt(magnifierCanvas.style.height) / 2; // 與游標座標之垂直距離
-
-    /*if (openMeasure && (MouseDownCheck == true || TouchDownCheck == true)) {
-        getByid("MeasureLabel").style.display = '';
-        if (MeasureXY2[0] > MeasureXY[0])
-            x_out = 20; // 與游標座標之水平距離
-        else x_out = -20;
-        if (MeasureXY2[1] > MeasureXY[1])
-            y_out = 20; // 與游標座標之水平距離
-        else y_out = -20;
-    }*/
-    if (openAngle >= 2) {
-        getByid("AngleLabel").style.display = '';
-        if (AngleXY2[0] > AngleXY0[0])
-            x_out = 20; // 與游標座標之水平距離
-        else x_out = -20;
-        if (AngleXY2[1] > AngleXY0[1])
-            y_out = 20; // 與游標座標之水平距離
-        else y_out = -20;
-    } else {
-        getByid("AngleLabel").style.display = 'none';
-    }
-
-    if (document.body.scrollTop && document.body.scrollTop != 0) {
-        dbst = document.body.scrollTop;
-        dbsl = document.body.scrollLeft;
-    } else {
-        dbst = document.getElementsByTagName("html")[0].scrollTop;
-        dbsl = document.getElementsByTagName("html")[0].scrollLeft;
-    }
-    if (openZoom)
-        dgs = document.getElementById("magnifierDiv").style;
-    else if (openMeasure)
-        dgs = document.getElementById("MeasureLabel").style;
-    else /* if (openAngle==2)*/
-        dgs = document.getElementById("AngleLabel").style;
-    y = e.clientY;
-    x = e.clientX;
-    if (!y || !x) {
-        y = e.touches[0].clientY;
-        x = e.touches[0].clientX;
-    }
-    if (MouseDownCheck == true || TouchDownCheck == true || openAngle == 2) {
-        dgs.top = y + dbst + y_out + "px";
-        dgs.left = x + dbsl + x_out + "px";
-    }
-    if (openMeasure) {
-        /*getByid("MeasureLabel").innerText = parseInt(Math.sqrt(
-            Math.pow(MeasureXY2[0] / GetNewViewport().transform.PixelSpacingX - MeasureXY[0] / GetNewViewport().transform.PixelSpacingX, 2) +
-            Math.pow(MeasureXY2[1] / GetNewViewport().transform.PixelSpacingY - MeasureXY[1] / GetNewViewport().transform.PixelSpacingY, 2), 2)) +
-            "mm";*/
-    } else if (openAngle == 2) {
-        var getAngle = ({
-            x: x1,
-            y: y1
-        }, {
-            x: x2,
-            y: y2
-        }) => {
-            const dot = x1 * x2 + y1 * y2
-            const det = x1 * y2 - y1 * x2
-            const angle = Math.atan2(det, dot) / Math.PI * 180
-            return (angle + 360) % 360
-        }
-        var angle1 = getAngle({
-            x: AngleXY0[0] - AngleXY2[0],
-            y: AngleXY0[1] - AngleXY2[1],
-        }, {
-            x: AngleXY0[0] - AngleXY1[0],
-            y: AngleXY0[1] - AngleXY1[1],
-        });
-        if (angle1 > 180) angle1 = 360 - angle1;
-        getByid("AngleLabel").innerText = parseInt(angle1) + "°";
-    }
-    if (parseInt(getByid("MeasureLabel").innerText) <= 1) getByid("MeasureLabel").style.display = "none";
+    //GetViewport().div.addEventListener("wheel", wheelF, false); --*
 }

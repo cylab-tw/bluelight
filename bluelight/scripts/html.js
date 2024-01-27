@@ -1,11 +1,12 @@
 function html_onload() {
-  document.documentElement.onmousemove = DivDraw;
-  document.documentElement.ontouchmove = DivDraw;
   document.body.style.overscrollBehavior = "none";
   getByid("openFile").onclick = function () {
     if (this.enable == false) return;
     getByid('myfile').click();
   }
+
+  //點到其他地方時，關閉抽屜
+  getClass("container")[0].addEventListener("mousedown", hideAllDrawer, false);
 
   window.addEventListener("keydown", KeyDown, true);
   window.addEventListener("keyup", KeyUp, true);
@@ -15,11 +16,11 @@ function html_onload() {
 
   function KeyDown(KeyboardKeys) {
     var key = KeyboardKeys.which
-    //修復key===33和34時，GetViewport().InstanceNumber為字串之問題
+    //修復key===33和34時，GetViewport().tags.InstanceNumber為字串之問題
     if (key === 33) {
-      jump2UpOrEnd(parseInt(GetViewport().InstanceNumber) - parseInt(Patient.findSeries(GetNewViewport().series).Sop.length / 10) + 0, undefined);
+      jump2UpOrEnd(parseInt(GetViewport().tags.InstanceNumber) - parseInt(Patient.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
     } else if (key === 34) {
-      jump2UpOrEnd(parseInt(GetViewport().InstanceNumber) + parseInt(Patient.findSeries(GetNewViewport().series).Sop.length / 10) + 0, undefined);
+      jump2UpOrEnd(parseInt(GetViewport().tags.InstanceNumber) + parseInt(Patient.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
     } else if (key === 36) {
       jump2UpOrEnd(0, 'up');
     } else if (key === 35) {
@@ -27,49 +28,27 @@ function html_onload() {
     } else if (key === 17) {
       KeyCode_ctrl = true;
     } else if (KeyboardKeys.key == '-') {
-      var viewport = GetViewport(), canvas = viewport.canvas();
-      var tempWidth = parseFloat(canvas.style.width);
-      var tempHeight = parseFloat(canvas.style.height)
-      var canvasW = GetViewportMark().style.width = canvas.style.width = tempWidth / 1.05 + "px";
-      var cnavsH = GetViewportMark().style.height = canvas.style.height = tempHeight / 1.05 + "px";
-      viewport.newMousePointX += Math.abs(tempWidth - (parseFloat(canvasW))) / 2;
-      viewport.newMousePointY += Math.abs(tempHeight - (parseFloat(cnavsH))) / 2;
-      viewport.NowCanvasSizeWidth = parseFloat(canvas.style.width);
-      viewport.NowCanvasSizeHeight = parseFloat(canvas.style.height);
+      var viewport = GetViewport(), canvas = GetViewport().canvas;
+      if (viewport.scale > 0.1) viewport.scale -= viewport.scale * 0.05;
       setTransform();
       if (openLink == true) {
         for (var i = 0; i < Viewport_Total; i++) {
           if (i == viewportNumber) continue;
-          GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = canvas.style.width;
-          GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = canvas.style.height;
-          GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
-          GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
-          GetViewport(i).newMousePointX = viewport.newMousePointX;
-          GetViewport(i).newMousePointY = viewport.newMousePointY;
+          GetViewport(i).scale = GetViewport().scale;
+          GetViewport(i).translate.x = viewport.translate.x;
+          GetViewport(i).translate.y = viewport.translate.y;
           setTransform(i);
         }
       }
       displayAllRuler();
     } else if (KeyboardKeys.key == '+') {
-      var viewport = GetViewport(), canvas = viewport.canvas();
-      var tempWidth = parseFloat(canvas.style.width);
-      var tempHeight = parseFloat(canvas.style.height)
-      var canvasW = GetViewportMark().style.width = canvas.style.width = tempWidth * 1.05 + "px";
-      var cnavsH = GetViewportMark().style.height = canvas.style.height = tempHeight * 1.05 + "px";
-      viewport.newMousePointX -= Math.abs(tempWidth - (parseFloat(canvasW))) / 2;
-      viewport.newMousePointY -= Math.abs(tempHeight - (parseFloat(cnavsH))) / 2;
-      viewport.NowCanvasSizeWidth = parseFloat(canvas.style.width);
-      viewport.NowCanvasSizeHeight = parseFloat(canvas.style.height);
+      var viewport = GetViewport(), canvas = GetViewport().canvas;
+      if (viewport.scale < 10) viewport.scale += viewport.scale * 0.05;
       setTransform();
       if (openLink == true) {
         for (var i = 0; i < Viewport_Total; i++) {
           if (i == viewportNumber) continue;
-          GetViewportMark(i).style.width = GetViewport(i).canvas().style.width = canvas.style.width;
-          GetViewportMark(i).style.height = GetViewport(i).canvas().style.height = canvas.style.height;
-          GetViewport(i).NowCanvasSizeWidth = parseFloat(canvas.style.width);
-          GetViewport(i).NowCanvasSizeHeight = parseFloat(canvas.style.height);
-          GetViewport(i).newMousePointX = viewport.newMousePointX;
-          GetViewport(i).newMousePointY = viewport.newMousePointY;
+          GetViewport(i).scale = GetViewport().scale;
           setTransform(i);
         }
       }
@@ -180,10 +159,12 @@ function html_onload() {
         newCanvas.height = oldCanvas.height;
         return newCanvas;
       }
-      var newCanvas = BuildCanvas(GetNewViewport().canvas);
+      var newCanvas = BuildCanvas(GetViewport().canvas);
       var context = newCanvas.getContext('2d');
-      context.drawImage(GetNewViewport().canvas, 0, 0);
-      context.drawImage(GetViewportMark(), 0, 0);
+      context.translate(newCanvas.width / 2, newCanvas.height / 2);
+      context.rotate((GetViewport().rotate * Math.PI) / 180);
+      context.drawImage(GetViewport().canvas, -newCanvas.width / 2, -newCanvas.height / 2);
+      context.drawImage(GetViewportMark(), -newCanvas.width / 2, -newCanvas.height / 2);
       link.href = newCanvas.toDataURL()
       link.click();
     }
@@ -194,6 +175,7 @@ function html_onload() {
 
     if (this.enable == false) return;
     //BL_mode = 'MouseTool';
+    hideAllDrawer();
     set_BL_model('MouseTool');
     mouseTool();
     //cancelTools();
@@ -204,6 +186,7 @@ function html_onload() {
   getByid("b_Scroll").onclick = function () {
     if (this.enable == false) return;
     //BL_mode = 'scroll';
+    hideAllDrawer();
     set_BL_model('scroll');
     scroll();
     drawBorder(this);
@@ -211,6 +194,7 @@ function html_onload() {
 
   getByid("annotation1").onclick = function () {
     if (this.enable == false) return;
+    hideAllDrawer();
     if (getByid("SplitViewportDiv").style.display == "none")
       getByid("SplitViewportDiv").style.display = "";
     else
@@ -226,44 +210,56 @@ function html_onload() {
   }
 
   getByid("Rotate_90").onclick = function () {
-    GetNewViewport().rotate += 90;
+    GetViewport().rotate += 90;
+    GetViewport().rotate = (GetViewport().rotate % 360 + 360) % 360;//有考慮負值
     setTransform();
     if (openLink == true) {
       for (var z = 0; z < Viewport_Total; z++) {
-        GetNewViewport(z).rotate = GetNewViewport().rotate;
+        GetViewport(z).rotate = GetViewport().rotate;
         setTransform(z);
       }
     }
   }
 
   getByid("Rotate_i90").onclick = function () {
-    GetNewViewport().rotate -= 90;
+    GetViewport().rotate -= 90;
+    GetViewport().rotate = (GetViewport().rotate % 360 + 360) % 360;//有考慮負值
     setTransform();
     if (openLink == true) {
       for (var z = 0; z < Viewport_Total; z++) {
-        GetNewViewport(z).rotate = GetNewViewport().rotate;
+        GetViewport(z).rotate = GetViewport().rotate;
         setTransform(z);
       }
     }
   }
 
-  /*getByid("Rotate_180").onclick = function () {
-    GetNewViewport().rotate = 180;
+  getByid("Rotate_0").onclick = function () {
+    GetViewport().rotate = 0;
     setTransform();
     if (openLink == true) {
       for (var z = 0; z < Viewport_Total; z++) {
-        GetNewViewport(z).rotate = GetNewViewport().rotate;
+        GetViewport(z).rotate = GetViewport().rotate;
+        setTransform(z);
+      }
+    }
+  }
+  /*getByid("Rotate_180").onclick = function () {
+    GetViewport().rotate = 180;
+    setTransform();
+    if (openLink == true) {
+      for (var z = 0; z < Viewport_Total; z++) {
+        GetViewport(z).rotate = GetViewport().rotate;
         setTransform(z);
       }
     }
   }
 
   getByid("Rotate_270").onclick = function () {
-    GetNewViewport().rotate = 270;
+    GetViewport().rotate = 270;
     setTransform();
     if (openLink == true) {
       for (var z = 0; z < Viewport_Total; z++) {
-        GetNewViewport(z).rotate = GetNewViewport().rotate;
+        GetViewport(z).rotate = GetViewport().rotate;
         setTransform(z);
       }
     }
@@ -272,6 +268,7 @@ function html_onload() {
   getByid("WindowRevision").onclick = function () {
     if (this.enable == false) return;
     //BL_mode = 'windowlevel';
+    hideAllDrawer("windowlevel");
     set_BL_model('windowlevel');
     windowlevel();
     drawBorder(this);
@@ -284,8 +281,33 @@ function html_onload() {
     //SetTable();
   }
 
+  getByid("clearviewportImg").onclick = function () {
+    hideAllDrawer();
+    GetViewport().clear();
+    displayMark();
+    displayRuler();
+    putLabel();
+    displayAIM();
+    displayAnnotation();
+    VIEWPORT.loadViewport(GetViewport(), null, viewportNumber);
+    DisplaySeriesCount();
+    getClass("labelLT")[viewportNumber].innerText = "";
+    getClass("labelWC")[viewportNumber].innerText = "";  
+    getClass("labelRT")[viewportNumber].innerText = "";
+    getClass("labelRB")[viewportNumber].innerText = "";   
+  }
+  getByid("OtherImg").onclick = function () {
+    hideAllDrawer("othereDIv");
+    invertDisplayById('othereDIv');
+    if (getByid("othereDIv").style.display == "none") getByid("OtherImgParent").style.position = "";
+    else {
+      getByid("OtherImgParent").style.position = "relative";
+      //onElementLeave();
+    }
+  }
+
   getByid("openMeasureImg").onclick = function () {
-    hideAllImgListDiv("openMeasureDIv");
+    hideAllDrawer("openMeasureDIv");
     invertDisplayById('openMeasureDIv');
     if (getByid("openMeasureDIv").style.display == "none") getByid("MeasureImgParent").style.position = "";
     else {
@@ -295,7 +317,7 @@ function html_onload() {
   }
 
   getByid("openTransformationsImg").onclick = function () {
-    hideAllImgListDiv("openTransformationsDiv");
+    hideAllDrawer("openTransformationsDiv");
     invertDisplayById('openTransformationsDiv');
     if (getByid("openTransformationsDiv").style.display == "none") getByid("TransformationsImgParent").style.position = "";
     else {
@@ -334,6 +356,7 @@ function html_onload() {
 
   getByid("zoom").onclick = function () {
     if (this.enable == false) return;
+    hideAllDrawer();
     //BL_mode = 'zoom';
     set_BL_model('zoom')
     zoom();
@@ -342,21 +365,21 @@ function html_onload() {
 
   getByid("horizontal_flip").onclick = function () {
     if (this.enable == false) return;
-    GetNewViewport().HorizontalFlip = !GetNewViewport().HorizontalFlip;
-    if (openLink) SetAllViewport("HorizontalFlip", GetNewViewport().HorizontalFlip);
+    GetViewport().HorizontalFlip = !GetViewport().HorizontalFlip;
+    if (openLink) SetAllViewport("HorizontalFlip", GetViewport().HorizontalFlip);
     refleshViewport();
   }
 
   getByid("vertical_flip").onclick = function () {
     if (this.enable == false) return;
-    GetNewViewport().VerticalFlip = !GetNewViewport().VerticalFlip;
-    if (openLink) SetAllViewport("VerticalFlip", GetNewViewport().VerticalFlip);
+    GetViewport().VerticalFlip = !GetViewport().VerticalFlip;
+    if (openLink) SetAllViewport("VerticalFlip", GetViewport().VerticalFlip);
     refleshViewport();
   }
   getByid("color_invert").onclick = function () {
     if (this.enable == false) return;
-    GetNewViewport().invert = !GetNewViewport().invert;
-    if (openLink) SetAllViewport("invert", GetNewViewport().invert);
+    GetViewport().invert = !GetViewport().invert;
+    if (openLink) SetAllViewport("invert", GetViewport().invert);
     refleshViewport();
   }
 
@@ -369,6 +392,7 @@ function html_onload() {
   getByid("resetImg").onclick = function () {
     if (this.enable == false) return;
     resetAndLoadImg();
+    hideAllDrawer();
   }
 
   getByid("MeasureRuler").onclick = function () {
@@ -376,7 +400,7 @@ function html_onload() {
     set_BL_model('measure');
     measure();
     drawBorder(getByid("openMeasureImg"));
-    getByid("openMeasureImg").click();
+    hideAllDrawer();
   }
 
   getByid("AngleRuler").onclick = function () {
@@ -385,15 +409,15 @@ function html_onload() {
     set_BL_model('angle');
     angle();
     drawBorder(getByid("openMeasureImg"));
-    getByid("openMeasureImg").click();
+    hideAllDrawer();
   }
 
   getByid("playvideo").onclick = function () {
     if (this.enable == false) return;
-    openAngle = 0;
     drawBorder(this);
-    GetNewViewport().cine = !GetNewViewport().cine;
-    if (GetNewViewport().cine) {
+    hideAllDrawer();
+    GetViewport().cine = !GetViewport().cine;
+    if (GetViewport().cine) {
       getByid('labelPlay').style.display = '';
       getByid('textPlay').style.display = '';
     }
@@ -401,12 +425,12 @@ function html_onload() {
       getByid('labelPlay').style.display = 'none';
       getByid('textPlay').style.display = 'none';
     }
-    PlayTimer();
+    PlayCine();
   }
 
   getByid("MarkButton").onclick = function () {
-    GetNewViewport().drawMark = !GetNewViewport().drawMark;
-    for (var i = 0; i < Viewport_Total; i++) GetViewportMark(i).getContext("2d").clearRect(0, 0, GetNewViewport(i).width, GetNewViewport(i).height);
+    GetViewport().drawMark = !GetViewport().drawMark;
+    for (var i = 0; i < Viewport_Total; i++) GetViewportMark(i).getContext("2d").clearRect(0, 0, GetViewport(i).width, GetViewport(i).height);
     displayAllMark()
     changeMarkImg();
   }
@@ -419,10 +443,11 @@ function html_onload() {
 
   getByid("MarkupImg").onclick = function () {
     if (this.enable == false) return;
+    hideAllDrawer();
     openDisplayMarkup = !openDisplayMarkup;
     var TableSelectOnChange = function () {
-      GetViewport().style.overflowY = "hidden";
-      GetViewport().style.overflowX = "hidden";
+      GetViewport().div.style.overflowY = "hidden";
+      GetViewport().div.style.overflowX = "hidden";
       if (getByid("DICOMTagsSelect").selected == true)
         displayDicomTagsList();
       else if (getByid("AIMSelect").selected == true)
@@ -460,20 +485,20 @@ function html_onload() {
 
   getByid("WindowLevelSelect").onchange = function () {
     if (getByid("WindowDefault").selected == true) {
-      getByid("textWC").value = GetNewViewport().windowCenter = GetNewViewport().content.image.windowCenter;
-      getByid("textWW").value = GetNewViewport().windowWidth = GetNewViewport().content.image.windowWidth;
-      if (openLink) SetAllViewport("windowCenter", GetNewViewport().windowCenter);
-      if (openLink) SetAllViewport("windowWidth", GetNewViewport().windowWidth);
+      getByid("textWC").value = GetViewport().windowCenter = GetViewport().content.image.windowCenter;
+      getByid("textWW").value = GetViewport().windowWidth = GetViewport().content.image.windowWidth;
+      if (openLink) SetAllViewport("windowCenter", GetViewport().windowCenter);
+      if (openLink) SetAllViewport("windowWidth", GetViewport().windowWidth);
       refleshViewport();
       WindowOpen = true;
       return;
     }
     for (var i = 0; i < getClass("WindowSelect").length; i++) {
       if (getClass("WindowSelect")[i].selected == true) {
-        GetNewViewport().windowCenter = getByid("textWC").value = parseInt(getClass("WindowSelect")[i].getAttribute('wc'));
-        GetNewViewport().windowWidth = getByid("textWW").value = parseInt(getClass("WindowSelect")[i].getAttribute('ww'));
-        if (openLink) SetAllViewport("windowCenter", GetNewViewport().windowCenter);
-        if (openLink) SetAllViewport("windowWidth", GetNewViewport().windowWidth);
+        GetViewport().windowCenter = getByid("textWC").value = parseInt(getClass("WindowSelect")[i].getAttribute('wc'));
+        GetViewport().windowWidth = getByid("textWW").value = parseInt(getClass("WindowSelect")[i].getAttribute('ww'));
+        if (openLink) SetAllViewport("windowCenter", GetViewport().windowCenter);
+        if (openLink) SetAllViewport("windowWidth", GetViewport().windowWidth);
         refleshViewport();
         WindowOpen = true;
         break;
@@ -482,17 +507,17 @@ function html_onload() {
   }
 
   getByid("textWC").onchange = function () {
-    GetNewViewport().windowCenter = parseInt(getByid("textWC").value);
+    GetViewport().windowCenter = parseInt(getByid("textWC").value);
     getByid("WindowCustom").selected = true;
-    if (openLink) SetAllViewport("windowCenter", GetNewViewport().windowCenter);
+    if (openLink) SetAllViewport("windowCenter", GetViewport().windowCenter);
     refleshViewport();
     WindowOpen = true;
   }
 
   getByid("textWW").onchange = function () {
-    GetNewViewport().windowWidth = parseInt(getByid("textWW").value);
+    GetViewport().windowWidth = parseInt(getByid("textWW").value);
     getByid("WindowCustom").selected = true;
-    if (openLink) SetAllViewport("windowWidth", GetNewViewport().windowWidth);
+    if (openLink) SetAllViewport("windowWidth", GetViewport().windowWidth);
     refleshViewport();
     WindowOpen = true;
   }
@@ -501,7 +526,7 @@ function html_onload() {
     if ((parseInt(getByid('textPlay').value) <= 1)) getByid('textPlay').value = 1;
     else if (parseInt(getByid('textPlay').value) >= 60) getByid('textPlay').value = 60;
     else if (!(parseInt(getByid('textPlay').value) >= 1)) getByid('textPlay').value = 10;
-    PlayTimer();
+    PlayCine();
   }
 
   getByid("labelZoom").onchange = function () {
@@ -591,9 +616,7 @@ function addEvent2SplitViewport() {
 }
 
 function changeMarkImg() {
-  getByid("MeasureLabel").style.display = "none";
-  getByid("AngleLabel").style.display = "none";
-  if (GetNewViewport().drawMark == true) getByid("MarkButton").src = "../image/icon/black/fist0.png";
+  if (GetViewport().drawMark == true) getByid("MarkButton").src = "../image/icon/black/fist0.png";
   else getByid("MarkButton").src = "../image/icon/black/fist1.png";
 }
 
@@ -659,8 +682,8 @@ function onElementLeave() {
   var elem = getByid("tooltiptext_img");
   if (elem) elem.remove();
 }
-function hideAllImgListDiv(id) {
-  for (var obj of getClass("imgListDiv")) {
+function hideAllDrawer(id) {
+  for (var obj of getClass("drawer")) {
     if (id && obj.id == id) {
 
     } else {

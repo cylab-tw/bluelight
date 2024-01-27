@@ -1,3 +1,6 @@
+//decode function
+let decodeImageFrame;
+
 function readXML(url) {
   var oReq = new XMLHttpRequest();
   try {

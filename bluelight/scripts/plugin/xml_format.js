@@ -11,7 +11,7 @@ function loadxml_format() {
   span.innerHTML =
     `<label style="color: #ffffff;" id="xmlMarkName">name<input type="text" id="xmlMarkNameText" value="noName" /></label>`
   getByid("page-header").appendChild(span);
-  getByid("xmlMarkName").style.display = "none";
+  HideElemByID("xmlMarkName");
 }
 loadxml_format();
 
@@ -23,11 +23,11 @@ getByid("writeXML").onclick = function () {
   openLeftImgClick = !openWriteXML;
   this.src = openWriteXML == true ? '../image/icon/black/xml_on.png' : '../image/icon/black/xml_off.png';
   if (openWriteXML == true) {
-    getByid('xmlMarkName').style.display = '';
+    ShowElemByID("xmlMarkName");
     set_BL_model('writexml');
     writexml();
   }
-  else getByid('xmlMarkName').style.display = 'none';
+  else HideElemByID("xmlMarkName");
   displayMark();
   if (openWriteXML == true) return;
   else xml_now_choose = null;
@@ -52,7 +52,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
     PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
     displayMark();
     xml_now_choose = null;
-    refreshMarkFromSop(GetNewViewport().sop);
+    refreshMarkFromSop(GetViewport().sop);
   }
   xml_now_choose = null;
 });
@@ -267,7 +267,7 @@ function setXml_context() {
 
   for (var n = 0; n < PatientMark.length; n++) {
     temp = "" + xml_format_object;
-    if (PatientMark[n].sop == GetNewViewport().sop) {
+    if (PatientMark[n].sop == GetViewport().sop) {
       if (PatientMark[n].type == "XML_mark") {
         for (var m = 0; m < PatientMark[n].pointArray.length; m++) {
           for (var o = 0; o < PatientMark[n].pointArray.length; o += 2) {
@@ -293,7 +293,7 @@ function getXml_context() {
   for (var i = 0; i < xml_format_object_list.length; i++) {
     temp_str += xml_format_object_list[i];
   }
-  return xml_format_title.replace("_width_", GetNewViewport().width).replace("_height_", GetNewViewport().height) +
+  return xml_format_title.replace("_width_", GetViewport().width).replace("_height_", GetViewport().height) +
     temp_str + xml_format_tail;
 }
 
@@ -301,7 +301,7 @@ function xml_pounch(currX, currY) {
   let block_size = getMarkSize(GetViewportMark(), false) * 4;
 
   for (var n = 0; n < PatientMark.length; n++) {
-    if (PatientMark[n].sop == GetNewViewport().sop) {
+    if (PatientMark[n].sop == GetViewport().sop) {
       if (PatientMark[n].type == "XML_mark") {
         for (var o = 0; o < PatientMark[n].pointArray.length; o += 2) {
           var tempMark = PatientMark[n].pointArray;
@@ -352,7 +352,7 @@ function xml_pounch(currX, currY) {
 }
 
 function deleteXml() {
-  let index = SearchUid2Index(GetNewViewport().sop);
+  let index = SearchUid2Index(GetViewport().sop);
   let i = index[0],
     j = index[1],
     k = index[2];
@@ -388,7 +388,7 @@ function importXml(url) {
       for (var i = 0; i < objlist.length; i++) {
 
         var RtssMark = new BlueLightMark();
-        RtssMark.setQRLevels(GetNewViewport().QRLevels);
+        RtssMark.setQRLevels(GetViewport().QRLevels);
         RtssMark.color = "#0000FF";
         RtssMark.hideName = RtssMark.showName = "" + objlist[i].getElementsByTagName("name")[0].childNodes[0].data;
         RtssMark.type = "XML_mark";
@@ -418,56 +418,56 @@ function writexml() {
   if (BL_mode == 'writexml') {
     DeleteMouseEvent();
 
+    GetViewport().rotate = 0;
+    setTransform();
+
     BlueLightMousedownList = [];
     BlueLightMousedownList.push(function (e) {
       if (xml_previous_choose) xml_previous_choose = null;
       if (xml_pounch(getCurrPoint(e)[0], getCurrPoint(e)[1]) == true) displayMark();
     });
 
-    Mousemove = function (e) {
+    BlueLightMousemoveList = [];
+    BlueLightMousemoveList.push(function (e) {
       var [currX, currY] = getCurrPoint(e);
 
       if (rightMouseDown == true) scale_size(e, currX, currY);
 
       if (MouseDownCheck) {
-        [windowMouseX, windowMouseY] = GetmouseXY(e);
         if (!xml_now_choose) {
           var RtssMark = xml_previous_choose ? xml_previous_choose : new BlueLightMark();
           if (!xml_previous_choose) PatientMark.push(RtssMark);
 
-          RtssMark.setQRLevels(GetNewViewport().QRLevels);
+          RtssMark.setQRLevels(GetViewport().QRLevels);
           RtssMark.color = "#0000FF";
           RtssMark.hideName = RtssMark.showName = "" + getByid("xmlMarkNameText").value;
           RtssMark.type = "XML_mark";
           RtssMark.pointArray = [];
-          RtssMark.setPoint2D(GetViewport().originalPointX, GetViewport().originalPointY);
-          RtssMark.setPoint2D(getCurrPoint(e)[0], getCurrPoint(e)[1]);
+          RtssMark.setPoint2D(originalPoint_X, originalPoint_Y);
+          RtssMark.setPoint2D(currX, currY);
 
           xml_previous_choose = RtssMark;
           refreshMark(RtssMark);
         } else {
-          if (xml_now_choose.value == "up")
-            xml_now_choose.reference.pointArray[0].y = currY;
-          else if (xml_now_choose.value == "down")
-            xml_now_choose.reference.pointArray[1].y = currY;
-          else if (xml_now_choose.value == "left")
-            xml_now_choose.reference.pointArray[0].x = currX;
-          else if (xml_now_choose.value == "right")
-            xml_now_choose.reference.pointArray[1].x = currX;
+          var direction = xml_now_choose.value;
+          if (direction == "up") xml_now_choose.reference.pointArray[0].y = currY;
+          else if (direction == "down") xml_now_choose.reference.pointArray[1].y = currY;
+          else if (direction == "left") xml_now_choose.reference.pointArray[0].x = currX;
+          else if (direction == "right") xml_now_choose.reference.pointArray[1].x = currX;
         }
         displayAllMark();
       }
-    }
-    Mouseup = function (e) {
-      var [currX, currY] = getCurrPoint(e);
-      MouseDownCheck = rightMouseDown = false;
+    });
 
+    BlueLightMouseupList = [];
+    BlueLightMouseupList.push(function (e) {
       if (xml_previous_choose) {
         //xml_previous_choose.pointArray[1] = [currX, currY];
         //refreshMark(xml_previous_choose);
         xml_previous_choose = null;
       }
-    }
+    });
   }
+
   AddMouseEvent();
 }

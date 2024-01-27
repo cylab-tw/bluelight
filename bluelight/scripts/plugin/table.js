@@ -5,8 +5,8 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
     if (openTable == false) return;
 
     dropTable(viewportNum);
-    GetViewport(viewportNum).style.overflowY = "hidden";
-    GetViewport(viewportNum).style.overflowX = "hidden";
+    GetViewport(viewportNum).div.style.overflowY = "hidden";
+    GetViewport(viewportNum).div.style.overflowX = "hidden";
     if (getByid("DICOMTagsSelect").selected == false) return;
     if (openDisplayMarkup == false) return;
     var Table = document.createElement("table");
@@ -31,33 +31,33 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
     cells0.innerHTML = "Value";
 
     var rowCount = 1;
-    for (var i = 0; i < GetViewport().DicomTagsList.length; i++) {
+    for (var i = 0; i < GetViewport().tags.length; i++) {
         var row = Table.insertRow(rowCount);
         row.setAttribute("border", 2);
         row.style.backgroundColor = "#151515";
         var cells = row.insertCell(0);
-        cells.innerHTML = "" + GetViewport().DicomTagsList[i][0];
+        cells.innerHTML = "" + GetViewport().tags[i][0];
         cells = row.insertCell(1);
-        cells.innerHTML = "" + GetViewport().DicomTagsList[i][1];
+        cells.innerHTML = "" + GetViewport().tags[i][1];
         cells = row.insertCell(2);
-        if (GetViewport().DicomTagsList[i][2] && GetViewport().DicomTagsList[i][2].length > 100)
-            cells.innerHTML = ("" + GetViewport().DicomTagsList[i][2]).substring(0, 99) + "...";
+        if (GetViewport().tags[i][2] && GetViewport().tags[i][2].length > 100)
+            cells.innerHTML = ("" + GetViewport().tags[i][2]).substring(0, 99) + "...";
         else
-            cells.innerHTML = "" + GetViewport().DicomTagsList[i][2];
-        /*var dicomtag = GetViewport().DicomTagsList[i][0].replace("x", "");
+            cells.innerHTML = "" + GetViewport().tags[i][2];
+        /*var dicomtag = GetViewport().tags[i][0].replace("x", "");
         dicomtag = dicomtag.slice(0, 4) + "," + dicomtag.slice(4);
         cells.innerHTML = "" + dicomtag;
 
         cells = row.insertCell(1);
-        if (GetViewport().DicomTagsList[i][1] && GetViewport().DicomTagsList[i][1].length > 100)
+        if (GetViewport().tags[i][1] && GetViewport().tags[i][1].length > 100)
             cells.innerHTML = "";
         else
-            cells.innerHTML = "" + GetViewport().DicomTagsList[i][1];*/
+            cells.innerHTML = "" + GetViewport().tags[i][1];*/
         rowCount++;
     }
-    GetViewport(viewportNum).appendChild(Table);
-    GetViewport(viewportNum).style.overflowY = "scroll";
-    GetViewport(viewportNum).style.overflowX = "scroll";
+    GetViewport(viewportNum).div.appendChild(Table);
+    GetViewport(viewportNum).div.style.overflowY = "scroll";
+    GetViewport(viewportNum).div.style.overflowX = "scroll";
 }
 
 function displayAIM(viewportNum = viewportNumber) {
@@ -65,8 +65,8 @@ function displayAIM(viewportNum = viewportNumber) {
     
     var break1 = false;
     dropTable(viewportNum);
-    GetViewport(viewportNum).style.overflowY = "hidden";
-    GetViewport(viewportNum).style.overflowX = "hidden"
+    GetViewport(viewportNum).div.style.overflowY = "hidden";
+    GetViewport(viewportNum).div.style.overflowX = "hidden"
     if (getByid("AIMSelect").selected == false) return;
     if (openDisplayMarkup == false) return;
     var Table = document.createElement("table");
@@ -80,7 +80,7 @@ function displayAIM(viewportNum = viewportNumber) {
     //Table.style.right = "0px";
     Table.style['zIndex'] = "20";
     //SearchUid2Index
-    var sop = GetNewViewport(viewportNum).sop;
+    var sop = GetViewport(viewportNum).sop;
     let index = SearchUid2Index(sop);
     if (!index) return;
     let i = index[0],
@@ -135,9 +135,9 @@ function displayAIM(viewportNum = viewportNumber) {
             break;
         }
     }
-    GetViewport(viewportNum).appendChild(Table);
-    GetViewport(viewportNum).style.overflowY = "scroll";
-    GetViewport(viewportNum).style.overflowX = "scroll";
+    GetViewport(viewportNum).div.appendChild(Table);
+    GetViewport(viewportNum).div.style.overflowY = "scroll";
+    GetViewport(viewportNum).div.style.overflowX = "scroll";
 }
 
 function dropTable(num) {

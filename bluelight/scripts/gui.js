@@ -1,4 +1,12 @@
 
+//表示目前icon圖示的RWD收合功能為開啟狀態
+var openRWD = true;
+//邊框寬度
+var bordersize = 5;
+
+//表示左側的影像可以點擊
+var openLeftImgClick = true;
+
 let leftLayout;
 onloadFunction.push2First(
     function () {
@@ -24,6 +32,26 @@ function ShowElemByID(Elem) {
     }
 }
 
+
+function invertDisplayById(id) {
+    if (!id && !getByid(id)) return;
+    if (getByid(id).style.display == "none") getByid(id).style.display = "";
+    else getByid(id).style.display = "none";
+}
+
+function refleshGUI() {
+    var viewport = GetViewport();
+    if (!viewport) return;
+    if (viewport.invert) getByid("color_invert").classList.add("activeImg");
+    else getByid("color_invert").classList.remove("activeImg");
+    if (viewport.HorizontalFlip) getByid("horizontal_flip").classList.add("activeImg");
+    else getByid("horizontal_flip").classList.remove("activeImg");
+    if (viewport.VerticalFlip) getByid("vertical_flip").classList.add("activeImg");
+    else getByid("vertical_flip").classList.remove("activeImg");
+    if (viewport.rotate != 0) getByid("MouseRotate").classList.add("activeImg");
+    else getByid("MouseRotate").classList.remove("activeImg");
+}
+
 class LeftLayout {
     constructor() {
         this.initLeftLayout();
@@ -44,6 +72,17 @@ class LeftLayout {
         return null;
     }
 
+    setAccent(series) {
+        for (var series_div of getClass("LeftImgAndMark")) {
+            series_div.style.border = "5px groove rgb(211, 217, 255)";
+        }
+        if (!series) return;
+        if (getClass("LeftImgAndMark").length <= 1) return;
+        for (var series_div of getClass("LeftImgAndMark")) {
+            if (series_div.series == series) series_div.style.border = "5px solid rgb(255, 255, 255)";
+        }
+    }
+
     getCheckboxBySeriesAndHideName(series, hideName) {
         var MarkDiv = getByid("menu" + series);
         if (!MarkDiv) return;
@@ -54,7 +93,6 @@ class LeftLayout {
         return null;
     }
 
-    //注意leftCanvasStudy
     setImg2Left(QRLevel, patientID) {
         var pic = getByid("LeftPicture");
         var Patient_div = document.createElement("DIV");
@@ -163,7 +201,6 @@ class LeftLayout {
                 if (e.button == 2) jump2Mark(this.name);
             }
             checkbox.onchange = function () {
-                getByid("AngleLabel").style.display = getByid("MeasureLabel").style.display = "none";
                 for (var i = 0; i < Viewport_Total; i++) displayMark(i)
             };
             label.appendChild(checkbox);
@@ -199,8 +236,8 @@ function PictureOnclick(QRLevel) {
     resetViewport();
     //drawBorder(getByid("MouseOperation"));
 
-    if (QRLevel.series) GetNewViewport().loadFirstImgBySeries(QRLevel.series);
-    else if (QRLevel.sop) GetNewViewport().loadFirstImgBySop(QRLevel.sop);
+    if (QRLevel.series) GetViewport().loadFirstImgBySeries(QRLevel.series);
+    else if (QRLevel.sop) GetViewport().loadFirstImgBySop(QRLevel.sop);
 }
 
 function displayLeftCanvas(DicomCanvas, image, pixelData) {
@@ -276,7 +313,7 @@ function displayLeftCanvas(DicomCanvas, image, pixelData) {
         ctx.restore(); // restore the state as it was when this function was called
     }
     if (invert == true) {
-        mirrorImage(ctx2, DicomCanvas, 0, 0, GetNewViewport().HorizontalFlip, GetNewViewport().VerticalFlip);
+        mirrorImage(ctx2, DicomCanvas, 0, 0, GetViewport().HorizontalFlip, GetViewport().VerticalFlip);
     }
 }
 
@@ -317,16 +354,20 @@ window.onresize = function () {
     //設定左側面板的style
     leftLayout.reflesh();
     //刷新每個Viewport
-    for (i = 0; i < Viewport_Total; i++) {
+    for (var i = 0; i < Viewport_Total; i++) {
         try {
-            //NowResize = true;
-            GetViewport(i).NowCanvasSizeWidth = GetViewport(i).NowCanvasSizeHeight = null;
-            setSopToViewport(GetNewViewport(i).sop, i);
+            if (!(GetViewport(i) && GetViewport(i).sop)) continue;
+            GetViewport(i).scale = null;
+            setSopToViewport(GetViewport(i).sop, i);
             //loadAndViewImage(Patient.findSop(GetViewport(i).sop).imageId, i);
-        } catch (ex) { }
+        } catch (ex) { console.log(ex) }
     }
-
+    hideAllDrawer();//關閉抽屜
     EnterRWD();
+    for (var i = 0; i < Viewport_Total; i++) {
+        try { setTransform(i); }
+        catch (ex) { console.log(ex) }
+    }
 }
 
 //執行icon圖示的摺疊效果
@@ -386,26 +427,28 @@ function SetTable(row0, col0) {
     try {
         var WandH = getViewportFixSize(window.innerWidth, window.innerHeight, row, col);
         for (var i = 0; i < Viewport_Total; i++)
-            GetViewport(i).style = "position:relative;float: left;left:100px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;margin:0px";
+            GetViewport(i).div.style = "position:relative;float: left;left:100px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;margin:0px";
         for (var r = 0; r < row; r++) {
             for (var c = 0; c < col; c++) {
-                GetViewport(r * col + c).style.width = "calc(" + parseInt(100 / col) + "% - " + (parseInt(100 / col) + (bordersize * 2)) + "px)";
-                GetViewport(r * col + c).style.height = (WandH[1] - (bordersize * 2)) + "px";
+                GetViewport(r * col + c).div.style.width = "calc(" + parseInt(100 / col) + "% - " + (parseInt(100 / col) + (bordersize * 2)) + "px)";
+                GetViewport(r * col + c).div.style.height = (WandH[1] - (bordersize * 2)) + "px";
             }
         }
     } catch (ex) { }
     //重置各個Viewport的長寬大小(不顯示時)
     for (var i = row * col; i < Viewport_Total; i++) {
         try {
-            GetViewport(i).style = "position:relative;float: right;;width:0px;" + "height:" + 0 + "px;overflow:hidden;border:" + 0 + "px #D3D9FF groove;margin:0px";
+            GetViewport(i).div.style = "position:relative;float: right;;width:0px;" + "height:" + 0 + "px;overflow:hidden;border:" + 0 + "px #D3D9FF groove;margin:0px";
         } catch (ex) { }
     }
 
+
     if (viewportNumber >= row * col) viewportNumber = 0;
 
-    if (GetNewViewport()) {
-        GetNewViewport().div.style.backgroundColor = "rgb(10,6,6)";
-        GetNewViewport().div.style.border = bordersize + "px #FFC3FF groove";
+    if (GetViewport()) {
+        GetViewport().div.style.backgroundColor = "rgb(10,6,6)";
+        GetViewport().div.style.border = bordersize + "px #FFC3FF groove";
+        leftLayout.setAccent(GetViewport().series);
     }
     // window.onresize();
 }

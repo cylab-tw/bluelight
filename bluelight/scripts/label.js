@@ -1,17 +1,30 @@
+//代表病患資訊顯示狀態
+var openAnnotation = true;
+
+//label距離邊緣多遠
+var labelPadding = 3;
+var leftLabelPadding = labelPadding;
+var rightLabelPadding = labelPadding;
+var topLabelPadding = labelPadding;
+var bottomLabelPadding = labelPadding;
+
+//數著這個Series有幾張影像
+//var SeriesCount = 0;
+
 function displayWindowLevel(viewportNum = viewportNumber) {
   getByid("textWC").value = "originWindowCenter";
   getByid("textWW").value = "originWindowWidth";
-  getByid("textWW").value = "" + parseInt(GetNewViewport(viewportNum).windowWidth);
-  getByid("textWC").value = "" + parseInt(GetNewViewport(viewportNum).windowCenter);
-  getClass("labelWC")[viewportNum].innerText = " WC: " + parseInt(GetNewViewport(viewportNum).windowCenter) + " WW: " + parseInt(GetNewViewport(viewportNum).windowWidth);
+  getByid("textWW").value = "" + parseInt(GetViewport(viewportNum).windowWidth);
+  getByid("textWC").value = "" + parseInt(GetViewport(viewportNum).windowCenter);
+  getClass("labelWC")[viewportNum].innerText = " WC: " + parseInt(GetViewport(viewportNum).windowCenter) + " WW: " + parseInt(GetViewport(viewportNum).windowWidth);
 }
 
 function DisplaySeriesCount(viewportNum = viewportNumber) {
-  var viewport = GetNewViewport(viewportNum);
+  var viewport = GetViewport(viewportNum);
   var tags = viewport.tags;
   var label_RB = getClass("labelRB")[viewportNum];
 
-  SeriesCount = 1;
+  var SeriesCount = 1;
   for (var i = 0; i < Patient.StudyAmount; i++) {
     for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
       if (Patient.Study[i].Series[j].SeriesUID == tags.SeriesInstanceUID) {

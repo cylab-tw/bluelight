@@ -1,38 +1,30 @@
+//暫時移除的功能
+var openPenDraw = false;
+
 var contextmenuF = function (e) {
     e.preventDefault();
 };
 
-var touchstartF = function (e) {
-    if (e.touches[1]) Touchstart(e.touches[0], e.touches[1]);
-    else Touchstart(e.touches[0]);
-};
-var touchendF = function (e) {
-    if (e.touches[1]) Touchend(e.touches[0], e.touches[1]);
-    else Touchend(e.touches[0]);
-};
-var touchmoveF = function (e) {
-    if (e.touches[1]) Touchmove(e.touches[0], e.touches[1]);
-    else Touchmove(e.touches[0]);
-};
 var thisF = function () {
     getByid("WindowDefault").selected = true;
-    MeasureXY[0] = MeasureXY[1] = MeasureXY2[0] = MeasureXY2[1] = 0;
+
     var viewportNum = viewportNumber;
 
     viewportNumber = isNaN(this.viewportNum) ? viewportNumber : this.viewportNum;
-
-    if (GetNewViewport().cine) getByid('playvideo').src = '../image/icon/black/b_CinePause.png';
+    leftLayout.setAccent(GetViewport().series);
+    if (GetViewport().cine) getByid('playvideo').src = '../image/icon/black/b_CinePause.png';
     else getByid('playvideo').src = '../image/icon/black/b_CinePlay.png';
 
     changeMarkImg();
-    if (GetNewViewport().sop) setSopToViewport(GetNewViewport().sop);
-    //loadAndViewImage(Patient.findSop(GetNewViewport().sop).imageId /*, null, null, viewportNumber*/);
+    if (GetViewport().sop) setSopToViewport(GetViewport().sop);
+    //loadAndViewImage(Patient.findSop(GetViewport().sop).imageId /*, null, null, viewportNumber*/);
     else {
         try {
-            setSopToViewport(GetNewViewport(viewportNum).sop);
-            //loadAndViewImage(Patient.findSop(GetNewViewport(viewportNum).sop).imageId /*, null, null, viewportNumber*/);
+            setSopToViewport(GetViewport(viewportNum).sop);
+            //loadAndViewImage(Patient.findSop(GetViewport(viewportNum).sop).imageId /*, null, null, viewportNumber*/);
         } catch (ex) { }
     }
+    refleshGUI();
 }
 
 window.addEventListener("keydown", function (e) {
@@ -45,9 +37,9 @@ window.addEventListener("keydown", function (e) {
     if (!GetViewport() || nextInstanceNumber == 0) return;
 
     if (nextInstanceNumber == -1) {
-        GetNewViewport().nextFrame(true);
+        GetViewport().nextFrame(true);
     } else if (nextInstanceNumber = 1) {
-        GetNewViewport().nextFrame(false);
+        GetViewport().nextFrame(false);
     }
 });
 
@@ -74,6 +66,7 @@ window.addEventListener('load', function () {
         }
 
     };
+    
     document.addEventListener('touchstart', touchStartHandler, false);
     document.addEventListener('touchmove', touchMoveHandler, false);
 });
@@ -81,20 +74,23 @@ window.addEventListener('load', function () {
 function Wheel(e) {
     if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
     //if (openPenDraw == true) return;
-    getByid("MeasureLabel").style.display = "none";
     var viewportNum = viewportNumber;
 
     if (!(openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true)) return;
     if (openLink == false) {
-        if (e.deltaY < 0) GetNewViewport(viewportNum).nextFrame(true);
-        else GetNewViewport(viewportNum).nextFrame(false);
+        if (e.deltaY < 0) GetViewport(viewportNum).nextFrame(true);
+        else GetViewport(viewportNum).nextFrame(false);
     }
     else {
         for (var z = 0; z < Viewport_Total; z++) {
-            if (parseInt(GetViewport(z).style.height) <= 1) continue;
-            if (e.deltaY < 0) GetNewViewport(z).nextFrame(true);
-            else GetNewViewport(z).nextFrame(false);
+            //if (parseInt(GetViewport(z).div.style.height) <= 1) continue;
+            if (e.deltaY < 0) GetViewport(z).nextFrame(true);
+            else GetViewport(z).nextFrame(false);
         }
+    }
+    if(openZoom){
+        var angle2point = rotateCalculation(e);
+        magnifierIng(angle2point[0], angle2point[1]);
     }
 }
 

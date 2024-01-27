@@ -1,3 +1,8 @@
+//裝DICOM階層樣式表等資訊的物件
+//var Patient = {};
+//
+var getPatientbyImageID = {};
+
 class QRLv {
     constructor(data) {
         if (data.constructor.name == 'DataSet') {
@@ -74,13 +79,13 @@ class BlueLightPatient {
     }
 
     findStudy(study) {
-        if (study == undefined) study = GetNewViewport().study;
+        if (study == undefined) study = GetViewport().study;
         if (this.Study[study]) return this.Study[study]
         else return null;
     }
 
     findSeries(series) {//atient.Study[i].Series[j].SopAmount
-        if (series == undefined) series = GetNewViewport().series;
+        if (series == undefined) series = GetViewport().series;
         for (var studyObj of this.Study) {
             if (studyObj.Series[series]) return studyObj.Series[series];
         }
@@ -88,7 +93,7 @@ class BlueLightPatient {
     }
 
     findSop(sop) {
-        if (sop == undefined) sop = GetNewViewport().sop;
+        if (sop == undefined) sop = GetViewport().sop;
         for (var studyObj of this.Study) {
             for (var seriesObj of studyObj.Series) {
                 if (seriesObj.Sop[sop]) return seriesObj.Sop[sop];
@@ -98,7 +103,7 @@ class BlueLightPatient {
     }
 
     findSeriesBySop(sop) {
-        if (sop == undefined) sop = GetNewViewport().sop;
+        if (sop == undefined) sop = GetViewport().sop;
         for (var studyObj of this.Study) {
             for (var seriesObj of studyObj.Series) {
                 if (seriesObj.Sop[sop]) return seriesObj;
@@ -107,8 +112,8 @@ class BlueLightPatient {
         return null;
     }
 
-    getSopAmountBySeries(series){
-        if (series == undefined) series = GetNewViewport().series;
+    getSopAmountBySeries(series) {
+        if (series == undefined) series = GetViewport().series;
         for (var studyObj of this.Study) {
             if (studyObj.Series[series]) return studyObj.Series.SopAmount;
         }

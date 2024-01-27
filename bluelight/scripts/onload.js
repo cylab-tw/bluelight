@@ -1,3 +1,10 @@
+//裝DICOM Tags設定檔的物件
+var DicomTags = {};
+//裝伺服器設定檔的物件
+var ConfigLog = {};
+//代表config檔已經載入完畢 --*
+var configOnload = false;
+
 window.onload = function () {
   //執行其他Script提供的高優先度onload函數
   onloadFunction.ExecuteFirst();
@@ -51,7 +58,7 @@ function loadLdcmview() {
     ViewPortList.push(new BlueLightViewPort(i));
   }
 
-  getByid("textWC").style.display = getByid("textWW").style.display = "none";
+  HideElemByID(["textWC","textWW"]);
 
   //載入config檔的設定
   readDicomTags("../data/dicomTags.json", setLabelPadding);

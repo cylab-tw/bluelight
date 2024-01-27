@@ -1,6 +1,19 @@
 
+//表示現在開啟放大鏡功能
+var openZoom = false;
 //放大鏡元素
 let magnifierDiv;
+
+//放大鏡預設長寬
+var magnifierWidth0 = 200;
+var magnifierHeight0 = 200;
+//放大鏡設定長寬
+var magnifierWidth = 200;
+var magnifierHeight = 200;
+
+//代表原始影像，通常被用於放大鏡的參考
+//var originalCanvas;
+//var originalCtx;
 
 onloadFunction.push(
     function () {
@@ -27,20 +40,20 @@ function initMagnifier() {
 }
 
 function magnifierIng(currX, currY) {
-    var canvas = GetNewViewport().canvas;
+    var canvas = GetViewport().canvas;
     var zoom = parseFloat(getByid('textZoom').value);
     if ((zoom <= 25)) getByid('textZoom').value = zoom = 25;
     if (zoom >= 400) getByid('textZoom').value = zoom = 400;
     zoom /= 100;
-    magnifierWidth = parseFloat(GetNewViewport().width / parseFloat(canvas.style.width)) * (magnifierWidth0 / zoom);
-    magnifierHeight = parseFloat(GetNewViewport().height / parseFloat(canvas.style.height)) * (magnifierHeight0 / zoom);
+    magnifierWidth = parseFloat(1.0 / GetViewport().scale) * (magnifierWidth0 / zoom);
+    magnifierHeight = parseFloat(1.0 / GetViewport().scale) * (magnifierHeight0 / zoom);
     var magnifierCanvas = document.getElementById("magnifierCanvas");
     var magnifierCtx = magnifierCanvas.getContext("2d");
     magnifierCanvas.width = magnifierWidth;
     magnifierCanvas.height = magnifierHeight;
     magnifierCanvas.style.width = magnifierWidth0 + "px";
     magnifierCanvas.style.height = magnifierHeight0 + "px";
-    magnifierCanvas.style.transform = "rotate(" + GetNewViewport().rotate + "deg)";
+    magnifierCanvas.style.transform = "rotate(" + GetViewport().rotate + "deg)";
     magnifierCtx.clearRect(0, 0, magnifierWidth, magnifierHeight);
 
     var currX02 = Math.floor(currX) - magnifierWidth / 2;
@@ -57,53 +70,52 @@ function zoom() {
         getByid('labelZoom').style.display = '';
         getByid('textZoom').style.display = '';
         SetTable();
-        document.documentElement.onmousemove = displayZoom;
-        document.documentElement.ontouchmove = displayZoom;
-        document.documentElement.onmousedown = displayZoom;
-        set_BL_model.onchange1 = function () {
-            document.documentElement.onmousemove = DivDraw;
-            document.documentElement.ontouchmove = DivDraw;
-            document.documentElement.onmousedown = null;
+
+        set_BL_model.onchange = function () {
             getByid('labelZoom').style.display = 'none';
             getByid('textZoom').style.display = 'none';
             openZoom = false;
-            set_BL_model.onchange1 = function () { return 0; };
+            magnifierDiv.hide();
+            set_BL_model.onchange = function () { return 0; };
         }
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
             let angle2point = rotateCalculation(e);
             magnifierIng(angle2point[0], angle2point[1]);
-            if (MouseDownCheck == true) magnifierDiv.show();
+            if (MouseDownCheck) magnifierDiv.show();
         });
 
-        Mousemove = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-
-            if (rightMouseDown == true) scale_size(e, currX, currY);
-
+        BlueLightMousemoveList = [];
+        BlueLightMousemoveList.push(function (e) {
+            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
             if (MouseDownCheck) {
                 magnifierDiv.show();
                 let angle2point = rotateCalculation(e);
                 magnifierIng(angle2point[0], angle2point[1]);
 
-                windowMouseX = GetmouseX(e);
-                windowMouseY = GetmouseY(e);
-                GetViewport().originalPointX = currX;
-                GetViewport().originalPointY = currY;
+                dgs = document.getElementById("magnifierDiv").style;
+                if (document.body.scrollTop && document.body.scrollTop != 0) {
+                    dbst = document.body.scrollTop;
+                    dbsl = document.body.scrollLeft;
+                }
+                else {
+                    dbst = getByTag("html")[0].scrollTop;
+                    dbsl = getByTag("html")[0].scrollLeft;
+                }
+                y = e.clientY; x = e.clientX;
+                if (!y || !x) { y = e.touches[0].clientY; x = e.touches[0].clientX; }
+                dgs.top = y + dbst + (-parseInt(magnifierCanvas.style.height) / 2) + "px";
+                dgs.left = x + dbsl + (-parseInt(magnifierCanvas.style.width) / 2) + "px";
             }
-        }
-        Mouseup = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-            if (openMouseTool == true && rightMouseDown == true)
-                displayMark();
-            MouseDownCheck = rightMouseDown = false;
-            magnifierDiv.hide();
+        });
 
+        BlueLightMouseupList = [];
+        BlueLightMouseupList.push(function (e) {
+            if (openMouseTool && rightMouseDown) displayMark();
+            magnifierDiv.hide();
             if (openLink) displayAllRuler();
-        }
+        });
 
         BlueLightTouchstartList = [];
         BlueLightTouchstartList.push(function () {
@@ -113,60 +125,21 @@ function zoom() {
             magnifierIng(currX11, currY11);
         });
 
-        Touchmove = function (e, e2) {
-            //尚未完成
+        BlueLightTouchmoveList = [];
+        BlueLightTouchmoveList.push(function (e, e2) {
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
-
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-
             if (TouchDownCheck == true && rightTouchDown == false) {
-                if (/*openZoom == true && */rightTouchDown == false) {
-                    magnifierDiv.show();;
-                    let angle2point = rotateCalculation(e);
-                    var currX11 = angle2point[0];
-                    var currY11 = angle2point[1];
-                    magnifierIng(currX11, currY11);
-                }
+                magnifierDiv.show();
+                let angle2point = rotateCalculation(e);
+                magnifierIng(angle2point[0], angle2point[1]);
             }
-        }
-        Touchend = function (e, e2) {
-            if (TouchDownCheck == true) {
-                if (openAngle == 1) openAngle = 2;
-                else if (openAngle == 2) openAngle = 3;
-            }
-            TouchDownCheck = false;
-            rightTouchDown = false;
+        });
 
+        BlueLightTouchendList = [];
+        BlueLightTouchendList.push(function (e, e2) {
             magnifierDiv.hide();
+        });
 
-        }
         AddMouseEvent();
-    }
-}
-function displayZoom(e) {
-    // x_out = -magnifierWidth / 2; // 與游標座標之水平距離
-    // y_out = -magnifierHeight / 2; // 與游標座標之垂直距離
-    x_out = -parseInt(magnifierCanvas.style.width) / 2; // 與游標座標之水平距離
-    y_out = -parseInt(magnifierCanvas.style.height) / 2; // 與游標座標之垂直距離
-
-    if (document.body.scrollTop && document.body.scrollTop != 0) {
-        dbst = document.body.scrollTop;
-        dbsl = document.body.scrollLeft;
-    } else {
-        dbst = document.getElementsByTagName("html")[0].scrollTop;
-        dbsl = document.getElementsByTagName("html")[0].scrollLeft;
-    }
-    dgs = document.getElementById("magnifierDiv").style;
-
-    y = e.clientY;
-    x = e.clientX;
-    if (e.touches && (!y || !x)) {
-        y = e.touches[0].clientY;
-        x = e.touches[0].clientX;
-    }
-    if (MouseDownCheck == true || TouchDownCheck == true) {
-        dgs.top = y + dbst + y_out + "px";
-        dgs.left = x + dbsl + x_out + "px";
     }
 }

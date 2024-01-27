@@ -1,22 +1,14 @@
-function CreateViewportSettings() {
-    var obj = {};
-    obj.invert = false;
-    obj.HorizontalFlip = false;
-    obj.VerticalFlip = false;
+//Viewport的總數量
+const Viewport_Total = 16;
+//Viewport的即時數量
+let Viewport_row = 1;
+let Viewport_col = 1;
 
-    obj.windowCenter = null;
-    obj.windowWidth = null;
+//表示Viewport為連接狀態
+var openLink = false;
 
-    obj.transform = null;
-    obj.drawMark = true;
-    obj.play = false;
-
-    obj.enable = true;
-    obj.lockRender = false;
-
-    obj.DicomTagsList = [];
-    return obj;
-}
+//目前選取的Viewport是第幾個Viewport
+var viewportNumber = 0;
 
 class BlueLightViewPort {
     constructor(index, init = true) {
@@ -44,13 +36,13 @@ class BlueLightViewPort {
         this.initLabelXY(div, index);
         this.initScrollBar(div, index);
     }
-
-    initViewportOption(div, index) {
-        //this.Settings = CreateViewportSettings();
+    clear() {
         this.invert = false;
         this.HorizontalFlip = false;
         this.VerticalFlip = false;
         this.rotate = 0;
+        this.translate = new Point2D(0, 0);
+        this.scale = null;
 
         this.windowCenter = null;
         this.windowWidth = null;
@@ -63,15 +55,48 @@ class BlueLightViewPort {
         this.lockRender = false;
         this.cine = false;
 
-        div.newMousePointX = 0;
-        div.newMousePointY = 0;
+        this.PDFView = null;
+        this.content = {};
+        this.div.enable = true;
+        this.div.lockRender = false;
+        this.DicomTagsList = [];
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.canvas.width = this.canvas.height = 1;
+        this.MarkCanvas.getContext('2d').clearRect(0, 0, this.MarkCanvas.width, this.MarkCanvas.height);
+        this.MarkCanvas.width = this.MarkCanvas.height = 1;
+    }
+    
+    initViewportOption(div, index) {
+        this.invert = false;
+        this.HorizontalFlip = false;
+        this.VerticalFlip = false;
+        this.rotate = 0;
+        this.translate = new Point2D(0, 0);
+        this.scale = null;
+
+        this.windowCenter = null;
+        this.windowWidth = null;
+
+        this.transform = {};
+        this.drawMark = true;
+        this.play = false;
+
+        this.enable = true;
+        this.lockRender = false;
+        this.cine = false;
+
+        this.PDFView = null;
+        this.content.framesNumber = 0;
+
+        //div.newMousePointX = 0;
+        //div.newMousePointY = 0;
         //div.openMark = true;
         //div.openInvert = false;
 
         div.enable = true;
         div.lockRender = false;
         //div.openDisplayMarkup = false;
-        div.DicomTagsList = [];
+        this.DicomTagsList = [];
         this.initViewportCanvas(div, index);
     }
     get enable() { return this.div.enable };
@@ -85,7 +110,7 @@ class BlueLightViewPort {
     get series() { if (this.tags) return this.tags.SeriesInstanceUID };
     get sop() { if (this.tags) return this.tags.SOPInstanceUID };
     get InstanceNumber() { return this.div.InstanceNumber };
-    get framesNumber() { return this.div.framesNumber };
+    get framesNumber() { return this.content.framesNumber };
     get imageId() { return this.div.imageId };
     get tags() { return this.DicomTagsList; }
 
@@ -93,7 +118,7 @@ class BlueLightViewPort {
     set series(v) { this.div.series = v };
     set sop(v) { this.div.sop = v };
     set InstanceNumber(v) { this.div.InstanceNumber = v };
-    set framesNumber(v) { this.div.framesNumber = v };
+    set framesNumber(v) { this.content.framesNumber = v };
     set imageId(v) { this.div.imageId = v };
     initViewportCanvas(div, index) {
         //一般的Canvas
@@ -114,6 +139,7 @@ class BlueLightViewPort {
         //標記Canvas
         var MarkCanvas = document.createElement("CANVAS");
         MarkCanvas.id = "MarkCanvas" + index;
+        MarkCanvas.className = "MarkCanvas";
         div.appendChild(MarkCanvas);
         this.MarkCanvas = MarkCanvas;
     }
@@ -123,7 +149,7 @@ class BlueLightViewPort {
     initLeftRule(div, index) {
         var leftRule = document.createElement("CANVAS");
         leftRule.className = "leftRule";
-        leftRule.style = "z-index:30;position:absolute;left:110px;";
+        leftRule.style = "z-index:30;position:absolute;left:15px;";
         leftRule.height = 500;
         leftRule.width = 10;
         this.leftRule = div.leftRule = leftRule;
@@ -133,7 +159,7 @@ class BlueLightViewPort {
     initDownRule(div, index) {
         var downRule = document.createElement("CANVAS");
         downRule.className = "downRule";
-        downRule.style = "z-index:30;position:absolute;bottom:15px;left:100px;";
+        downRule.style = "z-index:30;position:absolute;bottom:15px;";
         downRule.height = 10;
         this.downRule = div.downRule = downRule;
         div.appendChild(downRule);
@@ -176,7 +202,7 @@ class BlueLightViewPort {
         div.appendChild(labelXY);
     }
     initScrollBar(div, index) {
-        div.ScrollBar = new ScrollBar(div);//增加右側卷軸
+        this.ScrollBar = new ScrollBar(div);//增加右側卷軸
     }
 
     get QRLevels() {
@@ -187,7 +213,7 @@ class BlueLightViewPort {
         };
     }
     nextFrame(invert = false) {
-        if (this.QRLevel == "series" && this.tags) {
+        if (this.QRLevel == "series" && this.tags && this.tags.length) {
             var Sop = Patient.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.tags.InstanceNumber, invert);
             if (Sop != undefined) setSopToViewport(Sop, this.index);//loadAndViewImage(Sop.imageId, this.index);
         } else if (this.QRLevel == "frames" && this.framesNumber != undefined) {
@@ -227,16 +253,6 @@ class BlueLightViewPort {
 function GetViewport(num) {
     if (!num) {
         if (num === 0) {
-            return getByid("MyDicomDiv" + (0 + 0));
-        }
-        return getByid("MyDicomDiv" + (viewportNumber + 0));
-    }
-    return getByid("MyDicomDiv" + (num + 0));
-}
-
-function GetNewViewport(num) {
-    if (!num) {
-        if (num === 0) {
             return ViewPortList[0];
         }
         return ViewPortList[viewportNumber];
@@ -247,7 +263,7 @@ function GetNewViewport(num) {
 function SetAllViewport(key, value) {
     if (!key) return;
     for (var i = 0; i < Viewport_Total; i++) {
-        GetNewViewport(i)[key] = value;
+        GetViewport(i)[key] = value;
     }
 }
 
@@ -376,6 +392,7 @@ function refleshCanvas(viewport) {
 
     //setTransform(viewport.index);
     //GetViewportMark(viewport.index).style = canvas.style.cssText;
+    refleshGUI();
 }
 
 function cloneCanvas(canvas) {

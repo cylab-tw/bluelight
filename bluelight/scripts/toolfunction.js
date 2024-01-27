@@ -49,23 +49,15 @@ function SortArrayByElem(arr, str) {
     return arr.sort((a, b) => a[str] - b[str]);
 }
 
-function invertDisplayById(id) {
-    if (!id && !getByid(id)) return;
-    if (getByid(id).style.display == "none") getByid(id).style.display = "";
-    else getByid(id).style.display = "none";
-}
-
 function getCurrPoint(e) {
-    var canvas = GetNewViewport().canvas
+    var canvas = GetViewport().canvas
     if (!canvas) return [0, 0];
-    var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetNewViewport().width / parseFloat(canvas.style.width)));
-    var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetNewViewport().height / parseFloat(canvas.style.height)));
+    //BlueLight2
+    //var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().width / parseFloat(canvas.style.width)));
+    //var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().height / parseFloat(canvas.style.height)));
+    var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (1.0 / GetViewport().scale));
+    var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (1.0 / GetViewport().scale));
     return [currX, currY];
-}
-
-function Css(element, style, value) {
-    if (value == null) return element.style[style];
-    else return element.style[style] = value;
 }
 
 function Fpx(value) {
@@ -74,6 +66,10 @@ function Fpx(value) {
 
 function getByid(str) {
     return document.getElementById(str);
+}
+
+function getByTag(str) {
+    return document.getElementsByTagName(str);
 }
 
 function getClass(str) {
@@ -89,11 +85,6 @@ function CheckNull(str) {
     return false;
 }
 
-function Null2Empty(str) {
-    if (str == undefined || str == null) str = "";
-    return str;
-}
-
 function getViewprtStretchSize(width, height, element) {
     var wi = (parseFloat(element.clientWidth) - (bordersize * 2)) / parseFloat(width);
     var he = (parseFloat(element.clientHeight) - (bordersize * 2)) / parseFloat(height);
@@ -105,34 +96,6 @@ function getViewportFixSize(width, height, row, col) {
     while (width > window.innerWidth - 100 - (bordersize * 2) && width >= 10) width -= 5;
     while (height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2) && height >= 10) height -= 5;
     return [width / col, height / row];
-}
-
-function getStretchSize(width, height, element) {
-    if (width > window.innerWidth || height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) {
-        while (width > window.innerWidth || height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) {
-            width *= 0.99;
-            height *= 0.99;
-            if (width < 10 || height < 10) break;
-        }
-        /* var wi = parseFloat(width) / window.innerWidth;
-        var he = parseFloat(height) / (window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2));
-        var wi_he = wi > he ? wi : he;
-        height *= wi_he;
-        width *= wi_he; */
-    } else {
-        if (window.innerWidth > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) {
-            var he = (window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) / parseFloat(height);
-            height *= he;
-            width *= he;
-
-        }
-        /*while (!width < window.innerWidth || !height < window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) {
-            width *= 1.1;
-            height *= 1.1;
-            if (width > window.innerWidth || height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) break;
-        }*/
-    }
-    return [width, height];
 }
 
 function getFixSize(width, height, element) {
@@ -197,17 +160,23 @@ function sortInstance(sop) {
 }
 
 function rotateCalculation(e) {
-    var canvas = GetNewViewport().canvas;
+    var canvas = GetViewport().canvas;
     if (!canvas) return [0, 0];
-    let cx = (GetNewViewport().width / 2);
-    let cy = (GetNewViewport().height / 2);
-    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")";
-    let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
-        (GetNewViewport().width / parseFloat(canvas.style.width));
+    let cx = (GetViewport().width / 2);
+    let cy = (GetViewport().height / 2);
+    var element = GetViewport();
+    canvas.style.transform = "translate(" + "calc(-50% + "+Fpx(element.translate.x)+")" + "," + "calc(-50% + "+Fpx(element.translate.y)+")" + ")scale(" + element.scale + ")";
+    //BlueLight2
+    /*let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
+        (GetViewport().width / parseFloat(canvas.style.width));
     let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
-        (GetNewViewport().height / parseFloat(canvas.style.height));
-    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetNewViewport().rotate + "deg)";
-    let radians = GetNewViewport().rotate * (Math.PI / 180),
+        (GetViewport().height / parseFloat(canvas.style.height));*/
+    let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
+        (1.0 / element.scale);
+    let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
+        (1.0 / element.scale);
+    canvas.style.transform = "translate(" + "calc(-50% + "+Fpx(element.translate.x)+")" + "," + "calc(-50% + "+Fpx(element.translate.y)+")" + ")scale(" + element.scale + ")" + "rotate(" + element.rotate + "deg)";
+    let radians = element.rotate * (Math.PI / 180),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
         nx = (cos * (currX11 - cx)) + (sin * (currY11 - cy)) + cx,
@@ -217,17 +186,17 @@ function rotateCalculation(e) {
     return [currX11, currY11];
 }
 /*function rotateCalculation(e) {
-    var canvas = GetNewViewport().canvas;
+    var canvas = GetViewport().canvas;
     if (!canvas) return [0, 0];
-    let cx = (GetNewViewport().width / 2);
-    let cy = (GetNewViewport().height / 2);
-    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ") scaleX(" + (GetNewViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetNewViewport().VerticalFlip ? -1 : 1) + ")";
+    let cx = (GetViewport().width / 2);
+    let cy = (GetViewport().height / 2);
+    canvas.style.transform = "translate(" + Fpx(GetViewport().translate.x) + "," + Fpx(GetViewport().translate.y) + ") scaleX(" + (GetViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetViewport().VerticalFlip ? -1 : 1) + ")";
     let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
-        (GetNewViewport().width / parseFloat(canvas.style.width));
+        (GetViewport().width / parseFloat(canvas.style.width));
     let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
-        (GetNewViewport().height / parseFloat(canvas.style.height));
-    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ") scaleX(" + (GetNewViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetNewViewport().VerticalFlip ? -1 : 1) + ") " + "rotate(" + GetNewViewport().rotate + "deg)";
-    let radians = GetNewViewport().rotate * (Math.PI / 180),
+        (GetViewport().height / parseFloat(canvas.style.height));
+    canvas.style.transform = "translate(" + Fpx(GetViewport().translate.x) + "," + Fpx(GetViewport().translate.y) + ") scaleX(" + (GetViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetViewport().VerticalFlip ? -1 : 1) + ") " + "rotate(" + GetViewport().rotate + "deg)";
+    let radians = GetViewport().rotate * (Math.PI / 180),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
         nx = (cos * (currX11 - cx)) + (sin * (currY11 - cy)) + cx,
@@ -253,7 +222,7 @@ function rotatePoint(point, RotationAngle, RotationPoint) {
 
 function jump2UpOrEnd(number, choose) {
 
-    var SopList = Patient.findSeries(GetNewViewport().series);
+    var SopList = Patient.findSeries(GetViewport().series);
     var min = 99999999, max = -9999999;
     for (var l = 0; l < SopList.SopAmount; l++) {
         var instance = parseInt(SopList.Sop[l].InstanceNumber);
@@ -279,10 +248,10 @@ function jump2UpOrEnd(number, choose) {
 
 function jump2Mark(showName) {
     for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].series == GetNewViewport().series) {
+        if (PatientMark[n].series == GetViewport().series) {
             if (PatientMark[n].showName == showName) {
                 for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                    if (checkMarkEnabled(GetNewViewport().series, PatientMark[n]) == 0) continue;
+                    if (checkMarkEnabled(GetViewport().series, PatientMark[n]) == 0) continue;
                     else {
                         setSopToViewport(PatientMark[n].sop);
                         //loadAndViewImage(Patient.findSop(PatientMark[n].sop).imageId);

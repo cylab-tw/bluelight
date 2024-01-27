@@ -1,135 +1,99 @@
 
+//表示按下WindowLevel調整
+var openWindow = false;
+
 //表示現在正在調整WindowLevel
 var WindowOpen = false;
 
 function windowlevel() {
     if (BL_mode == 'windowlevel') {
         DeleteMouseEvent();
-        getByid("textWC").style.display = '';
-        getByid("textWW").style.display = '';
-        getByid('WindowLevelDiv').style.display = '';
-        //  getByid('myWW').style.display = '';
+        ShowElemByID(["textWC", "textWW", "WindowLevelDiv"]);
         openWindow = true;
 
-        set_BL_model.onchange1 = function () {
+        set_BL_model.onchange = function () {
             openWindow = false;
-            getByid('WindowLevelDiv').style.display = 'none';
-            set_BL_model.onchange1 = function () { return 0; };
+            HideElemByID("WindowLevelDiv");
+            set_BL_model.onchange = function () { return 0; };
         }
 
         SetTable();
 
         BlueLightMousedownList = [];
 
-        Mousemove = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-
-            if (rightMouseDown == true) scale_size(e, currX, currY);
+        BlueLightMousemoveList = [];
+        BlueLightMousemoveList.push(function (e) {
+            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
 
             if (MouseDownCheck) {
-                var MouseX = GetmouseX(e);
-                var MouseY = GetmouseY(e);
-                //GetViewport().newMousePointX += MouseX - windowMouseX;
-                //GetViewport().newMousePointY += MouseY - windowMouseY;
-                //setTransform();
-
                 if (openWindow == true) {
                     getByid("WindowCustom").selected = true;
-                    if (Math.abs(currY - GetViewport().originalPointY) > Math.abs(currX - GetViewport().originalPointX)) {
-                        if (currY < GetViewport().originalPointY - 3)
-                            GetNewViewport().windowCenter = (parseInt(GetNewViewport().windowCenter) + Math.abs(GetmouseY(e) - windowMouseY));
-                        else if (currY > GetViewport().originalPointY + 3)
-                            GetNewViewport().windowCenter = (parseInt(GetNewViewport().windowCenter) - Math.abs(GetmouseY(e) - windowMouseY));
+                    if (Math.abs(windowMouseDiffY) > Math.abs(windowMouseDiffX)) {
+                        if (windowMouseDiffY < - 3)
+                            GetViewport().windowCenter = (parseInt(GetViewport().windowCenter) + Math.abs(windowMouseDiffY));
+                        else if (windowMouseDiffY > 3)
+                            GetViewport().windowCenter = (parseInt(GetViewport().windowCenter) - Math.abs(windowMouseDiffY));
                     } else {
-                        if (currX < GetViewport().originalPointX - 3)
-                            GetNewViewport().windowWidth = (parseInt(GetNewViewport().windowWidth) - Math.abs(GetmouseX(e) - windowMouseX));
-                        else if (currX > GetViewport().originalPointX + 3)
-                            GetNewViewport().windowWidth = (parseInt(GetNewViewport().windowWidth) + Math.abs(GetmouseX(e) - windowMouseX));
+                        if (windowMouseDiffX < - 3)
+                            GetViewport().windowWidth = (parseInt(GetViewport().windowWidth) - Math.abs(windowMouseDiffX));
+                        else if (windowMouseDiffX > 3)
+                            GetViewport().windowWidth = (parseInt(GetViewport().windowWidth) + Math.abs(windowMouseDiffX));
                     }
-                    if (GetNewViewport().windowWidth < 1) GetNewViewport().windowWidth = 1;
-                    getByid("textWC").value = "" + parseInt(GetNewViewport().windowCenter);
-                    getByid("textWW").value = "" + parseInt(GetNewViewport().windowWidth);
+                    if (GetViewport().windowWidth < 1) GetViewport().windowWidth = 1;
+                    getByid("textWC").value = "" + parseInt(GetViewport().windowCenter);
+                    getByid("textWW").value = "" + parseInt(GetViewport().windowWidth);
                     if (openLink == true) {
                         for (var z = 0; z < Viewport_Total; z++) {
-                            GetNewViewport(z).windowWidth = GetNewViewport().windowWidth;
-                            GetNewViewport(z).windowCenter = GetNewViewport().windowCenter;
+                            GetViewport(z).windowWidth = GetViewport().windowWidth;
+                            GetViewport(z).windowCenter = GetViewport().windowCenter;
                         }
                     }
                     displayWindowLevel();
-
                     refleshViewport();
                     WindowOpen = true;
                 }
-                windowMouseX = GetmouseX(e);
-                windowMouseY = GetmouseY(e);
-                GetViewport().originalPointX = currX;
-                GetViewport().originalPointY = currY;
             }
-        }
-        Mouseup = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-            if (openMouseTool == true && rightMouseDown == true)
-                displayMark();
-            MouseDownCheck = rightMouseDown = false;
-            magnifierDiv.hide();
+        });
 
+        BlueLightMouseupList = [];
+        BlueLightMouseupList.push(function (e) {
+            if (openMouseTool && rightMouseDown) displayMark();
             if (openLink) displayAllRuler();
-        }
+        });
 
         BlueLightTouchstartList = [];
 
-        Touchmove = function (e, e2) {
+        BlueLightTouchmoveList = [];
+        BlueLightTouchmoveList.push(function (e, e2) {
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
 
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-            //尚未完成
-
-            if (/*openWindow == true && */rightTouchDown == false) {
+            if (TouchDownCheck && openWindow) {
                 getByid("WindowCustom").selected = true;
-                if (Math.abs(currY - GetViewport().originalPointY) > Math.abs(currX - GetViewport().originalPointX)) {
-                    if (currY < GetViewport().originalPointY - 3)
-                        GetNewViewport().windowCenter = (parseInt(GetNewViewport().windowCenter) + Math.abs(GetmouseY(e) - windowMouseY));
-                    else if (currY > GetViewport().originalPointY + 3)
-                        GetNewViewport().windowCenter = (parseInt(GetNewViewport().windowCenter) - Math.abs(GetmouseY(e) - windowMouseY));
+                if (Math.abs(windowMouseDiffY) > Math.abs(windowMouseDiffX)) {
+                    if (windowMouseDiffY < - 3)
+                        GetViewport().windowCenter = (parseInt(GetViewport().windowCenter) + Math.abs(windowMouseDiffY));
+                    else if (windowMouseDiffY > 3)
+                        GetViewport().windowCenter = (parseInt(GetViewport().windowCenter) - Math.abs(windowMouseDiffY));
                 } else {
-                    if (currX < GetViewport().originalPointX - 3)
-                        GetNewViewport().windowWidth = (parseInt(GetNewViewport().windowWidth) - Math.abs(GetmouseX(e) - windowMouseX));
-                    else if (currX > GetViewport().originalPointX + 3)
-                        GetNewViewport().windowWidth = (parseInt(GetNewViewport().windowWidth) + Math.abs(GetmouseX(e) - windowMouseX));
+                    if (windowMouseDiffX < - 3)
+                        GetViewport().windowWidth = (parseInt(GetViewport().windowWidth) - Math.abs(windowMouseDiffX));
+                    else if (windowMouseDiffX > 3)
+                        GetViewport().windowWidth = (parseInt(GetViewport().windowWidth) + Math.abs(windowMouseDiffX));
                 }
-                if (GetNewViewport().windowWidth < 1) GetNewViewport().windowWidth = 1;
-                getByid("textWC").value = "" + parseInt(GetNewViewport().windowCenter);
-                getByid("textWW").value = "" + parseInt(GetNewViewport().windowWidth);
+                if (GetViewport().windowWidth < 1) GetViewport().windowWidth = 1;
+                getByid("textWC").value = "" + parseInt(GetViewport().windowCenter);
+                getByid("textWW").value = "" + parseInt(GetViewport().windowWidth);
                 if (openLink == true) {
                     for (var z = 0; z < Viewport_Total; z++) {
-                        GetNewViewport(z).windowWidth = GetNewViewport().windowWidth;
-                        GetNewViewport(z).windowCenter = GetNewViewport().windowCenter;
+                        GetViewport(z).windowWidth = GetViewport().windowWidth;
+                        GetViewport(z).windowCenter = GetViewport().windowCenter;
                     }
                 }
                 displayWindowLevel();
-
                 refleshViewport();
-                GetViewport().originalPointX = currX;
-                GetViewport().originalPointY = currY;
                 WindowOpen = true;
             }
-            // putLabel();
-            //  for (var i = 0; i < Viewport_Total; i++)
-            //   displayRuler(i);
-        }
-        Touchend = function (e, e2) {
-            if (TouchDownCheck == true) {
-                if (openAngle == 1) openAngle = 2;
-                else if (openAngle == 2) openAngle = 3;
-            }
-            TouchDownCheck = false;
-            rightTouchDown = false;
-
-            magnifierDiv.hide();
-        }
+        });
 
         AddMouseEvent();
     }

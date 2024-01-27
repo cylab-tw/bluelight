@@ -1,9 +1,3 @@
-//Viewport的總數量
-const Viewport_Total = 16;
-//Viewport的及時數量
-let Viewport_row = 1;
-let Viewport_col = 1;
-
 //當前選擇的Viewport的canvas
 //var canvas;
 //var ctx;
@@ -17,23 +11,7 @@ var TouchDownCheck = false;
 //表示按住了滑鼠左鍵
 var rightTouchDown = false;
 
-//表示現在為開放用拖曳切換影像
-var openChangeFile = false;
-//表示按下WindowLevel調整
-var openWindow = false;
-//表示現在開啟放大鏡功能
-var openZoom = false;
-//表示Viewport為連接狀態
-var openLink = false;
-//表示左側的影像可以點擊
-var openLeftImgClick = true;
 
-//暫時移除的功能
-var openPenDraw = false;
-//表示目前正在使用量角器工具
-var openAngle = 0;
-//表示目前icon圖示的RWD收合功能為開啟狀態
-var openRWD = true;
 
 //紀錄滑鼠座標
 var windowMouseX = 0,
@@ -42,67 +20,22 @@ var windowMouseX2 = 0,
   windowMouseY2 = 0;
 var MousePointX = 0,
   MousePointY = 0;
+var originalPoint_X = 0,
+  originalPoint_Y = 0;
+var originalPoint_X2 = 0,
+  originalPoint_Y2 = 0;
 
-//放大鏡預設長寬
-var magnifierWidth0 = 200;
-var magnifierHeight0 = 200;
-//放大鏡設定長寬
-var magnifierWidth = 200;
-var magnifierHeight = 200;
-//代表目前處於基本操作狀態
-var openMouseTool = false;
+//紀錄滑鼠座標差
+var windowMouseDiffX = 0,
+  windowMouseDiffY = 0;
+
+//紀錄雙指距離
+var windowTouchDistX = 0,
+  windowTouchDistY = 0;
+
 //代表目前開放使用滾輪切換影像，無論處於什麼操作模式
 var openWheel = false;
-//代表病患資訊顯示狀態
-var openAnnotation = true;
-//代表正在使用測量工具
-var openMeasure = false;
-//代表正在使用旋轉工具
-var openRotate = false;
 
-//代表目前從左側面板拖曳中的影像的Series UID
-var dragseries = "";
-//代表原始影像，通常被用於放大鏡的參考
-var originalCanvas;
-var originalCtx;
-//代表左側有幾個Study --*
-var leftCanvasStudy = [];
-//目前選取的Viewport是第幾個Viewport
-var viewportNumber = 0;
-//播放動畫用的計時器
-var PlayTimer1 = [];
-
-var openDisplayMarkup = false;
-//數著這個Series有幾張影像
-var SeriesCount = 0;
-
-//邊框寬度
-var bordersize = 5;
-//label距離邊緣多遠
-var labelPadding = 3;
-var leftLabelPadding = labelPadding;
-var rightLabelPadding = labelPadding;
-var topLabelPadding = labelPadding;
-var bottomLabelPadding = labelPadding;
-//代表目前載入了多少次DICOM --*
-var dicomImageCount = 0;
-
-//代表現在視窗大小受到改變，須執行RWD
-//var NowResize = false;
-//裝DICOM階層樣式表等資訊的物件
-//var Patient = {};
-//
-var getPatientbyImageID = {};
-//裝標記的物件
-var PatientMark = [];
-//裝DICOM Tags設定檔的物件
-var DicomTags = {};
-//裝伺服器設定檔的物件
-var ConfigLog = {};
-//代表config檔已經載入完畢 --*
-var configOnload = false;
-//decode function
-let decodeImageFrame;
 //代表按下ctrl
 let KeyCode_ctrl = false;
 let BL_mode = 'MouseTool';
@@ -115,6 +48,15 @@ class Point2D {
   get() { return [this.x, this.y] };
   point() { return [this.x, this.y] };
   setPoint(arr) { this.x = arr[0], this.y = arr[1]; };
+}
+
+class Size2D {
+  constructor(w, h) { this.w = w, this.h = h; }
+  get 0() { return this.w }; set 0(v) { this.w = v };
+  get 1() { return this.h }; set 1(v) { this.h = v };
+  set(w, h) { this.w = w, this.h = h; };
+  get() { return [this.w, this.h] };
+  setSize(arr) { this.w = arr[0], this.h = arr[1]; };
 }
 
 class Point3D {
@@ -139,11 +81,12 @@ let BlueLightMousedownList = [];
 let BlueLightMousedown = function (e) {
   if (e.which == 1) MouseDownCheck = true;
   else if (e.which == 3) rightMouseDown = true;
+  windowMouseDiffX = windowMouseDiffY = 0;
 
   MouseDownPointByWindow.setPoint(GetmouseXY(e));
   MouseDownPointByCanvas.setPoint(rotateCalculation(e));
   [windowMouseX, windowMouseY] = GetmouseXY(e);
-  [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
+  [originalPoint_X, originalPoint_Y] = getCurrPoint(e);
   for (var i = 0; i < BlueLightMousedownList.length; i++) {
     if (BlueLightMousedownList[i].constructor.name == "Function")
       BlueLightMousedownList[i](e);
@@ -151,10 +94,9 @@ let BlueLightMousedown = function (e) {
   //console.log(GetmouseXY(e), getCurrPoint(e), rotateCalculation(e));
 }
 
-
 let BlueLightTouchstartList = [];
 let BlueLightTouchstart = function (E) {
-  var e = null, e2 = null, viewport = GetViewport();
+  var e = null, e2 = null;
   if (E.touches[1]) e = E.touches[0], e2 = E.touches[1]
   else e = E.touches[0];
 
@@ -162,11 +104,11 @@ let BlueLightTouchstart = function (E) {
   else rightTouchDown = true;
 
   [windowMouseX, windowMouseY] = GetmouseXY(e);
-  [viewport.originalPointX, viewport.originalPointY] = getCurrPoint(e);
+  [originalPoint_X, originalPoint_Y] = getCurrPoint(e);
 
   if (rightTouchDown == true && e2) {
     [windowMouseX2, windowMouseY2] = GetmouseXY(e2);
-    [viewport.originalPointX2, viewport.originalPointY2] = getCurrPoint(e2);
+    [originalPoint_X2, originalPoint_Y2] = getCurrPoint(e2);
   }
 
   for (var i = 0; i < BlueLightTouchstartList.length; i++) {
@@ -178,21 +120,25 @@ let BlueLightTouchstart = function (E) {
 
 let BlueLightMousemoveList = [];
 let BlueLightMousemove = function (e) {
-  if (e.which == 1) MouseDownCheck = true;
-  else if (e.which == 3) rightMouseDown = true;
+  //if (e.which == 1) MouseDownCheck = true;
+  //else if (e.which == 3) rightMouseDown = true;
+  let angle2point = rotateCalculation(e);
+  var [MouseX, MouseY] = GetmouseXY(e);
+  windowMouseDiffX = MouseX - windowMouseX;
+  windowMouseDiffY = MouseY - windowMouseY;
   [windowMouseX, windowMouseY] = GetmouseXY(e);
 
-  [GetViewport().originalPointX, GetViewport().originalPointY] = getCurrPoint(e);
-  for (var i = 0; i < BlueLightMousedownList.length; i++) {
-    if (BlueLightMousedownList[i].constructor.name == "Function")
-      BlueLightMousedownList[i](e);
+  //[originalPoint_X, originalPoint_Y] = getCurrPoint(e);
+  for (var i = 0; i < BlueLightMousemoveList.length; i++) {
+    if (BlueLightMousemoveList[i].constructor.name == "Function")
+      BlueLightMousemoveList[i](e);
   }
 
   getClass('labelXY')[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
   if (openLink == true) {
     for (var i = 0; i < Viewport_Total; i++) {
-      GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-      GetViewport(i).newMousePointY = GetViewport().newMousePointY;
+      GetViewport(i).translate.x = GetViewport().translate.x;
+      GetViewport(i).translate.y = GetViewport().translate.y;
     }
   }
   putLabel();
@@ -200,37 +146,95 @@ let BlueLightMousemove = function (e) {
 }
 
 
+let BlueLightTouchmoveList = [];
+let BlueLightTouchmove = function (E) {
+  var e = null, e2 = null;
+  if (E.touches[1]) e = E.touches[0], e2 = E.touches[1]
+  else e = E.touches[0];
+
+  var [MouseX, MouseY] = GetmouseXY(e);
+  windowMouseDiffX = MouseX - windowMouseX;
+  windowMouseDiffY = MouseY - windowMouseY;
+
+  if (rightTouchDown == true && e2) {
+    //紀錄雙指距變化
+    windowTouchDistDiffX = Math.abs(GetmouseX(e2) - GetmouseX(e)) - Math.abs(windowMouseX - windowMouseXF2);
+    windowTouchDistDiffY = Math.abs(GetmouseY(e2) - GetmouseY(e)) - Math.abs(windowMouseY - windowMouseY2);
+  }
+
+  [windowMouseX, windowMouseY] = GetmouseXY(e);
+
+
+  //originalPoint_X,originalPoint_Y] = getCurrPoint(e);
+
+  if (rightTouchDown == true && e2) {
+    [windowMouseX2, windowMouseY2] = GetmouseXY(e2);
+    [originalPoint_X2, originalPoint_Y2] = getCurrPoint(e2);
+  }
+
+  for (var i = 0; i < BlueLightTouchmoveList.length; i++) {
+    if (BlueLightTouchmoveList[i].constructor.name == "Function")
+      BlueLightTouchmoveList[i](e, e2);
+  }
+}
+
+let BlueLightMouseupList = [];
+let BlueLightMouseup = function (e) {
+
+  for (var i = 0; i < BlueLightMouseupList.length; i++) {
+    if (BlueLightMouseupList[i].constructor.name == "Function")
+      BlueLightMouseupList[i](e);
+  }
+  [windowMouseX, windowMouseY] = [0, 0];
+  windowMouseDiffX = windowMouseDiffY = 0;
+  MouseDownCheck = rightMouseDown = false;
+}
+
+let BlueLightTouchendList = [];
+let BlueLightTouchend = function (E) {
+  var e = null, e2 = null;
+  if (E.touches[1]) e = E.touches[0], e2 = E.touches[1]
+  else e = E.touches[0];
+
+  for (var i = 0; i < BlueLightTouchendList.length; i++) {
+    if (BlueLightTouchendList[i].constructor.name == "Function")
+      BlueLightTouchendList[i](e, e2);
+  }
+  TouchDownCheck = rightTouchDown = false;
+}
+
+
 let AddMouseEvent = function () {
   try {
-    GetNewViewport().div.removeEventListener("touchstart", thisF, false);
-    GetNewViewport().div.removeEventListener("mousedown", thisF, false);
-    GetNewViewport().div.addEventListener("contextmenu", contextmenuF, false);
-    GetNewViewport().div.addEventListener("mousemove", Mousemove, false);
-    GetNewViewport().div.addEventListener("mousedown", BlueLightMousedown, false);
-    GetNewViewport().div.addEventListener("mouseup", Mouseup, false);
-    GetNewViewport().div.addEventListener("mouseout", Mouseout, false);
-    GetNewViewport().div.addEventListener("touchstart", BlueLightTouchstart, false);
-    GetNewViewport().div.addEventListener("touchmove", touchmoveF, false);
-    GetNewViewport().div.addEventListener("touchend", touchendF, false);
-    GetNewViewport().div.addEventListener("wheel", Wheel, false);
+    GetViewport().div.removeEventListener("touchstart", thisF, false);
+    GetViewport().div.removeEventListener("mousedown", thisF, false);
+    GetViewport().div.addEventListener("contextmenu", contextmenuF, false);
+    GetViewport().div.addEventListener("mousemove", BlueLightMousemove, false);
+    GetViewport().div.addEventListener("mousedown", BlueLightMousedown, false);
+    GetViewport().div.addEventListener("mouseup", BlueLightMouseup, false);
+    GetViewport().div.addEventListener("mouseout", Mouseout, false);
+    GetViewport().div.addEventListener("touchstart", BlueLightTouchstart, false);
+    GetViewport().div.addEventListener("touchmove", BlueLightTouchmove, false);
+    GetViewport().div.addEventListener("touchend", BlueLightTouchend, false);
+    GetViewport().div.addEventListener("wheel", Wheel, false);
   } catch (ex) { console.log(ex); }
 }
 let DeleteMouseEvent = function () {
   try {
     for (var i = 0; i < Viewport_Total; i++) {
-      GetNewViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
-      GetNewViewport(i).div.removeEventListener("mousemove", Mousemove, false);
-      GetNewViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
-      GetNewViewport(i).div.removeEventListener("mouseup", Mouseup, false);
-      GetNewViewport(i).div.removeEventListener("mouseout", Mouseout, false);
-      GetNewViewport(i).div.removeEventListener("wheel", Wheel, false);
-      GetNewViewport(i).div.removeEventListener("mousedown", thisF, false);
-      GetNewViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
-      GetNewViewport(i).div.removeEventListener("touchend", touchendF, false);
-      GetNewViewport(i).div.removeEventListener("wheel", Wheel, false);
-      GetNewViewport(i).div.addEventListener("touchstart", thisF, false);
-      GetNewViewport(i).div.addEventListener("mousedown", thisF, false);
-      GetNewViewport(i).div.addEventListener("wheel", Wheel, false);
+      GetViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
+      GetViewport(i).div.removeEventListener("mousemove", BlueLightMousemove, false);
+      GetViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
+      GetViewport(i).div.removeEventListener("mouseup", BlueLightMouseup, false);
+      GetViewport(i).div.removeEventListener("mouseout", Mouseout, false);
+      GetViewport(i).div.removeEventListener("wheel", Wheel, false);
+      GetViewport(i).div.removeEventListener("mousedown", thisF, false);
+      GetViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
+      GetViewport(i).div.removeEventListener("touchend", BlueLightTouchend, false);
+      GetViewport(i).div.removeEventListener("wheel", Wheel, false);
+      GetViewport(i).div.addEventListener("touchstart", thisF, false);
+      GetViewport(i).div.addEventListener("mousedown", thisF, false);
+      GetViewport(i).div.addEventListener("wheel", Wheel, false);
     }
   } catch (ex) { }
 }
@@ -239,12 +243,12 @@ let set_BL_model = function (string) {
   BL_mode = string;
 
   if (!this.init) {
-    set_BL_model.onchange1 = function () {
+    set_BL_model.onchange = function () {
       return 0;
     }
     this.init = true;
   }
-  set_BL_model.onchange1();
+  set_BL_model.onchange();
 }
 
 let ViewPortList = [];

@@ -28,12 +28,12 @@ getByid("overlay2seg").onclick = function () {
     getByid("overlay2seg").style.display = "none";
 
     for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].type == "Overlay" && PatientMark[n].sop == GetNewViewport().sop) {
+        if (PatientMark[n].type == "Overlay" && PatientMark[n].sop == GetViewport().sop) {
 
             var SegMark = new BlueLightMark();
-            SegMark.setQRLevels(GetNewViewport().QRLevels);
+            SegMark.setQRLevels(GetViewport().QRLevels);
             SegMark.type = SegMark.hideName = SegMark.showName = "SEG";
-            SegMark.ImagePositionPatient = GetNewViewport().tags.ImagePositionPatient;
+            SegMark.ImagePositionPatient = GetViewport().tags.ImagePositionPatient;
 
             SegMark.canvas = PatientMark[n].canvas;
             PatientMark.push(SegMark);
@@ -44,7 +44,7 @@ getByid("overlay2seg").onclick = function () {
         }
 
     }
-    refreshMarkFromSop(GetNewViewport().sop);
+    refreshMarkFromSop(GetViewport().sop);
 }
 
 getByid("writeSEG").onclick = function () {
@@ -297,7 +297,7 @@ function set_SEG_context() {
     let tail2_list = "", tail4_list = "";
 
     function setTag(temp, replace, str, len) {
-        str = Null2Empty(str);
+        if (str == undefined || str == null) str = "";
         str = "" + str;
         temp = temp.replace("___" + replace + "___", "" + str);
         var length = ("" + str).length;
@@ -316,7 +316,7 @@ function set_SEG_context() {
     }
 
     //此更動待驗證
-    var sopList = Patient.findSeries(GetNewViewport().series).Sop;
+    var sopList = Patient.findSeries(GetViewport().series).Sop;
     for (var s = 0; s < sopList.length; s++) {
         let tail2 = "" + SEG_format_tail_2;
         // tail2 = tail2.replace("___ReferencedSOPInstanceUID___", sopList[s]);
@@ -326,7 +326,7 @@ function set_SEG_context() {
     var segCount = 0;
     for (var n = 0; n < PatientMark.length; n++) {
         //for (var m = 0; m < PatientMark[n].mark.length; m++) {
-        if (PatientMark[n].series == GetNewViewport().series) {
+        if (PatientMark[n].series == GetViewport().series) {
             if (PatientMark[n].type == "SEG") {
                 segCount++;
             }
@@ -339,7 +339,7 @@ function set_SEG_context() {
     var mark_xy = "";
     var temp_segCount = 0;
     for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].series == GetNewViewport().series) {
+        if (PatientMark[n].series == GetViewport().series) {
             //for (var m = 0; m < PatientMark[n].mark.length; m++) {
             if (PatientMark[n].type == "SEG") {
                 temp_segCount++;
@@ -358,41 +358,42 @@ function set_SEG_context() {
         }
         var createSopUid = CreateUid("sop");
         var createSeriesUid = CreateUid("series");
+        var tags=GetViewport().tags;
         for (var c = 0; c < 5; c++) {
-            temp = setTag(temp, "StudyDate", GetNewViewport().studyDate, true);
-            temp = setTag(temp, "StudyTime", GetNewViewport().studyTime, true);
-            temp = setTag(temp, "StudyInstanceUID", GetNewViewport().study, true);
+            temp = setTag(temp, "StudyDate", GetViewport().studyDate, true);
+            temp = setTag(temp, "StudyTime", GetViewport().studyTime, true);
+            temp = setTag(temp, "StudyInstanceUID", GetViewport().study, true);
             temp = setTag(temp, "SeriesInstanceUID", createSeriesUid, true);
             temp = setTag(temp, "SOPInstanceUID", createSopUid, true);
-            temp = setTag(temp, "PatientID", GetViewport().PatientID, true);
-            temp = setTag(temp, "PatientName", GetViewport().PatientName, true);
-            temp = setTag(temp, "ReferencedSOPInstanceUID", GetNewViewport().sop, true);
-            temp = setTag(temp, "ImageType", GetViewport().ImageType, true);
-            temp = setTag(temp, "ReferencedSeriesInstanceUID", GetNewViewport().series, true);
-            temp = setTag(temp, "AccessionNumber", GetViewport().AccessionNumber, true);
+            temp = setTag(temp, "PatientID", tags.PatientID, true);
+            temp = setTag(temp, "PatientName", tags.PatientName, true);
+            temp = setTag(temp, "ReferencedSOPInstanceUID", GetViewport().sop, true);
+            temp = setTag(temp, "ImageType", tags.ImageType, true);
+            temp = setTag(temp, "ReferencedSeriesInstanceUID", GetViewport().series, true);
+            temp = setTag(temp, "AccessionNumber", tags.AccessionNumber, true);
 
-            temp = setTag(temp, "StudyID", GetNewViewport().studyID, true);
+            temp = setTag(temp, "StudyID", GetViewport().studyID, true);
 
-            temp = setTag(temp, "PatientSex", GetViewport().PatientSex, true);
-            temp = setTag(temp, "PatientBirthDate", GetViewport().PatientBirthDate, true);
-            temp = setTag(temp, "PatientAge", GetViewport().PatientAge, true);
-            temp = setTag(temp, "Manufacturer", GetViewport().Manufacture, true);
-            temp = setTag(temp, "PhotometricInterpretation", GetViewport().PhotometricInterpretation, true);
-            temp = setTag(temp, "ReferringPhysicianName", GetViewport().ReferringPhysicianName, true);
-            temp = setTag(temp, "SliceThickness", GetViewport().SliceThickness, true);
-            temp = setTag(temp, "SpacingBetweenSlices", GetViewport().SpacingBetweenSlices, true);
+            temp = setTag(temp, "PatientSex", tags.PatientSex, true);
+            temp = setTag(temp, "PatientBirthDate", tags.PatientBirthDate, true);
+            temp = setTag(temp, "PatientAge", tags.PatientAge, true);
+            temp = setTag(temp, "Manufacturer", tags.Manufacture, true);
+            temp = setTag(temp, "PhotometricInterpretation", tags.PhotometricInterpretation, true);
+            temp = setTag(temp, "ReferringPhysicianName", tags.ReferringPhysicianName, true);
+            temp = setTag(temp, "SliceThickness", tags.SliceThickness, true);
+            temp = setTag(temp, "SpacingBetweenSlices", tags.SpacingBetweenSlices, true);
 
             temp = setTag(temp, "SeriesDescription", getByid('SegSeriesDescription').value, true);
-            temp = setTag(temp, "SeriesNumber", "" + GetNewViewport().seriesNumber + "03", true);
-            temp = setTag(temp, "PixelSpacing", "" + GetViewport().PixelSpacing, true);
+            temp = setTag(temp, "SeriesNumber", "" + GetViewport().seriesNumber + "03", true);
+            temp = setTag(temp, "PixelSpacing", "" + tags.PixelSpacing, true);
 
-            temp = setTag(temp, "ImagePositionPatient", "" + GetViewport().ImagePositionPatient, true);
+            temp = setTag(temp, "ImagePositionPatient", "" + tags.ImagePositionPatient, true);
 
             function setTagByElTag(temp, replace, len) {
-                for (var d = 0; d < GetViewport().DicomTagsList.length; d++) {
-                    if (GetViewport().DicomTagsList[d][1] == replace) {
-                        temp = ("" + temp).replace("___" + replace + "___", "" + GetViewport().DicomTagsList[d][2]);
-                        var length = ("" + GetViewport().DicomTagsList[d][2]).length;
+                for (var d = 0; d < GetViewport().tags.length; d++) {
+                    if (GetViewport().tags[d][1] == replace) {
+                        temp = ("" + temp).replace("___" + replace + "___", "" + GetViewport().tags[d][2]);
+                        var length = ("" + GetViewport().tags[d][2]).length;
                         if (length % 2 != 0) length++;
                         if (len == true) temp = temp.replace("___" + replace + "(len)___", length);
                         return temp;
@@ -491,7 +492,7 @@ function writeSeg() {
             if (openWindow != true) {
                 var break1 = false;
                 for (var n_s = 0; n_s < PatientMark.length; n_s++) {
-                    if (PatientMark[n_s].sop == GetNewViewport().sop) {
+                    if (PatientMark[n_s].sop == GetViewport().sop) {
                         if (break1 == true) break;
                         if (PatientMark[n_s].type == "SEG") {
                             SEG_now_choose = PatientMark[n_s];
@@ -502,15 +503,15 @@ function writeSeg() {
                 }
                 if (break1 == false) {
                     var SegMark = new BlueLightMark();
-                    SegMark.setQRLevels(GetNewViewport().QRLevels);
+                    SegMark.setQRLevels(GetViewport().QRLevels);
                     SegMark.type = SegMark.hideName = SegMark.showName = "SEG";
-                    SegMark.ImagePositionPatient = GetNewViewport().tags.ImagePositionPatient;
-                    SegMark.pixelData = new Uint8ClampedArray(GetNewViewport().canvas.width * GetNewViewport().canvas.height);
+                    SegMark.ImagePositionPatient = GetViewport().tags.ImagePositionPatient;
+                    SegMark.pixelData = new Uint8ClampedArray(GetViewport().canvas.width * GetViewport().canvas.height);
 
                     if (!SegMark.canvas) {
                         SegMark.canvas = document.createElement("CANVAS");
-                        SegMark.canvas.width = GetNewViewport().canvas.width;
-                        SegMark.canvas.height = GetNewViewport().canvas.height;
+                        SegMark.canvas.width = GetViewport().canvas.width;
+                        SegMark.canvas.height = GetViewport().canvas.height;
                         SegMark.ctx = SegMark.canvas.getContext('2d');
 
                         var pixelData = SegMark.ctx.getImageData(0, 0, SegMark.canvas.width, SegMark.canvas.height);
@@ -537,15 +538,15 @@ function writeSeg() {
 
         var Previous_angle2point;
 
-        Mousemove = function (e) {
-
+        BlueLightMousemoveList = [];
+        BlueLightMousemoveList.push(function (e) {
             if (MouseDownCheck && !rightMouseDown && SEG_now_choose && openWindow != true) {
                 let angle2point = rotateCalculation(e);
                 if (Previous_angle2point && (Previous_angle2point[0] != angle2point[0] || Previous_angle2point[1] != angle2point[1])) {
                     setSEG2PixelData(angle2point);
                     Line_setSEG2PixelData(Previous_angle2point, angle2point);
 
-                    refreshMarkFromSop(GetNewViewport().sop);
+                    refreshMarkFromSop(GetViewport().sop);
                     displayAllMark();
                 }
                 Previous_angle2point = angle2point;
@@ -554,7 +555,7 @@ function writeSeg() {
                 var rect = getByid("SegBrushSizeText").value;
                 rect = parseInt(rect);
                 if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
-                refreshMarkFromSop(GetNewViewport().sop);
+                refreshMarkFromSop(GetViewport().sop);
                 let angle2point = rotateCalculation(e);
                 var MarkCanvas = GetViewportMark();
                 var segCtx = MarkCanvas.getContext("2d");
@@ -565,19 +566,16 @@ function writeSeg() {
                 segCtx.stroke();
                 segCtx.closePath();
             }
+        });
 
-        }
-        Mouseup = function (e) {
+        BlueLightMouseupList = [];
+        BlueLightMouseupList.push(function (e) {
             Previous_angle2point = undefined;
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-            if (openMouseTool == true && rightMouseDown == true)
-                displayMark();
-            MouseDownCheck = rightMouseDown = false;
-            magnifierDiv.hide();
+            if (openMouseTool && rightMouseDown ) displayMark();
 
             if (openLink) displayAllRuler();
-        }
+        });
+
         AddMouseEvent();
         return;
     }
@@ -594,7 +592,7 @@ function setSEG2PixelData(angle2point) {
         for (var s = -rect; s < rect; s++) {
             for (var s2 = -rect; s2 < rect; s2++) {
                 if ((s * s) + (s2 * s2) < rect * rect) {
-                    SEG_now_choose.pixelData[Math.floor(angle2point[1] + s) * GetNewViewport().width + Math.floor(angle2point[0] + s2)] = 0;
+                    SEG_now_choose.pixelData[Math.floor(angle2point[1] + s) * GetViewport().width + Math.floor(angle2point[0] + s2)] = 0;
                     pixelData.data[p] = 0;
                     pixelData.data[p + 1] = 0;
                     pixelData.data[p + 2] = 0;
@@ -607,7 +605,7 @@ function setSEG2PixelData(angle2point) {
         for (var s = -rect; s < rect; s++) {
             for (var s2 = -rect; s2 < rect; s2++) {
                 if ((s * s) + (s2 * s2) < rect * rect) {
-                    SEG_now_choose.pixelData[Math.floor(angle2point[1] + s) * GetNewViewport().width + Math.floor(angle2point[0] + s2)] = 1;
+                    SEG_now_choose.pixelData[Math.floor(angle2point[1] + s) * GetViewport().width + Math.floor(angle2point[0] + s2)] = 1;
                     pixelData.data[p] = 0;
                     pixelData.data[p + 1] = 0;
                     pixelData.data[p + 2] = 255;

@@ -1,7 +1,15 @@
+//表示現在為開放用拖曳切換影像
+var openChangeFile = false;
 
 function scroll() {
     if (BL_mode == 'scroll') {
         DeleteMouseEvent();
+        
+        openChangeFile = true;
+        set_BL_model.onchange = function () {
+            openChangeFile = false;
+            set_BL_model.onchange = function () { return 0; };
+        }
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
@@ -13,87 +21,51 @@ function scroll() {
             }
         });
 
-        Mousemove = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-
-
-            if (rightMouseDown == true) scale_size(e, currX, currY);
-
+        BlueLightMousemoveList = [];
+        BlueLightMousemoveList.push(function (e) {
+            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
             if (MouseDownCheck) {
-                windowMouseX = GetmouseX(e);
-                windowMouseY = GetmouseY(e);
-
                 var nextBool = null;
-                if (Math.abs(currY - GetViewport().originalPointY) < Math.abs(currX - GetViewport().originalPointX)) {
-                    if (currX < GetViewport().originalPointX - 3) nextBool = true;
-                    else if (currX > GetViewport().originalPointX + 3) nextBool = false;
+                if (Math.abs(windowMouseDiffY) < Math.abs(windowMouseDiffX)) {
+                    if (windowMouseDiffX < - 3) nextBool = true;
+                    else if (windowMouseDiffX > 3) nextBool = false;
                 } else {
-                    if (currY < GetViewport().originalPointY - 3) nextBool = true;
-                    else if (currY > GetViewport().originalPointY + 3) nextBool = false;
+                    if (windowMouseDiffY < - 3) nextBool = true;
+                    else if (windowMouseDiffY > 3) nextBool = false;
                 }
 
-                if (nextBool != null && openLink == false) GetNewViewport().nextFrame(nextBool);
+                if (nextBool != null && openLink == false) GetViewport().nextFrame(nextBool);
                 else if (nextBool != null && openLink == true) {
                     for (var z = 0; z < Viewport_Total; z++)
-                        if (!(parseInt(GetViewport(z).style.height) <= 1)) GetNewViewport(z).nextFrame(nextBool);
+                        if (!(parseInt(GetViewport(z).div.style.height) <= 1)) GetViewport(z).nextFrame(nextBool);
 
                 }
-
-                GetViewport().originalPointX = currX;
-                GetViewport().originalPointY = currY;
             }
-        }
-        Mouseup = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-            if (openMouseTool == true && rightMouseDown == true)
-                displayMark();
-            MouseDownCheck = rightMouseDown = false;
-            magnifierDiv.hide();
+        });
 
+        BlueLightMouseupList = [];
+        BlueLightMouseupList.push(function (e) {
+            if (openMouseTool && rightMouseDown) displayMark();
             if (openLink) displayAllRuler();
-        }
+        });
+
         BlueLightTouchstartList = [];
 
-        Touchmove = function (e, e2) {
+        BlueLightTouchmoveList = [];
+        BlueLightTouchmoveList.push(function (e, e2) {
             if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
 
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-
             if (TouchDownCheck == true && rightTouchDown == false) {
-                //if (openChangeFile == true) 
-                {
-                    if (Math.abs(currY - GetViewport().originalPointY) < Math.abs(currX - GetViewport().originalPointX)) {
-                        if (currX < GetViewport().originalPointX - 3) {
-                            GetNewViewport().nextFrame(true);
-                        } else if (currX > GetViewport().originalPointX + 3) {
-                            GetNewViewport().nextFrame(false);
-                        }
-                    } else {
-                        if (currY < GetViewport().originalPointY - 3) {
-                            GetNewViewport().nextFrame(true);
-                        } else if (currY > GetViewport().originalPointY + 3) {
-                            GetNewViewport().nextFrame(false);
-                        }
-                    }
-                    GetViewport().originalPointX = currX;
-                    GetViewport().originalPointY = currY;
+                if (Math.abs(windowMouseDiffY) < Math.abs(windowMouseDiffX)) {
+                    if (windowMouseDiffX < - 3) GetViewport().nextFrame(true);
+                    else if (windowMouseDiffX > 3) GetViewport().nextFrame(false);
+                } else {
+                    if (windowMouseDiffY < - 3) GetViewport().nextFrame(true);
+                    else if (windowMouseDiffY > 3) GetViewport().nextFrame(false);
                 }
             }
-        }
-        Touchend = function (e, e2) {
-            if (TouchDownCheck == true) {
-                if (openAngle == 1) openAngle = 2;
-                else if (openAngle == 2) openAngle = 3;
-            }
-            TouchDownCheck = false;
-            rightTouchDown = false;
+        });
 
-            magnifierDiv.hide();
-
-        }
         AddMouseEvent();
     }
 };
@@ -120,8 +92,8 @@ class ScrollBar {
         this.outerDIV.style.right = "0px";
         this.innerDIV.style.right = "0px";
 
-        this.outerDIV.style.zIndex = "7";
-        this.innerDIV.style.zIndex = "8";
+        this.outerDIV.style.zIndex = "9";
+        this.innerDIV.style.zIndex = "10";
 
         this.outerDIV.appendChild(this.innerDIV);
         this.viewport.appendChild(this.outerDIV);
