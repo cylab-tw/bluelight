@@ -118,7 +118,7 @@ function zoom() {
         });
 
         BlueLightTouchstartList = [];
-        BlueLightTouchstartList.push(function () {
+        BlueLightTouchstartList.push(function (e, e2) {
             magnifierDiv.show();
             let angle2point = rotateCalculation(e);
             [currX11, currY11] = angle2point[0];

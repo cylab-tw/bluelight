@@ -9,7 +9,7 @@ VIEWPORT.delPDFView = function (viewport) {
     }
 }
 
-VIEWPORT.initPixelSpacing = function (viewport, image) {
+VIEWPORT.initTransform = function (viewport, image) {
     if (!image) return;
     if (viewport.tags.PixelSpacing) {
         viewport.transform.PixelSpacingX = 1.0 / parseFloat(viewport.tags.PixelSpacing.split("\\")[0]);
@@ -17,10 +17,7 @@ VIEWPORT.initPixelSpacing = function (viewport, image) {
     } else {
         viewport.transform.PixelSpacingX = viewport.transform.PixelSpacingY = 1.0;
     }
-}
 
-VIEWPORT.initImageOrientation = function (viewport, image) {
-    if (!image) return;
     if (viewport.tags.ImageOrientationPatient) {
         viewport.transform.imageOrientationX = viewport.tags.ImageOrientationPatient.split("\\")[0];
         viewport.transform.imageOrientationY = viewport.tags.ImageOrientationPatient.split("\\")[1];
@@ -32,10 +29,7 @@ VIEWPORT.initImageOrientation = function (viewport, image) {
         viewport.transform.imageOrientationX = viewport.transform.imageOrientationY = viewport.transform.imageOrientationZ = 0;
         viewport.transform.imageOrientationX2 = viewport.transform.imageOrientationY2 = viewport.transform.imageOrientationZ2 = 0;
     }
-}
 
-VIEWPORT.initImagePosition = function (viewport, image) {
-    if (!image) return;
     if (viewport.tags.ImagePositionPatient) {
         viewport.transform.imagePositionX = parseFloat(viewport.tags.ImagePositionPatient.split("\\")[0]);
         viewport.transform.imagePositionY = parseFloat(viewport.tags.ImagePositionPatient.split("\\")[1]);
@@ -85,16 +79,7 @@ VIEWPORT.loadViewport = function (viewport, image, viewportNum) {
         VIEWPORT[VIEWPORT.loadViewportList[i]](viewport, image, viewportNum);
     }
 }
-VIEWPORT.loadViewportList = ['initImagePosition', 'initPixelSpacing', 'initImageOrientation', 'putLabel2Element', 'delPDFView'];
-
-//VIEWPORT.lockViewportList = [];
-
-/*
-initImagePosition(element);
-initPixelSpacing(element);//載入Pixel Spacing
-initImageOrientation(element);//載入image Orientation
-putLabel2Element(element, image, viewportNum);//putLabel
-*/
+VIEWPORT.loadViewportList = ['initTransform', 'putLabel2Element', 'delPDFView'];
 
 function wadorsLoader(url, onlyload) {
     var data = [];
@@ -236,14 +221,8 @@ function displayPDF(pdf) {
     element.div.appendChild(iFrame);
     element.PDFView = iFrame;
 
-    getClass("labelWC")[viewportNumber].style.display = "none";
-    getClass("labelLT")[viewportNumber].style.display = "none";
-    getClass("labelRT")[viewportNumber].style.display = "none";
-    getClass("labelRB")[viewportNumber].style.display = "none";
-    getClass("labelWC")[viewportNumber].style.display = "none";
-    getClass("labelXY")[viewportNumber].style.display = "none";
-    getClass("leftRule")[viewportNumber].style.display = "none";
-    getClass("downRule")[viewportNumber].style.display = "none";
+    for (label of ["labelWC", "labelLT", "labelRT", "labelRB", "labelWC", "labelXY", "leftRule", "downRule"])
+        getClass(label)[viewportNumber].style.display = "none";
 }
 
 function parseDicomWithoutImage(dataSet, imageId) {
@@ -352,12 +331,6 @@ function setSopToViewport(Sop, viewportNum = viewportNumber, framesNumber) {
     leftLayout.appendCanvasBySeries(element.tags.SeriesInstanceUID, image, pixelData);
     leftLayout.refleshMarkWithSeries(element.tags.SeriesInstanceUID);
 
-    //var HandW = getStretchSize(element.width, element.height, element.div);
-    //element.div.style = "position:block;left:100px;width:" + element.width + "px;height:" + element.height + "px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;";
-    //element.div.study = element.tags.StudyInstanceUID;
-    //element.div.series = element.tags.SeriesInstanceUID;
-    //element.div.sop = element.tags.SOPInstanceUID;
-
     //渲染影像到viewport和原始影像
     // showTheImage(element, image, 'normal', ifNowSeries, viewportNum);
     // showTheImage(originelement, image, 'origin', null, viewportNum);
@@ -374,8 +347,6 @@ function setSopToViewport(Sop, viewportNum = viewportNumber, framesNumber) {
     //渲染上去後畫布應該從原始大小縮小為適當大小
     var HandW = getViewprtStretchSize(element.width, element.height, element.div);
     if (!element.scale && (image.width / HandW[0])) element.scale = (1.0 / (image.width / HandW[0]));
-    //MainCanvas.style = "width:" + HandW[0] + "px;height:" + HandW[1] + "px;display:block;position:absolute;top:50%;left:50%";
-    //MainCanvas.style.margin = "-" + (HandW[1] / 2) + "px 0 0 -" + (HandW[0] / 2) + "px";
 
     MarkCanvas.width = MainCanvas.width;
     MarkCanvas.height = MainCanvas.height;
@@ -385,7 +356,7 @@ function setSopToViewport(Sop, viewportNum = viewportNumber, framesNumber) {
     MarkCanvas.style = MainCanvas.style.cssText;
     MarkCanvas.style["zIndex"] = "8";
     MarkCanvas.style["pointerEvents"] = "none";
-    /*BlueLight2//if (!(viewportNum0 >= 0))*/initNewCanvas(MainCanvas);
+    initNewCanvas();
 
     setTransform(viewportNum);
 
@@ -404,23 +375,11 @@ function setSopToViewport(Sop, viewportNum = viewportNumber, framesNumber) {
     displayAnnotation();
     displayAllRuler();
 
-    //ScrollBar
-    if (element.tags.NumberOfFrames && element.tags.NumberOfFrames > 0 && element.tags.framesNumber != undefined && element.tags.framesNumber != null) {
-        element.ScrollBar.setTotal(parseInt(element.tags.NumberOfFrames));
-        element.ScrollBar.setIndex(parseInt(element.tags.framesNumber));
-        element.ScrollBar.reflesh();
-    } else {
-        var sopList = sortInstance(element.sop);
-        element.ScrollBar.setTotal(sopList.length);
-        element.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == element.tags.InstanceNumber));
-        element.ScrollBar.reflesh();
-    }
+    element.refleshScrollBar();
     refleshGUI();
 }
 
 function parseDicom(image, pixelData, viewportNum = viewportNumber) {
-    //var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
-    //if (VIEWPORT.lockViewportList && VIEWPORT.lockViewportList.includes(viewportNum)) return;
 
     var element = GetViewport(viewportNum);
     if (element.enable == false || element.lockRender == true) return;
@@ -442,37 +401,7 @@ function parseDicom(image, pixelData, viewportNum = viewportNumber) {
     //StudyUID:x0020000d,Series UID:x0020000e,SOP UID:x00080018,
     //Instance Number:x00200013,影像檔編碼資料:imageId,PatientId:x00100020
 
-
-
     VIEWPORT.loadViewport(element, image, viewportNum);
-    /*//載入image Position
-    initImagePosition(element);
-    //載入Pixel Spacing
-    initPixelSpacing(element);
-    //載入image Orientation
-    initImageOrientation(element);
-    //putLabel
-    putLabel2Element(element, image, viewportNum);*/
-    //載入影像的原始長寬
-    //*BlueLight2*/element.image Width = image.width;
-    //*BlueLight2*/element.image Height = image.height;
-
-    //如果現在載入的這張跟上次載入的不一樣
-    //bluelight2註解
-    /*if (!(PreviousSeriesInstanceUID == element.SeriesInstanceUID && element.windowWidthList != 0) || WindowOpen == false) {
-        element.windowCenterList = image.windowCenter;
-        element.windowWidthList = image.windowWidth;
-    }
-
-    if (PreviousSeriesInstanceUID != element.SeriesInstanceUID) {
-        //重置滑鼠座標
-        element.newMousePointX = element.newMousePointY = element.rotateValue = 0;
-        PreviousSeriesInstanceUID = element.SeriesInstanceUID;
-        //重置縮放大小
-        element.NowCanvasSizeWidth = element.NowCanvasSizeHeight = null;
-    } else { //如果一樣
-        if (element.newMousePointX == null) element.newMousePointX = element.newMousePointY = 0;
-    }*/
 
     //改成無論是否曾出現在左側面板，都嘗試加到左側面板
     leftLayout.setImg2Left(new QRLv(image.data), image.data.string('x00100020'));
@@ -482,11 +411,6 @@ function parseDicom(image, pixelData, viewportNum = viewportNumber) {
     //顯示資訊到label
     DisplaySeriesCount(viewportNum);
     displayWindowLevel(viewportNum);
-    //var HandW = getStretchSize(element.width, element.height, element.div);
-    //element.div.style = "position:block;left:100px;width:" + element.width + "px;height:" + element.height + "px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;";
-    //element.study = element.tags.StudyInstanceUID;
-    //element.series = element.tags.SeriesInstanceUID;
-    //element.sop = element.tags.SOPInstanceUID;
 
     //渲染影像到viewport和原始影像
     // showTheImage(element, image, 'normal', ifNowSeries, viewportNum);
@@ -505,27 +429,21 @@ function parseDicom(image, pixelData, viewportNum = viewportNumber) {
     //渲染上去後畫布應該從原始大小縮小為適當大小
     var HandW = getViewprtStretchSize(element.width, element.height, element.div);
     if (!element.scale && (image.width / HandW[0])) element.scale = (1.0 / (image.width / HandW[0]));
-    //MainCanvas.style = "width:" + HandW[0] + "px;height:" + HandW[1] + "px;display:block;position:absolute;top:50%;left:50%";
-    //MainCanvas.style.margin = "-" + (HandW[1] / 2) + "px 0 0 -" + (HandW[0] / 2) + "px";
 
-    MarkCanvas.width = MainCanvas.width;
-    MarkCanvas.height = MainCanvas.height;
+    MarkCanvas.width = MainCanvas.width, MarkCanvas.height = MainCanvas.height;
 
     MarkCanvas.getContext("2d").save();
     MainCanvas.style["zIndex"] = "6";
     MarkCanvas.style = MainCanvas.style.cssText;
     MarkCanvas.style["zIndex"] = "8";
     MarkCanvas.style["pointerEvents"] = "none";
-    /*BlueLight2//if (!(viewportNum0 >= 0))*/initNewCanvas(MainCanvas);
+    initNewCanvas();
     //BlueLight2//if (!(viewportNum0 >= 0)) displayWindowLevel();
     //BlueLight2//else displayWindowLevel(viewportNum);
 
     setTransform(viewportNum);
-    //MainCanvas.style['transform']="translate(" + ToPx(element.translate.x) + "," + ToPx(element.translate.y) + ")rotate(" + element.rotateValue + "deg)";
-    //MarkCanvas.style['transform']="translate(" + ToPx(element.translate.x) + "," + ToPx(element.translate.y) + ")rotate(" + element.rotateValue + "deg)";
 
     if (openWindow == false && openZoom == false) openMouseTool = true;
-    //openChangeFile = true;
 
     //隱藏Table
     getByid("TableSelectNone").selected = true;
@@ -589,7 +507,7 @@ function loadAndViewImage(imageId, viewportNum = viewportNumber, framesNumber) {
             cornerstone.loadImage(imageId, {
                 usePDFJS: true
             }).then(function (image) {
-
+                resetViewport();
                 if (image.data.intString("x00280008") > 1) {//muti frame
                     loadDicomMultiFrame(image, image.imageId, viewportNum);
                 } else {
@@ -627,12 +545,8 @@ function loadAndViewImage(imageId, viewportNum = viewportNumber, framesNumber) {
     }
 }
 
-function initNewCanvas(newCanvas) {
-    //初始化Canvas，添加事件
-    var canvas = newCanvas;
-    var ctx = canvas.getContext("2d");
-    var viewportNumber2 = (viewportNumber + 1);
-    if (viewportNumber2 > 3) viewportNumber2 = 0
+function initNewCanvas() {
+    //添加事件
     try {
         for (var i = 0; i < Viewport_Total; i++) {
             GetViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
@@ -641,15 +555,15 @@ function initNewCanvas(newCanvas) {
             GetViewport(i).div.removeEventListener("mouseup", BlueLightMouseup, false);
             GetViewport(i).div.removeEventListener("mouseout", Mouseout, false);
             GetViewport(i).div.removeEventListener("wheel", Wheel, false);
-            GetViewport(i).div.removeEventListener("mousedown", thisF, false);
+            GetViewport(i).div.removeEventListener("mousedown", SwitchViewport, false);
             GetViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
             GetViewport(i).div.removeEventListener("touchend", BlueLightTouchend, false);
-            GetViewport(i).div.addEventListener("touchstart", thisF, false);
-            GetViewport(i).div.addEventListener("mousedown", thisF, false);
+            GetViewport(i).div.addEventListener("touchstart", SwitchViewport, false);
+            GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
             GetViewport(i).div.addEventListener("wheel", Wheel, false);
         }
-        GetViewport().div.removeEventListener("touchstart", thisF, false);
-        GetViewport().div.removeEventListener("mousedown", thisF, false);
+        GetViewport().div.removeEventListener("touchstart", SwitchViewport, false);
+        GetViewport().div.removeEventListener("mousedown", SwitchViewport, false);
         GetViewport().div.addEventListener("contextmenu", contextmenuF, false);
         GetViewport().div.addEventListener("mousemove", BlueLightMousemove, false);
         GetViewport().div.addEventListener("mousedown", BlueLightMousedown, false);

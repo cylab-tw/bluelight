@@ -240,7 +240,6 @@ function jump2UpOrEnd(number, choose) {
     for (var l = 0; l < SopList.SopAmount; l++) {
         if (parseInt(SopList.Sop[l].InstanceNumber) == number) {
             setSopToViewport(SopList.Sop[l].SopUID);
-            //loadAndViewImage(Patient.findSop(SopList.Sop[l].SopUID).imageId);
             break;
         }
     }

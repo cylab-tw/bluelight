@@ -292,9 +292,15 @@ function html_onload() {
     VIEWPORT.loadViewport(GetViewport(), null, viewportNumber);
     DisplaySeriesCount();
     getClass("labelLT")[viewportNumber].innerText = "";
-    getClass("labelWC")[viewportNumber].innerText = "";  
+    getClass("labelWC")[viewportNumber].innerText = "";
     getClass("labelRT")[viewportNumber].innerText = "";
-    getClass("labelRB")[viewportNumber].innerText = "";   
+    getClass("labelRB")[viewportNumber].innerText = "";
+    PatientMark = [];
+    Patient = new BlueLightPatient();
+    getPatientbyImageID = {};
+    getByid("LeftPicture").innerHTML = ""; //leftLayout = new LeftLayout();
+    leftLayout.reflesh();
+    getByid("myfile").value = null;
   }
   getByid("OtherImg").onclick = function () {
     hideAllDrawer("othereDIv");

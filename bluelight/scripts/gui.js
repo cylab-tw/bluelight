@@ -9,9 +9,7 @@ var openLeftImgClick = true;
 
 let leftLayout;
 onloadFunction.push2First(
-    function () {
-        leftLayout = new LeftLayout();
-    }
+    function () { leftLayout = new LeftLayout(); }
 );
 
 function HideElemByID(Elem) {
@@ -31,7 +29,6 @@ function ShowElemByID(Elem) {
         getByid(Elem).style.display = "";
     }
 }
-
 
 function invertDisplayById(id) {
     if (!id && !getByid(id)) return;
@@ -101,6 +98,10 @@ class LeftLayout {
         Patient_div.style = "border:" + bordersize + "px #FFA3FF groove;padding:1px 1px 1px 1px;";
         Patient_div.PatientId = patientID;
         if (!this.findPatienID(patientID)) pic.appendChild(Patient_div);
+        else {
+            for (elem of getClass("OutLeftImg"))
+                if (elem.PatientId == patientID) Patient_div = elem;
+        }
 
         if (this.findSeries(QRLevel.series)) return;
         var series_div = document.createElement("DIV");
@@ -372,8 +373,6 @@ window.onresize = function () {
 
 //執行icon圖示的摺疊效果
 function EnterRWD() {
-
-    //if (openPenDraw == true) return;
     //計算目前有幾個應被計算的icon在上方
     var count = 1;
     //計算上方icon的區塊有多少空間可以容納

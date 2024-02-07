@@ -10,6 +10,8 @@ var openLink = false;
 //目前選取的Viewport是第幾個Viewport
 var viewportNumber = 0;
 
+let ViewPortList = [];
+
 class BlueLightViewPort {
     constructor(index, init = true) {
         if (init) this.initViewport(index);
@@ -65,7 +67,7 @@ class BlueLightViewPort {
         this.MarkCanvas.getContext('2d').clearRect(0, 0, this.MarkCanvas.width, this.MarkCanvas.height);
         this.MarkCanvas.width = this.MarkCanvas.height = 1;
     }
-    
+
     initViewportOption(div, index) {
         this.invert = false;
         this.HorizontalFlip = false;
@@ -248,6 +250,20 @@ class BlueLightViewPort {
         if (Sop.pdf) displayPDF(Sop.pdf);
         else setSopToViewport(Sop, this.index, 0);//loadAndViewImage(Sop.imageId, this.index);
     }
+
+    refleshScrollBar() {
+        var element = this;
+        if (element.tags.NumberOfFrames && element.tags.NumberOfFrames > 0 && element.tags.framesNumber != undefined && element.tags.framesNumber != null) {
+            element.ScrollBar.setTotal(parseInt(element.tags.NumberOfFrames));
+            element.ScrollBar.setIndex(parseInt(element.tags.framesNumber));
+            element.ScrollBar.reflesh();
+        } else {
+            var sopList = sortInstance(element.sop);
+            element.ScrollBar.setTotal(sopList.length);
+            element.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == element.tags.InstanceNumber));
+            element.ScrollBar.reflesh();
+        }
+    }
 }
 
 function GetViewport(num) {
@@ -308,13 +324,13 @@ function refleshCanvas(viewport) {
             const data = imgData.data;
             if (image.color == true) {
                 for (var i = data.length; i >= 0; i -= 4) {
-                    data[i + 0] = parseInt(pixelData[i] * diff);
-                    data[i + 1] = parseInt(pixelData[i + 1] * diff);
-                    data[i + 2] = parseInt(pixelData[i + 2] * diff);
+                    data[i + 0] = pixelData[i] * diff;
+                    data[i + 1] = pixelData[i + 1] * diff;
+                    data[i + 2] = pixelData[i + 2] * diff;
                 }
             } else {
                 for (var i = data.length, j = data.length / 4; i >= 0; i -= 4, j--) {
-                    data[i + 0] = data[i + 1] = data[i + 2] = parseInt(pixelData[j] * diff);
+                    data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * diff;
                 }
             }
             ctx.putImageData(imgData, 0, 0);
@@ -343,8 +359,8 @@ function refleshCanvas(viewport) {
                 imgData.data[i + 3] = 255;
             }
         }*/
-        var multiplication = 255 / ((high - low)) * slope;
-        var addition = (- low + intercept) / (high - low) * 255;
+        const multiplication = 255 / ((high - low)) * slope;
+        const addition = (- low + intercept) / (high - low) * 255;
         const data = imgData.data;
         if (image.color == true) {
             for (var i = data.length; i >= 0; i -= 4) {

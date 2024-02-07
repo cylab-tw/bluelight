@@ -540,7 +540,7 @@ var Gsps_previous_choose = null;
 function writegsps() {
     if (BL_mode == 'writegsps') {
         DeleteMouseEvent();
-        
+
         GetViewport().rotate = 0;
         setTransform();
 
@@ -566,7 +566,8 @@ function writegsps() {
                 GspsMark.setQRLevels(GetViewport().QRLevels);
                 GspsMark.color = GetGSPSColor();
 
-                GspsMark.hideName = GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+                GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+                GspsMark.hideName = GspsMark.showName + "_CIRCLE";
 
                 GspsMark.type = "CIRCLE";
                 GspsMark.pointArray = [];
@@ -585,7 +586,8 @@ function writegsps() {
                 GspsMark.setQRLevels(GetViewport().QRLevels);
                 GspsMark.color = GetGSPSColor();
 
-                GspsMark.hideName = GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+                GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+                GspsMark.hideName = GspsMark.showName + "_POLYLINE";
 
                 GspsMark.type = "POLYLINE";
                 GspsMark.pointArray = [];
@@ -618,7 +620,8 @@ function writegsps() {
                     GspsMark.color = GetGraphicColor();
                     if (getByid("GspsPOLYLINE").selected == true) GspsMark.color = GetGSPSColor();
 
-                    GspsMark.hideName = GspsMark.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
+                    GspsMark.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
+                    GspsMark.hideName = GspsMark.showName + "_Rectangle";
                     if (getByid("GspsPOLYLINE").selected == true) GspsMark.showName = getByid("GspsName").value;
 
                     GspsMark.type = "POLYLINE";

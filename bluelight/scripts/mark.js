@@ -68,6 +68,12 @@ function getRGBFrom0xFF(color, RGB, invert) {
 
 
 function setMarkColor(ctx, color) {
+    //BlueLight2(改成只將色彩選項套用在沒有預設顏色的情況)
+    if (color) {
+        ctx.strokeStyle = ctx.fillStyle = color;
+        return true;
+    }
+
     if (getByid("WhiteSelect").selected) {
         ctx.strokeStyle = ctx.fillStyle = "#FFFFFF";
     } else if (getByid("BlueSelect").selected) {
@@ -160,7 +166,7 @@ function drawSEG(canvas, Mark, viewport) {
     var globalCompositeOperation = ctx.globalCompositeOperation;
 
     ctx.globalCompositeOperation = "source-in";
-    if (setMarkColor(ctx) == true) ctx.fillRect(0, 0, viewport.width, viewport.height);
+    if (setMarkColor(ctx, Mark.color) == true) ctx.fillRect(0, 0, viewport.width, viewport.height);
 
     ctx.globalCompositeOperation = globalCompositeOperation;
     ctx.restore();
@@ -185,7 +191,7 @@ function drawOverLay(canvas, Mark, viewport) {
     ctx.globalAlpha = 1;
     var globalCompositeOperation = ctx.globalCompositeOperation;
     ctx.globalCompositeOperation = "source-in";
-    if (setMarkColor(ctx) == true) ctx.fillRect(0, 0, viewport.width, viewport.height);
+    if (setMarkColor(ctx, Mark.color) == true) ctx.fillRect(0, 0, viewport.width, viewport.height);
     ctx.globalCompositeOperation = globalCompositeOperation;
     ctx.restore();
 }
@@ -256,7 +262,7 @@ function drawTEXT(canvas, Mark, viewport) {
 function drawPOLYLINE(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    setMarkColor(ctx);
+    setMarkColor(ctx, Mark.color);
     if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
 
     for (var o = 0; o < Mark.pointArray.length - 1; o += 1) {
@@ -298,7 +304,7 @@ function drawPOLYLINE(canvas, Mark, viewport) {
 function drawINTERPOLATED(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    setMarkColor(ctx);
+    setMarkColor(ctx, Mark.color);
     if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
 
     var middleX = (Mark.pointArray[0].x + Mark.pointArray[2].x) / 2;
@@ -363,7 +369,7 @@ function drawELLIPSE(canvas, Mark, viewport) {
 function drawCIRCLE(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    setMarkColor(ctx);
+    setMarkColor(ctx, Mark.color);
     if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
     for (var o = 0; o < Mark.pointArray.length; o += 2) {
         var x1 = Mark.pointArray[o].x * 1;
@@ -388,7 +394,7 @@ function drawTwoDimensionPolyline(canvas, mark, viewport) {
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
 
     if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
-    setMarkColor(ctx);
+    setMarkColor(ctx, mark.parent.color);
     for (var o = 0; o < mark.markX.length; o++) {
         ctx.beginPath();
         x1 = mark.markX[o] /* * viewport.transform.PixelSpacingX*/;
@@ -411,7 +417,7 @@ function drawTwoDimensionMultiPoint(canvas, mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
-    setMarkColor(ctx);
+    setMarkColor(ctx, mark.parent.color);
 
     for (var o = 0; o < mark.markX.length; o++) {
         ctx.beginPath();
@@ -432,7 +438,7 @@ function drawTwoDimensionEllipse(canvas, mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
-    setMarkColor(ctx);
+    setMarkColor(ctx, mark.parent.color);
     for (var o = 0; o < mark.markX.length; o++) {
         ctx.beginPath();
         var X1 = mark.markX[o + 0];
@@ -463,7 +469,7 @@ function drawRTSS(canvas, Mark, viewport) {
         //ctx.setTransform(1, 0, 0, 1, 0, 0);
         //ctx.scale(1, 1);
         if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
-        setMarkColor(ctx);
+        setMarkColor(ctx, Mark.color);
         for (var o = 0; o < Mark.pointArray.length; o++) {
             ctx.beginPath();
             var x1 = Math.ceil((Mark.pointArray[o].x - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
@@ -510,7 +516,7 @@ function drawTextAnnotationEntity(canvas, mark, viewport) {
     setImageOrientation2MarkCanvas(viewport, ctx);
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
-    setMarkColor(ctx);
+    setMarkColor(ctx, mark.parent.color);
 
     for (var o = 0; o < mark.markX.length; o++) {
         var theta = 30;

@@ -1,11 +1,14 @@
-config = window.customWebWorkerConfig;
-cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
-cornerstoneWADOImageLoader.configure({
-  beforeSend: function (xhr) {
-  }
+onloadFunction.push2First(function(){
+  config = window.customWebWorkerConfig;
+  cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+  cornerstoneWADOImageLoader.configure({
+    beforeSend: function (xhr) {
+    }
+  });
+  cornerstoneWADOImageLoader.webWorkerManager.initialize(config);/*
+  */
 });
-cornerstoneWADOImageLoader.webWorkerManager.initialize(config);/*
-*/
+
 function getBlobUrl(url) {
   const baseUrl = window.URL || window.webkitURL;
   const blob = new Blob([`importScripts('${url}')`], { type: 'application/javascript' });

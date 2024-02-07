@@ -369,7 +369,6 @@ function initVR() {
                 elem.getElementsByClassName("VrCanvas")[0] = null;
             } catch (ex) { }
         }
-        //VIEWPORT.lockViewportList = [];
         ViewPortList[0].lockRender = false;
         // o3DListLength = 0;
         window.removeEventListener("resize", resizeVR, false);
@@ -386,11 +385,11 @@ function initVR() {
             GetViewport(i).div.removeEventListener("mouseup", BlueLightMouseup, false);
             GetViewport(i).div.removeEventListener("mouseout", Mouseout, false);
             GetViewport(i).div.removeEventListener("wheel", Wheel, false);
-            GetViewport(i).div.removeEventListener("mousedown", thisF, false);
+            GetViewport(i).div.removeEventListener("mousedown", SwitchViewport, false);
             GetViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
             GetViewport(i).div.removeEventListener("touchend", BlueLightTouchend, false);
-            GetViewport(i).div.addEventListener("touchstart", thisF, false);
-            GetViewport(i).div.addEventListener("mousedown", thisF, false);
+            GetViewport(i).div.addEventListener("touchstart", SwitchViewport, false);
+            GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
             //GetViewport(i).div.addEventListener("wheel", wheelF, false);
         }
         cancelTools();
@@ -443,7 +442,6 @@ function initVR() {
         GetViewportMark().style.display = "none";
         GetViewport(0).canvas.style.display = "none";
         GetViewportMark(0).style.display = "none";
-        //VIEWPORT.lockViewportList = [0];
         ViewPortList[0].lockRender = true;
 
         window.addEventListener("resize", resizeVR, false);
@@ -454,11 +452,11 @@ function initVR() {
             GetViewport(i1).div.removeEventListener("mouseup", BlueLightMouseup, false);
             GetViewport(i1).div.removeEventListener("mouseout", Mouseout, false);
             GetViewport(i1).div.removeEventListener("wheel", Wheel, false);
-            GetViewport(i1).div.removeEventListener("mousedown", thisF, false);
+            GetViewport(i1).div.removeEventListener("mousedown", SwitchViewport, false);
             GetViewport(i1).div.removeEventListener("touchstart", BlueLightTouchstart, false);
             GetViewport(i1).div.removeEventListener("touchend", BlueLightTouchend, false);
-            GetViewport(i1).div.removeEventListener("touchstart", thisF, false);
-            GetViewport(i1).div.removeEventListener("mousedown", thisF, false);
+            GetViewport(i1).div.removeEventListener("touchstart", SwitchViewport, false);
+            GetViewport(i1).div.removeEventListener("mousedown", SwitchViewport, false);
         }
         GetViewport(0).div.addEventListener("mousemove", mousemove3D, false);
         GetViewport(0).div.addEventListener("mousedown", mousedown3D, false);
