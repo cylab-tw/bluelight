@@ -136,7 +136,7 @@ function html_onload() {
     }
   }*/
 
-  getByid("ExportButton2").onclick = function () {
+  getByid("downloadDcm").onclick = function () {
     var Export2dcm = function () {
       var link = document.createElement('a');
       link.download = GetViewport().imageId.replace("wadouri:", "").replace("wadors:", "").replace(/^.*(\\|\/|\:)/, '');
@@ -148,7 +148,7 @@ function html_onload() {
     Export2dcm();
   }
 
-  getByid("ExportButton").onclick = function () {
+  getByid("downloadImg").onclick = function () {
     var Export2png = function () {
       var link = document.createElement('a');
       link.download = 'dicom.png';
@@ -349,8 +349,14 @@ function html_onload() {
     for (var n in PatientMark) { refreshMark(PatientMark[n]); }
     //for (var s = 0; s < sopList.length; s++)
     //   refreshMarkFromSop(sopList[s]);
+    for (var i = 0; i < Viewport_Total; i++)
+      if (GetViewport(i).series) leftLayout.refleshMarkWithSeries(GetViewport(i).series);
 
     getByid("openMeasureImg").click();
+
+    Angle_now_choose = null;
+    Angle_previous_choose = null;
+    angle.angle_ = "stop";
   }
 
   for (var element of getClass("img")) {
@@ -414,6 +420,23 @@ function html_onload() {
     //cancelTools();
     set_BL_model('angle');
     angle();
+    drawBorder(getByid("openMeasureImg"));
+    hideAllDrawer();
+  }
+
+  getByid("AngleRuler2").onclick = function () {
+    if (this.enable == false) return;
+    //cancelTools();
+    set_BL_model('angle2');
+    angle();
+    drawBorder(getByid("openMeasureImg"));
+    hideAllDrawer();
+  }
+
+  getByid("IrregularRuler").onclick = function () {
+    if (this.enable == false) return;
+    set_BL_model('Irregular');
+    MeasureIrregular();
     drawBorder(getByid("openMeasureImg"));
     hideAllDrawer();
   }

@@ -58,6 +58,7 @@
 
   <script src="../scripts/newscript/measure.js"></script>
   <script src="../scripts/newscript/angle.js"></script>
+  <script src="../scripts/newscript/irregular.js"></script>
   <script src="../scripts/external/other/html2canvas.min.js"></script>
   <script type="module">
     import { decodeImageFrame1 } from "../scripts/external/cornerstone/decode/decodeImageFrame.js";
@@ -147,7 +148,7 @@
           src="../image/icon/black/b_LayoutWithinViewport.png" width="50" height="50"></span>
 
       <span id="TransformationsImgParent">
-        <img class="img" id="openTransformationsImg" altzhtw="Transformations" alt="Measure"
+        <img class="img" id="openTransformationsImg" altzhtw="Transformations" alt="Transformations"
           src="../image/icon/black/b_Transformations.png" width="50" height="50">
         <div id="openTransformationsDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
           width: 500; display: none;background-color: black;">
@@ -192,12 +193,20 @@
             <img alt="清除測量" class="innerimg" id="removeRuler" src="../image/icon/black/X.png" width="50" height="50">
           </span>
           <span id="MeasureRuler_span">
-            <img alt="測量" class="innerimg" id="MeasureRuler" src="../image/icon/black/b_DistanceMeasurement.png"
-              width="50" height="50">
+            <img alt="measure" altzhtw="測量" class="innerimg" id="MeasureRuler"
+              src="../image/icon/black/b_DistanceMeasurement.png" width="50" height="50">
           </span>
           <span id="AngleRuler_span">
-            <img alt="角度" class="innerimg" id="AngleRuler" src="../image/icon/black/b_AngleMeasurement.png" width="50"
-              height="50">
+            <img alt="angle" altzhtw="角度" class="innerimg" id="AngleRuler"
+              src="../image/icon/black/b_AngleMeasurement.png" width="50" height="50">
+          </span>
+          <span id="AngleRuler_span2">
+            <img alt="angle" altzhtw="角度" class="innerimg" id="AngleRuler2"
+              src="../image/icon/black/b_AngleMeasurement2.png" width="50" height="50">
+          </span>
+          <span id="IrregularRuler_span">
+            <img alt="irregular shape" altzhtw="不規則形狀" class="innerimg" id="IrregularRuler"
+              src="../image/icon/black/irregular.png" width="50" height="50">
           </span>
         </div>
       </span>
@@ -218,15 +227,15 @@
           <span id="clearViewport_span">
             <img altzhtw="清除視窗" alt="clear viewport" class="innerimg" id="clearviewportImg"
               src="../image/icon/black/b_trashcan.png" width="50" height="50">
-          </span>
-          <!--<span id="downloadImg_span">
-            <img altzhtw="下載圖片" alt="download image" class="innerimg" id="downloadImg_Img"
-              src="../image/icon/black/download.png" width="50" height="50">
-          </span>
+          </span> <br>
+          <span id="downloadImg_span">
+            <img altzhtw="下載圖片" alt="download image" class="innerimg" id="downloadImg"
+              src="../image/icon/black/download_img.png" width="50" height="50">
+          </span> <br>
           <span id="downloadDcm_span">
-            <img altzhtw="下載DICOM" alt="download DICOM" class="innerimg" id="downloadDcm_Img"
-              src="../image/icon/black/download.png" width="50" height="50">
-          </span>-->
+            <img altzhtw="下載DICOM" alt="download DICOM" class="innerimg" id="downloadDcm"
+              src="../image/icon/black/download_dcm.png" width="50" height="50">
+          </span>
       </span>
       </div>
     </span>
@@ -275,8 +284,8 @@
         <option id="DICOMTagsSelect">DICOMTags</option>
         <option id="AIMSelect">AIM</option>
       </select>
-      <button id="ExportButton" sytle="">Export Image</button>
-      <button id="ExportButton2" sytle="">Export Dicom</button>
+      <!--<button id="ExportButton" sytle="">Export Image</button>
+      <button id="ExportButton2" sytle="">Export Dicom</button>-->
       <!--<button id="remove__ClearMarkupButton__remove" sytle="">Clear Markup</button>-->
     </div>
 
