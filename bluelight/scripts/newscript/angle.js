@@ -423,7 +423,7 @@ function angle_pounch2(currX, currY) {
 function drawAngleRuler(obj) {
     try {
 
-        var canvas = obj.canvas, Mark = obj.Mark;
+        var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
         if (!Mark) return;
         if (Mark.type != "AngleRuler") return;
         var ctx = canvas.getContext("2d");
@@ -482,8 +482,10 @@ function drawAngleRuler(obj) {
         ctx.closePath();
 
         if (Mark.Text) {
+            var n = 22;
+            if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
             ctx.beginPath();
-            ctx.font = "" + (22) + "px Arial";
+            ctx.font = "" + (n) + "px Arial";
             ctx.fillStyle = "#FF0000";
             ctx.fillText("" + Mark.Text, Mark.lastMark.x, Mark.lastMark.y);
             ctx.closePath();
@@ -509,8 +511,7 @@ function getIntersectionPoint(x1, y1, x2, y2, x3, y3, x4, y4) {
 
 function drawAngleRuler2(obj) {
     try {
-
-        var canvas = obj.canvas, Mark = obj.Mark;
+        var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
         if (!Mark) return;
         if (Mark.type != "AngleRuler2") return;
         var ctx = canvas.getContext("2d");
@@ -652,8 +653,10 @@ function drawAngleRuler2(obj) {
         ctx.closePath();
 
         if (Mark.Text) {
+            var n = 22;
+            if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
             ctx.beginPath();
-            ctx.font = "" + (22) + "px Arial";
+            ctx.font = "" + (n) + "px Arial";
             ctx.fillStyle = "#FF0000";
             ctx.fillText("" + Mark.Text, Mark.lastMark.x, Mark.lastMark.y);
             ctx.closePath();

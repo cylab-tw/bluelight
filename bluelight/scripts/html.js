@@ -441,6 +441,21 @@ function html_onload() {
     hideAllDrawer();
   }
 
+  getByid("RectRuler").onclick = function () {
+    if (this.enable == false) return;
+    set_BL_model('MeasureRect');
+    MeasureRect();
+    drawBorder(getByid("openMeasureImg"));
+    hideAllDrawer();
+  }
+  getByid("CircleRuler").onclick = function () {
+    if (this.enable == false) return;
+    set_BL_model('MeasureCircle');
+    MeasureCircle();
+    drawBorder(getByid("openMeasureImg"));
+    hideAllDrawer();
+  }
+
   getByid("playvideo").onclick = function () {
     if (this.enable == false) return;
     drawBorder(this);

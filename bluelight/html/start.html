@@ -58,6 +58,7 @@
 
   <script src="../scripts/newscript/measure.js"></script>
   <script src="../scripts/newscript/angle.js"></script>
+  <script src="../scripts/newscript/shape.js"></script>
   <script src="../scripts/newscript/irregular.js"></script>
   <script src="../scripts/external/other/html2canvas.min.js"></script>
   <script type="module">
@@ -204,6 +205,15 @@
             <img alt="angle" altzhtw="角度" class="innerimg" id="AngleRuler2"
               src="../image/icon/black/b_AngleMeasurement2.png" width="50" height="50">
           </span>
+          <br>
+          <span id="RectRuler_span">
+            <img alt="Rect shape" altzhtw="矩形" class="innerimg" id="RectRuler"
+              src="../image/icon/black/b_RectMeasurement.png" width="50" height="50">
+          </span>
+          <span id="CircleRuler_span">
+            <img alt="Circle shape" altzhtw="圓形" class="innerimg" id="CircleRuler"
+              src="../image/icon/black/b_CircleMeasurement.png" width="50" height="50">
+          </span>
           <span id="IrregularRuler_span">
             <img alt="irregular shape" altzhtw="不規則形狀" class="innerimg" id="IrregularRuler"
               src="../image/icon/black/irregular.png" width="50" height="50">
@@ -217,7 +227,7 @@
           src="../image/icon/black/fist0.png" width="50" height="50"></span>
       <span id="annotation_span"><img class="img" alt="Annotation" id="annotation"
           src="../image/icon/black/b_Annotation.png" width="50" height="50"></span>
-      <span id="MarkupImg_span"><img class="img VR MPR" alt="Markup & Annotation" id="MarkupImg"
+      <span id="MarkupImg_span"><img class="img VR MPR RTSS" alt="Markup & Annotation" id="MarkupImg"
           src="../image/icon/black/b_ShowReport.png" width="50" height="50"></span>
       <span id="OtherImgParent">
         <img class="img" altzhtw="其他" alt="other" id="OtherImg" src="../image/icon/black/b_CineTools.png" width="50"
@@ -263,7 +273,7 @@
     <div id="MarkStyleDiv" style="background-color:#00306044;" class="drawer">
       <label style="color: #ffffff;" id="markColorLabel">Color：</label>
       <select id="MarkcolorSelect">
-        <option selected="selected">Auto</option>
+        <option id="AutoColorSelect"selected="selected">Auto</option>
         <option id="WhiteSelect">White</option>
         <option id="RedSelect">Red</option>
         <option id="BlueSelect">Blue</option>

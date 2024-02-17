@@ -12,6 +12,7 @@ var thicknessList_MPR = [];
 var Thickness_MPR = 0;
 
 var globalTemVector3 = undefined;
+var origin_openAnnotation;
 
 function loadMPR2() {
     var span = document.createElement("SPAN");
@@ -164,7 +165,8 @@ getByid("ImgMPR2").onclick = function (catchError) {
     img2darkByClass("MPR2", !openMPR2);
     if (openMPR2 == true) {
         initMPR2();
-        for (var c = 0; c < 3; c++) GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "none";
+        if (openMPR2 != false)//在initMPR2()中出錯時，openMPR2會變成false
+            for (var c = 0; c < 3; c++) GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "none";
     }
 }
 function exitMPR2() {
@@ -177,9 +179,9 @@ function exitMPR2() {
     GetViewport(0).div.removeEventListener("wheel", MPRWheel, false);
     GetViewport(1).div.removeEventListener("wheel", MPRWheel, false);
     GetViewport(2).div.removeEventListener("wheel", MPRWheel, false);
-    GetViewport(2).div.removeChild(getByid("canvas0_MPR"));
-    GetViewport(1).div.removeChild(getByid("canvas1_MPR"));
-    GetViewport(0).div.removeChild(getByid("canvas2_MPR"));
+    if (getByid("canvas0_MPR")) GetViewport(2).div.removeChild(getByid("canvas0_MPR"));
+    if (getByid("canvas1_MPR")) GetViewport(1).div.removeChild(getByid("canvas1_MPR"));
+    if (getByid("canvas2_MPR")) GetViewport(0).div.removeChild(getByid("canvas2_MPR"));
     cancelTools();
     openMouseTool = true;
     drawBorder(getByid("MouseOperation"));
@@ -210,6 +212,8 @@ function exitMPR2() {
     o3dPixelData2 = [];
     o3dImage = [];
     thicknessList_MPR = [];
+    if (origin_openAnnotation == true || origin_openAnnotation == false) openAnnotation = origin_openAnnotation;
+    displayAnnotation();
     for (var c = 0; c < Viewport_Total; c++) GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "";
     getByid("MouseOperation").click();
 }
@@ -221,6 +225,7 @@ function initMPR2() {
     VIEWPORT.fixRow = 1; VIEWPORT.fixCol = 3;
     openLink = false;
     changeLinkImg();
+    origin_openAnnotation = openAnnotation;
     openAnnotation = false;
     displayAnnotation();
     //getByid("3dDisplay").style.display = "";
@@ -326,7 +331,7 @@ function initMPR2() {
                 alert("Error, this image may not support 3D.");
             };
             openRendering = false;
-            getByid("ImgMPR2").click('error');
+            getByid("ImgMPR2_MPR").onclick('error');
             return;
         };
     }

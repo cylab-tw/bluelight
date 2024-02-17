@@ -622,7 +622,10 @@ function writegsps() {
 
                     GspsMark.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
                     GspsMark.hideName = GspsMark.showName + "_Rectangle";
-                    if (getByid("GspsPOLYLINE").selected == true) GspsMark.showName = getByid("GspsName").value;
+                    if (getByid("GspsPOLYLINE").selected == true) {
+                        GspsMark.showName = getByid("GspsName").value;
+                        GspsMark.hideName = GspsMark.showName + "_Rectangle";
+                    }
 
                     GspsMark.type = "POLYLINE";
                     GspsMark.pointArray = [];
@@ -693,7 +696,7 @@ function writegsps() {
 }
 
 function drawPOLYLINE_Write(obj) {
-    var canvas = obj.canvas, Mark = obj.Mark;
+    var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
     if (Mark.type != "POLYLINE") return;
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
@@ -714,7 +717,9 @@ function drawPOLYLINE_Write(obj) {
         }
 
         if (Mark.GSPS_Text && o == 0) {
-            ctx.font = "" + (parseInt(ctx.lineWidth) * 4) + "px Arial";
+            var n = parseInt(ctx.lineWidth) * 4;
+            if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
+            ctx.font = "" + (n) + "px Arial";
             ctx.fillStyle = "red";
             var tempAlpha = ctx.globalAlpha;
             ctx.globalAlpha = 1.0;

@@ -143,7 +143,7 @@ function measure() {
         BlueLightTouchendList.push(function (e, e2) {
             //let angle2point = rotateCalculation(e);
             //Measure_Point2 = angle2point;
-            
+
             if (Measure_now_choose) {
                 Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
                 Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
@@ -170,7 +170,7 @@ function measure() {
 
             if (openLink) displayAllRuler();
         });
-        
+
         AddMouseEvent();
     }
 }
@@ -229,7 +229,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
 
 function drawMeasureRuler(obj) {
     try {
-        var canvas = obj.canvas, Mark = obj.Mark;
+        var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
         if (!Mark) return;
         if (!Mark || Mark.type != "MeasureRuler" || Mark.pointArray.length < 2) return;
         var ctx = canvas.getContext("2d");
@@ -264,8 +264,10 @@ function drawMeasureRuler(obj) {
         ctx.closePath();
 
         if (Mark.Text) {
+            var n = 22;
+            if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
             ctx.beginPath();
-            ctx.font = "" + (22) + "px Arial";
+            ctx.font = "" + (n) + "px Arial";
             ctx.fillStyle = "#FF0000";
             ctx.fillText("" + Mark.Text, Mark.lastMark.x, Mark.lastMark.y);
             ctx.closePath();

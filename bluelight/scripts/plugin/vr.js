@@ -27,6 +27,7 @@ var Direction_VR = 1;
 var rotateStep = 3;
 var rotateSpeed = 12;
 var zoomRatio3D = 1;
+var origin_openAnnotation;
 
 function loadVR() {
     var span = document.createElement("SPAN");
@@ -212,7 +213,7 @@ getByid("WindowLevelSelect_VR").onchange = function () {
 }
 
 getByid("ImgVR").onclick = function (catchError) {
-    if (this.enable == false) return;
+    if (this.enable == false && catchError != "error") return;
     openVR = !openVR;
     if (catchError == "error") openVR = false;
     img2darkByClass("VR", !openVR);
@@ -417,6 +418,9 @@ function initVR() {
             setSopToViewport(GetViewport(0).sop, 0);
         //loadAndViewImage(Patient.findSop(GetViewport(0).sop).imageId, 0);
         o3DListLength = 0;
+
+        if (origin_openAnnotation == true || origin_openAnnotation == false) openAnnotation = origin_openAnnotation;
+        displayAnnotation();
         for (var c = 0; c < Viewport_Total; c++) GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "";
     } else if (openVR == true) {
         enterVR_UI();
@@ -424,6 +428,7 @@ function initVR() {
         VIEWPORT.fixRow = VIEWPORT.fixCol = 1;//如果VR模式正在開啟，固定1x1
         openLink = false;
         changeLinkImg();
+        origin_openAnnotation = openAnnotation;
         openAnnotation = false;
         displayAnnotation();
         getByid("3dDisplay").style.display = "";

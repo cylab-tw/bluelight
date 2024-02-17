@@ -618,13 +618,13 @@ function displayMark(viewportNum = viewportNumber) {
 
     for (var Mark of patientMark_enable) {
         if (Mark.constructor.name == "BlueLightMark") {
-            MARKER.drawMark({ "canvas": MarkCanvas, "Mark": Mark, "showName": Mark.showName });
+            MARKER.drawMark({ "canvas": MarkCanvas, "Mark": Mark, "showName": Mark.showName, "viewport": viewport });
             continue;
         }
         else {
             for (var mark of Mark.mark) {
                 mark.parent = Mark;
-                MARKER.drawMark({ "canvas": MarkCanvas, "mark": mark, "showName": Mark.showName });//MarkCanvas, mark, viewport
+                MARKER.drawMark({ "canvas": MarkCanvas, "mark": mark, "showName": Mark.showName, "viewport": viewport });//MarkCanvas, mark, viewport
             }
         }
     }

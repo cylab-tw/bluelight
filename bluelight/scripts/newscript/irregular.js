@@ -1,7 +1,7 @@
 
 var openMeasureIrregular = false;
 
-var Measure_previous_choose = null;
+var MeasureIrregular_previous_choose = null;
 
 function MeasureIrregular() {
     if (BL_mode == 'Irregular') {
@@ -26,7 +26,7 @@ function MeasureIrregular() {
             MeasureMark.pointArray = [];
             MeasureMark.setPoint2D(angle2point[0], angle2point[1]);
             MeasureMark.setPoint2D(angle2point[0], angle2point[1]);
-            Measure_previous_choose = MeasureMark;
+            MeasureIrregular_previous_choose = MeasureMark;
             PatientMark.push(MeasureMark);
             refreshMark(MeasureMark);
             displayAllMark();
@@ -36,22 +36,22 @@ function MeasureIrregular() {
         BlueLightMousemoveList.push(function (e) {
             if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
             let angle2point = rotateCalculation(e);
-            if (MouseDownCheck && Measure_previous_choose) {
-                Measure_previous_choose.setPoint2D(angle2point[0], angle2point[1]);
+            if (MouseDownCheck && MeasureIrregular_previous_choose) {
+                MeasureIrregular_previous_choose.setPoint2D(angle2point[0], angle2point[1]);
                 var vector = [];
-                for (var o = 0; o < Measure_previous_choose.pointArray.length; o++) {
-                    vector.push({ x: Measure_previous_choose.pointArray[o].x, y: Measure_previous_choose.pointArray[o].y });
+                for (var o = 0; o < MeasureIrregular_previous_choose.pointArray.length; o++) {
+                    vector.push({ x: MeasureIrregular_previous_choose.pointArray[o].x, y: MeasureIrregular_previous_choose.pointArray[o].y });
                 }
-                Measure_previous_choose.Text = parseInt(shoelaceFormula(vector) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
+                MeasureIrregular_previous_choose.Text = parseInt(shoelaceFormula(vector) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
 
-                refreshMark(Measure_previous_choose);
+                refreshMark(MeasureIrregular_previous_choose);
                 displayAllMark();
             }
         });
 
         BlueLightMouseupList = [];
         BlueLightMouseupList.push(function (e) {
-            if (Measure_previous_choose) Measure_previous_choose = null;
+            if (MeasureIrregular_previous_choose) MeasureIrregular_previous_choose = null;
             displayMark();
         });
 
@@ -79,13 +79,13 @@ const shoelaceFormula = (vertices) => {
 };
 
 function drawIrregularRuler(obj) {
-    var canvas = obj.canvas, Mark = obj.Mark;
+    var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
     if (!Mark) return;
     if (!Mark || Mark.type != "IrregularRuler" || Mark.pointArray.length < 2) return;
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     setMarkColor(ctx);
-    if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
+    if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
 
     var tempAlpha = ctx.globalAlpha;
     ctx.globalAlpha = 1.0;
@@ -98,12 +98,18 @@ function drawIrregularRuler(obj) {
         ctx.lineTo(x1, y1);
         //ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     }
+    ctx.lineTo(Math.ceil((Mark.pointArray[0].x)), Math.ceil((Mark.pointArray[0].y)));
+
     ctx.stroke();
     ctx.closePath();
+    ctx.globalAlpha = 0.3;
     ctx.fill();
+    ctx.globalAlpha = 1.0;
     if (Mark.Text) {
         ctx.beginPath();
-        ctx.font = "" + (22) + "px Arial";
+        var n = 22;
+        if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
+        ctx.font = "" + (n) + "px Arial";
         ctx.fillStyle = "#FF0000";
         ctx.fillText("" + Mark.Text, Mark.lastMark.x, Mark.lastMark.y);
         ctx.closePath();

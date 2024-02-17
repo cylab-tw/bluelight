@@ -7,6 +7,7 @@ var openMPR = false;
 
 var buffer_mpr_X = 0;
 var buffer_mpr_Y = 0;
+var origin_openAnnotation;
 
 function loadMPR() {
     var span = document.createElement("SPAN");
@@ -284,7 +285,7 @@ getByid("MouseOperation_MPR").onclick = function () {
 }
 
 getByid("ImgMPR").onclick = function (catchError) {
-    if (this.enable == false) return;
+    if (this.enable == false && catchError != "error") return;
     openMPR = !openMPR;
     if (catchError == "error") openMPR = false;
     img2darkByClass("MPR", !openMPR);
@@ -504,7 +505,7 @@ function initMPR() {
                 delete elem;
             } catch (ex) { }
         }
-        
+
         ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = false;
         window.removeEventListener("resize", resizeVR, false);
         GetViewport(3).div.removeEventListener("mousemove", mousemove3D, false);
@@ -558,6 +559,8 @@ function initMPR() {
         if (GetViewport(0).sop)
             setSopToViewport(GetViewport(0).sop, 0, 0);//loadAndViewImage(Patient.findSop(GetViewport(0).sop).imageId, 0);
         //canvas = GetViewport().canvas
+        if (origin_openAnnotation == true || origin_openAnnotation == false) openAnnotation = origin_openAnnotation;
+        displayAnnotation();
         for (var c = 0; c < Viewport_Total; c++) GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "";
         getByid("MouseOperation").click();
     } else if (openMPR == true) {
@@ -565,6 +568,7 @@ function initMPR() {
         VIEWPORT.fixRow = VIEWPORT.fixCol = 2;
         openLink = false;
         changeLinkImg();
+        origin_openAnnotation = openAnnotation;
         openAnnotation = false;
         displayAnnotation();
         getByid("3dDisplay").style.display = "";
@@ -579,7 +583,7 @@ function initMPR() {
         //    GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "none";
         viewportNumber = 2;
         setSopToViewport(sop, viewportNumber, 0);//loadAndViewImage(Patient.findSop(sop).imageId);
-        
+
         ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
 
         window.addEventListener("resize", resizeVR, false);
@@ -844,7 +848,7 @@ function initMPR() {
                     alert("Error, this image may not support 3D.");
                 };
                 openRendering = false;
-                getByid("ImgMPR").click('error');
+                getByid("ImgMPR").onclick('error');
                 return;
             };
 
