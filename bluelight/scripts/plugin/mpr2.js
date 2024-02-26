@@ -363,7 +363,7 @@ function getVrDistance() {
 function normalizeAngle(angle) { return angle % 360 < 0 ? (angle % 360) + 360 : angle % 360; }
 
 
-function rotatePoint(x, y, cx, cy, angle) {
+function rotatePoint_MPR2(x, y, cx, cy, angle) {
     // 將角度轉換為弧度
     var radian = angle * Math.PI / 180;
     // 計算相對於中心點的偏移量
@@ -440,15 +440,15 @@ function display3dImage2Canvas() {
         ctx.lineWidth = 3;
         ctx.strokeStyle = "pink";
         ctx.beginPath();
-        var p0 = rotatePoint(-this.width, canvas1.camera.center.y, canvas2.camera.center.x, canvas1.camera.center.y, canvas1.camera.angle.z);
-        var p1 = rotatePoint(this.width * 2, canvas1.camera.center.y, canvas2.camera.center.x, canvas1.camera.center.y, canvas1.camera.angle.z);
+        var p0 = rotatePoint_MPR2(-this.width, canvas1.camera.center.y, canvas2.camera.center.x, canvas1.camera.center.y, canvas1.camera.angle.z);
+        var p1 = rotatePoint_MPR2(this.width * 2, canvas1.camera.center.y, canvas2.camera.center.x, canvas1.camera.center.y, canvas1.camera.angle.z);
         ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]);
         ctx.stroke();
 
         ctx.strokeStyle = "blue";
         ctx.beginPath();
-        var p0 = rotatePoint(canvas2.camera.center.x, -this.height, canvas2.camera.center.x, canvas1.camera.center.y, canvas2.camera.angle.z);
-        var p1 = rotatePoint(canvas2.camera.center.x, this.height * 2, canvas2.camera.center.x, canvas1.camera.center.y, canvas2.camera.angle.z);
+        var p0 = rotatePoint_MPR2(canvas2.camera.center.x, -this.height, canvas2.camera.center.x, canvas1.camera.center.y, canvas2.camera.angle.z);
+        var p1 = rotatePoint_MPR2(canvas2.camera.center.x, this.height * 2, canvas2.camera.center.x, canvas1.camera.center.y, canvas2.camera.angle.z);
         ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]);
         ctx.stroke();
     }
@@ -460,16 +460,16 @@ function display3dImage2Canvas() {
         ctx.lineWidth = 3;
         ctx.strokeStyle = "yellow";
         ctx.beginPath();
-        var p0 = rotatePoint(-this.width, canvas0.camera.center.z / (o3dMaxLen.z / canvas1.height), canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), canvas0.camera.center.z / (o3dMaxLen.z / canvas1.height), -canvas0.camera.angle.y);
-        var p1 = rotatePoint(this.width * 2, canvas0.camera.center.z / (o3dMaxLen.z / canvas1.height), canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), canvas0.camera.center.z / (o3dMaxLen.z / canvas1.height), -canvas0.camera.angle.y);
+        var p0 = rotatePoint_MPR2(-this.width, canvas0.camera.center.z / (o3dMaxLen.z / canvas1.height), canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), canvas0.camera.center.z / (o3dMaxLen.z / canvas1.height), -canvas0.camera.angle.y);
+        var p1 = rotatePoint_MPR2(this.width * 2, canvas0.camera.center.z / (o3dMaxLen.z / canvas1.height), canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), canvas0.camera.center.z / (o3dMaxLen.z / canvas1.height), -canvas0.camera.angle.y);
 
         ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]);
         ctx.stroke();
 
         ctx.strokeStyle = "blue";
         ctx.beginPath();
-        var p0 = rotatePoint(canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), -this.height, canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), canvas0.camera.center.z * (canvas1.height / o3dMaxLen.z), -canvas2.camera.angle.y);
-        var p1 = rotatePoint(canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), this.height * 2, canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), canvas0.camera.center.z * (canvas1.height / o3dMaxLen.z), -canvas2.camera.angle.y);
+        var p0 = rotatePoint_MPR2(canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), -this.height, canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), canvas0.camera.center.z * (canvas1.height / o3dMaxLen.z), -canvas2.camera.angle.y);
+        var p1 = rotatePoint_MPR2(canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), this.height * 2, canvas2.camera.center.x / (o3dMaxLen.x / canvas1.width), canvas0.camera.center.z * (canvas1.height / o3dMaxLen.z), -canvas2.camera.angle.y);
         ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]);
         ctx.stroke();
     }
@@ -480,15 +480,15 @@ function display3dImage2Canvas() {
         ctx.lineWidth = 3;
         ctx.strokeStyle = "yellow";
         ctx.beginPath();
-        var p0 = rotatePoint(-this.width, canvas0.camera.center.z / (o3dMaxLen.z / canvas2.height), canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), canvas0.camera.center.z / (o3dMaxLen.z / canvas2.height), canvas0.camera.angle.x);
-        var p1 = rotatePoint(this.width * 2, canvas0.camera.center.z / (o3dMaxLen.z / canvas2.height), canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), canvas0.camera.center.z / (o3dMaxLen.z / canvas2.height), canvas0.camera.angle.x);
+        var p0 = rotatePoint_MPR2(-this.width, canvas0.camera.center.z / (o3dMaxLen.z / canvas2.height), canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), canvas0.camera.center.z / (o3dMaxLen.z / canvas2.height), canvas0.camera.angle.x);
+        var p1 = rotatePoint_MPR2(this.width * 2, canvas0.camera.center.z / (o3dMaxLen.z / canvas2.height), canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), canvas0.camera.center.z / (o3dMaxLen.z / canvas2.height), canvas0.camera.angle.x);
         ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]);
         ctx.stroke();
 
         ctx.strokeStyle = "pink";
         ctx.beginPath();
-        var p0 = rotatePoint(canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), -this.height, canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), canvas0.camera.center.z * (canvas2.height / o3dMaxLen.z), canvas1.camera.angle.x);
-        var p1 = rotatePoint(canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), this.height * 2, canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), canvas0.camera.center.z * (canvas2.height / o3dMaxLen.z), canvas1.camera.angle.x);
+        var p0 = rotatePoint_MPR2(canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), -this.height, canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), canvas0.camera.center.z * (canvas2.height / o3dMaxLen.z), canvas1.camera.angle.x);
+        var p1 = rotatePoint_MPR2(canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), this.height * 2, canvas1.camera.center.y / (o3dMaxLen.y / canvas2.width), canvas0.camera.center.z * (canvas2.height / o3dMaxLen.z), canvas1.camera.angle.x);
         ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]);
         //ctx.moveTo(canvas1.camera.center.y, 0); ctx.lineTo(canvas1.camera.center.y, this.height);
         ctx.stroke();

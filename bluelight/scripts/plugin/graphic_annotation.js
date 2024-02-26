@@ -289,7 +289,7 @@ function Graphic_pounch(currX, currY) {
                                 reference: PatientMark[n],
                                 Mark: PatientMark[n],
                                 point: Max_Y_list,
-                                pointArray: tempMark.pointArray,
+                                pointArray: tempMark,
                                 middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
                                 value: 'up'
                             };
@@ -299,7 +299,7 @@ function Graphic_pounch(currX, currY) {
                                 reference: PatientMark[n],
                                 Mark: PatientMark[n],
                                 point: Min_Y_list,
-                                pointArray: tempMark.pointArray,
+                                pointArray: tempMark,
                                 middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
                                 value: 'down'
                             };
@@ -309,7 +309,7 @@ function Graphic_pounch(currX, currY) {
                                 reference: PatientMark[n],
                                 Mark: PatientMark[n],
                                 point: Min_X_list,
-                                pointArray: tempMark.pointArray,
+                                pointArray: tempMark,
                                 middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
                                 value: 'left'
                             };
@@ -319,7 +319,7 @@ function Graphic_pounch(currX, currY) {
                                 reference: PatientMark[n],
                                 Mark: PatientMark[n],
                                 point: Max_X_list,
-                                pointArray: tempMark.pointArray,
+                                pointArray: tempMark,
                                 middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
                                 value: 'right'
                             };
@@ -629,6 +629,8 @@ function writegsps() {
 
                     GspsMark.type = "POLYLINE";
                     GspsMark.pointArray = [];
+                    GspsMark.RotationAngle = 0;
+                    GspsMark.RotationPoint = 0;
                     GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
                     GspsMark.setPoint2D(originalPoint_X, currY);
                     GspsMark.setPoint2D(currX, currY);
@@ -641,47 +643,47 @@ function writegsps() {
                 } else {
                     if (rightMouseDown == true) {
                         if (Math.abs(currY - originalPoint_Y) > Math.abs(currX - originalPoint_X)) {
-                            if (!Graphic_now_choose.mark || !Graphic_now_choose.mark.RotationAngle) Graphic_now_choose.mark.RotationAngle = 0;
+                            if (!Graphic_now_choose.Mark || !Graphic_now_choose.Mark.RotationAngle) Graphic_now_choose.Mark.RotationAngle = 0;
                             if (currY < originalPoint_Y - 1)
-                                Graphic_now_choose.mark.RotationAngle += parseInt((originalPoint_Y - currY) / 3);
+                                Graphic_now_choose.Mark.RotationAngle += parseInt((originalPoint_Y - currY) / 3);
                             else if (currY > originalPoint_Y + 1)
-                                Graphic_now_choose.mark.RotationAngle -= parseInt((currY - originalPoint_Y) / 3);
+                                Graphic_now_choose.Mark.RotationAngle -= parseInt((currY - originalPoint_Y) / 3);
 
                         } else if (Math.abs(currX - originalPoint_X) > Math.abs(currY - originalPoint_Y)) {
-                            if (!Graphic_now_choose.mark || !Graphic_now_choose.mark.RotationAngle) Graphic_now_choose.mark.RotationAngle = 0;
+                            if (!Graphic_now_choose.Mark || !Graphic_now_choose.Mark.RotationAngle) Graphic_now_choose.Mark.RotationAngle = 0;
                             if (currX < originalPoint_X - 1)
-                                Graphic_now_choose.mark.RotationAngle += parseInt((originalPoint_X - currX) / 3);
+                                Graphic_now_choose.Mark.RotationAngle += parseInt((originalPoint_X - currX) / 3);
                             else if (currX > originalPoint_X + 1)
-                                Graphic_now_choose.mark.RotationAngle -= parseInt((currX - originalPoint_X) / 3);
+                                Graphic_now_choose.Mark.RotationAngle -= parseInt((currX - originalPoint_X) / 3);
                         }
-                        if (Graphic_now_choose.mark.RotationAngle > 360) Graphic_now_choose.mark.RotationAngle -= 360;
-                        if (Graphic_now_choose.mark.RotationAngle < 0) Graphic_now_choose.mark.RotationAngle += 360;
-                        //bluelight2
-                        //originalPoint_X = currX;
-                        //originalPoint_Y = currY;
+                        if (Graphic_now_choose.Mark.RotationAngle > 360) Graphic_now_choose.Mark.RotationAngle -= 360;
+                        if (Graphic_now_choose.Mark.RotationAngle < 0) Graphic_now_choose.Mark.RotationAngle += 360;
+                        
+                        originalPoint_X = currX;
+                        originalPoint_Y = currY;
                     } else if (MouseDownCheck == true) {
                         var Graphic_point = Graphic_now_choose.point;
                         if (Graphic_now_choose.value == "up") {
                             for (var p = 0; p < Graphic_point.length; p++) {
-                                Graphic_now_choose.pointArray[Graphic_point[p]] = currY;
+                                Graphic_now_choose.pointArray[Graphic_point[p]].y = currY;
                             }
                         } else if (Graphic_now_choose.value == "down") {
                             for (var p = 0; p < Graphic_point.length; p++) {
-                                Graphic_now_choose.pointArray[Graphic_point[p]] = currY;
+                                Graphic_now_choose.pointArray[Graphic_point[p]].y = currY;
                             }
                         } else if (Graphic_now_choose.value == "left") {
                             for (var p = 0; p < Graphic_point.length; p++) {
-                                Graphic_now_choose.pointArray[Graphic_point[p]] = currX;
+                                Graphic_now_choose.pointArray[Graphic_point[p]].x = currX;
                             }
                         } else if (Graphic_now_choose.value == "right") {
                             for (var p = 0; p < Graphic_point.length; p++) {
-                                Graphic_now_choose.pointArray[Graphic_point[p]] = currX;
+                                Graphic_now_choose.pointArray[Graphic_point[p]].x = currX;
                             }
                         }
                     }
-                    if (Graphic_now_choose.mark.RotationAngle >= 0)
-                        Graphic_now_choose.mark.RotationPoint = getRotationPoint(Graphic_now_choose.Mark, true);
-                    //Graphic_now_choose.mark.RotationPoint = [Graphic_now_choose.middle[0], Graphic_now_choose.middle[1]];
+                    if (Graphic_now_choose.Mark.RotationAngle >= 0)
+                        Graphic_now_choose.Mark.RotationPoint = getRotationPoint(Graphic_now_choose.Mark, true);
+                    //Graphic_now_choose.Mark.RotationPoint = [Graphic_now_choose.middle[0], Graphic_now_choose.middle[1]];
                     displayMark();
                 }
             }
@@ -732,14 +734,40 @@ function drawPOLYLINE_Write(obj) {
         ctx.lineTo(x2, y2);
         ctx.stroke();
         ctx.globalAlpha = tempAlpha2;
-        if (mMarkark.GraphicFilled && Mark.GraphicFilled == 'Y') {
+        if (Mark.GraphicFilled && Mark.GraphicFilled == 'Y') {
             ctx.fillStyle = "#FFFF88";
             ctx.fill();
-            console.log(x1, y1, x2, y2)
         };
         ctx.closePath();
 
         if (openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true && openWriteGSPS == true)) {
+            if (Mark.pointArray.length >=4) {
+                if (Mark.RotationAngle && Mark.RotationPoint) {
+                    [x1, y1] = rotatePoint([x1, y1], -Mark.RotationAngle, Mark.RotationPoint);
+                    [x2, y2] = rotatePoint([x2, y2], -Mark.RotationAngle, Mark.RotationPoint);
+                }
+                ctx.lineWidth = "" + parseInt(ctx.lineWidth) * 2;
+                var fillstyle = ctx.fillStyle;
+
+                if (Graphic_now_choose && Graphic_now_choose.Mark == Mark) ctx.strokeStyle = getRGBFrom0xFF(ctx.strokeStyle, false, true);
+                ctx.beginPath();
+                ctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.fill();
+                ctx.closePath();
+
+                for (var fil = 0; fil < 2; fil++) {
+                    ctx.fillStyle = fillstyle;
+                    ctx.beginPath();
+                    ctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.fill();
+                    ctx.closePath();
+                }
+                ctx.lineWidth = "" + parseInt(ctx.lineWidth) / 2;
+            }
+        }
+        /*else if (openWriteGraphic == true || (getByid("GspsLINE").selected == true && openWriteGSPS == true)) {
             if (Mark.RotationAngle && Mark.RotationPoint) {
                 [x1, y1] = rotatePoint([x1, y1], -Mark.RotationAngle, Mark.RotationPoint);
                 [x2, y2] = rotatePoint([x2, y2], -Mark.RotationAngle, Mark.RotationPoint);
@@ -749,19 +777,13 @@ function drawPOLYLINE_Write(obj) {
 
             if (Graphic_now_choose && Graphic_now_choose.Mark == Mark) ctx.strokeStyle = getRGBFrom0xFF(ctx.strokeStyle, false, true);
             ctx.beginPath();
-            ctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+            ctx.arc(x1, y1, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+            ctx.arc(x2, y2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
             ctx.stroke();
+            ctx.fill();
             ctx.closePath();
-
-            for (var fil = 0; fil < 2; fil++) {
-                ctx.fillStyle = fillstyle;
-                ctx.beginPath();
-                ctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
-                ctx.fill();
-                ctx.closePath();
-            }
             ctx.lineWidth = "" + parseInt(ctx.lineWidth) / 2;
-        }
+        }*/
     }
 }
 
