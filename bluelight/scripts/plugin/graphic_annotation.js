@@ -258,74 +258,128 @@ function Graphic_pounch(currX, currY) {
         if (PatientMark[n].sop == GetViewport().sop) {
             if (PatientMark[n].type == "POLYLINE") {
                 var tempMark = PatientMark[n].pointArray;
-                var Max_X = Max_Y = -999999;
-                var Min_X = Min_Y = 999999;
-                var Max_X_list = [],
-                    Max_Y_list = [],
-                    Min_X_list = [],
-                    Min_Y_list = [];
-                for (var o = 0; o < tempMark.length; o += 1) {
-                    if (parseInt(tempMark[o].x) >= Max_X) Max_X = parseInt(tempMark[o].x);
-                    if (parseInt(tempMark[o].x) <= Min_X) Min_X = parseInt(tempMark[o].x);
-                }
-                for (var o = 0; o < tempMark.length; o += 1) {
-                    if (equal_TOL(Max_X, parseInt(tempMark[o].x), block_size)) Max_X_list.push(o);
-                    if (equal_TOL(Min_X, parseInt(tempMark[o].x), block_size)) Min_X_list.push(o);
-                }
-                for (var o = 0; o < tempMark.length; o += 1) {
-                    if (parseInt(tempMark[o].y) >= Max_Y) Max_Y = parseInt(tempMark[o].y);
-                    if (parseInt(tempMark[o].y) <= Min_Y) Min_Y = parseInt(tempMark[o].y);
-                }
-                for (var o = 0; o < tempMark.length; o += 1) {
-                    if (equal_TOL(Max_Y, parseInt(tempMark[o].y), block_size)) Max_Y_list.push(o);
-                    if (equal_TOL(Min_Y, parseInt(tempMark[o].y), block_size)) Min_Y_list.push(o);
-                }
-                for (var o = 0; o < tempMark.length - 1; o += 1) {
-                    var x_middle = (parseInt(tempMark[o].x) + parseInt(tempMark[o + 1].x)) / 2;
-                    var y_middle = (parseInt(tempMark[o].y) + parseInt(tempMark[o + 1].y)) / 2;
-                    if (currY + block_size >= y_middle && currX + block_size >= x_middle && currY < y_middle + block_size && currX < x_middle + block_size) {
-                        if (equal_TOL(y_middle, Max_Y, block_size)) {
-                            Graphic_now_choose = {
-                                reference: PatientMark[n],
-                                Mark: PatientMark[n],
-                                point: Max_Y_list,
-                                pointArray: tempMark,
-                                middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
-                                value: 'up'
-                            };
-                            return true;
-                        } else if (equal_TOL(y_middle, Min_Y, block_size)) {
-                            Graphic_now_choose = {
-                                reference: PatientMark[n],
-                                Mark: PatientMark[n],
-                                point: Min_Y_list,
-                                pointArray: tempMark,
-                                middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
-                                value: 'down'
-                            };
-                            return true;
-                        } else if (equal_TOL(x_middle, Min_X, block_size)) {
-                            Graphic_now_choose = {
-                                reference: PatientMark[n],
-                                Mark: PatientMark[n],
-                                point: Min_X_list,
-                                pointArray: tempMark,
-                                middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
-                                value: 'left'
-                            };
-                            return true;
-                        } else if (equal_TOL(x_middle, Max_X, block_size)) {
-                            Graphic_now_choose = {
-                                reference: PatientMark[n],
-                                Mark: PatientMark[n],
-                                point: Max_X_list,
-                                pointArray: tempMark,
-                                middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
-                                value: 'right'
-                            };
-                            return true;
+                if (tempMark.length >= 4) {
+                    //Rect
+                    var Max_X = Max_Y = -999999;
+                    var Min_X = Min_Y = 999999;
+                    var Max_X_list = [],
+                        Max_Y_list = [],
+                        Min_X_list = [],
+                        Min_Y_list = [];
+                    for (var o = 0; o < tempMark.length; o += 1) {
+                        if (parseInt(tempMark[o].x) >= Max_X) Max_X = parseInt(tempMark[o].x);
+                        if (parseInt(tempMark[o].x) <= Min_X) Min_X = parseInt(tempMark[o].x);
+                    }
+                    for (var o = 0; o < tempMark.length; o += 1) {
+                        if (equal_TOL(Max_X, parseInt(tempMark[o].x), block_size)) Max_X_list.push(o);
+                        if (equal_TOL(Min_X, parseInt(tempMark[o].x), block_size)) Min_X_list.push(o);
+                    }
+                    for (var o = 0; o < tempMark.length; o += 1) {
+                        if (parseInt(tempMark[o].y) >= Max_Y) Max_Y = parseInt(tempMark[o].y);
+                        if (parseInt(tempMark[o].y) <= Min_Y) Min_Y = parseInt(tempMark[o].y);
+                    }
+                    for (var o = 0; o < tempMark.length; o += 1) {
+                        if (equal_TOL(Max_Y, parseInt(tempMark[o].y), block_size)) Max_Y_list.push(o);
+                        if (equal_TOL(Min_Y, parseInt(tempMark[o].y), block_size)) Min_Y_list.push(o);
+                    }
+                    for (var o = 0; o < tempMark.length - 1; o += 1) {
+                        var x_middle = (parseInt(tempMark[o].x) + parseInt(tempMark[o + 1].x)) / 2;
+                        var y_middle = (parseInt(tempMark[o].y) + parseInt(tempMark[o + 1].y)) / 2;
+                        if (currY + block_size >= y_middle && currX + block_size >= x_middle && currY < y_middle + block_size && currX < x_middle + block_size) {
+                            if (equal_TOL(y_middle, Max_Y, block_size)) {
+                                Graphic_now_choose = {
+                                    reference: PatientMark[n],
+                                    Mark: PatientMark[n],
+                                    point: Max_Y_list,
+                                    pointArray: tempMark,
+                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                                    value: 'up'
+                                };
+                                return true;
+                            } else if (equal_TOL(y_middle, Min_Y, block_size)) {
+                                Graphic_now_choose = {
+                                    reference: PatientMark[n],
+                                    Mark: PatientMark[n],
+                                    point: Min_Y_list,
+                                    pointArray: tempMark,
+                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                                    value: 'down'
+                                };
+                                return true;
+                            } else if (equal_TOL(x_middle, Min_X, block_size)) {
+                                Graphic_now_choose = {
+                                    reference: PatientMark[n],
+                                    Mark: PatientMark[n],
+                                    point: Min_X_list,
+                                    pointArray: tempMark,
+                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                                    value: 'left'
+                                };
+                                return true;
+                            } else if (equal_TOL(x_middle, Max_X, block_size)) {
+                                Graphic_now_choose = {
+                                    reference: PatientMark[n],
+                                    Mark: PatientMark[n],
+                                    point: Max_X_list,
+                                    pointArray: tempMark,
+                                    middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                                    value: 'right'
+                                };
+                                return true;
+                            }
                         }
                     }
+                } else {
+                    //Line
+                    var Max_X = tempMark[1].x, Max_Y = tempMark[1].y;
+                    var Min_X = tempMark[0].x, Min_Y = tempMark[0].y;
+                    if (currY + block_size >= Min_Y && currX + block_size >= Min_X && currY < Min_Y + block_size && currX < Min_X + block_size) {
+                        Graphic_now_choose = {
+                            reference: PatientMark[n],
+                            Mark: PatientMark[n],
+                            //point: [Min_X,Min_Y],
+                            pointArray: tempMark,
+                            //middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                            value: 'begin'
+                        };
+                        return true;
+                    } else if (currY + block_size >= Max_Y && currX + block_size >= Max_X && currY < Max_Y + block_size && currX < Max_X + block_size) {
+                        Graphic_now_choose = {
+                            reference: PatientMark[n],
+                            Mark: PatientMark[n],
+                            //point: [Max_X,Max_Y],
+                            pointArray: tempMark,
+                            //middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                            value: 'end'
+                        };
+                        return true;
+                    }
+                }
+            }
+            if (PatientMark[n].type == "CIRCLE") {
+                var tempMark = PatientMark[n].pointArray;
+                var Max_X = tempMark[1].x, Max_Y = tempMark[1].y;
+                var Min_X = tempMark[0].x, Min_Y = tempMark[0].y;
+                if (currY + block_size >= Min_Y && currX + block_size >= Min_X && currY < Min_Y + block_size && currX < Min_X + block_size) {
+                    Graphic_now_choose = {
+                        reference: PatientMark[n],
+                        Mark: PatientMark[n],
+                        //point: [Min_X,Min_Y],
+                        pointArray: tempMark,
+                        //middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                        value: 'begin'
+                    };
+                    return true;
+                } else if (currY + block_size >= Max_Y && currX + block_size >= Max_X && currY < Max_Y + block_size && currX < Max_X + block_size) {
+                    Graphic_now_choose = {
+                        reference: PatientMark[n],
+                        Mark: PatientMark[n],
+                        //point: [Max_X,Max_Y],
+                        pointArray: tempMark,
+                        //middle: [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2],
+                        value: 'end'
+                    };
+                    return true;
                 }
             }
         }
@@ -547,7 +601,7 @@ function writegsps() {
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
             if (Gsps_previous_choose) Gsps_previous_choose = null;
-            if (!rightMouseDown && getByid("GspsPOLYLINE").selected == true) {
+            if (!rightMouseDown && (getByid("GspsPOLYLINE").selected == true || getByid("GspsLINE").selected == true) || getByid("GspsCIRCLE").selected == true) {
                 let angle2point = rotateCalculation(e);
                 if (Graphic_pounch(angle2point[0], angle2point[1]) == true) {
                     displayMark();
@@ -561,47 +615,74 @@ function writegsps() {
             // if (rightMouseDown == true) {scale_size(e, currX, currY);  }
 
             if (MouseDownCheck == true && getByid("GspsCIRCLE").selected == true) {
-                var GspsMark = Gsps_previous_choose ? Gsps_previous_choose : new BlueLightMark();
-                if (!Gsps_previous_choose) PatientMark.push(GspsMark);
-                GspsMark.setQRLevels(GetViewport().QRLevels);
-                GspsMark.color = GetGSPSColor();
+                if (!Graphic_now_choose) {
+                    var GspsMark = Gsps_previous_choose ? Gsps_previous_choose : new BlueLightMark();
+                    if (!Gsps_previous_choose) PatientMark.push(GspsMark);
+                    GspsMark.setQRLevels(GetViewport().QRLevels);
+                    GspsMark.color = GetGSPSColor();
 
-                GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
-                GspsMark.hideName = GspsMark.showName + "_CIRCLE";
+                    GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+                    GspsMark.hideName = GspsMark.showName + "_CIRCLE";
 
-                GspsMark.type = "CIRCLE";
-                GspsMark.pointArray = [];
-                GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
-                GspsMark.setPoint2D(
-                    originalPoint_X + Math.sqrt(Math.pow(Math.abs(originalPoint_X - currX), 2) + Math.pow(Math.abs(originalPoint_Y - currY), 2) / 2),
-                    originalPoint_Y + Math.sqrt(Math.pow(Math.abs(originalPoint_X - currX), 2) + Math.pow(Math.abs(originalPoint_Y - currY), 2) / 2)
-                );
-                Gsps_previous_choose = GspsMark;
-                refreshMark(GspsMark);
-                displayAllMark();
+                    GspsMark.type = "CIRCLE";
+                    GspsMark.pointArray = [];
+                    GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
+                    GspsMark.setPoint2D(
+                        originalPoint_X + Math.sqrt(Math.pow(Math.abs(originalPoint_X - currX), 2) + Math.pow(Math.abs(originalPoint_Y - currY), 2) / 2),
+                        originalPoint_Y + Math.sqrt(Math.pow(Math.abs(originalPoint_X - currX), 2) + Math.pow(Math.abs(originalPoint_Y - currY), 2) / 2)
+                    );
+                    Gsps_previous_choose = GspsMark;
+                    refreshMark(GspsMark);
+                    displayAllMark();
+                } else {
+                    var Graphic_point = Graphic_now_choose.point;
+                    if (Graphic_now_choose.value == "begin") {
+                        var origin_point = [Graphic_now_choose.pointArray[0].x, Graphic_now_choose.pointArray[0].y];
+                        Graphic_now_choose.pointArray[0].x = currX;
+                        Graphic_now_choose.pointArray[0].y = currY;
+                        Graphic_now_choose.pointArray[1].x += (currX - origin_point[0]);
+                        Graphic_now_choose.pointArray[1].y += (currY - origin_point[1]);
+                    } else if (Graphic_now_choose.value == "end") {
+                        Graphic_now_choose.pointArray[1].x = currX;
+                        Graphic_now_choose.pointArray[1].y = currY;
+                    }
+                    displayMark();
+                }
             }
             if (MouseDownCheck == true && getByid("GspsLINE").selected == true) {
-                var GspsMark = Gsps_previous_choose ? Gsps_previous_choose : new BlueLightMark();
-                if (!Gsps_previous_choose) PatientMark.push(GspsMark);
-                GspsMark.setQRLevels(GetViewport().QRLevels);
-                GspsMark.color = GetGSPSColor();
+                if (!Graphic_now_choose) {
+                    var GspsMark = Gsps_previous_choose ? Gsps_previous_choose : new BlueLightMark();
+                    if (!Gsps_previous_choose) PatientMark.push(GspsMark);
+                    GspsMark.setQRLevels(GetViewport().QRLevels);
+                    GspsMark.color = GetGSPSColor();
 
-                GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
-                GspsMark.hideName = GspsMark.showName + "_POLYLINE";
+                    GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+                    GspsMark.hideName = GspsMark.showName + "_POLYLINE";
 
-                GspsMark.type = "POLYLINE";
-                GspsMark.pointArray = [];
-                GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
-                GspsMark.setPoint2D(currX, currY);//注意要釐清這個為什麼是顛倒的
-                /*原先的Code：
-                    dcm.mark[DcmMarkLength].markX.push(originalPoint_X);
-                    dcm.mark[DcmMarkLength].markY.push(originalPoint_Y);
-                    dcm.mark[DcmMarkLength].markY.push(currY);
-                    dcm.mark[DcmMarkLength].markX.push(currX);
-                */
-                Gsps_previous_choose = GspsMark;
-                refreshMark(GspsMark);
-                displayAllMark();
+                    GspsMark.type = "POLYLINE";
+                    GspsMark.pointArray = [];
+                    GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
+                    GspsMark.setPoint2D(currX, currY);//注意要釐清這個為什麼是顛倒的
+                    /*原先的Code：
+                        dcm.mark[DcmMarkLength].markX.push(originalPoint_X);
+                        dcm.mark[DcmMarkLength].markY.push(originalPoint_Y);
+                        dcm.mark[DcmMarkLength].markY.push(currY);
+                        dcm.mark[DcmMarkLength].markX.push(currX);
+                    */
+                    Gsps_previous_choose = GspsMark;
+                    refreshMark(GspsMark);
+                    displayAllMark();
+                } else {
+                    var Graphic_point = Graphic_now_choose.point;
+                    if (Graphic_now_choose.value == "begin") {
+                        Graphic_now_choose.pointArray[0].x = currX;
+                        Graphic_now_choose.pointArray[0].y = currY;
+                    } else if (Graphic_now_choose.value == "end") {
+                        Graphic_now_choose.pointArray[1].x = currX;
+                        Graphic_now_choose.pointArray[1].y = currY;
+                    }
+                    displayMark();
+                }
             }
             if ((openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true)) && (MouseDownCheck == true || rightMouseDown == true)) {
                 if (currX <= 0) currX = 0;
@@ -658,7 +739,7 @@ function writegsps() {
                         }
                         if (Graphic_now_choose.Mark.RotationAngle > 360) Graphic_now_choose.Mark.RotationAngle -= 360;
                         if (Graphic_now_choose.Mark.RotationAngle < 0) Graphic_now_choose.Mark.RotationAngle += 360;
-                        
+
                         originalPoint_X = currX;
                         originalPoint_Y = currY;
                     } else if (MouseDownCheck == true) {
@@ -701,6 +782,7 @@ function drawPOLYLINE_Write(obj) {
     var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
     if (Mark.type != "POLYLINE") return;
     var ctx = canvas.getContext("2d");
+    var ArcSize = 3;//控制圓點之大小
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     setMarkColor(ctx);
     if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
@@ -741,50 +823,97 @@ function drawPOLYLINE_Write(obj) {
         ctx.closePath();
 
         if (openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true && openWriteGSPS == true)) {
-            if (Mark.pointArray.length >=4) {
+            if (Mark.pointArray.length >= 4) {
                 if (Mark.RotationAngle && Mark.RotationPoint) {
                     [x1, y1] = rotatePoint([x1, y1], -Mark.RotationAngle, Mark.RotationPoint);
                     [x2, y2] = rotatePoint([x2, y2], -Mark.RotationAngle, Mark.RotationPoint);
                 }
                 ctx.lineWidth = "" + parseInt(ctx.lineWidth) * 2;
-                var fillstyle = ctx.fillStyle;
+                var fillStyle = ctx.fillStyle, strokeStyle = ctx.strokeStyle;
 
                 if (Graphic_now_choose && Graphic_now_choose.Mark == Mark) ctx.strokeStyle = getRGBFrom0xFF(ctx.strokeStyle, false, true);
-                ctx.beginPath();
-                ctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
-                ctx.stroke();
-                ctx.fill();
-                ctx.closePath();
-
                 for (var fil = 0; fil < 2; fil++) {
-                    ctx.fillStyle = fillstyle;
                     ctx.beginPath();
-                    ctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
+                    ctx.arc(x1 / 2 + x2 / 2, y1 / 2 + y2 / 2, parseInt(parseFloat(ctx.lineWidth) * ArcSize), 0, 2 * Math.PI);
                     ctx.stroke();
                     ctx.fill();
                     ctx.closePath();
                 }
                 ctx.lineWidth = "" + parseInt(ctx.lineWidth) / 2;
+                ctx.fillstyle = fillStyle; ctx.strokeStyle = strokeStyle;
             }
         }
-        /*else if (openWriteGraphic == true || (getByid("GspsLINE").selected == true && openWriteGSPS == true)) {
+        else if (openWriteGraphic == true || (getByid("GspsLINE").selected == true && openWriteGSPS == true)) {
+            if (Mark.pointArray.length < 4) {
+                if (Mark.RotationAngle && Mark.RotationPoint) {
+                    [x1, y1] = rotatePoint([x1, y1], -Mark.RotationAngle, Mark.RotationPoint);
+                    [x2, y2] = rotatePoint([x2, y2], -Mark.RotationAngle, Mark.RotationPoint);
+                }
+                ctx.lineWidth = "" + parseInt(ctx.lineWidth) * 2;
+                var fillStyle = ctx.fillStyle, strokeStyle = ctx.strokeStyle;
+                if (Graphic_now_choose && Graphic_now_choose.Mark == Mark) ctx.strokeStyle = getRGBFrom0xFF(ctx.strokeStyle, false, true);
+
+                for (var fil = 0; fil < 2; fil++) {
+                    ctx.beginPath();
+                    ctx.arc(x1, y1, parseInt(parseFloat(ctx.lineWidth) * ArcSize), 0, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.fill();
+                    ctx.closePath();
+                    ctx.beginPath();
+                    ctx.arc(x2, y2, parseInt(parseFloat(ctx.lineWidth) * ArcSize), 0, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.fill();
+                    ctx.closePath();
+                }
+                ctx.lineWidth = "" + parseInt(ctx.lineWidth) / 2;
+                ctx.fillstyle = fillStyle; ctx.strokeStyle = strokeStyle;
+            }
+        }
+    }
+}
+
+PLUGIN.PushMarkList(drawPOLYLINE_Write);
+
+
+function drawCircle_Write(obj) {
+    var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
+    if (Mark.type != "CIRCLE") return;
+    var ctx = canvas.getContext("2d");
+    var ArcSize = 3;//控制圓點之大小
+    ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
+    setMarkColor(ctx);
+    if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
+
+    if (openWriteGraphic == true || (getByid("GspsCIRCLE").selected == true && openWriteGSPS == true)) {
+        if (Mark.pointArray.length >= 2) {
+            var x1 = Mark.pointArray[0].x * 1;
+            var y1 = Mark.pointArray[0].y * 1;
+            var x2 = Mark.pointArray[1].x * 1;
+            var y2 = Mark.pointArray[1].y * 1;
             if (Mark.RotationAngle && Mark.RotationPoint) {
                 [x1, y1] = rotatePoint([x1, y1], -Mark.RotationAngle, Mark.RotationPoint);
                 [x2, y2] = rotatePoint([x2, y2], -Mark.RotationAngle, Mark.RotationPoint);
             }
             ctx.lineWidth = "" + parseInt(ctx.lineWidth) * 2;
-            var fillstyle = ctx.fillStyle;
-
+            var fillStyle = ctx.fillStyle, strokeStyle = ctx.strokeStyle;
             if (Graphic_now_choose && Graphic_now_choose.Mark == Mark) ctx.strokeStyle = getRGBFrom0xFF(ctx.strokeStyle, false, true);
-            ctx.beginPath();
-            ctx.arc(x1, y1, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
-            ctx.arc(x2, y2, parseInt(ctx.lineWidth), 0, 2 * Math.PI);
-            ctx.stroke();
-            ctx.fill();
-            ctx.closePath();
+
+            for (var fil = 0; fil < 2; fil++) {
+                ctx.beginPath();
+                ctx.arc(x1, y1, parseInt(parseFloat(ctx.lineWidth) * ArcSize), 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.fill();
+                ctx.closePath();
+                ctx.beginPath();
+                ctx.arc(x2, y2, parseInt(parseFloat(ctx.lineWidth) * ArcSize), 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.fill();
+                ctx.closePath();
+            }
             ctx.lineWidth = "" + parseInt(ctx.lineWidth) / 2;
-        }*/
+            ctx.fillstyle = fillStyle; ctx.strokeStyle = strokeStyle;
+        }
     }
 }
 
-PLUGIN.PushMarkList(drawPOLYLINE_Write);
+PLUGIN.PushMarkList(drawCircle_Write);
