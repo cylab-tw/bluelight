@@ -78,19 +78,33 @@
       filter: invert(80%);
     }
 
-    .innerimg:active:hover {
+    .img:hover {
       filter: invert(80%);
     }
 
-    .activeImg {
-      border: dashed white;
+    #WindowRevision {
+      max-width: calc(min(4.0%, 38px));
+      min-width: 27px;
+      width: 100%;
+      height: 100%;
     }
 
-    .activeImg:hover {
-      border: dashed black;
+    #WindowRevisionOption {
+      max-width: calc(min(1.0%, 13px));
+      min-width: 9px;
+      width: 100%;
+      height: 100%;
     }
 
-    .img:hover {
+    .cropimg:active:hover {
+      filter: invert(80%);
+    }
+
+    .cropimg:hover {
+      filter: invert(80%);
+    }
+
+    .innerimg:active:hover {
       filter: invert(80%);
     }
 
@@ -121,6 +135,39 @@
       left: 50%;
       transform: translateX(-50%);
     }
+
+    .WindowSelect {
+      background-color: rgb(105, 105, 105);
+      display: flex;
+      justify-content: center;
+      align-content: center;
+      flex-wrap: wrap;
+      color: white;
+      width: 150px;
+      height: 30px;
+
+      border-color: rgb(55, 55, 55);
+      border-width: 2px;
+      border-style: solid;
+    }
+
+    .WindowSelect:hover {
+      background-color: rgb(190, 175, 175);
+      color: rgb(40, 25, 25);
+    }
+
+    #WindowRevisionParent {
+      width: 50px;
+      overflow: hidden;
+    }
+
+    .activeImg {
+      border: dashed white;
+    }
+
+    .activeImg:hover {
+      border: dashed black;
+    }
   </style>
   <style>
     #LeftPicture {
@@ -145,9 +192,13 @@
           src="../image/icon/black/b_Pan.png" width="50" height="50"></span>
       <span id="b_Scroll_span"><img class="img MPR" alt="Scroll" altzhtw="捲動" id="b_Scroll"
           src="../image/icon/black/b_Scroll.png" width="50" height="50"></span>
-      <span id="annotation1_span"><img class="img" alt="Split Screen" altzhtw="分隔" id="annotation1"
-          src="../image/icon/black/b_LayoutWithinViewport.png" width="50" height="50"></span>
 
+      <span id="SplitParent">
+        <img class="img" alt="Split Screen" altzhtw="分隔" id="SplitWindow"
+          src="../image/icon/black/b_LayoutWithinViewport.png" width="50" height="50">
+        <div id="openSplitWindowDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+              width: 500; display: none;"></div>
+      </span>
       <span id="TransformationsImgParent">
         <img class="img" id="openTransformationsImg" altzhtw="Transformations" alt="Transformations"
           src="../image/icon/black/b_Transformations.png" width="50" height="50">
@@ -173,9 +224,24 @@
               src="../image/icon/black/b_Rotate_270.png" width="50" height="50"></span>-->
         </div>
       </span>
-
-      <span id="WindowRevision_span"><img class="img VR MPR SEG" alt="Window Level" altzhtw="Window Level"
-          id="WindowRevision" src="../image/icon/black/b_Window.png" width="50" height="50"></span>
+      <span id="WindowRevisionParent">
+        <span id="WindowRevision_span"><img class="cropimg VR MPR SEG" alt="Window Level" altzhtw="Window Level"
+            id="WindowRevision" src="../image/icon/black/b_Window_Presets_left.png" width="38" height="50"></span>
+        <span id="WindowRevisionOption_span">
+          <img class="cropimg VR MPR SEG" alt="Window Level" altzhtw="Window Level" id="WindowRevisionOption"
+            src="../image/icon/black/b_Window_Presets_right.png" width="12" height="50"></span>
+        <div id="openWindowRevisionDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+              width: 500; display: none;">
+          <div class="WindowSelect" id="WindowDefault">Default</div>
+          <div class="WindowSelect" id="WindowCustom">Custom</div>
+          <div class="WindowSelect" id="WindowAbdomen" wc="60" ww="400">Abdomen(60,400)</div>
+          <div class="WindowSelect" id="WindowAngio" wc="300" ww="600">Angio(300,600)</div>
+          <div class="WindowSelect" id="WindowBone" wc="300" ww="1500">Bone(300,1500)</div>
+          <div class="WindowSelect" id="WindowBrain" wc="40" ww="80">Brain(40,80)</div>
+          <div class="WindowSelect" id="WindowChest" wc="40" ww="400">Chest(40,400)</div>
+          <div class="WindowSelect" id="WindowLungs" wc="-400" ww="1500">Lungs(-400,1500)</div>
+        </div>
+      </span>
       <span id="zoom_span"><img class="img" altzhtw="放大鏡" alt="Zoom" id="zoom" src="../image/icon/black/b_Zoom.png"
           width="50" height="50"></span>
 
@@ -273,7 +339,7 @@
     <div id="MarkStyleDiv" style="background-color:#00306044;" class="drawer">
       <label style="color: #ffffff;" id="markColorLabel">Color：</label>
       <select id="MarkcolorSelect">
-        <option id="AutoColorSelect"selected="selected">Auto</option>
+        <option id="AutoColorSelect" selected="selected">Auto</option>
         <option id="WhiteSelect">White</option>
         <option id="RedSelect">Red</option>
         <option id="BlueSelect">Blue</option>
@@ -312,7 +378,7 @@
       <div id="WindowLevelDiv" style="background-color:#33666644;" class="drawer">
         <font color="white" id="myWC">WC：</font><input type="text" id="textWC" value="520" />
         <font color="white" id="myWW">WW：</font><input type="text" id="textWW" value="50" />
-        <select id="WindowLevelSelect">
+        <!--<select id="WindowLevelSelect">
           <option id="WindowDefault" selected="selected">Default</option>
           <option id="WindowCustom">Custom</option>
           <option class="WindowSelect" id="WindowAbdomen" wc="60" ww="400">Abdomen(60,400)</option>
@@ -321,7 +387,7 @@
           <option class="WindowSelect" id="WindowBrain" wc="40" ww="80">Brain(40,80)</option>
           <option class="WindowSelect" id="WindowChest" wc="40" ww="400">Chest(40,400)</option>
           <option class="WindowSelect" id="WindowLungs" wc="-400" ww="1500">Lungs(-400,1500)</option>
-        </select>
+        </select>-->
       </div>
     </span>
     <font color="white" class="drawer" id="labelZoom">Zoom：</font><input type="text" class="drawer" id="textZoom"

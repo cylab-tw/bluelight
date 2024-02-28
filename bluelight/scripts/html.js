@@ -192,14 +192,14 @@ function html_onload() {
     drawBorder(this);
   }
 
-  getByid("annotation1").onclick = function () {
+  /*getByid("SplitWindow").onclick = function () {
     if (this.enable == false) return;
     hideAllDrawer();
     if (getByid("SplitViewportDiv").style.display == "none")
       getByid("SplitViewportDiv").style.display = "";
     else
       getByid("SplitViewportDiv").style.display = "none";
-  }
+  }*/
 
   getByid("MouseRotate").onclick = function () {
     if (this.enable == false) return;
@@ -272,6 +272,8 @@ function html_onload() {
     set_BL_model('windowlevel');
     windowlevel();
     drawBorder(this);
+    getByid("textWC").value = GetViewport().windowCenter;
+    getByid("textWW").value = GetViewport().windowWidth;
     //cancelTools();
     //getByid("textWC").style.display = '';
     //getByid("textWW").style.display = '';
@@ -329,6 +331,95 @@ function html_onload() {
     else {
       getByid("TransformationsImgParent").style.position = "relative";
       onElementLeave();
+    }
+  }
+
+  getByid("WindowRevisionOption").onclick = function () {
+    hideAllDrawer("openWindowRevisionDiv");
+    invertDisplayById('openWindowRevisionDiv');
+    if (getByid("openWindowRevisionDiv").style.display == "none") getByid("WindowRevisionParent").style.position = "";
+    else {
+      getByid("WindowRevisionParent").style.position = "relative";
+      onElementLeave();
+    }
+
+    function setWindowSelectStyle() {
+      for (var obj of getClass("WindowSelect")) {
+        obj.classList.remove("activeImg");
+      }
+      if (!GetViewport() || isNaN(GetViewport().windowCenter) | isNaN(GetViewport().windowWidth)) return;
+      if (!GetViewport().content.image || isNaN(GetViewport().content.image.windowCenter) | isNaN(GetViewport().content.image.windowWidth)) return;
+
+      var active = false;
+
+      for (var obj of getClass("WindowSelect")) {
+        if (obj.getAttribute("wc") == GetViewport().windowCenter && obj.getAttribute("ww") == GetViewport().windowWidth) {
+          obj.classList.add("activeImg");
+          active = true;
+        }
+      }
+      if (active) return;
+      if (GetViewport().windowCenter == GetViewport().content.image.windowCenter && GetViewport().windowWidth == GetViewport().content.image.windowWidth) {
+        getByid("WindowDefault").classList.add("activeImg");
+      } else {
+        getByid("WindowCustom").classList.add("activeImg");
+      }
+    }
+    setWindowSelectStyle();
+  }
+
+  getByid("SplitWindow").onclick = function () {
+    function createSplitWindow() {
+      var outerDiv = getByid("openSplitWindowDiv");
+      outerDiv.innerHTML = "";
+      outerDiv.selectObj = null;
+      outerDiv.style.backgroundColor = "rgb(55,55,55)"
+      outerDiv.style.width = (4 * 30 + 4 * 5 + 4) + "px";
+      outerDiv.style.height = (4 * 30 + 4 * 5 + 4) + "px";
+      outerDiv.onclick = function () {
+        if (this.selectObj) {
+          this.selectObj.onclick();
+          this.selectObj = null;
+        }
+      }
+
+      for (var r = 0; r < 4; r++) {
+        for (var c = 0; c < 4; c++) {
+          var div = document.createElement("DIV");
+          div.className = "SplitWindowCell";
+          div.style.position = "absolute";
+          div.style.width = div.style.height = 30 + "px";
+          div.style.left = 5 + (5 + 30) * c + "px";
+          div.style.top = 5 + (5 + 30) * r + "px";
+          div.row = r;
+          div.col = c;
+          div.style.backgroundColor = "rgb(105,105,105)"
+          outerDiv.appendChild(div);
+          div.onclick = function () {
+            hideAllDrawer();
+            Viewport_row = this.row + 1;
+            Viewport_col = this.col + 1;
+            getByid("MouseOperation").click();
+            SetTable();
+            window.onresize();
+          }
+          div.onmouseenter = function () {
+            for (var obj of getClass("SplitWindowCell")) {
+              if (obj.row <= this.row && obj.col <= this.col) obj.style.backgroundColor = "rgb(170,160,160)"
+              else obj.style.backgroundColor = "rgb(105,105,105)"
+            }
+            getByid("openSplitWindowDiv").selectObj = this;
+          }
+        }
+      }
+    }
+    hideAllDrawer("openSplitWindowDiv");
+    invertDisplayById('openSplitWindowDiv');
+    if (getByid("openSplitWindowDiv").style.display == "none") getByid("SplitParent").style.position = "";
+    else {
+      getByid("SplitParent").style.position = "relative";
+      onElementLeave();
+      createSplitWindow();
     }
   }
 
@@ -527,7 +618,31 @@ function html_onload() {
     displayAllMark()
   }
 
-  getByid("WindowLevelSelect").onchange = function () {
+  for (var obj of getClass("WindowSelect")) {
+    obj.onclick = function () {
+      if (this.id == "WindowDefault") {
+        getByid("textWC").value = GetViewport().windowCenter = GetViewport().content.image.windowCenter;
+        getByid("textWW").value = GetViewport().windowWidth = GetViewport().content.image.windowWidth;
+        if (openLink) SetAllViewport("windowCenter", GetViewport().windowCenter);
+        if (openLink) SetAllViewport("windowWidth", GetViewport().windowWidth);
+      }
+      else if (this.id == "WindowCustom") {
+        getByid("WindowRevision").click()
+        return;
+      }
+      else {
+        GetViewport().windowCenter = getByid("textWC").value = parseInt(this.getAttribute('wc'));
+        GetViewport().windowWidth = getByid("textWW").value = parseInt(this.getAttribute('ww'));
+        if (openLink) SetAllViewport("windowCenter", GetViewport().windowCenter);
+        if (openLink) SetAllViewport("windowWidth", GetViewport().windowWidth);
+      }
+      refleshViewport();
+      WindowOpen = true;
+      hideAllDrawer();
+    }
+  }
+
+  /*getByid("WindowLevelSelect").onchange = function () {
     if (getByid("WindowDefault").selected == true) {
       getByid("textWC").value = GetViewport().windowCenter = GetViewport().content.image.windowCenter;
       getByid("textWW").value = GetViewport().windowWidth = GetViewport().content.image.windowWidth;
@@ -548,7 +663,7 @@ function html_onload() {
         break;
       }
     }
-  }
+  }*/
 
   getByid("textWC").onchange = function () {
     GetViewport().windowCenter = parseInt(getByid("textWC").value);
