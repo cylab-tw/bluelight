@@ -66,6 +66,15 @@
     decodeImageFrame = decodeImageFrame1;
   </script>
   <style>
+    select,input {
+      background-color: #404048;
+      color: #fff;
+      border-radius: 4px;
+      border: none;
+      padding: 4px;
+      border: 2px solid #555;
+    }
+
     .img {
       flex: 0 0 4.0%;
       max-width: calc(min(4.0%, 50px));
@@ -257,7 +266,11 @@
         <div id="openMeasureDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
         width: 500; display: none;background-color: black;">
           <span id="removeRuler_span">
-            <img alt="清除測量" class="innerimg" id="removeRuler" src="../image/icon/black/X.png" width="50" height="50">
+            <img alt="remove"altzhtw="清除測量" class="innerimg" id="removeRuler" src="../image/icon/black/X.png" width="50" height="50">
+          </span>
+          <span id="eraseRuler_span">
+            <img alt="eraser"altzhtw="橡皮擦" class="innerimg" id="eraseRuler" src="../image/icon/black/b_Eraser.png" width="50"
+              height="50">
           </span>
           <span id="MeasureRuler_span">
             <img alt="measure" altzhtw="測量" class="innerimg" id="MeasureRuler"
@@ -267,11 +280,11 @@
             <img alt="angle" altzhtw="角度" class="innerimg" id="AngleRuler"
               src="../image/icon/black/b_AngleMeasurement.png" width="50" height="50">
           </span>
+          <br>
           <span id="AngleRuler_span2">
             <img alt="angle" altzhtw="角度" class="innerimg" id="AngleRuler2"
               src="../image/icon/black/b_AngleMeasurement2.png" width="50" height="50">
           </span>
-          <br>
           <span id="RectRuler_span">
             <img alt="Rect shape" altzhtw="矩形" class="innerimg" id="RectRuler"
               src="../image/icon/black/b_RectMeasurement.png" width="50" height="50">
@@ -319,10 +332,10 @@
     <span id="rwdImgTag_span"> <img class="img VR MPR XML PEN" alt="RWD" id="rwdImgTag"
         src="../image/icon/black/b_CineTools.png" style="display:none;" width="50" height="50"></span>
 
-    <div id="GraphicStyleDiv" style="background-color:#30306044;" class="drawer">
+    <!--<div id="GraphicStyleDiv" style="background-color:#30306044;display: none;" class="drawer">
       <label style="color: #ffffff;" id="GraphicColorLabel">Color：</label>
       <select id="GraphiccolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
-        <!--<option id="Graphicselected" selected="selected">Auto</option>-->
+        <! --<option id="Graphicselected" selected="selected">Auto</option> -- >
         <option id="GraphicBlackSelect" style="color: #000000;font-weight:bold;">Black(T7)</option>
         <option id="GraphicBlueSelect" style="color: #0000FF;font-weight:bold;" selected="selected">Blue(T8)</option>
         <option id="GraphicBrownSelect" style="color: #844200;font-weight:bold;">Brown(T9)</option>
@@ -335,7 +348,7 @@
         <option id="GraphicYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow(L4)</option>
         <option id="GraphicWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White(L5)</option>
       </select>
-    </div>
+    </div>-->
     <div id="MarkStyleDiv" style="background-color:#00306044;" class="drawer">
       <label style="color: #ffffff;" id="markColorLabel">Color：</label>
       <select id="MarkcolorSelect">

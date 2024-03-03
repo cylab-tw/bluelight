@@ -11,22 +11,22 @@ function loadWriteGraphic() {
 
     var span = document.createElement("SPAN")
     span.innerHTML =
-        `<div id="GspsStyleDiv" style="background-color:#30306044;">
-        <select id="GSPScolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
-          <option id="GSPSBlackSelect" style="color: #000000;font-weight:bold;">Black</option>
-          <option id="GSPSBlueSelect" style="color: #0000FF;font-weight:bold;" selected="selected">Blue</option>
-          <option id="GSPSBrownSelect" style="color: #A52A2A;font-weight:bold;">Brown</option>
-          <option id="GSPSCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan</option>
-          <option id="GSPSGreenSelect" style="color: #00FF00;font-weight:bold;">Green</option>
-          <option id="GSPSMagentaSelect" style="color: #FF00FF;font-weight:bold;">Magenta</option>
-          <option id="GSPSOrangeSelect" style="color: #FFA500;font-weight:bold;">Orange</option>
-          <option id="GSPSPurpleSelect" style="color: #663399;font-weight:bold;">Purple</option>
-          <option id="GSPSRedSelect" style="color: #FF0000;font-weight:bold;">Red</option>
-          <option id="GSPSYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow</option>
-          <option id="GSPSWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White</option>
+        `<div id="GspsStyleDiv"">
+        <select id="GSPScolorSelect" style="font-weight:bold;font-size:16px;">
+          <option id="GSPSBlackSelect" style="background-color:#929292;color: #000000;font-weight:bold;">Black</option>
+          <option id="GSPSBlueSelect" style="background-color:#929292;color: #0000FF;font-weight:bold;" selected="selected">Blue</option>
+          <option id="GSPSBrownSelect" style="background-color:#929292;color: #A52A2A;font-weight:bold;">Brown</option>
+          <option id="GSPSCyanSelect" style="background-color:#929292;color: #00FFFF;font-weight:bold;">Cyan</option>
+          <option id="GSPSGreenSelect" style="background-color:#929292;color: #00FF00;font-weight:bold;">Green</option>
+          <option id="GSPSMagentaSelect" style="background-color:#929292;color: #FF00FF;font-weight:bold;">Magenta</option>
+          <option id="GSPSOrangeSelect" style="background-color:#929292;color: #FFA500;font-weight:bold;">Orange</option>
+          <option id="GSPSPurpleSelect" style="background-color:#929292;color: #663399;font-weight:bold;">Purple</option>
+          <option id="GSPSRedSelect" style="background-color:#929292;color: #FF0000;font-weight:bold;">Red</option>
+          <option id="GSPSYellowSelect" style="background-color:#929292;color: #FFFF00;font-weight:bold;"> Yellow</option>
+          <option id="GSPSWhiteSelect" style="background-color:#929292;color: #FFFFFF;font-weight:bold;">White</option>
         </select>
         <font color="white">Name：</font><input type="text" id="GspsName" value="T1" size="8" />
-        <select id="GspsTypeSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
+        <select id="GspsTypeSelect" style="font-weight:bold;font-size:16px;">
           <option id="GspsPOLYLINE" selected="selected">Rectangle</option>
           <option id="GspsCIRCLE">Circle</option>
           <option id="GspsLINE">Line</option>
@@ -47,7 +47,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
     }
 });
 
-function GetGraphicColor() {
+/*function GetGraphicColor() {//舊時的
     //if (getByid("Graphicselected").selected) return "#0000FF";
     if (getByid("GraphicBlackSelect").selected) return "#000000";
     else if (getByid("GraphicBlueSelect").selected) return "#0000FF";
@@ -61,7 +61,7 @@ function GetGraphicColor() {
     else if (getByid("GraphicYellowSelect").selected) return "#FFFF00";
     else if (getByid("GraphicWhiteSelect").selected) return "#FFFFFF";
     else return "#0000FF";
-}
+}*/
 
 function GetGSPSColor() {
     //if (getByid("Graphicselected").selected) return "#0000FF";
@@ -79,7 +79,7 @@ function GetGSPSColor() {
     else return "#0000FF";
 }
 
-function GetGraphicName() {
+/*function GetGraphicName() {
     //if (getByid("Graphicselected").selected) return "T8";
     if (getByid("GraphicBlackSelect").selected) return "T7";
     else if (getByid("GraphicBlueSelect").selected) return "T8";
@@ -93,7 +93,7 @@ function GetGraphicName() {
     else if (getByid("GraphicYellowSelect").selected) return "L4";
     else if (getByid("GraphicWhiteSelect").selected) return "L5";
     else return "T8";
-}
+}*/
 
 
 getByid("GspsTypeSelect").onchange = function () {
@@ -698,12 +698,18 @@ function writegsps() {
                     var GspsMark = Gsps_previous_choose ? Gsps_previous_choose : new BlueLightMark();
                     if (!Gsps_previous_choose) PatientMark.push(GspsMark);
                     GspsMark.setQRLevels(GetViewport().QRLevels);
-                    GspsMark.color = GetGraphicColor();
+                    //GspsMark.color = GetGraphicColor();//舊時的
                     if (getByid("GspsPOLYLINE").selected == true) GspsMark.color = GetGSPSColor();
+                    else GspsMark.color = GetGSPSColor();//改成無條件
 
-                    GspsMark.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
-                    GspsMark.hideName = GspsMark.showName + "_Rectangle";
+                    //舊時的
+                    //GspsMark.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
+                    //GspsMark.hideName = GspsMark.showName + "_Rectangle";
                     if (getByid("GspsPOLYLINE").selected == true) {
+                        GspsMark.showName = getByid("GspsName").value;
+                        GspsMark.hideName = GspsMark.showName + "_Rectangle";
+                    }else{
+                        //改成無條件
                         GspsMark.showName = getByid("GspsName").value;
                         GspsMark.hideName = GspsMark.showName + "_Rectangle";
                     }

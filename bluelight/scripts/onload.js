@@ -51,7 +51,7 @@ function loadLdcmview() {
   leftLayout.reflesh();
 
   //隱藏一開始不需要的元素
-  HideElemByID(["WindowLevelDiv", "labelZoom", "labelPlay", "textPlay", "textZoom", "SplitViewportDiv", "MarkStyleDiv", "GraphicStyleDiv"]);
+  HideElemByID(["WindowLevelDiv", "labelZoom", "labelPlay", "textPlay", "textZoom", "SplitViewportDiv", "MarkStyleDiv"/*, "GraphicStyleDiv"*/]);
 
   //初始化每一個Viewport的參數
   for (var i = 0; i < Viewport_Total; i++) {

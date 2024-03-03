@@ -667,3 +667,46 @@ class BlueLightMark {
     }
     get lastMark() { if (this.pointArray.length) return this.pointArray[this.pointArray.length - 1] };
 }
+
+
+function erase() {
+    if (BL_mode == 'erase') {
+        DeleteMouseEvent();
+
+        set_BL_model.onchange = function () {
+            displayMark();
+            set_BL_model.onchange = function () { return 0; };
+        }
+
+        BlueLightMousedownList = [];
+        BlueLightMousedownList.push(function (e) {
+            angle_pounch(rotateCalculation(e)[0], rotateCalculation(e)[1]);
+            if (Angle_now_choose) {
+                PatientMark.splice(PatientMark.indexOf(Angle_now_choose.dcm), 1);
+                displayMark();
+                Angle_now_choose = null;
+                refreshMarkFromSop(GetViewport().sop);
+                return;
+            }
+            angle_pounch2(rotateCalculation(e)[0], rotateCalculation(e)[1]);
+            if (Angle_now_choose) {
+                PatientMark.splice(PatientMark.indexOf(Angle_now_choose.dcm), 1);
+                displayMark();
+                Angle_now_choose = null;
+                refreshMarkFromSop(GetViewport().sop);
+                return;
+            }
+            measure_pounch(rotateCalculation(e)[0], rotateCalculation(e)[1]);
+            if (Measure_now_choose) {
+                PatientMark.splice(PatientMark.indexOf(Measure_now_choose.dcm), 1);
+                displayMark();
+                Measure_now_choose = null;
+                refreshMarkFromSop(GetViewport().sop);
+                return;
+            }
+        });
+        BlueLightMousemoveList = [];
+        BlueLightMouseupList = [];
+        AddMouseEvent();
+    }
+}

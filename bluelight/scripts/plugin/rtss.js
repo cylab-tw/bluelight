@@ -14,22 +14,22 @@ function loadWriteRTSS() {
     width="100">
     <div style="background-color:#889292;">
       <font color="white">Color：</font>
-      <select id="RTSScolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
-        <option class="RTSSColorSelectOption" id="RTSSBlackSelect" style="color: #000000;font-weight:bold;">Black
+      <select id="RTSScolorSelect" style="font-weight:bold;font-size:16px;">
+        <option class="RTSSColorSelectOption" id="RTSSBlackSelect" style="background-color:#929292;color: #000000;font-weight:bold;">Black
         </option>
-        <option class="RTSSColorSelectOption" id="RTSSBlueSelect" style="color: #0000FF;font-weight:bold;"
+        <option class="RTSSColorSelectOption" id="RTSSBlueSelect" style="background-color:#929292;color: #0000FF;font-weight:bold;"
           selected="selected">Blue</option>
-        <option class="RTSSColorSelectOption" id="RTSSCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan
+        <option class="RTSSColorSelectOption" id="RTSSCyanSelect" style="background-color:#929292;color: #00FFFF;font-weight:bold;">Cyan
         </option>
-        <option class="RTSSColorSelectOption" id="RTSSGreenSelect" style="color: #00FF00;font-weight:bold;">Green
+        <option class="RTSSColorSelectOption" id="RTSSGreenSelect" style="background-color:#929292;color: #00FF00;font-weight:bold;">Green
         </option>
-        <option class="RTSSColorSelectOption" id="RTSSMagentaSelect" style="color: #FF00FF;font-weight:bold;">
+        <option class="RTSSColorSelectOption" id="RTSSMagentaSelect" style="background-color:#929292;color: #FF00FF;font-weight:bold;">
           Magenta</option>
-        <option class="RTSSColorSelectOption" id="RTSSRedSelect" style="color: #FF0000;font-weight:bold;">Red
+        <option class="RTSSColorSelectOption" id="RTSSRedSelect" style="background-color:#929292;color: #FF0000;font-weight:bold;">Red
         </option>
-        <option class="RTSSColorSelectOption" id="RTSSYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow
+        <option class="RTSSColorSelectOption" id="RTSSYellowSelect" style="background-color:#929292;color: #FFFF00;font-weight:bold;"> Yellow
         </option>
-        <option class="RTSSColorSelectOption" id="RTSSWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White
+        <option class="RTSSColorSelectOption" id="RTSSWhiteSelect" style="background-color:#929292;color: #FFFFFF;font-weight:bold;">White
         </option>
       </select>
       <br />

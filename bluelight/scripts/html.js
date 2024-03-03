@@ -524,6 +524,15 @@ function html_onload() {
     hideAllDrawer();
   }
 
+  getByid("eraseRuler").onclick = function () {
+    if (this.enable == false) return;
+    //cancelTools();
+    set_BL_model('erase');
+    erase();
+    drawBorder(getByid("openMeasureImg"));
+    hideAllDrawer();
+  }
+
   getByid("IrregularRuler").onclick = function () {
     if (this.enable == false) return;
     set_BL_model('Irregular');
