@@ -21,7 +21,7 @@ function measure() {
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
-            measure_pounch(rotateCalculation(e)[0], rotateCalculation(e)[1]);
+            measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
             Measure_previous_choose = null;
             if (!Measure_now_choose) {
                 var MeasureMark = new BlueLightMark();
@@ -34,14 +34,14 @@ function measure() {
                 Measure_previous_choose = MeasureMark;
                 PatientMark.push(MeasureMark);
             }
-            Measure_Point1 = Measure_Point2 = rotateCalculation(e);
+            Measure_Point1 = Measure_Point2 = rotateCalculation(e, true);
             displayAllMark();
         });
 
         BlueLightMousemoveList = [];
         BlueLightMousemoveList.push(function (e) {
             if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             if (MouseDownCheck) {
                 Measure_Point2 = angle2point;
                 if (Measure_now_choose) {
@@ -65,7 +65,7 @@ function measure() {
 
         BlueLightMouseupList = [];
         BlueLightMouseupList.push(function (e) {
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             Measure_Point2 = angle2point;
 
             if (Measure_now_choose) {
@@ -97,7 +97,7 @@ function measure() {
 
         BlueLightTouchstartList = [];
         BlueLightTouchstartList.push(function (e, e2) {
-            measure_pounch(rotateCalculation(e)[0], rotateCalculation(e)[1]);
+            measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
             Measure_previous_choose = null;
             if (!Measure_now_choose) {
                 var MeasureMark = new BlueLightMark();
@@ -110,14 +110,14 @@ function measure() {
                 Measure_previous_choose = MeasureMark;
                 PatientMark.push(MeasureMark);
             }
-            Measure_Point1 = Measure_Point2 = rotateCalculation(e);
+            Measure_Point1 = Measure_Point2 = rotateCalculation(e, true);
             displayAllMark();
         });
 
         BlueLightTouchmoveList = [];
         BlueLightTouchmoveList.push(function (e, e2) {
             if (rightTouchDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             if (TouchDownCheck) {
                 Measure_Point2 = angle2point;
                 if (Measure_now_choose) {
@@ -141,7 +141,7 @@ function measure() {
 
         BlueLightTouchendList = [];
         BlueLightTouchendList.push(function (e, e2) {
-            //let angle2point = rotateCalculation(e);
+            //let angle2point = rotateCalculation(e,true);
             //Measure_Point2 = angle2point;
 
             if (Measure_now_choose) {
@@ -236,7 +236,8 @@ function drawMeasureRuler(obj) {
         ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
         setMarkColor(ctx);
         if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
-
+        ctx.save();
+        setMarkFlip(ctx);
         ctx.beginPath();
         var x1 = Mark.pointArray[0].x * 1, y1 = Mark.pointArray[0].y * 1;
         var x2 = Mark.pointArray[1].x * 1, y2 = Mark.pointArray[1].y * 1;
@@ -265,15 +266,18 @@ function drawMeasureRuler(obj) {
 
         if (Mark.Text) {
             var n = 22;
+            ctx.translate(Mark.lastMark.x, Mark.lastMark.y);
+            ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
             if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
             ctx.beginPath();
             ctx.font = "" + (n) + "px Arial";
             ctx.fillStyle = "#FF0000";
-            ctx.fillText("" + Mark.Text, Mark.lastMark.x, Mark.lastMark.y);
+            ctx.fillText("" + Mark.Text, 0, 0);
             ctx.closePath();
         }
         ctx.globalAlpha = tempAlpha2;
     } catch (ex) { console.log(ex) }
 
+    ctx.restore();
 }
 PLUGIN.PushMarkList(drawMeasureRuler);

@@ -159,13 +159,13 @@ function sortInstance(sop) {
     }
 }
 
-function rotateCalculation(e) {
+function rotateCalculation(e, flip = false) {
     var canvas = GetViewport().canvas;
     if (!canvas) return [0, 0];
     let cx = (GetViewport().width / 2);
     let cy = (GetViewport().height / 2);
     var element = GetViewport();
-    canvas.style.transform = "translate(" + "calc(-50% + "+Fpx(element.translate.x)+")" + "," + "calc(-50% + "+Fpx(element.translate.y)+")" + ")scale(" + element.scale + ")";
+    canvas.style.transform = "translate(" + "calc(-50% + " + Fpx(element.translate.x) + ")" + "," + "calc(-50% + " + Fpx(element.translate.y) + ")" + ")scale(" + element.scale + ")";
     //BlueLight2
     /*let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
         (GetViewport().width / parseFloat(canvas.style.width));
@@ -175,7 +175,7 @@ function rotateCalculation(e) {
         (1.0 / element.scale);
     let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
         (1.0 / element.scale);
-    canvas.style.transform = "translate(" + "calc(-50% + "+Fpx(element.translate.x)+")" + "," + "calc(-50% + "+Fpx(element.translate.y)+")" + ")scale(" + element.scale + ")" + "rotate(" + element.rotate + "deg)";
+    canvas.style.transform = "translate(" + "calc(-50% + " + Fpx(element.translate.x) + ")" + "," + "calc(-50% + " + Fpx(element.translate.y) + ")" + ")scale(" + element.scale + ")" + "rotate(" + element.rotate + "deg)";
     let radians = element.rotate * (Math.PI / 180),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
@@ -183,6 +183,10 @@ function rotateCalculation(e) {
         ny = (cos * (currY11 - cy)) - (sin * (currX11 - cx)) + cy;
     currX11 = nx;
     currY11 = ny;
+    if (flip == true) {
+        if (GetViewport().VerticalFlip == true) currY11 = GetViewport().height - currY11;
+        if (GetViewport().HorizontalFlip == true) currX11 = GetViewport().width - currX11;
+    }
     return [currX11, currY11];
 }
 /*function rotateCalculation(e) {

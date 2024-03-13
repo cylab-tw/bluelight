@@ -18,7 +18,7 @@ function MeasureRect() {
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
             var MeasureMark = new BlueLightMark();
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             MeasureMark.setQRLevels(GetViewport().QRLevels);
             MeasureMark.color = "#FFFFFF";
             MeasureMark.hideName = MeasureMark.showName = "ruler";
@@ -35,7 +35,7 @@ function MeasureRect() {
         BlueLightMousemoveList = [];
         BlueLightMousemoveList.push(function (e) {
             if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             if (MouseDownCheck && MeasureShape_previous_choose) {
                 MeasureShape_previous_choose.pointArray[1].x = angle2point[0];
                 MeasureShape_previous_choose.pointArray[1].y = angle2point[1];
@@ -74,7 +74,7 @@ function MeasureCircle() {
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
             var MeasureMark = new BlueLightMark();
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             MeasureMark.setQRLevels(GetViewport().QRLevels);
             MeasureMark.color = "#FFFFFF";
             MeasureMark.hideName = MeasureMark.showName = "ruler";
@@ -91,7 +91,7 @@ function MeasureCircle() {
         BlueLightMousemoveList = [];
         BlueLightMousemoveList.push(function (e) {
             if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             if (MouseDownCheck && MeasureShape_previous_choose) {
                 var originalPoint_X = MeasureShape_previous_choose.pointArray[0].x;
                 var originalPoint_Y = MeasureShape_previous_choose.pointArray[0].y;
@@ -130,6 +130,8 @@ function drawMeasureRect(obj) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     setMarkColor(ctx);
+    ctx.save();
+    setMarkFlip(ctx);
     if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
 
     var tempAlpha = ctx.globalAlpha;
@@ -152,23 +154,28 @@ function drawMeasureRect(obj) {
     ctx.globalAlpha = 0.3;
     ctx.fill();
     ctx.globalAlpha = 1.0;
+
     if (Mark.Text) {
         var tempShadowColor = ctx.shadowColor;
         var tempshadowBlur = ctx.shadowBlur;
         ctx.shadowBlur = 7;
         ctx.shadowColor = "white";
-        ctx.beginPath();
         var n = 22;
+        ctx.translate(maxX - (Mark.Text.length * (n / 2) + n), maxY - (n / 4));
+        ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
+        ctx.beginPath();
         if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
         ctx.font = "" + (n) + "px Arial";
         ctx.fillStyle = "#FF0000";
         for (var t = 0; t < 5; t++)
-            ctx.fillText("" + Mark.Text, maxX - (Mark.Text.length * (n / 2) + n), maxY - (n / 4));
+            ctx.fillText("" + Mark.Text, 0, 0);
         ctx.closePath();
         ctx.shadowColor = tempShadowColor;
         ctx.shadowBlur = tempshadowBlur;
     }
     ctx.globalAlpha = tempAlpha;
+
+    ctx.restore();
 }
 PLUGIN.PushMarkList(drawMeasureRect);
 
@@ -181,7 +188,8 @@ function drawMeasureCIRCLE(obj) {
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     setMarkColor(ctx);
     if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
-
+    ctx.save();
+    setMarkFlip(ctx);
     var tempAlpha = ctx.globalAlpha;
     ctx.globalAlpha = 1.0;
     var x1 = Mark.pointArray[0].x * 1;
@@ -202,6 +210,8 @@ function drawMeasureCIRCLE(obj) {
     if (Mark.Text) {
         ctx.beginPath();
         var n = 22;
+        ctx.translate(Mark.pointArray[0].x - (Mark.Text.length * (n / 4)), Mark.pointArray[0].y);
+        ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
         if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
         ctx.font = "" + (n) + "px Arial";
         var tempShadowColor = ctx.shadowColor;
@@ -210,13 +220,14 @@ function drawMeasureCIRCLE(obj) {
         ctx.shadowColor = "white";
         ctx.fillStyle = "#FF0000";
         for (var t = 0; t < 5; t++)
-            ctx.fillText("" + Mark.Text, Mark.pointArray[0].x - (Mark.Text.length * (n / 4)), Mark.pointArray[0].y);
+            ctx.fillText("" + Mark.Text, 0, 0);
 
         ctx.closePath();
         ctx.shadowColor = tempShadowColor;
         ctx.shadowBlur = tempshadowBlur;
     }
     ctx.globalAlpha = tempAlpha;
+    ctx.restore();
 }
 
 PLUGIN.PushMarkList(drawMeasureCIRCLE);

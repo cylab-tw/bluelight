@@ -358,7 +358,7 @@ function set_SEG_context() {
         }
         var createSopUid = CreateUid("sop");
         var createSeriesUid = CreateUid("series");
-        var tags=GetViewport().tags;
+        var tags = GetViewport().tags;
         for (var c = 0; c < 5; c++) {
             temp = setTag(temp, "StudyDate", GetViewport().studyDate, true);
             temp = setTag(temp, "StudyTime", GetViewport().studyTime, true);
@@ -526,7 +526,7 @@ function writeSeg() {
                         }
                         SegMark.ctx.putImageData(pixelData, 0, 0);
                     }
-                    let angle2point = rotateCalculation(e);
+                    let angle2point = rotateCalculation(e, true);
                     PatientMark.push(SegMark);
                     SEG_now_choose = SegMark;
                     setSEG2PixelData(angle2point);
@@ -541,7 +541,7 @@ function writeSeg() {
         BlueLightMousemoveList = [];
         BlueLightMousemoveList.push(function (e) {
             if (MouseDownCheck && !rightMouseDown && SEG_now_choose && openWindow != true) {
-                let angle2point = rotateCalculation(e);
+                let angle2point = rotateCalculation(e, true);
                 if (Previous_angle2point && (Previous_angle2point[0] != angle2point[0] || Previous_angle2point[1] != angle2point[1])) {
                     setSEG2PixelData(angle2point);
                     Line_setSEG2PixelData(Previous_angle2point, angle2point);
@@ -556,7 +556,7 @@ function writeSeg() {
                 rect = parseInt(rect);
                 if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
                 refreshMarkFromSop(GetViewport().sop);
-                let angle2point = rotateCalculation(e);
+                let angle2point = rotateCalculation(e, false);
                 var MarkCanvas = GetViewportMark();
                 var segCtx = MarkCanvas.getContext("2d");
                 segCtx.beginPath();
@@ -571,7 +571,7 @@ function writeSeg() {
         BlueLightMouseupList = [];
         BlueLightMouseupList.push(function (e) {
             Previous_angle2point = undefined;
-            if (openMouseTool && rightMouseDown ) displayMark();
+            if (openMouseTool && rightMouseDown) displayMark();
 
             if (openLink) displayAllRuler();
         });

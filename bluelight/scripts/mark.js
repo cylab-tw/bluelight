@@ -66,6 +66,17 @@ function getRGBFrom0xFF(color, RGB, invert) {
     else return (getColorFrom16(R, G, B, 8));
 }
 
+function setMarkFlip(ctx, viewport) {
+    if (!viewport) viewport = GetViewport();
+    if (viewport.HorizontalFlip == true || viewport.VerticalFlip == true) {
+        ctx.transform(
+            viewport.HorizontalFlip ? -1 : 1, 0, // set the direction of x axis
+            0, viewport.VerticalFlip ? -1 : 1,   // set the direction of y axis
+            (viewport.HorizontalFlip ? viewport.width : 0), // set the x origin
+            (viewport.VerticalFlip ? viewport.height : 0)   // set the y origin
+        );
+    }
+}
 
 function setMarkColor(ctx, color) {
     //BlueLight2(改成只將色彩選項套用在沒有預設顏色的情況)
@@ -680,7 +691,7 @@ function erase() {
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
-            angle_pounch(rotateCalculation(e)[0], rotateCalculation(e)[1]);
+            angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
             if (Angle_now_choose) {
                 PatientMark.splice(PatientMark.indexOf(Angle_now_choose.dcm), 1);
                 displayMark();
@@ -688,7 +699,7 @@ function erase() {
                 refreshMarkFromSop(GetViewport().sop);
                 return;
             }
-            angle_pounch2(rotateCalculation(e)[0], rotateCalculation(e)[1]);
+            angle_pounch2(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
             if (Angle_now_choose) {
                 PatientMark.splice(PatientMark.indexOf(Angle_now_choose.dcm), 1);
                 displayMark();
@@ -696,7 +707,7 @@ function erase() {
                 refreshMarkFromSop(GetViewport().sop);
                 return;
             }
-            measure_pounch(rotateCalculation(e)[0], rotateCalculation(e)[1]);
+            measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
             if (Measure_now_choose) {
                 PatientMark.splice(PatientMark.indexOf(Measure_now_choose.dcm), 1);
                 displayMark();

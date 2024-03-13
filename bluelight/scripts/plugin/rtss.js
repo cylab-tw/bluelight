@@ -387,7 +387,7 @@ function writertss() {
             var viewport = GetViewport();
 
             if (!rightMouseDown) {
-                var angle2point = rotateCalculation(e)
+                var angle2point = rotateCalculation(e,true)
                 var [currX11, currY11] = [Math.floor(angle2point[0]), Math.floor(angle2point[1])];
                 var currX02 = currX11, currY02 = currY11;
 
@@ -433,7 +433,7 @@ function writertss() {
             if (rightMouseDown == true) scale_size(e, getCurrPoint(e)[0], getCurrPoint(e)[1]);
 
             if (!rightMouseDown && RTSS_now_choose) {
-                var angle2point = rotateCalculation(e)
+                var angle2point = rotateCalculation(e,true)
                 var currX11 = Math.floor(angle2point[0]);
                 var currY11 = Math.floor(angle2point[1]);
                 var currX02 = currX11;

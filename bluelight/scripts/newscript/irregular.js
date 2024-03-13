@@ -18,7 +18,7 @@ function MeasureIrregular() {
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
             var MeasureMark = new BlueLightMark();
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             MeasureMark.setQRLevels(GetViewport().QRLevels);
             MeasureMark.color = "#FFFFFF";
             MeasureMark.hideName = MeasureMark.showName = "ruler";
@@ -35,7 +35,7 @@ function MeasureIrregular() {
         BlueLightMousemoveList = [];
         BlueLightMousemoveList.push(function (e) {
             if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             if (MouseDownCheck && MeasureIrregular_previous_choose) {
                 MeasureIrregular_previous_choose.setPoint2D(angle2point[0], angle2point[1]);
                 var vector = [];
@@ -86,7 +86,8 @@ function drawIrregularRuler(obj) {
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     setMarkColor(ctx);
     if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
-
+    ctx.save();
+    setMarkFlip(ctx);
     var tempAlpha = ctx.globalAlpha;
     ctx.globalAlpha = 1.0;
 
@@ -108,12 +109,15 @@ function drawIrregularRuler(obj) {
     if (Mark.Text) {
         ctx.beginPath();
         var n = 22;
+        ctx.translate(Mark.lastMark.x, Mark.lastMark.y);
+        ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
         if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
         ctx.font = "" + (n) + "px Arial";
         ctx.fillStyle = "#FF0000";
-        ctx.fillText("" + Mark.Text, Mark.lastMark.x, Mark.lastMark.y);
+        ctx.fillText("" + Mark.Text, 0, 0);
         ctx.closePath();
     }
     ctx.globalAlpha = tempAlpha;
+    ctx.restore();
 }
 PLUGIN.PushMarkList(drawIrregularRuler);

@@ -24,12 +24,12 @@ function angle() {
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
-            angle_pounch(rotateCalculation(e)[0], rotateCalculation(e)[1]);
+            angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
             Angle_previous_choose = null;
             if (Angle_now_choose) return;
             if (angle.angle_ == "rotate") angle.angle_ = "stop";
             if (angle.angle_ == "stop" && !Angle_previous_choose) {
-                Angle_Point0 = Angle_Point1 = rotateCalculation(e);
+                Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
                 var AngleMark = new BlueLightMark();
 
                 AngleMark.setQRLevels(GetViewport().QRLevels);
@@ -47,7 +47,7 @@ function angle() {
         BlueLightMousemoveList.push(function (e) {
             if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
 
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             if (angle.angle_ == "rotate") {
                 Angle_Point2 = angle2point;
 
@@ -89,14 +89,14 @@ function angle() {
         BlueLightMouseupList.push(function (e) {
             if (openMouseTool && rightMouseDown) displayMark();
             if (Angle_now_choose) {
-                Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e)[0];
-                Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e)[1];
+                Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
+                Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
                 Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
                 refreshMark(Angle_now_choose.dcm);
                 angle.angle_ = "stop";
             }
             if (angle.angle_ == "rotate") {
-                let angle2point = rotateCalculation(e);
+                let angle2point = rotateCalculation(e, true);
                 Angle_Point2 = angle2point;
 
                 if (!Angle_previous_choose) return;
@@ -120,12 +120,12 @@ function angle() {
 
         BlueLightTouchstartList = [];
         BlueLightTouchstartList.push(function (e, e2) {
-            angle_pounch(rotateCalculation(e)[0], rotateCalculation(e)[1]);
+            angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
             Angle_previous_choose = null;
             if (Angle_now_choose) return;
             if (angle.angle_ == "rotate") angle.angle_ = "stop";
             if (angle.angle_ == "stop" && !Angle_previous_choose) {
-                Angle_Point0 = Angle_Point1 = rotateCalculation(e);
+                Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
                 var AngleMark = new BlueLightMark();
 
                 AngleMark.setQRLevels(GetViewport().QRLevels);
@@ -143,7 +143,7 @@ function angle() {
         BlueLightTouchmoveList.push(function (e, e2) {
             if (rightTouchDown) scale_size(e, originalPoint_X, originalPoint_Y);
 
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             if (angle.angle_ == "rotate") {
                 Angle_Point2 = angle2point;
 
@@ -185,14 +185,14 @@ function angle() {
         BlueLightTouchendList.push(function (e, e2) {
             if (openMouseTool && rightTouchDown) displayMark();
             if (Angle_now_choose) {
-                Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e)[0];
-                Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e)[1];
+                Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
+                Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
                 Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
                 refreshMark(Angle_now_choose.dcm);
                 angle.angle_ = "stop";
             }
             if (angle.angle_ == "rotate") {
-                /*let angle2point = rotateCalculation(e);
+                /*let angle2point = rotateCalculation(e,true);
                 Angle_Point2 = angle2point;
 
                 if (!Angle_previous_choose) return;
@@ -231,7 +231,7 @@ function angle() {
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
             if (angle.angle_ == "waitline2" && Angle_previous_choose) {
-                Angle_Point2 = Angle_Point3 = rotateCalculation(e);
+                Angle_Point2 = Angle_Point3 = rotateCalculation(e, true);
                 var AngleMark = Angle_previous_choose;
 
                 AngleMark.pointArray = [];
@@ -245,7 +245,7 @@ function angle() {
                 angle.angle_ = "line2";
                 return;
             }
-            angle_pounch2(rotateCalculation(e)[0], rotateCalculation(e)[1]);
+            angle_pounch2(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
 
             if (Angle_now_choose) {
                 Angle_previous_choose = null;
@@ -254,7 +254,7 @@ function angle() {
 
             //if (angle.angle_ == "line2") angle.angle_ = "stop";
             if (angle.angle_ == "stop"/*&& !Angle_previous_choose*/) {
-                Angle_Point0 = Angle_Point1 = rotateCalculation(e);
+                Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
                 var AngleMark = new BlueLightMark();
 
                 AngleMark.setQRLevels(GetViewport().QRLevels);
@@ -272,7 +272,7 @@ function angle() {
         BlueLightMousemoveList.push(function (e) {
             if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
 
-            let angle2point = rotateCalculation(e);
+            let angle2point = rotateCalculation(e, true);
             if (angle.angle_ == "line2") {
                 Angle_Point3 = angle2point;
 
@@ -316,8 +316,8 @@ function angle() {
         BlueLightMouseupList.push(function (e) {
             if (openMouseTool && rightMouseDown) displayMark();
             if (Angle_now_choose) {
-                Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e)[0];
-                Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e)[1];
+                Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
+                Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
                 Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
                 refreshMark(Angle_now_choose.dcm);
                 angle.angle_ = "stop";
@@ -325,7 +325,7 @@ function angle() {
                 Angle_now_choose = null;
             }
             if (angle.angle_ == "line2") {
-                let angle2point = rotateCalculation(e);
+                let angle2point = rotateCalculation(e, true);
                 Angle_Point3 = angle2point;
 
                 if (!Angle_previous_choose) return;
@@ -354,6 +354,8 @@ function angle() {
 
 function angle_pounch(currX, currY) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
+    //if (GetViewport().VerticalFlip == true) currY = GetViewport().height - currY;
+    //if (GetViewport().HorizontalFlip == true) currX = GetViewport().width - currX;
 
     for (var n = 0; n < PatientMark.length; n++) {
         if (PatientMark[n].sop == GetViewport().sop) {
@@ -384,6 +386,8 @@ function angle_pounch(currX, currY) {
 
 function angle_pounch2(currX, currY) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
+    //if (GetViewport().VerticalFlip == true) currY = GetViewport().height - currY;
+    //if (GetViewport().HorizontalFlip == true) currX = GetViewport().width - currX;
 
     for (var n = 0; n < PatientMark.length; n++) {
         if (PatientMark[n].sop == GetViewport().sop) {
@@ -429,7 +433,8 @@ function drawAngleRuler(obj) {
         var ctx = canvas.getContext("2d");
         ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
         setMarkColor(ctx);
-
+        ctx.save();
+        setMarkFlip(ctx);
         var tempAlpha2 = ctx.globalAlpha;
         ctx.globalAlpha = 1.0;
         ctx.beginPath();
@@ -480,18 +485,21 @@ function drawAngleRuler(obj) {
             ctx.fill();
         }
         ctx.closePath();
-
+        //ctx.restore();
         if (Mark.Text) {
             var n = 22;
+            ctx.translate(Mark.lastMark.x, Mark.lastMark.y);
+            ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
             if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
             ctx.beginPath();
             ctx.font = "" + (n) + "px Arial";
             ctx.fillStyle = "#FF0000";
-            ctx.fillText("" + Mark.Text, Mark.lastMark.x, Mark.lastMark.y);
+            ctx.fillText("" + Mark.Text, 0, 0);
             ctx.closePath();
         }
         ctx.globalAlpha = tempAlpha2;
     } catch (ex) { }
+    ctx.restore();
 }
 PLUGIN.PushMarkList(drawAngleRuler);
 
@@ -517,6 +525,8 @@ function drawAngleRuler2(obj) {
         var ctx = canvas.getContext("2d");
         ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
         setMarkColor(ctx);
+        ctx.save();
+        setMarkFlip(ctx);
 
         var tempAlpha2 = ctx.globalAlpha;
         ctx.globalAlpha = 1.0;
@@ -654,15 +664,19 @@ function drawAngleRuler2(obj) {
 
         if (Mark.Text) {
             var n = 22;
+            ctx.translate(Mark.lastMark.x, Mark.lastMark.y);
+            ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
             if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
             ctx.beginPath();
             ctx.font = "" + (n) + "px Arial";
             ctx.fillStyle = "#FF0000";
-            ctx.fillText("" + Mark.Text, Mark.lastMark.x, Mark.lastMark.y);
+            ctx.fillText("" + Mark.Text, 0, 0);
             ctx.closePath();
         }
         ctx.globalAlpha = tempAlpha2;
     } catch (ex) { }
+
+    ctx.restore();
 }
 PLUGIN.PushMarkList(drawAngleRuler2);
 
