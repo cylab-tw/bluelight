@@ -4,7 +4,10 @@ var openWriteXML = false;
 function loadxml_format() {
   var span = document.createElement("SPAN")
   span.innerHTML =
-    `<img class="img XML" alt="writeXML" id="writeXML" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/xml_off.png" width="50" height="50">`;
+    `<img class="img XML" alt="writeXML" id="writeXML" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/xml_off.png" width="50" height="50">;
+    <img class="img XML" alt="exitXML" id="exitXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
+    <img class="img XML" alt="saveXML" id="saveXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
+
   getByid("icon-list").appendChild(span);
 
   var span = document.createElement("SPAN")
@@ -18,32 +21,49 @@ loadxml_format();
 getByid("writeXML").onclick = function () {
   if (this.enable == false) return;
   cancelTools();
-  openWriteXML = !openWriteXML;
+  openWriteXML = true;
   img2darkByClass("XML", !openWriteXML);
   openLeftImgClick = !openWriteXML;
-  this.src = openWriteXML == true ? '../image/icon/black/xml_on.png' : '../image/icon/black/xml_off.png';
   if (openWriteXML == true) {
     ShowElemByID("xmlMarkName");
     set_BL_model('writexml');
     writexml();
   }
-  else HideElemByID("xmlMarkName");
-  displayMark();
-  if (openWriteXML == true) return;
-  else xml_now_choose = null;
+  //this.src = openWriteXML == true ? '../image/icon/black/xml_on.png' : '../image/icon/black/xml_off.png';
+  this.style.display = openWriteXML != true ? "" : "none";
+  getByid("exitXML").style.display = openWriteXML == true ? "" : "none";
+  getByid("saveXML").style.display = openWriteXML == true ? "" : "none";
 
-  function download(text, name, type) {
-    let a = document.createElement('a');
-    let file = new Blob([text], {
-      type: type
-    });
-    a.href = window.URL.createObjectURL(file);
-    a.download = name;
-    a.click();
+
+
+  HideElemByID("xmlMarkName");
+  displayMark();
+
+  getByid("exitXML").onclick = function () {
+    openWriteXML = false;
+    img2darkByClass("XML", !openWriteXML);
+    ShowElemByID("xmlMarkName");
+    getByid("writeXML").style.display = openWriteXML != true ? "" : "none";
+    getByid("exitXML").style.display = openWriteXML == true ? "" : "none";
+    getByid("saveXML").style.display = openWriteXML == true ? "" : "none";
+    displayMark();
+    xml_now_choose = null;
+    getByid('MouseOperation').click();
   }
-  setXml_context();
-  download(String(getXml_context()), 'filename.xml', 'text/plain');
-  getByid('MouseOperation').click();
+
+  getByid("saveXML").onclick = function () {
+    function download(text, name, type) {
+      let a = document.createElement('a');
+      let file = new Blob([text], {
+        type: type
+      });
+      a.href = window.URL.createObjectURL(file);
+      a.download = name;
+      a.click();
+    }
+    setXml_context();
+    download(String(getXml_context()), 'filename.xml', 'text/plain');
+  }
 }
 
 window.addEventListener('keydown', (KeyboardKeys) => {

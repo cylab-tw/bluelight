@@ -6,7 +6,10 @@ var openWriteGraphic = false;
 function loadWriteGraphic() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        `<img class="img GSPS" alt="writeGSPS" id="writeGSPS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/gsps_off.png" width="50" height="50">`;
+        `<img class="img GSPS" alt="writeGSPS" id="writeGSPS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/gsps_off.png" width="50" height="50">;
+        <img class="img GSPS" alt="exitGSPS" id="exitGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
+        <img class="img GSPS" alt="saveGSPS" id="saveGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
+
     getByid("icon-list").appendChild(span);
 
     var span = document.createElement("SPAN")
@@ -103,58 +106,70 @@ getByid("GspsTypeSelect").onchange = function () {
 getByid("writeGSPS").onclick = function () {
     if (this.enable == false) return;
     cancelTools();
-    openWriteGSPS = !openWriteGSPS;
+    openWriteGSPS = true;
     img2darkByClass("GSPS", !openWriteGSPS);
     openLeftImgClick = !openWriteGSPS;
-    this.src = openWriteGSPS == true ? '../image/icon/black/gsps_on.png' : '../image/icon/black/gsps_off.png';
     if (openWriteGSPS == true) {
         getByid('GspsStyleDiv').style.display = '';
         set_BL_model('writegsps');
         writegsps();
     }
-    else getByid('GspsStyleDiv').style.display = 'none';
-    displayMark();
-    if (openWriteGSPS == true) return;
-    // else GSPS_now_choose = null;
+    //this.src = openWriteGSPS == true ? '../image/icon/black/gsps_on.png' : '../image/icon/black/gsps_off.png';
+    this.style.display = openWriteGSPS != true ? "" : "none";
+    getByid("exitGSPS").style.display = openWriteGSPS == true ? "" : "none";
+    getByid("saveGSPS").style.display = openWriteGSPS == true ? "" : "none";
 
-    function download(text, name, type) {
-        let a = document.createElement('a');
-        let file = new Blob([text], {
-            type: type
-        });
-        a.href = window.URL.createObjectURL(file);
-        //a.style.display = '';
-        a.download = name;
-        a.click();
+    getByid("exitGSPS").onclick = function () {
+        openWriteGSPS = false;
+        img2darkByClass("GSPS", !openWriteGSPS);
+        getByid('GspsStyleDiv').style.display = 'none';
+        getByid("writeGSPS").style.display = openWriteGSPS != true ? "" : "none";
+        getByid("exitGSPS").style.display = openWriteGSPS == true ? "" : "none";
+        getByid("saveGSPS").style.display = openWriteGSPS == true ? "" : "none";
+        displayMark();
+        getByid('MouseOperation').click();
     }
-    function download2(text, name, type) {
-        let a = document.createElement('a');
-        let file = new File([text], name + ".xml", {
-            type: type
-        });
-        var xhr = new XMLHttpRequest();
+    getByid("saveGSPS").onclick = function () {
+        function download(text, name, type) {
+            let a = document.createElement('a');
+            let file = new Blob([text], {
+                type: type
+            });
+            a.href = window.URL.createObjectURL(file);
+            //a.style.display = '';
+            a.download = name;
+            a.click();
+        }
+        function download2(text, name, type) {
+            let a = document.createElement('a');
+            let file = new File([text], name + ".xml", {
+                type: type
+            });
+            var xhr = new XMLHttpRequest();
 
-        xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
-        xhr.setRequestHeader("enctype", "multipart/form-data");
-        // define new form
-        var formData = new FormData();
-        formData.append("files", file);
-        xhr.send(formData);
-        xhr.onload = function () {
-            if (xhr.status == 200) {
-                let data = JSON.parse(xhr.responseText);
-                for (let url of data) {
-                    window.open(url);
+            xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+            xhr.setRequestHeader("enctype", "multipart/form-data");
+            // define new form
+            var formData = new FormData();
+            formData.append("files", file);
+            xhr.send(formData);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    let data = JSON.parse(xhr.responseText);
+                    for (let url of data) {
+                        window.open(url);
+                    }
                 }
             }
         }
+        set_GSPS_context();
+        if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_Graphic_context()), "" + CreateSecurePassword(), 'text/plain');
+        else download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
+        displayMark();
     }
-    set_GSPS_context();
-    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_Graphic_context()), "" + CreateSecurePassword(), 'text/plain');
-    else download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
-    //download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
 
-    getByid('MouseOperation').click();
+    displayMark();
+    //download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
 }
 
 
@@ -708,7 +723,7 @@ function writegsps() {
                     if (getByid("GspsPOLYLINE").selected == true) {
                         GspsMark.showName = getByid("GspsName").value;
                         GspsMark.hideName = GspsMark.showName + "_Rectangle";
-                    }else{
+                    } else {
                         //改成無條件
                         GspsMark.showName = getByid("GspsName").value;
                         GspsMark.hideName = GspsMark.showName + "_Rectangle";

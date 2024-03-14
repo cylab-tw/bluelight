@@ -4,7 +4,9 @@ var openWriteRTSS = false;
 function loadWriteRTSS() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        ` <img class="img RTSS" alt="writeRTSS" id="writeRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">`;
+        ` <img class="img RTSS" alt="writeRTSS" id="writeRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">
+          <img class="img RTSS" alt="exitRTSS" id="exitRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
+          <img class="img RTSS" alt="saveRTSS" id="saveRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
     getByid("icon-list").appendChild(span);
 
     var span = document.createElement("SPAN")
@@ -77,58 +79,75 @@ window.addEventListener('keydown', (KeyboardKeys) => {
 getByid("writeRTSS").onclick = function () {
     if (this.enable == false) return;
     cancelTools();
-    openWriteRTSS = !openWriteRTSS;
+    openWriteRTSS = true;
     img2darkByClass("RTSS", !openWriteRTSS);
     openLeftImgClick = !openWriteRTSS;
-    this.src = openWriteRTSS == true ? '../image/icon/black/rtssdraw_ON.png' : '../image/icon/black/rtssdraw_OFF.png';
+
     if (openWriteRTSS == true) {
         getByid('RtssDiv').style.display = 'flex';
         set_BL_model('writertss');
         openWheel = true;
         writertss();
     }
-    else getByid('RtssDiv').style.display = 'none';
-    displayMark();
-    if (openWriteRTSS == true) return;
-    // else Graphic_now_choose = null;
 
-    function download(text, name, type) {
-        let a = document.createElement('a');
-        let file = new Blob([text], {
-            type: type
-        });
-        a.href = window.URL.createObjectURL(file);
-        //a.style.display = '';
-        a.download = name;
-        a.click();
+    //this.src = openWriteRTSS == true ? '../image/icon/black/rtssdraw_ON.png' : '../image/icon/black/rtssdraw_OFF.png';
+    this.style.display = openWriteRTSS != true ? "" : "none";
+    getByid("exitRTSS").style.display = openWriteRTSS == true ? "" : "none";
+    getByid("saveRTSS").style.display = openWriteRTSS == true ? "" : "none";
+    getByid("exitRTSS").onclick = function () {
+        openWriteRTSS = false;
+        img2darkByClass("RTSS", !openWriteRTSS);
+        getByid('RtssDiv').style.display = 'none';
+        getByid("writeRTSS").style.display = openWriteRTSS != true ? "" : "none";
+        getByid("exitRTSS").style.display = openWriteRTSS == true ? "" : "none";
+        getByid("saveRTSS").style.display = openWriteRTSS == true ? "" : "none";
+        displayMark();
+        getByid('MouseOperation').click();
     }
-    function download2(text, name, type) {
-        let a = document.createElement('a');
-        let file = new File([text], name + ".xml", {
-            type: type
-        });
-        var xhr = new XMLHttpRequest();
+    getByid("saveRTSS").onclick = function () {
 
-        xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
-        xhr.setRequestHeader("enctype", "multipart/form-data");
-        // define new form
-        var formData = new FormData();
-        formData.append("files", file);
-        xhr.send(formData);
-        xhr.onload = function () {
-            if (xhr.status == 200) {
-                let data = JSON.parse(xhr.responseText);
-                for (let url of data) {
-                    window.open(url);
+        function download(text, name, type) {
+            let a = document.createElement('a');
+            let file = new Blob([text], {
+                type: type
+            });
+            a.href = window.URL.createObjectURL(file);
+            //a.style.display = '';
+            a.download = name;
+            a.click();
+        }
+        function download2(text, name, type) {
+            let a = document.createElement('a');
+            let file = new File([text], name + ".xml", {
+                type: type
+            });
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
+            xhr.setRequestHeader("enctype", "multipart/form-data");
+            // define new form
+            var formData = new FormData();
+            formData.append("files", file);
+            xhr.send(formData);
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    let data = JSON.parse(xhr.responseText);
+                    for (let url of data) {
+                        window.open(url);
+                    }
                 }
             }
         }
+        set_RTSS_context();
+        if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_RTSS_context()), "" + CreateSecurePassword(), 'text/plain');
+        else download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
+        //download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
+        displayMark();
     }
-    set_RTSS_context();
-    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) download2(String(get_RTSS_context()), "" + CreateSecurePassword(), 'text/plain');
-    else download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
-    //download(String(get_RTSS_context()), 'filename_RTSS.xml', 'text/plain');
+
+    displayMark();
     getByid('MouseOperation').click();
+    return;
 }
 
 var RTSS_format =
@@ -387,7 +406,7 @@ function writertss() {
             var viewport = GetViewport();
 
             if (!rightMouseDown) {
-                var angle2point = rotateCalculation(e,true)
+                var angle2point = rotateCalculation(e, true)
                 var [currX11, currY11] = [Math.floor(angle2point[0]), Math.floor(angle2point[1])];
                 var currX02 = currX11, currY02 = currY11;
 
@@ -433,7 +452,7 @@ function writertss() {
             if (rightMouseDown == true) scale_size(e, getCurrPoint(e)[0], getCurrPoint(e)[1]);
 
             if (!rightMouseDown && RTSS_now_choose) {
-                var angle2point = rotateCalculation(e,true)
+                var angle2point = rotateCalculation(e, true)
                 var currX11 = Math.floor(angle2point[0]);
                 var currY11 = Math.floor(angle2point[1]);
                 var currX02 = currX11;
