@@ -66,6 +66,23 @@
     decodeImageFrame = decodeImageFrame1;
   </script>
   <style>
+    body,
+    html {
+        /*margin: 0;
+        padding: 0;*/
+        overflow: hidden;
+    }
+    .container{
+      height: 100%;
+      position: relative;
+      overflow-y: hidden;
+    }
+
+    #LeftPicture{
+      height: 100%;
+      overflow-y: auto;
+    }
+
     select,input {
       background-color: #404048;
       color: #fff;
@@ -414,7 +431,7 @@
     <label class="control-label col-sm-1" for="wadoURL">URL</label>
     <div class="container">
       <div id="LeftPicture"
-        style="overflow-y: scroll;display: flex;flex-direction: column;position: absolute;z-index: 9;height:100%-50px;"
+        style="overflow-y: auto;display: flex;flex-direction: column;position: absolute;z-index: 9;height:100%-50px;"
         width="100">
       </div>
     </div>
