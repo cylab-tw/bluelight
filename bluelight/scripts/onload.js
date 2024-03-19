@@ -18,24 +18,29 @@ window.onload = function () {
   EnterRWD();
   //執行其他Script提供的低優先度onload函數
   onloadFunction.ExecuteLast();
+  onloadFunction.onloaded = true;
 }
 
 class OnloadFunction {
   constructor() {
     this.FisrtList = [];
     this.LastList = [];
+    this.onloaded = false;
   }
   push(fun) {
     if (fun.constructor.name == 'Function') this.LastList.push(fun);
     else throw "not function";
+    if (this.onloaded) fun();//若已經onload過了，就直接執行
   }
   push2First(fun) {
     if (fun.constructor.name == 'Function') this.FisrtList.push(fun);
     else throw "not function";
+    if (this.onloaded) fun();
   }
   push2Last(fun) {
     if (fun.constructor.name == 'Function') this.LastList.push(fun);
     else throw "not function";
+    if (this.onloaded) fun();
   }
   ExecuteFirst() {
     for (var fun of this.FisrtList) fun();
@@ -58,7 +63,7 @@ function loadLdcmview() {
     ViewPortList.push(new BlueLightViewPort(i));
   }
 
-  HideElemByID(["textWC","textWW"]);
+  HideElemByID(["textWC", "textWW"]);
 
   //載入config檔的設定
   readDicomTags("../data/dicomTags.json", setLabelPadding);

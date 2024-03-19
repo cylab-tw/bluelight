@@ -231,3 +231,21 @@ function drawMeasureCIRCLE(obj) {
 }
 
 PLUGIN.PushMarkList(drawMeasureCIRCLE);
+
+onloadFunction.push2Last(function () {
+    getByid("RectRuler").onclick = function () {
+        if (this.enable == false) return;
+        set_BL_model('MeasureRect');
+        MeasureRect();
+        drawBorder(getByid("openMeasureImg"));
+        hideAllDrawer();
+    }
+
+    getByid("CircleRuler").onclick = function () {
+        if (this.enable == false) return;
+        set_BL_model('MeasureCircle');
+        MeasureCircle();
+        drawBorder(getByid("openMeasureImg"));
+        hideAllDrawer();
+    }
+});

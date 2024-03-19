@@ -812,3 +812,23 @@ function getAnglelValue(e, Label) {
     if (angle1 > 180) angle1 = 360 - angle1;
     return parseInt(angle1) + "°";
 }
+
+onloadFunction.push2Last(function () {
+    getByid("AngleRuler").onclick = function () {
+        if (this.enable == false) return;
+        //cancelTools();
+        set_BL_model('angle');
+        angle();
+        drawBorder(getByid("openMeasureImg"));
+        hideAllDrawer();
+    }
+
+    getByid("AngleRuler2").onclick = function () {
+        if (this.enable == false) return;
+        //cancelTools();
+        set_BL_model('angle2');
+        angle();
+        drawBorder(getByid("openMeasureImg"));
+        hideAllDrawer();
+    }
+});

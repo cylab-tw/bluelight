@@ -281,3 +281,13 @@ function drawMeasureRuler(obj) {
     ctx.restore();
 }
 PLUGIN.PushMarkList(drawMeasureRuler);
+
+onloadFunction.push2Last(function () {
+    getByid("MeasureRuler").onclick = function () {
+        if (this.enable == false) return;
+        set_BL_model('measure');
+        measure();
+        drawBorder(getByid("openMeasureImg"));
+        hideAllDrawer();
+    }
+});

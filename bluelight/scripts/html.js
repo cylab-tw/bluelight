@@ -498,60 +498,11 @@ function html_onload() {
     hideAllDrawer();
   }
 
-  getByid("MeasureRuler").onclick = function () {
-    if (this.enable == false) return;
-    set_BL_model('measure');
-    measure();
-    drawBorder(getByid("openMeasureImg"));
-    hideAllDrawer();
-  }
-
-  getByid("AngleRuler").onclick = function () {
-    if (this.enable == false) return;
-    //cancelTools();
-    set_BL_model('angle');
-    angle();
-    drawBorder(getByid("openMeasureImg"));
-    hideAllDrawer();
-  }
-
-  getByid("AngleRuler2").onclick = function () {
-    if (this.enable == false) return;
-    //cancelTools();
-    set_BL_model('angle2');
-    angle();
-    drawBorder(getByid("openMeasureImg"));
-    hideAllDrawer();
-  }
-
   getByid("eraseRuler").onclick = function () {
     if (this.enable == false) return;
     //cancelTools();
     set_BL_model('erase');
     erase();
-    drawBorder(getByid("openMeasureImg"));
-    hideAllDrawer();
-  }
-
-  getByid("IrregularRuler").onclick = function () {
-    if (this.enable == false) return;
-    set_BL_model('Irregular');
-    MeasureIrregular();
-    drawBorder(getByid("openMeasureImg"));
-    hideAllDrawer();
-  }
-
-  getByid("RectRuler").onclick = function () {
-    if (this.enable == false) return;
-    set_BL_model('MeasureRect');
-    MeasureRect();
-    drawBorder(getByid("openMeasureImg"));
-    hideAllDrawer();
-  }
-  getByid("CircleRuler").onclick = function () {
-    if (this.enable == false) return;
-    set_BL_model('MeasureCircle');
-    MeasureCircle();
     drawBorder(getByid("openMeasureImg"));
     hideAllDrawer();
   }

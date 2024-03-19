@@ -121,3 +121,13 @@ function drawIrregularRuler(obj) {
     ctx.restore();
 }
 PLUGIN.PushMarkList(drawIrregularRuler);
+
+onloadFunction.push2Last(function () {
+    getByid("IrregularRuler").onclick = function () {
+        if (this.enable == false) return;
+        set_BL_model('Irregular');
+        MeasureIrregular();
+        drawBorder(getByid("openMeasureImg"));
+        hideAllDrawer();
+      }
+});

@@ -16,6 +16,7 @@ PLUGIN.loadScript = function (path, name, scriptType) {
         PLUGIN[name] = true;
     }
 }
+
 onloadFunction.push(
     function () {
         function sleep(time) {

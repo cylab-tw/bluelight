@@ -12,6 +12,16 @@ onloadFunction.push2First(
     function () { leftLayout = new LeftLayout(); }
 );
 
+onloadFunction.push2Last(
+    //載入延遲載入的影像
+    function () {
+        var imgs = document.querySelectorAll('.img,.innerimg');//className is img or innerimg
+        for (img of imgs) {
+            if (img.loading && img.loading == "lazy") img.loading = "eager";
+        }
+    }
+);
+
 function HideElemByID(Elem) {
     if (Elem.constructor.name == "Array") {
         for (elem of Elem) getByid(elem).style.display = "none";
@@ -220,11 +230,12 @@ class LeftLayout {
     }
 
     reflesh() {
-        getByid("LeftPicture").style["height"] = getByid("LeftPicture").style["overflow-y"] = "";
+        //因為改成overflow-y已改成auto，不再需要
+        /*getByid("LeftPicture").style["height"] = getByid("LeftPicture").style["overflow-y"] = "";
         if (parseInt(getByid("LeftPicture").offsetHeight) + 10 >= window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) {
             getByid("LeftPicture").style["overflow-y"] = "scroll";
             getByid("LeftPicture").style.height = "" + (window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) + "px;"
-        }
+        }*/
     }
 }
 
