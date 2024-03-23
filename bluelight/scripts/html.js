@@ -1,3 +1,5 @@
+var BorderList_Icon = ["MouseOperation", "WindowRevision", "MeasureRuler", "MouseRotate", "playvideo", "zoom", "b_Scroll", "AngleRuler", "openMeasureImg"];
+
 function html_onload() {
   document.body.style.overscrollBehavior = "none";
   getByid("openFile").onclick = function () {
@@ -180,15 +182,6 @@ function html_onload() {
     mouseTool();
     //cancelTools();
     //openMouseTool = true;
-    drawBorder(this);
-  }
-
-  getByid("b_Scroll").onclick = function () {
-    if (this.enable == false) return;
-    //BL_mode = 'scroll';
-    hideAllDrawer();
-    set_BL_model('scroll');
-    scroll();
     drawBorder(this);
   }
 
@@ -457,15 +450,6 @@ function html_onload() {
     }
   }
 
-  getByid("zoom").onclick = function () {
-    if (this.enable == false) return;
-    hideAllDrawer();
-    //BL_mode = 'zoom';
-    set_BL_model('zoom')
-    zoom();
-    drawBorder(this);
-  }
-
   getByid("horizontal_flip").onclick = function () {
     if (this.enable == false) return;
     GetViewport().HorizontalFlip = !GetViewport().HorizontalFlip;
@@ -505,22 +489,6 @@ function html_onload() {
     erase();
     drawBorder(getByid("openMeasureImg"));
     hideAllDrawer();
-  }
-
-  getByid("playvideo").onclick = function () {
-    if (this.enable == false) return;
-    drawBorder(this);
-    hideAllDrawer();
-    GetViewport().cine = !GetViewport().cine;
-    if (GetViewport().cine) {
-      getByid('labelPlay').style.display = '';
-      getByid('textPlay').style.display = '';
-    }
-    else {
-      getByid('labelPlay').style.display = 'none';
-      getByid('textPlay').style.display = 'none';
-    }
-    PlayCine();
   }
 
   getByid("MarkButton").onclick = function () {
@@ -641,13 +609,6 @@ function html_onload() {
     WindowOpen = true;
   }
 
-  getByid("textPlay").onchange = function () {
-    if ((parseInt(getByid('textPlay').value) <= 1)) getByid('textPlay').value = 1;
-    else if (parseInt(getByid('textPlay').value) >= 60) getByid('textPlay').value = 60;
-    else if (!(parseInt(getByid('textPlay').value) >= 1)) getByid('textPlay').value = 10;
-    PlayCine();
-  }
-
   getByid("labelZoom").onchange = function () {
     if ((zoom <= 25)) getByid('textZoom').value = zoom = 25;
     if (zoom >= 400) getByid('textZoom').value = zoom = 400;
@@ -747,7 +708,7 @@ function changeLinkImg() {
 function drawBorder(element) {
   if (element != getByid("b_Scroll")) openChangeFile = false;
 
-  var list = ["MouseOperation", "WindowRevision", "MeasureRuler", "MouseRotate", "playvideo", "zoom", "b_Scroll", "AngleRuler", "openMeasureImg"]
+  var list = BorderList_Icon;
   for (elemID of list) getByid(elemID).style['border'] = "";
 
   element.style["border"] = 3 + "px #FFFFFF solid"

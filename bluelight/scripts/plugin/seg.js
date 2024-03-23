@@ -5,6 +5,7 @@ function loadWriteSEG() {
     var span = document.createElement("SPAN")
     span.innerHTML =
         `<img class="img SEG" alt="writeSEG" id="writeSEG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/seg_off.png" width="50" height="50">
+        <img class="img SEG" alt="drawSEG" id="drawSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/GraphicDraw.png" width="50" height="50" style="display:none;" >  
         <img class="img SEG" alt="exitSEG" id="exitSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
         <img class="img SEG" alt="saveSEG" id="saveSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
 
@@ -50,6 +51,13 @@ getByid("overlay2seg").onclick = function () {
     refreshMarkFromSop(GetViewport().sop);
 }
 
+getByid("drawSEG").onclick = function () {
+    set_BL_model('writeSeg');
+    writeSeg();
+    drawBorder(getByid("drawSEG"));
+}
+BorderList_Icon.push("drawSEG");
+
 getByid("writeSEG").onclick = function () {
     if (this.enable == false) return;
     cancelTools();
@@ -63,11 +71,12 @@ getByid("writeSEG").onclick = function () {
         openWheel = true;
         writeSeg();
     }
-    
+
     this.src = openWriteSEG == true ? '../image/icon/black/seg_on.png' : '../image/icon/black/seg_off.png';
     this.style.display = openWriteSEG != true ? "" : "none";
     getByid("exitSEG").style.display = openWriteSEG == true ? "" : "none";
     getByid("saveSEG").style.display = openWriteSEG == true ? "" : "none";
+    getByid("drawSEG").style.display = openWriteSEG == true ? "" : "none";
 
     getByid("exitSEG").onclick = function () {
         openWriteSEG = false;
@@ -76,6 +85,7 @@ getByid("writeSEG").onclick = function () {
         getByid("writeSEG").style.display = openWriteSEG != true ? "" : "none";
         getByid("exitSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("saveSEG").style.display = openWriteSEG == true ? "" : "none";
+        getByid("drawSEG").style.display = openWriteSEG == true ? "" : "none";
         displayMark();
         getByid('MouseOperation').click();
     }
@@ -96,7 +106,7 @@ getByid("writeSEG").onclick = function () {
                 type: type
             });
             var xhr = new XMLHttpRequest();
-    
+
             xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
             xhr.setRequestHeader("enctype", "multipart/form-data");
             // define new form
@@ -503,6 +513,7 @@ function Line_setSEG2PixelData(point1, point2) {
 function writeSeg() {
     if (BL_mode == 'writeSeg') {
         DeleteMouseEvent();
+        drawBorder(getByid("drawSEG"));
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {

@@ -5,6 +5,7 @@ function loadxml_format() {
   var span = document.createElement("SPAN")
   span.innerHTML =
     `<img class="img XML" alt="writeXML" id="writeXML" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/xml_off.png" width="50" height="50">;
+    <img class="img XML" alt="drawXML" id="drawXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/GraphicDraw.png" width="50" height="50" style="display:none;" >  
     <img class="img XML" alt="exitXML" id="exitXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
     <img class="img XML" alt="saveXML" id="saveXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
 
@@ -17,6 +18,13 @@ function loadxml_format() {
   HideElemByID("xmlMarkName");
 }
 loadxml_format();
+
+getByid("drawXML").onclick = function () {
+  set_BL_model('writexml');
+  writexml();
+  drawBorder(getByid("drawXML"));
+}
+BorderList_Icon.push("drawXML");
 
 getByid("writeXML").onclick = function () {
   if (this.enable == false) return;
@@ -33,6 +41,7 @@ getByid("writeXML").onclick = function () {
   this.style.display = openWriteXML != true ? "" : "none";
   getByid("exitXML").style.display = openWriteXML == true ? "" : "none";
   getByid("saveXML").style.display = openWriteXML == true ? "" : "none";
+  getByid("drawXML").style.display = openWriteXML == true ? "" : "none";
 
 
 
@@ -46,6 +55,7 @@ getByid("writeXML").onclick = function () {
     getByid("writeXML").style.display = openWriteXML != true ? "" : "none";
     getByid("exitXML").style.display = openWriteXML == true ? "" : "none";
     getByid("saveXML").style.display = openWriteXML == true ? "" : "none";
+    getByid("drawXML").style.display = openWriteXML == true ? "" : "none";
     displayMark();
     xml_now_choose = null;
     getByid('MouseOperation').click();
@@ -437,6 +447,7 @@ function writexml() {
 
   if (BL_mode == 'writexml') {
     DeleteMouseEvent();
+    drawBorder(getByid("drawXML"));
 
     GetViewport().rotate = 0;
     setTransform();

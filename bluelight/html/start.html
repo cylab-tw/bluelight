@@ -36,7 +36,7 @@
   <!--<script src="../scripts/variable.js"></script>-->
   <script src="../scripts/mark.js"></script>
 
-  <script src="../scripts/newscript/zoom.js"></script>
+  <script src="../scripts/newscript/zoom.js" async></script>
   <script src="../scripts/eventmanager.js"></script>
 
   <script src="../scripts/plugin/table.js" async></script>
@@ -48,11 +48,11 @@
   <!--onload-->
   <script src="../scripts/label.js"></script>
   <script src="../scripts/mtss.js"></script>
-  <script src="../scripts/cine.js"></script>
+  <script src="../scripts/cine.js" async></script>
   <script src="../scripts/html.js"></script>
   <script src="../scripts/newscript/mousetool.js"></script>
   <script src="../scripts/plugin/plugin.js"></script>
-  <script src="../scripts/newscript/scroll.js"></script>
+  <script src="../scripts/newscript/scroll.js" async></script>
   <script src="../scripts/newscript/windowlevel.js" async></script>
   <script src="../scripts/newscript/rotate.js" async></script>
 
@@ -68,22 +68,24 @@
   <style>
     body,
     html {
-        /*margin: 0;
+      /*margin: 0;
         padding: 0;*/
-        overflow: hidden;
+      overflow: hidden;
     }
-    .container{
+
+    .container {
       height: 100%;
       position: relative;
       overflow-y: hidden;
     }
 
-    #LeftPicture{
+    #LeftPicture {
       height: 100%;
       overflow-y: auto;
     }
 
-    select,input {
+    select,
+    input {
       background-color: #404048;
       color: #fff;
       border-radius: 4px;
@@ -232,17 +234,17 @@
           width: 500; display: none;background-color: black;">
           <span id="horizontal_flip_span"><img alt="Horizontal Flip" class="innerimg" loading="lazy" altzhtw="水平翻轉"
               id="horizontal_flip" src="../image/icon/black/b_FlipHorizontally.png" width="50" height="50"></span>
-          <span id="vertical_flip_span"><img altzhtw="垂直翻轉" class="innerimg" loading="lazy" alt="Vertical Flip" id="vertical_flip"
-              src="../image/icon/black/b_FlipVertically.png" width="50" height="50"></span>
+          <span id="vertical_flip_span"><img altzhtw="垂直翻轉" class="innerimg" loading="lazy" alt="Vertical Flip"
+              id="vertical_flip" src="../image/icon/black/b_FlipVertically.png" width="50" height="50"></span>
           <span id="MouseRotate_span"><img class="innerimg" loading="lazy" alt="rotate" altzhtw="旋轉" id="MouseRotate"
               src="../image/icon/black/b_Rotate 90 degrees clockwise.png" width="50" height="50"></span>
           <br>
           <span id="rotate0_span"><img class="innerimg" loading="lazy" altzhtw="旋轉0度" alt="rotate 0" id="Rotate_0"
               src="../image/icon/black/b_Rotate_0.png" width="50" height="50"></span>
-          <span id="rotatei90_span"><img class="innerimg" loading="lazy" altzhtw="旋轉-90度" alt="rotate 90" id="Rotate_i90"
-              src="../image/icon/black/b_Rotate_90.png" width="50" height="50"></span>
-          <span id="rotate90_span"><img class="innerimg" loading="lazy" altzhtw="旋轉90度" alt="rotate 90" id="Rotate_90" class="filpx"
-              src="../image/icon/black/b_Rotate_i90.png" width="50" height="50"></span>
+          <span id="rotatei90_span"><img class="innerimg" loading="lazy" altzhtw="旋轉-90度" alt="rotate 90"
+              id="Rotate_i90" src="../image/icon/black/b_Rotate_90.png" width="50" height="50"></span>
+          <span id="rotate90_span"><img class="innerimg" loading="lazy" altzhtw="旋轉90度" alt="rotate 90" id="Rotate_90"
+              class="filpx" src="../image/icon/black/b_Rotate_i90.png" width="50" height="50"></span>
 
           <!--<span id="rotate180_span"><img altzhtw="旋轉180度" alt="rotate 180" id="Rotate_180"
               src="../image/icon/black/b_Rotate_180.png" width="50" height="50"></span>
@@ -283,11 +285,12 @@
         <div id="openMeasureDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
         width: 500; display: none;background-color: black;">
           <span id="removeRuler_span">
-            <img alt="remove"altzhtw="清除測量" class="innerimg" loading="lazy" id="removeRuler" src="../image/icon/black/X.png" width="50" height="50">
+            <img alt="remove" altzhtw="清除測量" class="innerimg" loading="lazy" id="removeRuler"
+              src="../image/icon/black/X.png" width="50" height="50">
           </span>
           <span id="eraseRuler_span">
-            <img alt="eraser"altzhtw="橡皮擦" class="innerimg" loading="lazy" id="eraseRuler" src="../image/icon/black/b_Eraser.png" width="50"
-              height="50">
+            <img alt="eraser" altzhtw="橡皮擦" class="innerimg" loading="lazy" id="eraseRuler"
+              src="../image/icon/black/b_Eraser.png" width="50" height="50">
           </span>
           <span id="MeasureRuler_span">
             <img alt="measure" altzhtw="測量" class="innerimg" loading="lazy" id="MeasureRuler"
@@ -314,6 +317,15 @@
             <img alt="irregular shape" altzhtw="不規則形狀" class="innerimg" loading="lazy" id="IrregularRuler"
               src="../image/icon/black/irregular.png" width="50" height="50">
           </span>
+          <br>
+          <span id="arrowRuler_span">
+            <img alt="arrow" altzhtw="箭頭" class="innerimg" loading="lazy" id="ArrowRuler"
+              src="../image/icon/black/b_arrow.png" width="50" height="50">
+          </span>
+          <span id="TextAnnotation_span">
+            <img alt="text annotation" altzhtw="文字註解" class="innerimg" loading="lazy" id="TextAnnotation"
+              src="../image/icon/black/T.png" width="50" height="50">
+          </span>
         </div>
       </span>
 
@@ -326,8 +338,8 @@
       <span id="MarkupImg_span"><img class="img VR MPR RTSS" loading="lazy" alt="Markup & Annotation" id="MarkupImg"
           src="../image/icon/black/b_ShowReport.png" width="50" height="50"></span>
       <span id="OtherImgParent">
-        <img class="img" loading="lazy" altzhtw="其他" alt="other" id="OtherImg" src="../image/icon/black/b_CineTools.png" width="50"
-          height="50">
+        <img class="img" loading="lazy" altzhtw="其他" alt="other" id="OtherImg" src="../image/icon/black/b_CineTools.png"
+          width="50" height="50">
         <div id="othereDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
            width: 500; display: none;background-color: black;">
           <span id="clearViewport_span">
@@ -348,7 +360,7 @@
     </span>
     <span id="rwdImgTag_span"> <img class="img VR MPR XML PEN" alt="RWD" loading="lazy" id="rwdImgTag"
         src="../image/icon/black/b_CineTools.png" style="display:none;" width="50" height="50"></span>
-
+    <br>
     <!--<div id="GraphicStyleDiv" style="background-color:#30306044;display: none;" class="drawer">
       <label style="color: #ffffff;" id="GraphicColorLabel">Color：</label>
       <select id="GraphiccolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
@@ -424,6 +436,10 @@
       value="200" />
     <font color="white" class="drawer" id="labelPlay">fps：</font><input type="text" class="drawer" id="textPlay"
       value="15" />
+    <span id="span_TextAnnotation" style="display: none;">
+      <font color="white" id="label_TextAnnotation">Text：</font><input type="text" id="text_TextAnnotation"
+        value="text" />
+    </span>
 
     <input type="file" id="myfile" multiple="multiple" style='display:none'>
   </header>

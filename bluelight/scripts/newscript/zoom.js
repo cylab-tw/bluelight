@@ -15,6 +15,16 @@ var magnifierHeight = 200;
 //var originalCanvas;
 //var originalCtx;
 
+
+getByid("zoom").onclick = function () {
+    if (this.enable == false) return;
+    hideAllDrawer();
+    //BL_mode = 'zoom';
+    set_BL_model('zoom')
+    zoom();
+    drawBorder(this);
+}
+
 onloadFunction.push(
     function () {
         magnifierDiv = getByid("magnifierDiv");

@@ -7,6 +7,7 @@ function loadWriteGraphic() {
     var span = document.createElement("SPAN")
     span.innerHTML =
         `<img class="img GSPS" alt="writeGSPS" id="writeGSPS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/gsps_off.png" width="50" height="50">;
+        <img class="img GSPS" alt="drawGSPS" id="drawGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/GraphicDraw.png" width="50" height="50" style="display:none;" >
         <img class="img GSPS" alt="exitGSPS" id="exitGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
         <img class="img GSPS" alt="saveGSPS" id="saveGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
 
@@ -103,6 +104,13 @@ getByid("GspsTypeSelect").onchange = function () {
     displayMark();
 }
 
+getByid("drawGSPS").onclick = function () {
+    set_BL_model('writegsps');
+    writegsps();
+    drawBorder(getByid("drawGSPS"));
+}
+BorderList_Icon.push("drawGSPS");
+
 getByid("writeGSPS").onclick = function () {
     if (this.enable == false) return;
     cancelTools();
@@ -118,6 +126,7 @@ getByid("writeGSPS").onclick = function () {
     this.style.display = openWriteGSPS != true ? "" : "none";
     getByid("exitGSPS").style.display = openWriteGSPS == true ? "" : "none";
     getByid("saveGSPS").style.display = openWriteGSPS == true ? "" : "none";
+    getByid("drawGSPS").style.display = openWriteGSPS == true ? "" : "none";
 
     getByid("exitGSPS").onclick = function () {
         openWriteGSPS = false;
@@ -126,6 +135,7 @@ getByid("writeGSPS").onclick = function () {
         getByid("writeGSPS").style.display = openWriteGSPS != true ? "" : "none";
         getByid("exitGSPS").style.display = openWriteGSPS == true ? "" : "none";
         getByid("saveGSPS").style.display = openWriteGSPS == true ? "" : "none";
+        getByid("drawGSPS").style.display = openWriteGSPS == true ? "" : "none";
         displayMark();
         getByid('MouseOperation').click();
     }
@@ -609,6 +619,7 @@ var Gsps_previous_choose = null;
 function writegsps() {
     if (BL_mode == 'writegsps') {
         DeleteMouseEvent();
+        drawBorder(getByid("drawGSPS"));
 
         GetViewport().rotate = 0;
         setTransform();

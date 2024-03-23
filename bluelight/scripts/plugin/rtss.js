@@ -4,7 +4,8 @@ var openWriteRTSS = false;
 function loadWriteRTSS() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        ` <img class="img RTSS" alt="writeRTSS" id="writeRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">
+        ` <img class="img RTSS" alt="writeRTSS" id="writeRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">  
+          <img class="img RTSS" alt="drawRTSS" id="drawRTSS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/GraphicDraw.png" width="50" height="50" style="display:none;" >  
           <img class="img RTSS" alt="exitRTSS" id="exitRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
           <img class="img RTSS" alt="saveRTSS" id="saveRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
     getByid("icon-list").appendChild(span);
@@ -76,6 +77,13 @@ window.addEventListener('keydown', (KeyboardKeys) => {
     }
 });
 
+getByid("drawRTSS").onclick = function () {
+    set_BL_model('writertss');
+    writertss();
+    drawBorder(getByid("drawRTSS"));
+}
+BorderList_Icon.push("drawRTSS");
+
 getByid("writeRTSS").onclick = function () {
     if (this.enable == false) return;
     cancelTools();
@@ -94,6 +102,7 @@ getByid("writeRTSS").onclick = function () {
     this.style.display = openWriteRTSS != true ? "" : "none";
     getByid("exitRTSS").style.display = openWriteRTSS == true ? "" : "none";
     getByid("saveRTSS").style.display = openWriteRTSS == true ? "" : "none";
+    getByid("drawRTSS").style.display = openWriteRTSS == true ? "" : "none";
     getByid("exitRTSS").onclick = function () {
         openWriteRTSS = false;
         img2darkByClass("RTSS", !openWriteRTSS);
@@ -101,6 +110,7 @@ getByid("writeRTSS").onclick = function () {
         getByid("writeRTSS").style.display = openWriteRTSS != true ? "" : "none";
         getByid("exitRTSS").style.display = openWriteRTSS == true ? "" : "none";
         getByid("saveRTSS").style.display = openWriteRTSS == true ? "" : "none";
+        getByid("drawRTSS").style.display = openWriteRTSS == true ? "" : "none";
         displayMark();
         getByid('MouseOperation').click();
     }
@@ -400,6 +410,7 @@ function get_RTSS_context() {
 function writertss() {
     if (BL_mode == 'writertss') {
         DeleteMouseEvent();
+        drawBorder(getByid("drawRTSS"));
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
