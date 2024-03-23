@@ -430,76 +430,20 @@ function drawAngleRuler(obj) {
         var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
         if (!Mark) return;
         if (Mark.type != "AngleRuler") return;
-        var ctx = canvas.getContext("2d");
-        ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-        setMarkColor(ctx);
-        ctx.save();
-        setMarkFlip(ctx);
-        var tempAlpha2 = ctx.globalAlpha;
-        ctx.globalAlpha = 1.0;
-        ctx.beginPath();
-        ctx.strokeStyle = "#00FF00";
-        ctx.fillStyle = "#00FF00";
+        var ctx = canvas.getContext("2d"), length = Mark.pointArray.length;
 
-        ctx.moveTo(Mark.pointArray[0].x, Mark.pointArray[0].y);
-        ctx.lineTo(Mark.pointArray[1].x, Mark.pointArray[1].y);
-        ctx.stroke();
-        if (Mark.pointArray.length > 2) {
-            ctx.moveTo(Mark.pointArray[1].x, Mark.pointArray[1].y);
-            ctx.lineTo(Mark.pointArray[2].x, Mark.pointArray[2].y);
-            ctx.stroke();
-        }
-        /*if (Mark.pointArray.length > 3) {
-            ctx.moveTo(Mark.pointArray[1].x, Mark.pointArray[1].y);
-            ctx.lineTo(Mark.pointArray[3].x, Mark.pointArray[3].y);
-            ctx.stroke();
-        }*/
-        ctx.closePath();
-        ctx.strokeStyle = "#FF0000";
-        ctx.fillStyle = "#FF0000";
-        if (Mark.pointArray.length > 0) {
-            ctx.beginPath();
-            ctx.arc(Mark.pointArray[0].x, Mark.pointArray[0].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.closePath();
-        }
-        if (Mark.pointArray.length > 1) {
-            ctx.beginPath();
-            ctx.arc(Mark.pointArray[1].x, Mark.pointArray[1].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.closePath();
-        }
-        /*if (Mark.pointArray.length > 3) {
-            ctx.beginPath();
-            ctx.arc(Mark.pointArray[3].x, Mark.pointArray[3].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.closePath();
-        }*/
-        ctx.beginPath();
-        if (Mark.pointArray.length > 2) {
-            ctx.strokeStyle = "#FF0000";
-            ctx.fillStyle = "#FF0000";
-            ctx.arc(Mark.pointArray[1].x, Mark.pointArray[1].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.arc(Mark.pointArray[2].x, Mark.pointArray[2].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-        }
-        ctx.closePath();
-        //ctx.restore();
-        if (Mark.Text) {
-            var n = 22;
-            ctx.translate(Mark.lastMark.x, Mark.lastMark.y);
-            ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
-            if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
-            ctx.beginPath();
-            ctx.font = "" + (n) + "px Arial";
-            ctx.fillStyle = "#FF0000";
-            ctx.fillText("" + Mark.Text, 0, 0);
-            ctx.closePath();
-        }
-        ctx.globalAlpha = tempAlpha2;
+        viewport.drawLine(ctx, viewport, Mark.pointArray[0], Mark.pointArray[1], "#00FF00", 1.0);
+        if (length > 2) viewport.drawLine(ctx, viewport, Mark.pointArray[1], Mark.pointArray[2], "#00FF00", 1.0);
+
+        if (length > 0) viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#FF0000", 1.0);
+        if (length > 1) viewport.fillCircle(ctx, viewport, Mark.pointArray[1], 3, "#FF0000", 1.0);
+
+        if (length > 2) viewport.fillCircle(ctx, viewport, Mark.pointArray[1], 3, "#FF0000", 1.0);
+        if (length > 2) viewport.fillCircle(ctx, viewport, Mark.pointArray[2], 3, "#FF0000", 1.0);
+
+        if (Mark.Text) viewport.drawText(ctx, viewport, Mark.lastMark, Mark.Text, 22, "#FF0000", alpha = 1.0);
+
     } catch (ex) { }
-    ctx.restore();
 }
 PLUGIN.PushMarkList(drawAngleRuler);
 
@@ -514,7 +458,7 @@ function getIntersectionPoint(x1, y1, x2, y2, x3, y3, x4, y4) {
     const x = (b2 - b1) / (m1 - m2);
     // 計算交點的 Y 座標
     const y = m1 * x + b1;
-    return [x, y];
+    return new Point2D(x, y);
 }
 
 function drawAngleRuler2(obj) {
@@ -522,33 +466,14 @@ function drawAngleRuler2(obj) {
         var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
         if (!Mark) return;
         if (Mark.type != "AngleRuler2") return;
-        var ctx = canvas.getContext("2d");
-        ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-        setMarkColor(ctx);
-        ctx.save();
-        setMarkFlip(ctx);
 
-        var tempAlpha2 = ctx.globalAlpha;
-        ctx.globalAlpha = 1.0;
-        ctx.beginPath();
-        ctx.strokeStyle = "#0000FF";
-        ctx.fillStyle = "#0000FF";
 
-        ctx.moveTo(Mark.pointArray[0].x, Mark.pointArray[0].y);
-        ctx.lineTo(Mark.pointArray[1].x, Mark.pointArray[1].y);
-        ctx.stroke();
-        ctx.closePath();
-        if (Mark.pointArray.length > 3) {
-            ctx.beginPath();
-            ctx.moveTo(Mark.pointArray[2].x, Mark.pointArray[2].y);
-            ctx.lineTo(Mark.pointArray[3].x, Mark.pointArray[3].y);
-            ctx.stroke();
-            ctx.closePath();
+        var ctx = canvas.getContext("2d"), length = Mark.pointArray.length;
 
-            ctx.beginPath();
-            ctx.setLineDash([10, 10])
-            ctx.strokeStyle = "#FFFFFF";
-            ctx.fillStyle = "#FFFFFF";
+        viewport.drawLine(ctx, viewport, Mark.pointArray[0], Mark.pointArray[1], "#0000FF", 1.0);
+
+        if (length > 3) {
+            viewport.drawLine(ctx, viewport, Mark.pointArray[2], Mark.pointArray[3], "#0000FF", 1.0);
 
             var pointArray = Mark.pointArray;
             const intersectionPoint = getIntersectionPoint(pointArray[0].x, pointArray[0].y, pointArray[1].x, pointArray[1].y,
@@ -556,21 +481,13 @@ function drawAngleRuler2(obj) {
 
             if (isNaN(intersectionPoint[0]) || isNaN(intersectionPoint[1]) || intersectionPoint[0] > GetViewport().width * 10 || intersectionPoint[1] > GetViewport().height * 10) {
 
-                ctx.strokeStyle = "#FF2222";
-                ctx.fillStyle = "#FF2222";
                 if (Mark.Text && parseInt(Mark.Text) > 90 && parseInt(Mark.Text) < 270) {
-                    ctx.moveTo(Mark.pointArray[1].x, Mark.pointArray[1].y);
-                    ctx.lineTo(Mark.pointArray[2].x, Mark.pointArray[2].y);
+                    viewport.drawLine(ctx, viewport, Mark.pointArray[1], Mark.pointArray[2], "#FF2222", 1.0, [10, 10]);
                 } else if (Mark.Text) {
-                    ctx.moveTo(Mark.pointArray[0].x, Mark.pointArray[0].y);
-                    ctx.lineTo(Mark.pointArray[2].x, Mark.pointArray[2].y);
+                    viewport.drawLine(ctx, viewport, Mark.pointArray[0], Mark.pointArray[2], "#FF2222", 1.0, [10, 10]);
                 } else {
-                    ctx.moveTo(Mark.pointArray[0].x, Mark.pointArray[0].y);
-                    ctx.lineTo(Mark.pointArray[2].x, Mark.pointArray[2].y);
+                    viewport.drawLine(ctx, viewport, Mark.pointArray[0], Mark.pointArray[2], "#FF2222", 1.0, [10, 10]);
                 }
-                ctx.stroke();
-                ctx.setLineDash([])
-                ctx.closePath();
             } else {
                 var x = intersectionPoint[0], y = intersectionPoint[1];
                 var x1 = Mark.pointArray[0].x, y1 = Mark.pointArray[0].y;
@@ -578,11 +495,9 @@ function drawAngleRuler2(obj) {
                 var dist1 = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y));
                 var dist2 = Math.sqrt((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
                 if (dist1 < dist2) {
-                    ctx.moveTo(Mark.pointArray[0].x, Mark.pointArray[0].y);
-                    ctx.lineTo(intersectionPoint[0], intersectionPoint[1]);
+                    viewport.drawLine(ctx, viewport, Mark.pointArray[0], intersectionPoint, "#FFFFFF", 1.0, [10, 10]);
                 } else {
-                    ctx.moveTo(Mark.pointArray[1].x, Mark.pointArray[1].y);
-                    ctx.lineTo(intersectionPoint[0], intersectionPoint[1]);
+                    viewport.drawLine(ctx, viewport, Mark.pointArray[1], intersectionPoint, "#FFFFFF", 1.0, [10, 10]);
                 }
 
                 var x = intersectionPoint[0], y = intersectionPoint[1];
@@ -591,92 +506,26 @@ function drawAngleRuler2(obj) {
                 var dist1 = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y));
                 var dist2 = Math.sqrt((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
                 if (dist1 < dist2) {
-                    ctx.moveTo(Mark.pointArray[2].x, Mark.pointArray[2].y);
-                    ctx.lineTo(intersectionPoint[0], intersectionPoint[1]);
+                    viewport.drawLine(ctx, viewport, Mark.pointArray[2], intersectionPoint, "#FFFFFF", 1.0, [10, 10]);
                 } else {
-                    ctx.moveTo(Mark.pointArray[3].x, Mark.pointArray[3].y);
-                    ctx.lineTo(intersectionPoint[0], intersectionPoint[1]);
+                    viewport.drawLine(ctx, viewport, Mark.pointArray[3], intersectionPoint, "#FFFFFF", 1.0, [10, 10]);
                 }
-                ctx.stroke();
-                ctx.setLineDash([])
-                ctx.closePath();
-
-                ctx.beginPath();
-                ctx.arc(intersectionPoint[0], intersectionPoint[1], 5, 0, 2 * Math.PI);
-                ctx.fill();
-                ctx.closePath();
+                viewport.fillCircle(ctx, viewport, intersectionPoint, 5, "#FFFFFF", 1.0);
             }
         }
 
-        /*if (Mark.pointArray.length > 2) {
-            ctx.moveTo(Mark.pointArray[1].x, Mark.pointArray[1].y);
-            ctx.lineTo(Mark.pointArray[2].x, Mark.pointArray[2].y);
-            ctx.stroke();
-        }*/
-        /*if (Mark.pointArray.length > 3) {
-            ctx.moveTo(Mark.pointArray[1].x, Mark.pointArray[1].y);
-            ctx.lineTo(Mark.pointArray[3].x, Mark.pointArray[3].y);
-            ctx.stroke();
-        }*/
-        ctx.closePath();
-        ctx.strokeStyle = "#FF0000";
-        ctx.fillStyle = "#FF0000";
-        if (Mark.pointArray.length > 0) {
-            ctx.beginPath();
-            ctx.arc(Mark.pointArray[0].x, Mark.pointArray[0].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.closePath();
-        }
-        if (Mark.pointArray.length > 1) {
-            ctx.beginPath();
-            ctx.arc(Mark.pointArray[1].x, Mark.pointArray[1].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.closePath();
-        }
-        if (Mark.pointArray.length > 2) {
-            ctx.beginPath();
-            ctx.arc(Mark.pointArray[2].x, Mark.pointArray[2].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.closePath();
-        }
-        if (Mark.pointArray.length > 3) {
-            ctx.beginPath();
-            ctx.arc(Mark.pointArray[3].x, Mark.pointArray[3].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.closePath();
-        }
-        /*if (Mark.pointArray.length > 3) {
-            ctx.beginPath();
-            ctx.arc(Mark.pointArray[3].x, Mark.pointArray[3].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.closePath();
-        }*/
-        ctx.beginPath();
-        if (Mark.pointArray.length > 2) {
-            ctx.strokeStyle = "#FF0000";
-            ctx.fillStyle = "#FF0000";
-            ctx.arc(Mark.pointArray[1].x, Mark.pointArray[1].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.arc(Mark.pointArray[2].x, Mark.pointArray[2].y, 3, 0, 2 * Math.PI);
-            ctx.fill();
-        }
-        ctx.closePath();
 
-        if (Mark.Text) {
-            var n = 22;
-            ctx.translate(Mark.lastMark.x, Mark.lastMark.y);
-            ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
-            if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
-            ctx.beginPath();
-            ctx.font = "" + (n) + "px Arial";
-            ctx.fillStyle = "#FF0000";
-            ctx.fillText("" + Mark.Text, 0, 0);
-            ctx.closePath();
+        if (length > 0) viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#FF0000", 1.0);
+        if (length > 1) viewport.fillCircle(ctx, viewport, Mark.pointArray[1], 3, "#FF0000", 1.0);
+        if (length > 2) viewport.fillCircle(ctx, viewport, Mark.pointArray[2], 3, "#FF0000", 1.0);
+        if (length > 3) viewport.fillCircle(ctx, viewport, Mark.pointArray[3], 3, "#FF0000", 1.0);
+        if (length > 2) {
+            viewport.fillCircle(ctx, viewport, Mark.pointArray[1], 3, "#FF0000", 1.0);
+            viewport.fillCircle(ctx, viewport, Mark.pointArray[2], 3, "#FF0000", 1.0);
         }
-        ctx.globalAlpha = tempAlpha2;
+
+        if (Mark.Text) viewport.drawText(ctx, viewport, Mark.lastMark, Mark.Text, 22, "#FF0000", alpha = 1.0);
     } catch (ex) { }
-
-    ctx.restore();
 }
 PLUGIN.PushMarkList(drawAngleRuler2);
 

@@ -124,39 +124,17 @@ function Mouseout(e) {
     magnifierDiv.hide();
 }
 
+let dragged = null;
 onloadFunction.push2Last(function () {
-    interact('.LeftImgDiv').draggable({
-        onmove(event) {
+    for (var elem of getClass("MyDicomDiv")) {
+        elem.addEventListener("drop", (event) => {
+            event.preventDefault();
             if (!openLeftImgClick) return;
-            dragQRLevel = event.target.QRLevel;
-        }
-    })
-
-    interact('.MyDicomDiv').dropzone({
-        accept: '.LeftImgDiv',
-        ondropactivate: function (event) {
-            event.target.classList.add('drop-active')
-        },
-        ondragenter: function (event) {
-            var draggableElement = event.relatedTarget
-            var dropzoneElement = event.target
-            dropzoneElement.classList.add('drop-target')
-            draggableElement.classList.add('can-drop')
-        },
-        ondragleave: function (event) {
-            event.target.classList.remove('drop-target')
-            event.relatedTarget.classList.remove('can-drop')
-        },
-        ondrop: function (event) {
-            if (!openLeftImgClick) return;
-            viewportNumber = parseInt(event.target.viewportNum);
-            PictureOnclick(dragQRLevel);
-        },
-        ondropdeactivate: function (event) {
-            event.target.classList.remove('drop-active')
-            event.target.classList.remove('drop-target')
-        }
-    })
+            viewportNumber = parseInt(event.currentTarget.viewportNum);
+            PictureOnclick(dragged.QRLevel);
+            dragged = null;
+        });
+    }
 });
 
 class Point2D {

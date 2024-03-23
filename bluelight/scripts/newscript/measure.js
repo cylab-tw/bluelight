@@ -233,52 +233,21 @@ function drawMeasureRuler(obj) {
         if (!Mark) return;
         if (!Mark || Mark.type != "MeasureRuler" || Mark.pointArray.length < 2) return;
         var ctx = canvas.getContext("2d");
-        ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-        setMarkColor(ctx);
-        if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
-        ctx.save();
-        setMarkFlip(ctx);
-        ctx.beginPath();
+
         var x1 = Mark.pointArray[0].x * 1, y1 = Mark.pointArray[0].y * 1;
         var x2 = Mark.pointArray[1].x * 1, y2 = Mark.pointArray[1].y * 1;
-
         if (Mark.RotationAngle && Mark.RotationPoint) {
             [x1, y1] = rotatePoint([x1, y1], Mark.RotationAngle, Mark.RotationPoint);
             [x2, y2] = rotatePoint([x2, y2], Mark.RotationAngle, Mark.RotationPoint);
         }
+        viewport.drawLine(ctx, viewport, new Point2D(x1, y1), new Point2D(x2, y2), Mark.color, 1.0);
 
-        var tempAlpha2 = ctx.globalAlpha;
-        ctx.globalAlpha = 1.0;
-        ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
-        ctx.stroke();
-        ctx.globalAlpha = tempAlpha2;
-        ctx.closePath();
+        viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
+        viewport.fillCircle(ctx, viewport, Mark.lastMark, 3, "#00FF00", 1.0);
 
-        var tempAlpha2 = ctx.globalAlpha;
-        ctx.globalAlpha = 1.0;
-        ctx.strokeStyle = "#00FF00";
-        ctx.fillStyle = "#00FF00";
-        ctx.beginPath();
-        ctx.arc(Mark.pointArray[0].x, Mark.pointArray[0].y, 3, 0, 2 * Math.PI);
-        ctx.arc(Mark.lastMark.x, Mark.lastMark.y, 3, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.closePath();
+        if (Mark.Text) viewport.drawText(ctx, viewport, Mark.lastMark, Mark.Text, 22, "#FF0000", alpha = 1.0);
 
-        if (Mark.Text) {
-            var n = 22;
-            ctx.translate(Mark.lastMark.x, Mark.lastMark.y);
-            ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
-            if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
-            ctx.beginPath();
-            ctx.font = "" + (n) + "px Arial";
-            ctx.fillStyle = "#FF0000";
-            ctx.fillText("" + Mark.Text, 0, 0);
-            ctx.closePath();
-        }
-        ctx.globalAlpha = tempAlpha2;
     } catch (ex) { console.log(ex) }
-
-    ctx.restore();
 }
 PLUGIN.PushMarkList(drawMeasureRuler);
 

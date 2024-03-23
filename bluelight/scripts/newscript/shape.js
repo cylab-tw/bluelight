@@ -127,55 +127,19 @@ function drawMeasureRect(obj) {
     var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
     if (!Mark) return;
     if (!Mark || Mark.type != "MeasureRect" || Mark.pointArray.length < 2) return;
-    var ctx = canvas.getContext("2d");
-    ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    setMarkColor(ctx);
-    ctx.save();
-    setMarkFlip(ctx);
-    if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
+    var ctx = canvas.getContext("2d"), color = null, pointArray = Mark.pointArray, size = 22;
+    if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) color = "" + Mark.color;
 
-    var tempAlpha = ctx.globalAlpha;
-    ctx.globalAlpha = 1.0;
-    var maxX = Mark.pointArray[0].x > Mark.pointArray[1].x ? Mark.pointArray[0].x : Mark.pointArray[1].x;
-    var minX = Mark.pointArray[0].x < Mark.pointArray[1].x ? Mark.pointArray[0].x : Mark.pointArray[1].x;
-    var maxY = Mark.pointArray[0].y > Mark.pointArray[1].y ? Mark.pointArray[0].y : Mark.pointArray[1].y;
-    var minY = Mark.pointArray[0].y < Mark.pointArray[1].y ? Mark.pointArray[0].y : Mark.pointArray[1].y;
-    if (maxX == minX || maxY == minY) return;
-
-    ctx.beginPath();
-    ctx.moveTo(Math.ceil((minX)), Math.ceil((maxY)));
-    ctx.lineTo(Math.ceil((maxX)), Math.ceil((maxY)));
-    ctx.lineTo(Math.ceil((maxX)), Math.ceil((minY)));
-    ctx.lineTo(Math.ceil((minX)), Math.ceil((minY)));
-    ctx.lineTo(Math.ceil((minX)), Math.ceil((maxY)));
-
-    ctx.stroke();
-    ctx.closePath();
-    ctx.globalAlpha = 0.3;
-    ctx.fill();
-    ctx.globalAlpha = 1.0;
-
-    if (Mark.Text) {
-        var tempShadowColor = ctx.shadowColor;
-        var tempshadowBlur = ctx.shadowBlur;
-        ctx.shadowBlur = 7;
-        ctx.shadowColor = "white";
-        var n = 22;
-        ctx.translate(maxX - (Mark.Text.length * (n / 2) + n), maxY - (n / 4));
-        ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
-        ctx.beginPath();
-        if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
-        ctx.font = "" + (n) + "px Arial";
-        ctx.fillStyle = "#FF0000";
-        for (var t = 0; t < 5; t++)
-            ctx.fillText("" + Mark.Text, 0, 0);
-        ctx.closePath();
-        ctx.shadowColor = tempShadowColor;
-        ctx.shadowBlur = tempshadowBlur;
-    }
-    ctx.globalAlpha = tempAlpha;
-
-    ctx.restore();
+    try {
+        viewport.drawRect(ctx, viewport, pointArray, [color, color], [1.0, 0.3]);
+        if (Mark.Text) {
+            var maxX = pointArray[0].x > pointArray[1].x ? pointArray[0].x : pointArray[1].x;
+            var maxY = pointArray[0].y > pointArray[1].y ? pointArray[0].y : pointArray[1].y;
+            var point = new Point2D(maxX - (Mark.Text.length * (size / 2) + size), maxY - (size / 4));
+            for (var t = 0; t < 5; t++)
+                viewport.drawText(ctx, viewport, point, Mark.Text, size, "#FF0000", alpha = 1.0, [{ shadowBlur: 7 }, { shadowColor: "white" }]);
+        }
+    } catch (ex) { console.log(ex) }
 }
 PLUGIN.PushMarkList(drawMeasureRect);
 
@@ -184,50 +148,19 @@ function drawMeasureCIRCLE(obj) {
     var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
     if (!Mark) return;
     if (!Mark || Mark.type != "MeasureCircle" || Mark.pointArray.length < 2) return;
-    var ctx = canvas.getContext("2d");
-    ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    setMarkColor(ctx);
-    if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
-    ctx.save();
-    setMarkFlip(ctx);
-    var tempAlpha = ctx.globalAlpha;
-    ctx.globalAlpha = 1.0;
-    var x1 = Mark.pointArray[0].x * 1;
-    var y1 = Mark.pointArray[0].y * 1;
-    var x2 = Mark.pointArray[0 + 1].x * 1;
-    var y2 = Mark.pointArray[0 + 1].y * 1;
 
-    ctx.beginPath();
-    var tempAlpha = ctx.globalAlpha;
-    ctx.globalAlpha = 1.0;
-    var temp_distance = getDistance(Math.abs(x1 - x2), Math.abs(y1 - y2));
-    ctx.arc(x1, y1, temp_distance, 0, 2 * Math.PI);
-    ctx.stroke();
-    ctx.globalAlpha = 0.3;
-    ctx.fill();
-    ctx.globalAlpha = 1.0;
-    ctx.closePath();
-    if (Mark.Text) {
-        ctx.beginPath();
-        var n = 22;
-        ctx.translate(Mark.pointArray[0].x - (Mark.Text.length * (n / 4)), Mark.pointArray[0].y);
-        ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
-        if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
-        ctx.font = "" + (n) + "px Arial";
-        var tempShadowColor = ctx.shadowColor;
-        var tempshadowBlur = ctx.shadowBlur;
-        ctx.shadowBlur = 7;
-        ctx.shadowColor = "white";
-        ctx.fillStyle = "#FF0000";
-        for (var t = 0; t < 5; t++)
-            ctx.fillText("" + Mark.Text, 0, 0);
+    var ctx = canvas.getContext("2d"), color = null, pointArray = Mark.pointArray, size = 22;
+    if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) color = "" + Mark.color;
 
-        ctx.closePath();
-        ctx.shadowColor = tempShadowColor;
-        ctx.shadowBlur = tempshadowBlur;
-    }
-    ctx.globalAlpha = tempAlpha;
-    ctx.restore();
+    try {
+        var dist = getDistance(Math.abs(pointArray[0].x - pointArray[1].x), Math.abs(pointArray[0].y - pointArray[1].y));
+        viewport.drawCircle(ctx, viewport, pointArray[0], dist, [color, color], [1.0, 0.3]);
+        if (Mark.Text) {
+            var point = new Point2D(pointArray[0].x - (Mark.Text.length * (size / 4)), pointArray[0].y);
+            for (var t = 0; t < 5; t++)
+                viewport.drawText(ctx, viewport, point, Mark.Text, size, "#FF0000", alpha = 1.0, [{ shadowBlur: 7 }, { shadowColor: "white" }]);
+        }
+    } catch (ex) { console.log(ex) }
 }
 
 PLUGIN.PushMarkList(drawMeasureCIRCLE);

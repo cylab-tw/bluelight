@@ -66,6 +66,12 @@ function getRGBFrom0xFF(color, RGB, invert) {
     else return (getColorFrom16(R, G, B, 8));
 }
 
+function setMarkSetting(ctx, viewport) {
+    if (ctx.constructor.name == 'HTMLCanvasElement') ctx = ctx.getContext('2d');
+    setMarkColor(ctx);
+    setMarkFlip(ctx, viewport);
+}
+
 function setMarkFlip(ctx, viewport) {
     if (!viewport) viewport = GetViewport();
     if (viewport.HorizontalFlip == true || viewport.VerticalFlip == true) {

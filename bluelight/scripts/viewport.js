@@ -264,6 +264,119 @@ class BlueLightViewPort {
             element.ScrollBar.reflesh();
         }
     }
+
+    drawClosedInterval(ctx, viewport, pointArray, colorGroup = null, alphaGroup = null) {
+        ctx.save();
+        setMarkSetting(ctx, viewport);
+        if (alphaGroup != null && alphaGroup[0]) ctx.globalAlpha = alphaGroup[0];
+        if (colorGroup != null && colorGroup[0]) ctx.strokeStyle = ctx.fillStyle = colorGroup[0];
+        ctx.moveTo(Math.ceil((pointArray[0].x)), Math.ceil((pointArray[0].y)));
+        ctx.beginPath();
+        for (var o = 1; o < pointArray.length; o++) {
+            var x1 = Math.ceil((pointArray[o].x));
+            var y1 = Math.ceil((pointArray[o].y));
+            ctx.lineTo(x1, y1);
+        }
+        ctx.lineTo(Math.ceil((pointArray[0].x)), Math.ceil((pointArray[0].y)));
+        ctx.stroke();
+        ctx.closePath();
+
+        if (alphaGroup != null && alphaGroup[1]) ctx.globalAlpha = alphaGroup[1];
+        if (colorGroup != null && colorGroup[1]) ctx.strokeStyle = ctx.fillStyle = colorGroup[1];
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    drawRect(ctx, viewport, pointArray, colorGroup = null, alphaGroup = null) {
+        ctx.save();
+        setMarkSetting(ctx, viewport);
+        if (alphaGroup != null && alphaGroup[0]) ctx.globalAlpha = alphaGroup[0];
+        if (colorGroup != null && colorGroup[0]) ctx.strokeStyle = ctx.fillStyle = colorGroup[0];
+
+        var maxX = pointArray[0].x > pointArray[1].x ? pointArray[0].x : pointArray[1].x;
+        var minX = pointArray[0].x < pointArray[1].x ? pointArray[0].x : pointArray[1].x;
+        var maxY = pointArray[0].y > pointArray[1].y ? pointArray[0].y : pointArray[1].y;
+        var minY = pointArray[0].y < pointArray[1].y ? pointArray[0].y : pointArray[1].y;
+        if (maxX == minX || maxY == minY) return;
+
+        ctx.beginPath();
+        ctx.moveTo(Math.ceil((minX)), Math.ceil((maxY)));
+        ctx.lineTo(Math.ceil((maxX)), Math.ceil((maxY)));
+        ctx.lineTo(Math.ceil((maxX)), Math.ceil((minY)));
+        ctx.lineTo(Math.ceil((minX)), Math.ceil((minY)));
+        ctx.lineTo(Math.ceil((minX)), Math.ceil((maxY)));
+        ctx.stroke();
+        ctx.closePath();
+
+        if (alphaGroup != null && alphaGroup[1]) ctx.globalAlpha = alphaGroup[1];
+        if (colorGroup != null && colorGroup[1]) ctx.strokeStyle = ctx.fillStyle = colorGroup[1];
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    drawLine(ctx, viewport, point1, point2, color = null, alpha = null, dash = null) {
+        ctx.save();
+        setMarkSetting(ctx, viewport);
+        if (alpha != null) ctx.globalAlpha = alpha;
+        if (color) ctx.strokeStyle = ctx.fillStyle = color;
+        if (dash) ctx.setLineDash(dash);
+        ctx.beginPath();
+        ctx.moveTo(point1.x, point1.y); ctx.lineTo(point2.x, point2.y);
+        ctx.stroke();
+        ctx.closePath();
+        ctx.restore();
+    }
+
+    drawCircle(ctx, viewport, point, size = 3, colorGroup = null, alphaGroup = null) {
+        ctx.save();
+        setMarkSetting(ctx, viewport);
+        if (alphaGroup != null && alphaGroup[0]) ctx.globalAlpha = alphaGroup[0];
+        if (colorGroup != null && colorGroup[0]) ctx.strokeStyle = ctx.fillStyle = colorGroup[0];
+
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, size, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.closePath();
+
+        if (alphaGroup != null && alphaGroup[1]) ctx.globalAlpha = alphaGroup[1];
+        if (colorGroup != null && colorGroup[1]) ctx.strokeStyle = ctx.fillStyle = colorGroup[1];
+        ctx.fill();
+        ctx.restore();
+    }
+
+    fillCircle(ctx, viewport, point, size = 3, color = null, alpha = null) {
+        ctx.save();
+        setMarkSetting(ctx, viewport);
+        if (alpha != null) ctx.globalAlpha = alpha;
+        if (color) ctx.strokeStyle = ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, size, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+        ctx.restore();
+    }
+
+    drawText(ctx, viewport, point, text = "", size = 12, color = "#FF0000", alpha = null, otherSettingsGroup = null) {
+        ctx.save();
+        setMarkSetting(ctx, viewport);
+        if (alpha != null) ctx.globalAlpha = alpha;
+        if (color) ctx.strokeStyle = ctx.fillStyle = color;
+        if (otherSettingsGroup && otherSettingsGroup.length) {
+            for (var setting of otherSettingsGroup)
+                ctx["" + Object.keys(setting)[0]] = "" + Object.values(setting)[0]
+        }
+
+        ctx.translate(point.x, point.y);
+        ctx.scale(this.HorizontalFlip == true ? -1 : 1, this.VerticalFlip == true ? -1 : 1);
+        if (!isNaN(this.scale) && this.scale < 1) size /= this.scale;
+        ctx.beginPath();
+        ctx.font = "" + (size) + "px Arial";
+        ctx.fillText("" + text, 0, 0);
+        ctx.closePath();
+        ctx.restore();
+    }
 }
 
 function GetViewport(num) {

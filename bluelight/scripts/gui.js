@@ -118,17 +118,23 @@ class LeftLayout {
         series_div.className = "LeftImgAndMark";
         series_div.style = "width:" + 65 + "px;height:" + 65 + "px;border:" + bordersize + "px #D3D9FF groove;";
         series_div.series = QRLevel.series;
-        series_div.draggable = "true";
         series_div.style.touchAction = 'none';
 
         var ImgDiv = document.createElement("DIV");
         ImgDiv.className = "LeftImgDiv";
         ImgDiv.style = "width:" + 65 + "px;height:" + 65 + "px;";
         ImgDiv.series = QRLevel.series;
+        ImgDiv.draggable = "true";
         ImgDiv.QRLevel = QRLevel;
         ImgDiv.onclick = function () {
             PictureOnclick(this.QRLevel);
         };
+        
+        ImgDiv.ondrag = function () {
+            event.preventDefault();
+            dragged = this;
+        }
+
         ImgDiv.canvas = function () {
             if (!this.getElementsByClassName("LeftCanvas")[0]) return null;
             else return this.getElementsByClassName("LeftCanvas")[0];

@@ -82,43 +82,14 @@ function drawIrregularRuler(obj) {
     var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
     if (!Mark) return;
     if (!Mark || Mark.type != "IrregularRuler" || Mark.pointArray.length < 2) return;
-    var ctx = canvas.getContext("2d");
-    ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    setMarkColor(ctx);
-    if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
-    ctx.save();
-    setMarkFlip(ctx);
-    var tempAlpha = ctx.globalAlpha;
-    ctx.globalAlpha = 1.0;
 
-    ctx.moveTo(Math.ceil((Mark.pointArray[0].x)), Math.ceil((Mark.pointArray[0].y)));
-    ctx.beginPath();
-    for (var o = 1; o < Mark.pointArray.length; o++) {
-        var x1 = Math.ceil((Mark.pointArray[o].x));
-        var y1 = Math.ceil((Mark.pointArray[o].y));
-        ctx.lineTo(x1, y1);
-        //ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    }
-    ctx.lineTo(Math.ceil((Mark.pointArray[0].x)), Math.ceil((Mark.pointArray[0].y)));
+    var ctx = canvas.getContext("2d"), color = null;
+    try {
+        if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) color = Mark.color;
+        viewport.drawClosedInterval(ctx, viewport, Mark.pointArray, [color, color], [1.0, 0.3]);
+    } catch (ex) { }
 
-    ctx.stroke();
-    ctx.closePath();
-    ctx.globalAlpha = 0.3;
-    ctx.fill();
-    ctx.globalAlpha = 1.0;
-    if (Mark.Text) {
-        ctx.beginPath();
-        var n = 22;
-        ctx.translate(Mark.lastMark.x, Mark.lastMark.y);
-        ctx.scale(viewport.HorizontalFlip == true ? -1 : 1, viewport.VerticalFlip == true ? -1 : 1);
-        if (viewport && !isNaN(viewport.scale) && viewport.scale < 1) n /= viewport.scale;
-        ctx.font = "" + (n) + "px Arial";
-        ctx.fillStyle = "#FF0000";
-        ctx.fillText("" + Mark.Text, 0, 0);
-        ctx.closePath();
-    }
-    ctx.globalAlpha = tempAlpha;
-    ctx.restore();
+    if (Mark.Text) viewport.drawText(ctx, viewport, Mark.lastMark, Mark.Text, 22, "#FF0000", alpha = 1.0);
 }
 PLUGIN.PushMarkList(drawIrregularRuler);
 
@@ -129,5 +100,5 @@ onloadFunction.push2Last(function () {
         MeasureIrregular();
         drawBorder(getByid("openMeasureImg"));
         hideAllDrawer();
-      }
+    }
 });
