@@ -721,6 +721,22 @@ function erase() {
                 refreshMarkFromSop(GetViewport().sop);
                 return;
             }
+            MeasureRect_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+            if (MeasureRect_now_choose) {
+                PatientMark.splice(PatientMark.indexOf(MeasureRect_now_choose.dcm), 1);
+                displayMark();
+                MeasureRect_now_choose = null;
+                refreshMarkFromSop(GetViewport().sop);
+                return;
+            }
+            MeasureCircle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+            if (MeasureCircle_now_choose) {
+                PatientMark.splice(PatientMark.indexOf(MeasureCircle_now_choose.dcm), 1);
+                displayMark();
+                MeasureCircle_now_choose = null;
+                refreshMarkFromSop(GetViewport().sop);
+                return;
+            }
         });
         BlueLightMousemoveList = [];
         BlueLightMouseupList = [];

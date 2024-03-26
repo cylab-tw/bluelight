@@ -45,13 +45,13 @@ getByid("writeXML").onclick = function () {
 
 
 
-  HideElemByID("xmlMarkName");
+  ShowElemByID("xmlMarkName");
   displayMark();
 
   getByid("exitXML").onclick = function () {
     openWriteXML = false;
     img2darkByClass("XML", !openWriteXML);
-    ShowElemByID("xmlMarkName");
+    HideElemByID("xmlMarkName");
     getByid("writeXML").style.display = openWriteXML != true ? "" : "none";
     getByid("exitXML").style.display = openWriteXML == true ? "" : "none";
     getByid("saveXML").style.display = openWriteXML == true ? "" : "none";
