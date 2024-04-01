@@ -8,6 +8,7 @@ function loadWriteGraphic() {
     span.innerHTML =
         `<img class="img GSPS" alt="writeGSPS" id="writeGSPS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/gsps_off.png" width="50" height="50">;
         <img class="img GSPS" alt="drawGSPS" id="drawGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/GraphicDraw.png" width="50" height="50" style="display:none;" >
+        <img class="img GSPS" alt="eraseGSPS" id="eraseGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/b_Eraser.png" width="50" height="50" style="display:none;" >
         <img class="img GSPS" alt="exitGSPS" id="exitGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
         <img class="img GSPS" alt="saveGSPS" id="saveGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
 
@@ -110,6 +111,7 @@ getByid("drawGSPS").onclick = function () {
     drawBorder(getByid("drawGSPS"));
 }
 BorderList_Icon.push("drawGSPS");
+BorderList_Icon.push("eraseGSPS");
 
 getByid("writeGSPS").onclick = function () {
     if (this.enable == false) return;
@@ -124,6 +126,7 @@ getByid("writeGSPS").onclick = function () {
     }
     //this.src = openWriteGSPS == true ? '../image/icon/black/gsps_on.png' : '../image/icon/black/gsps_off.png';
     this.style.display = openWriteGSPS != true ? "" : "none";
+    getByid("eraseGSPS").style.display = openWriteGSPS == true ? "" : "none";
     getByid("exitGSPS").style.display = openWriteGSPS == true ? "" : "none";
     getByid("saveGSPS").style.display = openWriteGSPS == true ? "" : "none";
     getByid("drawGSPS").style.display = openWriteGSPS == true ? "" : "none";
@@ -133,12 +136,22 @@ getByid("writeGSPS").onclick = function () {
         img2darkByClass("GSPS", !openWriteGSPS);
         getByid('GspsStyleDiv').style.display = 'none';
         getByid("writeGSPS").style.display = openWriteGSPS != true ? "" : "none";
+        getByid("eraseGSPS").style.display = openWriteGSPS == true ? "" : "none";
         getByid("exitGSPS").style.display = openWriteGSPS == true ? "" : "none";
         getByid("saveGSPS").style.display = openWriteGSPS == true ? "" : "none";
         getByid("drawGSPS").style.display = openWriteGSPS == true ? "" : "none";
         displayMark();
         getByid('MouseOperation').click();
     }
+
+    getByid("eraseGSPS").onclick = function () {
+        set_BL_model('eraseGSPS');
+        eraseGSPS();
+        drawBorder(getByid("eraseGSPS"));
+        hideAllDrawer();
+        displayAllMark();
+    }
+
     getByid("saveGSPS").onclick = function () {
         function download(text, name, type) {
             let a = document.createElement('a');
@@ -275,6 +288,31 @@ var Graphic_format_rotation = `
 var Graphic_now_choose = null;
 var temp_xml_format = "";
 
+function eraseGSPS() {
+    if (BL_mode == 'eraseGSPS') {
+        DeleteMouseEvent();
+
+        set_BL_model.onchange = function () {
+            displayMark();
+            set_BL_model.onchange = function () { return 0; };
+        }
+
+        BlueLightMousedownList = [];
+        BlueLightMousedownList.push(function (e) {
+            Graphic_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+            if (Graphic_now_choose) {
+                PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
+                displayMark();
+                Graphic_now_choose = null;
+                refreshMarkFromSop(GetViewport().sop);
+                return;
+            }
+        });
+        BlueLightMousemoveList = [];
+        BlueLightMouseupList = [];
+        AddMouseEvent();
+    }
+}
 
 function Graphic_pounch(currX, currY) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
@@ -854,7 +892,7 @@ function drawPOLYLINE_Write(obj) {
         };
         ctx.closePath();
 
-        if (openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true && openWriteGSPS == true)) {
+        if (BL_mode == 'eraseGSPS' || openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true && openWriteGSPS == true)) {
             if (Mark.pointArray.length >= 4) {
                 if (Mark.RotationAngle && Mark.RotationPoint) {
                     [x1, y1] = rotatePoint([x1, y1], -Mark.RotationAngle, Mark.RotationPoint);
@@ -875,7 +913,7 @@ function drawPOLYLINE_Write(obj) {
                 ctx.fillstyle = fillStyle; ctx.strokeStyle = strokeStyle;
             }
         }
-        else if (openWriteGraphic == true || (getByid("GspsLINE").selected == true && openWriteGSPS == true)) {
+        else if (BL_mode == 'eraseGSPS' || openWriteGraphic == true || (getByid("GspsLINE").selected == true && openWriteGSPS == true)) {
             if (Mark.pointArray.length < 4) {
                 if (Mark.RotationAngle && Mark.RotationPoint) {
                     [x1, y1] = rotatePoint([x1, y1], -Mark.RotationAngle, Mark.RotationPoint);
@@ -916,7 +954,7 @@ function drawCircle_Write(obj) {
     setMarkColor(ctx);
     if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
 
-    if (openWriteGraphic == true || (getByid("GspsCIRCLE").selected == true && openWriteGSPS == true)) {
+    if (BL_mode == 'eraseGSPS' || openWriteGraphic == true || (getByid("GspsCIRCLE").selected == true && openWriteGSPS == true)) {
         if (Mark.pointArray.length >= 2) {
             var x1 = Mark.pointArray[0].x * 1;
             var y1 = Mark.pointArray[0].y * 1;

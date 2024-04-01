@@ -6,6 +6,7 @@ function loadxml_format() {
   span.innerHTML =
     `<img class="img XML" alt="writeXML" id="writeXML" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/xml_off.png" width="50" height="50">;
     <img class="img XML" alt="drawXML" id="drawXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/GraphicDraw.png" width="50" height="50" style="display:none;" >  
+    <img class="img XML" alt="eraseXML" id="eraseXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/b_Eraser.png" width="50" height="50" style="display:none;" >  
     <img class="img XML" alt="exitXML" id="exitXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
     <img class="img XML" alt="saveXML" id="saveXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
 
@@ -25,6 +26,7 @@ getByid("drawXML").onclick = function () {
   drawBorder(getByid("drawXML"));
 }
 BorderList_Icon.push("drawXML");
+BorderList_Icon.push("eraseXML");
 
 getByid("writeXML").onclick = function () {
   if (this.enable == false) return;
@@ -39,6 +41,7 @@ getByid("writeXML").onclick = function () {
   }
   //this.src = openWriteXML == true ? '../image/icon/black/xml_on.png' : '../image/icon/black/xml_off.png';
   this.style.display = openWriteXML != true ? "" : "none";
+  getByid("eraseXML").style.display = openWriteXML == true ? "" : "none";
   getByid("exitXML").style.display = openWriteXML == true ? "" : "none";
   getByid("saveXML").style.display = openWriteXML == true ? "" : "none";
   getByid("drawXML").style.display = openWriteXML == true ? "" : "none";
@@ -53,12 +56,22 @@ getByid("writeXML").onclick = function () {
     img2darkByClass("XML", !openWriteXML);
     HideElemByID("xmlMarkName");
     getByid("writeXML").style.display = openWriteXML != true ? "" : "none";
+    getByid("eraseXML").style.display = openWriteXML == true ? "" : "none";
     getByid("exitXML").style.display = openWriteXML == true ? "" : "none";
     getByid("saveXML").style.display = openWriteXML == true ? "" : "none";
     getByid("drawXML").style.display = openWriteXML == true ? "" : "none";
     displayMark();
     xml_now_choose = null;
     getByid('MouseOperation').click();
+  }
+
+
+  getByid("eraseXML").onclick = function () {
+    set_BL_model('eraseXML');
+    eraseXML();
+    drawBorder(getByid("eraseXML"));
+    hideAllDrawer();
+    displayAllMark();
   }
 
   getByid("saveXML").onclick = function () {
@@ -73,6 +86,33 @@ getByid("writeXML").onclick = function () {
     }
     setXml_context();
     download(String(getXml_context()), 'filename.xml', 'text/plain');
+  }
+}
+
+function eraseXML() {
+  if (BL_mode == 'eraseXML') {
+    DeleteMouseEvent();
+
+    set_BL_model.onchange = function () {
+      displayMark();
+      set_BL_model.onchange = function () { return 0; };
+    }
+
+    BlueLightMousedownList = [];
+    BlueLightMousedownList.push(function (e) {
+      xml_now_choose = null;
+      xml_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+      if (xml_now_choose) {
+        PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
+        displayMark();
+        xml_now_choose = null;
+        refreshMarkFromSop(GetViewport().sop);
+        return;
+      }
+    });
+    BlueLightMousemoveList = [];
+    BlueLightMouseupList = [];
+    AddMouseEvent();
   }
 }
 
