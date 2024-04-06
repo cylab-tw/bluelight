@@ -20,7 +20,8 @@ function loadWriteSEG() {
                     size="8" />
                 <font color="white">SegmentLabel</font><input type="text" id="SegSegmentLabel" value="SegmentLabel" size="8" />
                 <font color="white">Brush Size</font><input type="text" id="SegBrushSizeText" value="10" size="2" />
-                &nbsp;&nbsp;<button id="overlay2seg" sytle="">OverLay to Seg</button>
+                &nbsp;&nbsp;<button id="overlay2seg" sytle="">OverLay to Seg</button>&nbsp;&nbsp;
+                <button id="RemoveSEG" onclick="DeleteSelectedSEG();" style="font-size: 14px;display:none;">Delete Selected SEG</button>
             </div>`
     getByid("page-header").appendChild(span);
     getByid("SegStyleDiv").style.display = "none";
@@ -468,6 +469,14 @@ function get_SEG_context() {
         temp_str += SEG_format_object_list[i];
     }
     return temp_str;
+}
+
+function DeleteSelectedSEG() {
+    if (!SEG_now_choose) return;
+    PatientMark.splice(PatientMark.indexOf(SEG_now_choose), 1);
+    displayMark();
+
+    refreshMarkFromSop(GetViewport().sop);
 }
 
 function Line_setSEG2PixelData(point1, point2) {

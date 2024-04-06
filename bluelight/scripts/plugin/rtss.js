@@ -50,6 +50,8 @@ function loadWriteRTSS() {
       size="2" />
     <font color="white">RTROIInterpretedType：</font><input type="text" id="textRTROIInterpretedType" value="ORGAN"
       size="8" />
+      <br />
+      <button id="RemoveRtss" onclick="DeleteSelectedRTSS();" style="font-size: 14px;">Delete Selected RTSS</button>
   </div>`
     getByid("form-group").appendChild(span);
     getByid("RtssDiv").style.display = "none";
@@ -60,20 +62,24 @@ function getColorFromRGB(str) {
     return str.split("(")[1].split(")")[0].split(",");
 }
 
+function DeleteSelectedRTSS(){
+    var reference;
+    for (var m = 0; m < PatientMark.length; m++) {
+        if (PatientMark[m].showName == getByid('textROIName').value) {
+            reference = PatientMark[m];
+            break;
+        }
+    }
+    PatientMark.splice(PatientMark.indexOf(reference), 1);
+    displayMark();
+
+    refreshMarkFromSop(GetViewport().sop);
+}
+
 window.addEventListener('keydown', (KeyboardKeys) => {
     var key = KeyboardKeys.which
     if (openWriteRTSS == true && (key === 46 || key === 110)) {
-        var reference;
-        for (var m = 0; m < PatientMark.length; m++) {
-            if (PatientMark[m].showName == getByid('textROIName').value) {
-                reference = PatientMark[m];
-                break;
-            }
-        }
-        PatientMark.splice(PatientMark.indexOf(reference), 1);
-        displayMark();
-
-        refreshMarkFromSop(GetViewport().sop);
+        DeleteSelectedRTSS();
     }
 });
 
