@@ -168,6 +168,22 @@ function MeasureIrregular() {
     }
 }
 
+function other_irregular_pounch(currX, currY) {
+    let block_size = getMarkSize(GetViewportMark(), false) * 4;
+
+    for (var n = 0; n < PatientMark.length; n++) {
+        if (PatientMark[n].sop == GetViewport().sop) {
+            if (PatientMark[n].type == "IrregularRuler" || PatientMark[n].type == "TextAnnotation" || PatientMark[n].type == "ArrowRuler") {
+                var tempMark = PatientMark[n].pointArray;
+                var x1 = parseInt(tempMark[0].x), y1 = parseInt(tempMark[0].y);
+                if (currY + block_size >= y1 && currY - block_size <= y1 && currX + block_size >= x1 && currX - block_size <= x1)
+                    return { dcm: PatientMark[n], pointArray: tempMark, order: 0 };
+            }
+        }
+    }
+    return null;
+}
+
 /*getByid("IrregularRuler").onclick = function () {
     if (this.enable == false) return;
     set_BL_model('Irregular');
@@ -196,6 +212,7 @@ function drawIrregularRuler(obj) {
     try {
         if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) color = Mark.color;
         viewport.drawClosedInterval(ctx, viewport, Mark.pointArray, [color, color], [1.0, 0.3]);
+        if (BL_mode == 'erase') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#FF0000", 1.0);
     } catch (ex) { }
 
     if (Mark.Text) viewport.drawText(ctx, viewport, Mark.lastMark, Mark.Text, 22, "#FF0000", alpha = 1.0);
@@ -210,11 +227,12 @@ function drawTextAnnotatoin(obj) {
     var ctx = canvas.getContext("2d"), color = null;
     try {
         if (Mark.Text) viewport.drawText(ctx, viewport, Mark.pointArray[0], Mark.Text, 22, "#FF0000", alpha = 1.0);
+        if (BL_mode == 'erase') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
     } catch (ex) { }
 }
 PLUGIN.PushMarkList(drawTextAnnotatoin);
 
-function drawArrowRule(obj) {
+function drawArrowRuler(obj) {
     try {
         var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
         if (!Mark) return;
@@ -234,9 +252,10 @@ function drawArrowRule(obj) {
         var y4 = y2 - L * Math.sin(a - 30 * Math.PI / 180);
         viewport.drawLine(ctx, viewport, new Point2D(x3, y3), new Point2D(x2, y2), Mark.color, 1.0);
         viewport.drawLine(ctx, viewport, new Point2D(x4, y4), new Point2D(x2, y2), Mark.color, 1.0);
+        if (BL_mode == 'erase') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
     } catch (ex) { console.log(ex) }
 }
-PLUGIN.PushMarkList(drawArrowRule);
+PLUGIN.PushMarkList(drawArrowRuler);
 
 onloadFunction.push2Last(function () {
     getByid("IrregularRuler").onclick = function () {

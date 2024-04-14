@@ -739,6 +739,16 @@ function erase() {
                 refreshMarkFromSop(GetViewport().sop);
                 return;
             }
+
+            var other_irregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+            if (other_irregular_now_choose) {
+                PatientMark.splice(PatientMark.indexOf(other_irregular_now_choose.dcm), 1);
+                displayMark();
+                other_irregular_now_choose = null;
+                refreshMarkFromSop(GetViewport().sop);
+                return;
+            }
+
         });
         BlueLightMousemoveList = [];
         BlueLightMouseupList = [];

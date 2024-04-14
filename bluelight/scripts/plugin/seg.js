@@ -6,6 +6,7 @@ function loadWriteSEG() {
     span.innerHTML =
         `<img class="img SEG" alt="writeSEG" id="writeSEG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/seg_off.png" width="50" height="50">
         <img class="img SEG" alt="drawSEG" id="drawSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/GraphicDraw.png" width="50" height="50" style="display:none;" >  
+        <img class="img SEGhide" alt="eraseSEG" id="eraseSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/b_Eraser.png" width="50" height="50" style="display:none;" >
         <img class="img SEG" alt="exitSEG" id="exitSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
         <img class="img SEG" alt="saveSEG" id="saveSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
 
@@ -58,6 +59,7 @@ getByid("drawSEG").onclick = function () {
     drawBorder(getByid("drawSEG"));
 }
 BorderList_Icon.push("drawSEG");
+BorderList_Icon.push("eraseSEG");
 
 getByid("writeSEG").onclick = function () {
     if (this.enable == false) return;
@@ -76,6 +78,7 @@ getByid("writeSEG").onclick = function () {
     this.src = openWriteSEG == true ? '../image/icon/black/seg_on.png' : '../image/icon/black/seg_off.png';
     this.style.display = openWriteSEG != true ? "" : "none";
     getByid("exitSEG").style.display = openWriteSEG == true ? "" : "none";
+    getByid("eraseSEG").style.display = openWriteSEG == true ? "" : "none";
     getByid("saveSEG").style.display = openWriteSEG == true ? "" : "none";
     getByid("drawSEG").style.display = openWriteSEG == true ? "" : "none";
 
@@ -85,10 +88,19 @@ getByid("writeSEG").onclick = function () {
         getByid('SegStyleDiv').style.display = 'none';
         getByid("writeSEG").style.display = openWriteSEG != true ? "" : "none";
         getByid("exitSEG").style.display = openWriteSEG == true ? "" : "none";
+        getByid("eraseSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("saveSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("drawSEG").style.display = openWriteSEG == true ? "" : "none";
         displayMark();
         getByid('MouseOperation').click();
+    }
+    getByid("eraseSEG").onclick = function () {
+        return;
+        set_BL_model('eraseSEG');
+        eraseSEG();
+        drawBorder(getByid("eraseSEG"));
+        hideAllDrawer();
+        displayAllMark();
     }
     getByid("saveSEG").onclick = function () {
         function download(text, name, type) {
@@ -318,6 +330,49 @@ var SEG_format_tail_4 = `
             </item>`;
 var SEG_now_choose = null;
 var temp_SEG_format = "";
+
+
+function eraseSEG() {
+    if (BL_mode == 'eraseSEG') {
+        DeleteMouseEvent();
+
+        set_BL_model.onchange = function () {
+            displayMark();
+            set_BL_model.onchange = function () { return 0; };
+        }
+
+        BlueLightMousedownList = [];
+        BlueLightMousedownList.push(function (e) {
+            SEG_pounch(parseInt(rotateCalculation(e, true)[0]), parseInt(rotateCalculation(e, true)[1]));
+            if (SEG_now_choose) {
+                PatientMark.splice(PatientMark.indexOf(SEG_now_choose.dcm), 1);
+                displayMark();
+                SEG_now_choose = null;
+                refreshMarkFromSop(GetViewport().sop);
+                return;
+            }
+        });
+        BlueLightMousemoveList = [];
+        BlueLightMouseupList = [];
+        AddMouseEvent();
+    }
+}
+
+function SEG_pounch(currX, currY) {
+    for (var n = 0; n < PatientMark.length; n++) {
+        if (PatientMark[n].sop == GetViewport().sop) {
+            if (PatientMark[n].type == "SEG") {
+                if (PatientMark[n].pixelData[parseInt(currY * GetViewport().width + currX)] != 0) {
+                    SEG_now_choose = { dcm: PatientMark[n], order: 0 };
+                    return true;
+                }
+            }
+        }
+    }
+    SEG_now_choose = null;
+    return false;
+}
+
 //0062,0004
 function set_SEG_context() {
     SEG_format_object_list = []
@@ -654,3 +709,16 @@ function setSEG2PixelData(angle2point) {
     }
     SEG_now_choose.ctx.putImageData(pixelData, parseInt(angle2point[0]) - rect, parseInt(angle2point[1]) - rect);
 }
+/*
+function drawSEGEdit(obj) {
+    var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
+    if (!Mark || BL_mode != 'eraseSEG') return;
+    if (Mark.type != "SEG") return;
+
+    var ctx = canvas.getContext("2d"), color = null;
+    try {
+        viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#FF0000", 1.0);
+        console.log(Mark.pointArray[0])
+    } catch (ex) { console.log(ex) }
+}
+PLUGIN.PushMarkList(drawSEGEdit);*/
