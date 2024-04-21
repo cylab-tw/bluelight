@@ -18,7 +18,7 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
     Table.style.position = "absolute";
     Table.style.backgroundColor = "black";
     //Table.style.right = "0px";
-    Table.style['zIndex'] = "20";
+    Table.style['zIndex'] = "105";
 
     var row0 = Table.insertRow(0);
     row0.setAttribute("border", 2);

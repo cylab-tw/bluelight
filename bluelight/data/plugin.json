@@ -9,6 +9,7 @@
         {"path":"../scripts/plugin/rtss.js", "name": "rtss", "disableCatch": "true"},
         {"path":"../scripts/plugin/seg.js", "name": "seg", "disableCatch": "true"},
         {"path":"../scripts/plugin/tag.js", "name": "tag", "disableCatch": "true"},
-        {"path":"../scripts/plugin/xnat.js", "name": "tag", "disableCatch": "true"}
+        {"path":"../scripts/plugin/xnat.js", "name": "tag", "disableCatch": "true"},
+        {"path":"../scripts/plugin/hanging_protocols.js", "name": "tag", "disableCatch": "true"}
     ]
 }
