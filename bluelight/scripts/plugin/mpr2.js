@@ -159,7 +159,7 @@ getByid("ImgMPR2_MPR").onclick = function (catchError) {
 }
 
 getByid("ImgMPR2").onclick = function (catchError) {
-    //if (this.enable == false) return;
+    if (this.enable == false) return;
     openMPR2 = true;
     if (catchError == "error") openMPR2 = false;
     img2darkByClass("MPR2", !openMPR2);
@@ -169,6 +169,7 @@ getByid("ImgMPR2").onclick = function (catchError) {
             for (var c = 0; c < 3; c++) GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "none";
     }
 }
+
 function exitMPR2() {
     if (openMPR2 == true) return;
     exitMPR2_UI();

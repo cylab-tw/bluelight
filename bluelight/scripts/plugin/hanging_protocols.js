@@ -31,7 +31,7 @@ function createHaningProtocolsDIV(viewportNum = viewportNumber) {
     DIV.style['left'] = DIV.style['top'] = "0px";
     DIV.style['font-size'] = "x-large";
     DIV.style['line-height'] = "36px";
-    DIV.style['marginLeft'] = DIV.style['marginTop'] = "12px";
+    DIV.style['paddingLeft'] = DIV.style['paddingTop'] = "12px";
     DIV.style['display'] = "none";
     GetViewport(viewportNum).div.appendChild(DIV);
 
@@ -75,6 +75,7 @@ function createHaningProtocolsDIV(viewportNum = viewportNumber) {
         button_Exit.innerText = " Exit ";
         button_Exit.onclick = function () {
             getByid("HaningProtocolsDIV").style['display'] = "none";
+            img2darkByClass("HP", true);
         }
 
         var button_Export = document.createElement("button");
@@ -128,12 +129,15 @@ function loadHaningProtocols() {
     if (getQueryVariable_HaningProtocols("HaningProtocols") == false) return;
     var span = document.createElement("SPAN");
     span.innerHTML =
-        `<img class="innerimg" alt="Haning Protocols" id="HaningProtocols" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/H.png" width="50" height="50">;`;
+        `<img class="innerimg HP" alt="Haning Protocols" id="HaningProtocols" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/H.png" width="50" height="50">;`;
     getByid("othereDIv").appendChild(document.createElement("BR"));
     getByid("othereDIv").appendChild(span);
+    BorderList_Icon.push("HaningProtocols");
 
     getByid("HaningProtocols").onclick = function () {
+        hideAllDrawer();
         displayHaningProtocols();
+        img2darkByClass("HP", false);
     }
     createHaningProtocolsDIV();
 }

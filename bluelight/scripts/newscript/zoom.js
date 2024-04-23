@@ -5,15 +5,11 @@ var openZoom = false;
 let magnifierDiv;
 
 //放大鏡預設長寬
-var magnifierWidth0 = 200;
-var magnifierHeight0 = 200;
+var magnifierDefaultWidth = 200;
+var magnifierDefaultHeight = 200;
 //放大鏡設定長寬
 var magnifierWidth = 200;
 var magnifierHeight = 200;
-
-//代表原始影像，通常被用於放大鏡的參考
-//var originalCanvas;
-//var originalCtx;
 
 
 getByid("zoom").onclick = function () {
@@ -55,14 +51,14 @@ function magnifierIng(currX, currY) {
     if ((zoom <= 25)) getByid('textZoom').value = zoom = 25;
     if (zoom >= 400) getByid('textZoom').value = zoom = 400;
     zoom /= 100;
-    magnifierWidth = parseFloat(1.0 / GetViewport().scale) * (magnifierWidth0 / zoom);
-    magnifierHeight = parseFloat(1.0 / GetViewport().scale) * (magnifierHeight0 / zoom);
+    magnifierWidth = parseFloat(1.0 / GetViewport().scale) * (magnifierDefaultWidth / zoom);
+    magnifierHeight = parseFloat(1.0 / GetViewport().scale) * (magnifierDefaultHeight / zoom);
     var magnifierCanvas = document.getElementById("magnifierCanvas");
     var magnifierCtx = magnifierCanvas.getContext("2d");
     magnifierCanvas.width = magnifierWidth;
     magnifierCanvas.height = magnifierHeight;
-    magnifierCanvas.style.width = magnifierWidth0 + "px";
-    magnifierCanvas.style.height = magnifierHeight0 + "px";
+    magnifierCanvas.style.width = magnifierDefaultWidth + "px";
+    magnifierCanvas.style.height = magnifierDefaultHeight + "px";
     magnifierCanvas.style.transform = "rotate(" + GetViewport().rotate + "deg)";
     magnifierCtx.clearRect(0, 0, magnifierWidth, magnifierHeight);
 

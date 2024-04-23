@@ -13,8 +13,7 @@ var Angle_previous_choose = null;
 function angle() {
     if (BL_mode == 'angle') {
         DeleteMouseEvent();
-        //this.angle_=1;
-        //cancelTools();
+        
         angle.angle_ = "stop";
         set_BL_model.onchange = function () {
             displayMark();
@@ -219,8 +218,7 @@ function angle() {
 
     if (BL_mode == 'angle2') {
         DeleteMouseEvent();
-        //this.angle_=1;
-        //cancelTools();
+
         angle.angle_ = "stop";
         set_BL_model.onchange = function () {
             displayMark();

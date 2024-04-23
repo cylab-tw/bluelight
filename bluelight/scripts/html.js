@@ -174,14 +174,10 @@ function html_onload() {
   }
 
   getByid("MouseOperation").onclick = function () {
-
     if (this.enable == false) return;
-    //BL_mode = 'MouseTool';
     hideAllDrawer();
     set_BL_model('MouseTool');
     mouseTool();
-    //cancelTools();
-    //openMouseTool = true;
     drawBorder(this);
   }
 
@@ -196,7 +192,6 @@ function html_onload() {
 
   getByid("MouseRotate").onclick = function () {
     if (this.enable == false) return;
-    //BL_mode = 'rotate';
     set_BL_model('rotate');
     rotate();
     drawBorder(this);
@@ -260,20 +255,12 @@ function html_onload() {
 
   getByid("WindowRevision").onclick = function () {
     if (this.enable == false) return;
-    //BL_mode = 'windowlevel';
     hideAllDrawer("windowlevel");
     set_BL_model('windowlevel');
     windowlevel();
     drawBorder(this);
     getByid("textWC").value = GetViewport().windowCenter;
     getByid("textWW").value = GetViewport().windowWidth;
-    //cancelTools();
-    //getByid("textWC").style.display = '';
-    //getByid("textWW").style.display = '';
-    // getByid('WindowLevelDiv').style.display = '';
-    //openWindow = true;
-    //drawBorder(this);
-    //SetTable();
   }
 
   getByid("clearviewportImg").onclick = function () {
@@ -298,6 +285,7 @@ function html_onload() {
     getByid("myfile").value = null;
   }
   getByid("OtherImg").onclick = function () {
+    if (this.enable == false) return;
     hideAllDrawer("othereDIv");
     invertDisplayById('othereDIv');
     if (getByid("othereDIv").style.display == "none") getByid("OtherImgParent").style.position = "";
@@ -308,6 +296,7 @@ function html_onload() {
   }
 
   getByid("openMeasureImg").onclick = function () {
+    if (this.enable == false) return;
     hideAllDrawer("openMeasureDIv");
     invertDisplayById('openMeasureDIv');
     if (getByid("openMeasureDIv").style.display == "none") getByid("MeasureImgParent").style.position = "";
@@ -318,6 +307,7 @@ function html_onload() {
   }
 
   getByid("openTransformationsImg").onclick = function () {
+    if (this.enable == false) return;
     hideAllDrawer("openTransformationsDiv");
     invertDisplayById('openTransformationsDiv');
     if (getByid("openTransformationsDiv").style.display == "none") getByid("TransformationsImgParent").style.position = "";
@@ -328,6 +318,7 @@ function html_onload() {
   }
 
   getByid("WindowRevisionOption").onclick = function () {
+    if (this.enable == false) return;
     hideAllDrawer("openWindowRevisionDiv");
     invertDisplayById('openWindowRevisionDiv');
     if (getByid("openWindowRevisionDiv").style.display == "none") getByid("WindowRevisionParent").style.position = "";
@@ -362,6 +353,7 @@ function html_onload() {
   }
 
   getByid("SplitWindow").onclick = function () {
+    if (this.enable == false) return;
     function createSplitWindow() {
       var outerDiv = getByid("openSplitWindowDiv");
       outerDiv.innerHTML = "";
@@ -716,19 +708,21 @@ function drawBorder(element) {
 }
 
 function img2darkByClass(classname, dark) {
-  let class1 = getClass("img");
-  for (let i = 0; i < class1.length; i++) {
-    if (!class1[i].classList.contains(classname)) {
-      if (dark) {
-        class1[i].style.opacity = 1;
-        class1[i].enable = true;
+  for(var className of ["img","cropimg"]){
+    let icon = getClass(className);
+    for (let i = 0; i < icon.length; i++) {
+      if (!icon[i].classList.contains(classname)) {
+        if (dark) {
+          icon[i].style.opacity = 1;
+          icon[i].enable = true;
+        } else {
+          icon[i].style.opacity = 0.25;
+          icon[i].enable = false;
+        }
       } else {
-        class1[i].style.opacity = 0.25;
-        class1[i].enable = false;
+        icon[i].style.opacity = 1;
+        icon[i].enable = true;
       }
-    } else {
-      class1[i].style.opacity = 1;
-      class1[i].enable = true;
     }
   }
 }

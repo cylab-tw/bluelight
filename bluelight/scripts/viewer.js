@@ -104,28 +104,19 @@ function wadorsLoader(url, onlyload) {
                 let intArray = new Uint8Array(resBlob);
                 var string = '';
                 for (let i = 0; i < intArray.length; i++) {
-                    //console.log(resBlob[i]);
                     string += String.fromCodePoint(intArray[i]);
                 }
 
-                //console.log(bops.to(resBlob, encoding="binary"))
-                //let item = await resBlob.text();
                 var url = await stowMultipartRelated(string);
                 if (onlyload == true) onlyLoadImage("wadouri:" + url);
                 else loadAndViewImage("wadouri:" + url);
             })
             .catch(function (err) {
-                //console.log(err);
             })
     }
     async function stowMultipartRelated(iData) {
-        //console.log(iData);
-
-        //req.body= req.body.toString('binary');
         let multipartMessage = iData;
-        //let boundary = req.headers["content-type"].split("boundary=")[1];
         let startBoundary = multipartMessage.split("\r\n")[0];
-        //let startBoundary = `--${boundary}`;
         let matches = multipartMessage.matchAll(new RegExp(startBoundary, "gi"));
         let fileEndIndex = [];
         let fileStartIndex = [];
@@ -164,13 +155,11 @@ function wadorsLoader(url, onlyload) {
         }
         let maxIndex = _.maxBy(matchesIndex, "index");
         fileStartIndex.push(maxIndex.index + maxIndex.length + 3);
-        //console.log(fileStartIndex);
         for (let i in fileEndIndex) {
             let fileData = multipartMessage.substring(fileStartIndex[i], fileEndIndex[i]);
-            //console.log(fileData);
             files.push(fileData);
         }
-        //console.log("Upload Files complete");
+        
         function str2ab(str) {
             var buf = new ArrayBuffer(str.length); // 2 bytes for each char
             var bufView = new Uint8Array(buf);
@@ -180,7 +169,7 @@ function wadorsLoader(url, onlyload) {
             return buf;
         }
         let buf = str2ab(files[0]);
-        //console.log(buf);
+        
         var a = document.createElement("a"),
             url = URL.createObjectURL(new Blob([buf], { type: "application/dicom" }));
         return url;
