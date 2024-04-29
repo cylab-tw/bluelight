@@ -129,7 +129,7 @@ onloadFunction.push2Last(function () {
     for (var elem of getClass("MyDicomDiv")) {
         elem.addEventListener("drop", (event) => {
             event.preventDefault();
-            if (!openLeftImgClick) return;
+            if (!openLeftImgClick || !dragged) return;
             viewportNumber = parseInt(event.currentTarget.viewportNum);
             PictureOnclick(dragged.QRLevel);
             dragged = null;

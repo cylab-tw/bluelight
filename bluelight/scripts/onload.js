@@ -330,6 +330,11 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
         "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
         "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
         "&contentType=" + "application/dicom";
+        /*
+        var url = `${ConfigLog.WADO.https}://${ConfigLog.WADO.hostname}:${ConfigLog.WADO.PORT}/${ConfigLog.WADO.service}?requestType=WADO&` +
+        `studyUID=${DicomResponse[i]["0020000D"].Value[0]}&seriesUID=${DicomResponse[i]["0020000E"].Value[0]}` +
+        `&objectUID=${DicomResponse[i]["00080018"].Value[0]}&contentType=application/dicom`;
+        */
     } else if (ConfigLog.WADO.WADOType == "RS") {
       var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service +
         "/studies/" + DicomResponse[i]["0020000D"].Value[0] +

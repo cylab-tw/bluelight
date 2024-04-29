@@ -129,7 +129,7 @@ class LeftLayout {
         ImgDiv.onclick = function () {
             PictureOnclick(this.QRLevel);
         };
-        
+
         ImgDiv.ondrag = function () {
             event.preventDefault();
             dragged = this;
@@ -443,10 +443,10 @@ function SetTable(row0, col0) {
     try {
         var WandH = getViewportFixSize(window.innerWidth, window.innerHeight, row, col);
         for (var i = 0; i < Viewport_Total; i++)
-            GetViewport(i).div.style = "position:relative;float: left;left:100px;overflow:hidden;border:" + bordersize + "px #D3D9FF groove;margin:0px";
+            GetViewport(i).div.style = `position:relative;float:left;left:100px;overflow:hidden;border:${bordersize}px #D3D9FF groove;margin:0px`;
         for (var r = 0; r < row; r++) {
             for (var c = 0; c < col; c++) {
-                GetViewport(r * col + c).div.style.width = "calc(" + parseInt(100 / col) + "% - " + (parseInt(100 / col) + (bordersize * 2)) + "px)";
+                GetViewport(r * col + c).div.style.width = `calc(${parseInt(100 / col)}% - ${(parseInt(100 / col) + (bordersize * 2))}px)`;
                 GetViewport(r * col + c).div.style.height = (WandH[1] - (bordersize * 2)) + "px";
             }
         }
@@ -454,7 +454,7 @@ function SetTable(row0, col0) {
     //重置各個Viewport的長寬大小(不顯示時)
     for (var i = row * col; i < Viewport_Total; i++) {
         try {
-            GetViewport(i).div.style = "position:relative;float: right;;width:0px;" + "height:" + 0 + "px;overflow:hidden;border:" + 0 + "px #D3D9FF groove;margin:0px";
+            GetViewport(i).div.style = "position:relative;float: right;width:0px;" + "height:" + 0 + "px;overflow:hidden;border:" + 0 + "px #D3D9FF groove;margin:0px";
         } catch (ex) { }
     }
 

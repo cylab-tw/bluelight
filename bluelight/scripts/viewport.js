@@ -436,13 +436,13 @@ function refleshCanvas(viewport) {
             const diff = (1 / (max - min)) * 255;
             const data = imgData.data;
             if (image.color == true) {
-                for (var i = data.length; i >= 0; i -= 4) {
+                for (var i = data.length - 4; i >= 0; i -= 4) {
                     data[i + 0] = pixelData[i] * diff;
                     data[i + 1] = pixelData[i + 1] * diff;
                     data[i + 2] = pixelData[i + 2] * diff;
                 }
             } else {
-                for (var i = data.length, j = data.length / 4; i >= 0; i -= 4, j--) {
+                for (var i = data.length - 4, j = data.length / 4 - 1; i >= 0; i -= 4, j--) {
                     data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * diff;
                 }
             }
@@ -476,13 +476,13 @@ function refleshCanvas(viewport) {
         const addition = (- low + intercept) / (high - low) * 255;
         const data = imgData.data;
         if (image.color == true) {
-            for (var i = data.length; i >= 0; i -= 4) {
+            for (var i = data.length - 4; i >= 0; i -= 4) {
                 data[i + 0] = pixelData[i] * multiplication + addition;
                 data[i + 1] = pixelData[i + 1] * multiplication + addition;
                 data[i + 2] = pixelData[i + 2] * multiplication + addition;
             }
         } else {
-            for (var i = data.length, j = data.length / 4; i >= 0; i -= 4, j--) {
+            for (var i = data.length - 4, j = data.length / 4 - 1; i >= 0; i -= 4, j--) {
                 data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
             }
         }

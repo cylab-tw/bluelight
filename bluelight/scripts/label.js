@@ -16,7 +16,7 @@ function displayWindowLevel(viewportNum = viewportNumber) {
   getByid("textWW").value = "originWindowWidth";
   getByid("textWW").value = "" + parseInt(GetViewport(viewportNum).windowWidth);
   getByid("textWC").value = "" + parseInt(GetViewport(viewportNum).windowCenter);
-  getClass("labelWC")[viewportNum].innerText = " WC: " + parseInt(GetViewport(viewportNum).windowCenter) + " WW: " + parseInt(GetViewport(viewportNum).windowWidth);
+  getClass("labelWC")[viewportNum].innerText = ` WC: ${parseInt(GetViewport(viewportNum).windowCenter)} WW: ${parseInt(GetViewport(viewportNum).windowWidth)}`;
 }
 
 function DisplaySeriesCount(viewportNum = viewportNumber) {

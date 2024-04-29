@@ -62,7 +62,7 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
 
 function displayAIM(viewportNum = viewportNumber) {
     if (openTable == false) return;
-    
+
     var break1 = false;
     dropTable(viewportNum);
     GetViewport(viewportNum).div.style.overflowY = "hidden";
@@ -151,11 +151,11 @@ function dropTable(num) {
     }
 }
 
-function createDicomTagsList2Viewport(viewport){
+function createDicomTagsList2Viewport(viewport) {
     function getTag(tag) {
         var group = tag.substring(1, 5);
         var element = tag.substring(5, 9);
-        var tagIndex = ("(" + group + "," + element + ")").toUpperCase();
+        var tagIndex = (`(${group},${element})`).toUpperCase();
         var attr = TAG_DICT[tagIndex];
         return attr;
     }
@@ -172,7 +172,7 @@ function createDicomTagsList2Viewport(viewport){
 
     for (el in viewport.content.image.data.elements) {
         try {
-            var tag = ("(" + el.substring(1, 5) + "," + el.substring(5, 9) + ")").toUpperCase();
+            var tag = (`(${el.substring(1, 5)},${el.substring(5, 9)})`).toUpperCase();
             var el1 = getTag(el);
             el1.tag = "" + el;
             var content = dicomParser.explicitElementToString(viewport.content.image.data, el1);
@@ -209,6 +209,6 @@ function createDicomTagsList2Viewport(viewport){
                     viewport[el1.name] = viewport.content.image[name];
                 }
             }
-        } catch (ex) {}
+        } catch (ex) { }
     }
 }
