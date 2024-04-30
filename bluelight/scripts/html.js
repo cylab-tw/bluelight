@@ -742,9 +742,6 @@ function onElementOver(OriginElem) {
     if (OriginElem.getAttribute("altzhtw")) label.innerHTML = OriginElem.getAttribute("altzhtw");
   }
 
-  label.style.color = "white";
-  label.style.position = "absolute";
-
   label.id = "tooltiptext_img";
   // 將 label 元素添加到按鈕的父元素中
   OriginElem.parentNode.appendChild(label);

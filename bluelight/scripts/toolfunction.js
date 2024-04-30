@@ -227,7 +227,7 @@ function rotatePoint(point, RotationAngle, RotationPoint) {
 function jump2UpOrEnd(number, choose) {
 
     var SopList = Patient.findSeries(GetViewport().series);
-    var min = 99999999, max = -9999999;
+    var max = Number.MIN_VALUE, min = Number.MAX_VALUE;
     for (var l = 0; l < SopList.SopAmount; l++) {
         var instance = parseInt(SopList.Sop[l].InstanceNumber);
         if (instance < min) min = instance;
@@ -288,10 +288,10 @@ function getDistance(x, y) {
 }
 
 function getRotationPoint(Mark, middle) {
-    var Max_X = -999999,
-        Max_Y = -999999,
-        Min_X = 999999,
-        Min_Y = 999999;
+    var Max_X = Number.MIN_VALUE,
+        Max_Y = Number.MIN_VALUE,
+        Min_X = Number.MAX_VALUE,
+        Min_Y = Number.MAX_VALUE;
     for (var o = 0; o < Mark.pointArray.length; o += 1) {
         if (parseInt(Mark.pointArray[o].x) >= Max_X) Max_X = parseInt(Mark.pointArray[o].x);
         if (parseInt(Mark.pointArray[o].x) <= Min_X) Min_X = parseInt(Mark.pointArray[o].x);

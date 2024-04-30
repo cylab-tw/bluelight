@@ -151,7 +151,6 @@ class BlueLightViewPort {
     initLeftRule(div, index) {
         var leftRule = document.createElement("CANVAS");
         leftRule.className = "leftRule";
-        leftRule.style = "z-index:30;position:absolute;left:15px;";
         leftRule.height = 500;
         leftRule.width = 10;
         this.leftRule = div.leftRule = leftRule;
@@ -161,7 +160,6 @@ class BlueLightViewPort {
     initDownRule(div, index) {
         var downRule = document.createElement("CANVAS");
         downRule.className = "downRule";
-        downRule.style = "z-index:30;position:absolute;bottom:15px;";
         downRule.height = 10;
         this.downRule = div.downRule = downRule;
         div.appendChild(downRule);
@@ -170,36 +168,31 @@ class BlueLightViewPort {
     initLabelWC(div, index) {
         var labelWC = document.createElement("LABEL");
         labelWC.className = "labelWC innerLabel";
-        labelWC.style = "position:absolute;left:115px;bottom:30px;color: white;z-index: 10;-webkit-user-select: none; ";
         this.labelWC = div.labelWC = labelWC;
         div.appendChild(labelWC);
     }
     initLabelLT(div, index) {
         var labelLT = document.createElement("LABEL");
         labelLT.className = "labelLT innerLabel";
-        labelLT.style = "position:absolute;left:115px;top:10px;color: white;z-index: 10;-webkit-user-select: none; ";
         this.labelLT = div.labelLT = labelLT;
         div.appendChild(labelLT);
     }
     initLabelRT(div, index) {
         var labelRT = document.createElement("LABEL");
         labelRT.className = "labelRT innerLabel";
-        labelRT.style = "position:absolute;right:20px;top:10px;color: white;z-index: 10;-webkit-user-select: none;text-align:right;";
         this.labelRT = div.labelRT = labelRT;
         div.appendChild(labelRT);
     }
     initLabelRB(div, index) {
         var labelRB = document.createElement("LABEL");
         labelRB.className = "labelRB innerLabel";
-        labelRB.style = "position:absolute;right:20px;bottom:20px;color: white;z-index: 10;-webkit-user-select: none;text-align:right;";
         this.labelRB = div.labelRB = labelRB;
         div.appendChild(labelRB);
     }
     initLabelXY(div, index) {
         var labelXY = document.createElement("LABEL");
         labelXY.className = "labelXY innerLabel";
-        labelXY.style = "position:absolute;left:115px;bottom:10px;color: white;z-index: 10;-webkit-user-select: none;";
-        labelXY.innerText = "X: " + 0 + " Y: " + 0;
+        labelXY.innerText = "X: 0 Y: 0";
         this.labelXY = div.labelXY = labelXY;
         div.appendChild(labelXY);
     }
@@ -423,7 +416,7 @@ function refleshCanvas(viewport) {
         viewport.windowCenter = viewport.windowWidth = null;
 
     if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
-        var max = -99999999999, min = 99999999999;
+        var max = Number.MIN_VALUE, min = Number.MIN_VALUE;
         if (image.MinPixel == undefined || image.MaxPixel == undefined || (image.MinPixel == 0 && image.MaxPixel == 0)) {
             for (var i = 0; i < pixelData.length; i++) {
                 if (pixelData[i] > max) max = pixelData[i];

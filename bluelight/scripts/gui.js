@@ -105,7 +105,6 @@ class LeftLayout {
         var Patient_div = document.createElement("DIV");
         Patient_div.className = "OutLeftImg";
         //Patient_div.id = "OutLeftImg" + patientID;
-        Patient_div.style = "border:" + bordersize + "px #FFA3FF groove;padding:1px 1px 1px 1px;";
         Patient_div.PatientId = patientID;
         if (!this.findPatienID(patientID)) pic.appendChild(Patient_div);
         else {
@@ -122,7 +121,6 @@ class LeftLayout {
 
         var ImgDiv = document.createElement("DIV");
         ImgDiv.className = "LeftImgDiv";
-        ImgDiv.style = "width:" + 65 + "px;height:" + 65 + "px;";
         ImgDiv.series = QRLevel.series;
         ImgDiv.draggable = "true";
         ImgDiv.QRLevel = QRLevel;
@@ -204,8 +202,8 @@ class LeftLayout {
             var label = document.createElement('LABEL');
             label.innerText = "" + showNameList[o];
             label.name = "" + hideNameList[o];
-            label.style = "text-shadow:0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff, 0px 0px 10px #fff;" +
-                "color:" + colorList[o] + ";";
+            label.className = "LeftShadowLabel";
+            label.style.color = colorList[o];
             var checkbox = document.createElement('input');
             checkbox.type = "checkbox";
 
@@ -266,7 +264,7 @@ function displayLeftCanvas(DicomCanvas, image, pixelData) {
     var ctx2 = DicomCanvas.getContext("2d");
     var imgData2 = ctx2.createImageData(image.width, image.height);
     if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
-        var max = -99999999999, min = 99999999999;
+        var max = Number.MIN_VALUE, min = Number.MAX_VALUE;
         if (image.MinPixel == undefined || image.MaxPixel == undefined) {
             for (var i in pixelData) {
                 if (pixelData[i] > max) max = pixelData[i];
@@ -335,38 +333,6 @@ function displayLeftCanvas(DicomCanvas, image, pixelData) {
     }
 }
 
-function displayImg2LeftCanvas(DicomCanvas, image, pixelData) {
-    DicomCanvas.width = 100;
-    DicomCanvas.height = 100;
-    DicomCanvas.style.width = 66 + "px";
-    DicomCanvas.style.height = 66 + "px";
-    var ctx = DicomCanvas.getContext("2d");
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, 100, 100);
-    ctx.fillStyle = "gray";
-    function roundRect(ctx, x, y, w, h, r = 10) {
-        if (w < 2 * r) r = w / 2;
-        if (h < 2 * r) r = h / 2;
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.arcTo(x + w, y, x + w, y + h, r);
-        ctx.arcTo(x + w, y + h, x, y + h, r);
-        ctx.arcTo(x, y + h, x, y, r);
-        ctx.arcTo(x, y, x + w, y, r);
-        ctx.closePath();
-        ctx.fill();
-    }
-    roundRect(ctx, 10, 10, 80, 80, 10);
-    ctx.beginPath();
-    ctx.fillStyle = "white";
-    ctx.font = "32px serif";
-    ctx.closePath();
-    ctx.fillText("PDF", 20, 59);
-    ctx.closePath();
-    ctx.fill();
-}
-
-
 //當視窗大小改變
 window.onresize = function () {
     //設定左側面板的style
@@ -390,35 +356,6 @@ window.onresize = function () {
 
 //執行icon圖示的摺疊效果
 function EnterRWD() {
-    //計算目前有幾個應被計算的icon在上方
-    var count = 1;
-    //計算上方icon的區塊有多少空間可以容納
-    var iconWidth = getClass("page-header")[0].offsetWidth; //window.innerWidth;
-    //檢查icon區塊的寬度是否足夠
-    var check = false;
-    for (let i = 0; i < getClass("page-header")[0].childNodes.length; i++) {
-        if (getClass("page-header")[0].childNodes[i].tagName == "IMG") count++;
-        if (getClass("page-header")[0].childNodes[i].alt == "輸出標記") continue;
-        if (getClass("page-header")[0].childNodes[i].alt == "3dDisplay") continue;
-        if (getClass("page-header")[0].childNodes[i].alt == "3dCave") continue;
-        if (getClass("page-header")[0].childNodes[i].tagName == "IMG") {
-            if (count >= parseInt(iconWidth / document.querySelector('.img').offsetWidth) - 2) {
-
-                if (openRWD == true) { //如果折疊功能開啟中，隱藏應被隱藏的icon
-                    getClass("page-header")[0].childNodes[i].style.display = "none";
-                } else {
-                    getClass("page-header")[0].childNodes[i].style.display = "";
-                }
-                //寬度足夠
-                check = true;
-            } else { //全部icon均顯示
-                getClass("page-header")[0].childNodes[i].style.display = "";
-            }
-        }
-    }
-    //如果寬度足夠而沒有觸發折疊，摺疊的icon應該不顯示
-    if (check == true) getByid("rwdImgTag").style.display = "";
-    else getByid("rwdImgTag").style.display = "none";
     //刷新Viewport窗格
     SetTable();
     //刷新ScrollBar的Style

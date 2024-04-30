@@ -323,8 +323,8 @@ function Graphic_pounch(currX, currY) {
                 var tempMark = PatientMark[n].pointArray;
                 if (tempMark.length >= 4) {
                     //Rect
-                    var Max_X = Max_Y = -999999;
-                    var Min_X = Min_Y = 999999;
+                    var Max_X = Max_Y = Number.MIN_VALUE;
+                    var Min_X = Min_Y = Number.MAX_VALUE;
                     var Max_X_list = [],
                         Max_Y_list = [],
                         Min_X_list = [],

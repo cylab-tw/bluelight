@@ -11,14 +11,8 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
     if (openDisplayMarkup == false) return;
     var Table = document.createElement("table");
     Table.id = "DicomTagsTable" + (viewportNum + 1);
-    Table.className = "table table-dark table-striped";
+    Table.className = "DicomTable";
     Table.setAttribute("border", 2);
-    Table.style = "border-collapse:collapse";
-    Table.style.color = "#ffffff";
-    Table.style.position = "absolute";
-    Table.style.backgroundColor = "black";
-    //Table.style.right = "0px";
-    Table.style['zIndex'] = "105";
 
     var row0 = Table.insertRow(0);
     row0.setAttribute("border", 2);
@@ -71,14 +65,9 @@ function displayAIM(viewportNum = viewportNumber) {
     if (openDisplayMarkup == false) return;
     var Table = document.createElement("table");
     Table.id = "AimTable" + (viewportNum + 1);
-    Table.className = "table table-dark table-striped";
+    Table.className = "DicomTable";
     Table.setAttribute("border", 2);
-    Table.style = "border-collapse:collapse";
-    Table.style.color = "#ffffff";
-    Table.style.position = "absolute";
-    Table.style.backgroundColor = "black";
-    //Table.style.right = "0px";
-    Table.style['zIndex'] = "20";
+   
     //SearchUid2Index
     var sop = GetViewport(viewportNum).sop;
     let index = SearchUid2Index(sop);

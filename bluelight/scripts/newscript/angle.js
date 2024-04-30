@@ -13,7 +13,7 @@ var Angle_previous_choose = null;
 function angle() {
     if (BL_mode == 'angle') {
         DeleteMouseEvent();
-        
+
         angle.angle_ = "stop";
         set_BL_model.onchange = function () {
             displayMark();
@@ -597,7 +597,7 @@ window.addEventListener('keydown', (KeyboardKeys) => {
     Angle_previous_choose = null;
 });
 
-function getAnglelValue(e, Label) {
+function getAnglelValue(e) {
     if (!angle.angle_) return;
     var getAngle = ({
         x: x1, y: y1
@@ -609,55 +609,15 @@ function getAnglelValue(e, Label) {
         const angle = Math.atan2(det, dot) / Math.PI * 180
         return (angle + 360) % 360
     }
-    var angle1 = getAngle({
+    var angleV = getAngle({
         x: Angle_Point1[0] - Angle_Point2[0],
         y: Angle_Point1[1] - Angle_Point2[1],
     }, {
         x: Angle_Point1[0] - Angle_Point0[0],
         y: Angle_Point1[1] - Angle_Point0[1],
     });
-    if (angle1 > 180) angle1 = 360 - angle1;
-    if (!Label) return parseInt(angle1) + "°";
-
-    x_out = -parseInt(magnifierCanvas.style.width) / 2; // 與游標座標之水平距離
-    y_out = -parseInt(magnifierCanvas.style.height) / 2; // 與游標座標之垂直距離
-    if (angle.angle_ >= 2) {
-        Label.style.display = '';
-        if (Angle_Point2[0] > Angle_Point0[0])
-            x_out = 20; // 與游標座標之水平距離
-        else x_out = -20;
-        if (Angle_Point2[1] > Angle_Point0[1])
-            y_out = 20; // 與游標座標之水平距離
-        else y_out = -20;
-    } else {
-        Label.style.display = 'none';
-    }
-    if (document.body.scrollTop && document.body.scrollTop != 0) {
-        dbst = document.body.scrollTop;
-        dbsl = document.body.scrollLeft;
-    } else {
-        dbst = document.getElementsByTagName("html")[0].scrollTop;
-        dbsl = document.getElementsByTagName("html")[0].scrollLeft;
-    }
-    dgs = Label.style;
-    y = e.clientY;
-    x = e.clientX;
-    if (!y || !x) {
-        y = e.touches[0].clientY;
-        x = e.touches[0].clientX;
-    }
-    dgs.top = y + dbst + y_out + "px";
-    dgs.left = x + dbsl + x_out + "px";
-
-    var angle1 = getAngle({
-        x: Angle_Point0[0] - Angle_Point2[0],
-        y: Angle_Point0[1] - Angle_Point2[1],
-    }, {
-        x: Angle_Point0[0] - Angle_Point1[0],
-        y: Angle_Point0[1] - Angle_Point1[1],
-    });
-    if (angle1 > 180) angle1 = 360 - angle1;
-    return parseInt(angle1) + "°";
+    if (angleV > 180) angleV = 360 - angleV;
+    return parseInt(angleV) + "°";
 }
 
 onloadFunction.push2Last(function () {

@@ -111,8 +111,7 @@ function wadorsLoader(url, onlyload) {
                 if (onlyload == true) onlyLoadImage("wadouri:" + url);
                 else loadAndViewImage("wadouri:" + url);
             })
-            .catch(function (err) {
-            })
+            .catch(function (err) { })
     }
     async function stowMultipartRelated(iData) {
         let multipartMessage = iData;
@@ -127,20 +126,20 @@ function wadorsLoader(url, onlyload) {
         let data = multipartMessage.split("\r\n");
         let filename = [];
         let files = [];
-        let contentDispositionList = [];
-        let contentTypeList = [];
+        //let contentDispositionList = [];
+        //let contentTypeList = [];
         for (let i in data) {
             let text = data[i];
             if (text.includes("Content-Disposition")) {
-                contentDispositionList.push(text);
+                //contentDispositionList.push(text);
                 let textSplitFileName = text.split("filename=")
                 filename.push(textSplitFileName[textSplitFileName.length - 1].replace(/"/gm, ""));
             } else if (text.includes("Content-Type")) {
-                contentTypeList.push(text);
+                //contentTypeList.push(text);
             }
         }
-        contentDispositionList = _.uniq(contentDispositionList);
-        contentTypeList = _.uniq(contentTypeList);
+        //contentDispositionList = _.uniq(contentDispositionList);
+        //contentTypeList = _.uniq(contentTypeList);
         let teststring = ["Content-Type", "Content-Length", "MIME-Version"]
         let matchesIndex = []
         for (let type of teststring) {
@@ -151,15 +150,28 @@ function wadorsLoader(url, onlyload) {
                     length: match['0'].length
                 })
             }
-            // //+4
         }
-        let maxIndex = _.maxBy(matchesIndex, "index");
+
+        function maxBy(array, n) {
+            let result;
+            if (!array) return result;
+            result = Number.MIN_VALUE;
+            for (const obj of array) {
+                if (obj && obj[n]) {
+                    var value = obj[n];
+                    if (!isNaN(value) && value > result) result = value;
+                }
+            }
+            return result;
+        }
+
+        let maxIndex = maxBy(matchesIndex, "index");
         fileStartIndex.push(maxIndex.index + maxIndex.length + 3);
         for (let i in fileEndIndex) {
             let fileData = multipartMessage.substring(fileStartIndex[i], fileEndIndex[i]);
             files.push(fileData);
         }
-        
+
         function str2ab(str) {
             var buf = new ArrayBuffer(str.length); // 2 bytes for each char
             var bufView = new Uint8Array(buf);
@@ -169,21 +181,10 @@ function wadorsLoader(url, onlyload) {
             return buf;
         }
         let buf = str2ab(files[0]);
-        
-        var a = document.createElement("a"),
-            url = URL.createObjectURL(new Blob([buf], { type: "application/dicom" }));
-        return url;
-        /*
-        a.href = url;
-        a.download = "test";
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function () {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }, 0);
 
-        return { files: files, filename: filename };*/
+        var url = URL.createObjectURL(new Blob([buf], { type: "application/dicom" }));
+        return url;
+
     }
     return getData();
 }
@@ -204,9 +205,6 @@ function displayPDF(pdf) {
     iFrame.className = "PDFView";
     iFrame.id = "PDFView_" + viewportNumber;
     iFrame.src = pdf;
-    iFrame.style.width = iFrame.style.height = "100%";
-    iFrame.style.left = "0px";
-    iFrame.style.position = "absolute";
     element.div.appendChild(iFrame);
     element.PDFView = iFrame;
 
@@ -489,7 +487,6 @@ function onlyLoadImage(imageId) {
 
 //imageId:影像編碼資料，currX,currY:放大鏡座標，viewportNum0傳入的Viewport是第幾個
 function loadAndViewImage(imageId, viewportNum = viewportNumber, framesNumber) {
-
     var dicomData = getPatientbyImageID[imageId];
     if (!dicomData) {
         try {
