@@ -53,7 +53,6 @@ function displayRuler(viewportNum = viewportNumber) {
 }
 
 function displayRuler2(viewportNum = viewportNumber) {
-
     try {
         var leftRule = getClass("leftRule");
         var offsetHeight = GetViewport(viewportNum).div.offsetHeight;

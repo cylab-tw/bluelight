@@ -21,6 +21,7 @@ function MeasureIrregular() {
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
+            if (!MouseDownCheck) return;
             var MeasureMark = new BlueLightMark();
             let angle2point = rotateCalculation(e, true);
             MeasureMark.setQRLevels(GetViewport().QRLevels);
@@ -46,7 +47,12 @@ function MeasureIrregular() {
                 for (var o = 0; o < MeasureIrregular_previous_choose.pointArray.length; o++) {
                     vector.push({ x: MeasureIrregular_previous_choose.pointArray[o].x, y: MeasureIrregular_previous_choose.pointArray[o].y });
                 }
-                MeasureIrregular_previous_choose.Text = parseInt(shoelaceFormula(vector) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
+
+                if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
+                    MeasureIrregular_previous_choose.Text = parseInt(shoelaceFormula(vector) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
+                } else {
+                    MeasureIrregular_previous_choose.Text = parseInt(shoelaceFormula(vector)) + "px²";
+                }
 
                 refreshMark(MeasureIrregular_previous_choose);
                 displayAllMark();

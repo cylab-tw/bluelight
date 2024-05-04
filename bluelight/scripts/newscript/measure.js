@@ -21,9 +21,10 @@ function measure() {
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
-            measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
             Measure_previous_choose = null;
-            if (!Measure_now_choose) {
+            if (!MouseDownCheck) return;
+            measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+            if (!Measure_now_choose && MouseDownCheck) {
                 var MeasureMark = new BlueLightMark();
 
                 MeasureMark.setQRLevels(GetViewport().QRLevels);
@@ -200,19 +201,35 @@ function measure_pounch(currX, currY) {
 }
 
 function getMeasurelValueBy2Point(pointArray) {
-    var value = parseInt(Math.sqrt(
-        Math.pow(pointArray[0].x / GetViewport().transform.PixelSpacingX - pointArray[1].x / GetViewport().transform.PixelSpacingX, 2) +
-        Math.pow(pointArray[0].y / GetViewport().transform.PixelSpacingY - pointArray[1].y / GetViewport().transform.PixelSpacingY, 2), 2)) +
-        "mm";
-    return value;
+    if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
+        var value = parseInt(Math.sqrt(
+            Math.pow(pointArray[0].x / GetViewport().transform.PixelSpacingX - pointArray[1].x / GetViewport().transform.PixelSpacingX, 2) +
+            Math.pow(pointArray[0].y / GetViewport().transform.PixelSpacingY - pointArray[1].y / GetViewport().transform.PixelSpacingY, 2), 2)) +
+            "mm";
+        return value;
+    } else {
+        var value = parseInt(Math.sqrt(
+            Math.pow(pointArray[0].x - pointArray[1].x, 2) +
+            Math.pow(pointArray[0].y - pointArray[1].y, 2), 2)) +
+            "px";
+        return value;
+    }
 }
 
 function getMeasurelValue(e) {
-    var value = parseInt(Math.sqrt(
-        Math.pow(Measure_Point2[0] / GetViewport().transform.PixelSpacingX - Measure_Point1[0] / GetViewport().transform.PixelSpacingX, 2) +
-        Math.pow(Measure_Point2[1] / GetViewport().transform.PixelSpacingY - Measure_Point1[1] / GetViewport().transform.PixelSpacingY, 2), 2)) +
-        "mm";
-    return value;
+    if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
+        var value = parseInt(Math.sqrt(
+            Math.pow(Measure_Point2[0] / GetViewport().transform.PixelSpacingX - Measure_Point1[0] / GetViewport().transform.PixelSpacingX, 2) +
+            Math.pow(Measure_Point2[1] / GetViewport().transform.PixelSpacingY - Measure_Point1[1] / GetViewport().transform.PixelSpacingY, 2), 2)) +
+            "mm";
+        return value;
+    } else {
+        var value = parseInt(Math.sqrt(
+            Math.pow(Measure_Point2[0] - Measure_Point1[0], 2) +
+            Math.pow(Measure_Point2[1] - Measure_Point1[1], 2), 2)) +
+            "px";
+        return value;
+    }
 }
 
 window.addEventListener('keydown', (KeyboardKeys) => {

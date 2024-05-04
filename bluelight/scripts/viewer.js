@@ -15,7 +15,7 @@ VIEWPORT.initTransform = function (viewport, image) {
         viewport.transform.PixelSpacingX = 1.0 / parseFloat(viewport.tags.PixelSpacing.split("\\")[0]);
         viewport.transform.PixelSpacingY = 1.0 / parseFloat(viewport.tags.PixelSpacing.split("\\")[1]);
     } else {
-        viewport.transform.PixelSpacingX = viewport.transform.PixelSpacingY = 1.0;
+        //viewport.transform.PixelSpacingX = viewport.transform.PixelSpacingY = 1.0;
     }
 
     if (viewport.tags.ImageOrientationPatient) {
@@ -214,7 +214,7 @@ function displayPDF(pdf) {
 
 function parseDicomWithoutImage(dataSet, imageId) {
     //目前僅限於pdf的情況
-    if (dataSet.string(Tag.MediaStorageSOPClassUID) == '1.2.840.10008.5.1.4.1.1.104.1') {
+    if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EncapsulatedPDFStorage) {
         var fileTag = dataSet.elements.x00420011;
         var pdfByteArray = dataSet.byteArray.slice(fileTag.dataOffset, fileTag.dataOffset + fileTag.length);
         var pdfObj = new Blob([pdfByteArray], { type: 'application/pdf' });
@@ -278,8 +278,8 @@ function loadDicomMultiFrame(image, imageId, viewportNum0) {
             loadUID(DICOM_obj);
             GetViewport(viewportNum0).framesNumber = 0;
 
-            if (image.data.string(Tag.SOPClassUID) == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(image, image.imageId);
-            else if (image.data.string(Tag.MediaStorageSOPClassUID) == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(image.data, image.imageId);
+            if (image.data.string(Tag.SOPClassUID) == SOPClassUID.SegmentationStorage) loadDicomSeg(image, image.imageId);
+            else if (image.data.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EncapsulatedPDFStorage) parseDicomWithoutImage(image.data, image.imageId);
             else parseDicom(image, DICOM_obj.frames[0], viewportNum0);
             clearInterval(checkFrameLoadedInterval);
         }
@@ -508,8 +508,8 @@ function loadAndViewImage(imageId, viewportNum = viewportNumber, framesNumber) {
                         patientId: image.data.string(Tag.PatientID)
                     };
                     loadUID(DICOM_obj);
-                    if (image.data.string(Tag.SOPClassUID) == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(image, DICOM_obj.imageId);
-                    else if (image.data.string(Tag.MediaStorageSOPClassUID) == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(image.data, DICOM_obj.imageId);
+                    if (image.data.string(Tag.SOPClassUID) == SOPClassUID.SegmentationStorage) loadDicomSeg(image, DICOM_obj.imageId);
+                    else if (image.data.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EncapsulatedPDFStorage) parseDicomWithoutImage(image.data, DICOM_obj.imageId);
                     else parseDicom(image, DICOM_obj.pixelData, viewportNum);
                 }
             },
@@ -519,13 +519,13 @@ function loadAndViewImage(imageId, viewportNum = viewportNumber, framesNumber) {
     else {
         if (framesNumber != undefined) {
             GetViewport(viewportNum).framesNumber = framesNumber;
-            if (dicomData.image.data.string(Tag.SOPClassUID) == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(dicomData.image, dicomData.image.imageId);
-            else if (dicomData.image.data.string(Tag.MediaStorageSOPClassUID) == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(dicomData.image.data, dicomData.image.imageId);
+            if (dicomData.image.data.string(Tag.SOPClassUID) == SOPClassUID.SegmentationStorage) loadDicomSeg(dicomData.image, dicomData.image.imageId);
+            else if (dicomData.image.data.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EncapsulatedPDFStorage) parseDicomWithoutImage(dicomData.image.data, dicomData.image.imageId);
             else parseDicom(dicomData.image, dicomData.frames[framesNumber], viewportNum);
         }
         else {
-            if (dicomData.image.data.string(Tag.SOPClassUID) == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(dicomData.image, dicomData.image.imageId);
-            else if (dicomData.image.data.string(Tag.MediaStorageSOPClassUID) == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(dicomData.image.data, dicomData.image.imageId);
+            if (dicomData.image.data.string(Tag.SOPClassUID) == SOPClassUID.SegmentationStorage) loadDicomSeg(dicomData.image, dicomData.image.imageId);
+            else if (dicomData.image.data.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EncapsulatedPDFStorage) parseDicomWithoutImage(dicomData.image.data, dicomData.image.imageId);
             else parseDicom(dicomData.image, dicomData.pixelData, viewportNum);
         }
     }

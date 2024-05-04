@@ -32,6 +32,13 @@ onloadFunction.push2First(
     }
 );
 
+let SOPClassUID = {};
+onloadFunction.push2First(
+    function () {
+        SOPClassUID.SegmentationStorage = "1.2.840.10008.5.1.4.1.1.66.4";
+        SOPClassUID.EncapsulatedPDFStorage = "1.2.840.10008.5.1.4.1.1.104.1";
+    }
+);
 
 /*class BlueLightPatientMark {
     constructor() { }

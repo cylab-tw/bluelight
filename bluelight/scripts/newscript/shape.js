@@ -19,6 +19,7 @@ function MeasureRect() {
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
+            if (!MouseDownCheck) return;
             MeasureRect_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
             MeasureShape_previous_choose = null;
             if (MeasureRect_now_choose) return;
@@ -44,21 +45,35 @@ function MeasureRect() {
             if (MouseDownCheck && MeasureRect_now_choose) {
                 MeasureRect_now_choose.pointArray[MeasureRect_now_choose.order].x = angle2point[0];
                 MeasureRect_now_choose.pointArray[MeasureRect_now_choose.order].y = angle2point[1];
-                MeasureRect_now_choose.dcm.Text = parseInt(
-                    (Math.abs(MeasureRect_now_choose.pointArray[0].x - MeasureRect_now_choose.pointArray[1].x)
-                        * Math.abs(MeasureRect_now_choose.pointArray[0].y - MeasureRect_now_choose.pointArray[1].y)
-                    ) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
+                if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
+                    MeasureRect_now_choose.dcm.Text = parseInt(
+                        (Math.abs(MeasureRect_now_choose.pointArray[0].x - MeasureRect_now_choose.pointArray[1].x)
+                            * Math.abs(MeasureRect_now_choose.pointArray[0].y - MeasureRect_now_choose.pointArray[1].y)
+                        ) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
+                } else {
+                    MeasureRect_now_choose.dcm.Text = parseInt(
+                        (Math.abs(MeasureRect_now_choose.pointArray[0].x - MeasureRect_now_choose.pointArray[1].x)
+                            * Math.abs(MeasureRect_now_choose.pointArray[0].y - MeasureRect_now_choose.pointArray[1].y)
+                        )) + "px²";
+                }
+
                 refreshMark(MeasureRect_now_choose.dcm);
                 displayAllMark();
             }
             else if (MouseDownCheck && MeasureShape_previous_choose) {
                 MeasureShape_previous_choose.pointArray[1].x = angle2point[0];
                 MeasureShape_previous_choose.pointArray[1].y = angle2point[1];
-                MeasureShape_previous_choose.Text = parseInt(
-                    (Math.abs(MeasureShape_previous_choose.pointArray[0].x - MeasureShape_previous_choose.pointArray[1].x)
-                        * Math.abs(MeasureShape_previous_choose.pointArray[0].y - MeasureShape_previous_choose.pointArray[1].y)
-                    ) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
-
+                if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
+                    MeasureShape_previous_choose.Text = parseInt(
+                        (Math.abs(MeasureShape_previous_choose.pointArray[0].x - MeasureShape_previous_choose.pointArray[1].x)
+                            * Math.abs(MeasureShape_previous_choose.pointArray[0].y - MeasureShape_previous_choose.pointArray[1].y)
+                        ) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
+                } else {
+                    MeasureShape_previous_choose.Text = parseInt(
+                        (Math.abs(MeasureShape_previous_choose.pointArray[0].x - MeasureShape_previous_choose.pointArray[1].x)
+                            * Math.abs(MeasureShape_previous_choose.pointArray[0].y - MeasureShape_previous_choose.pointArray[1].y)
+                        )) + "px²";
+                }
                 refreshMark(MeasureShape_previous_choose);
                 displayAllMark();
             }
@@ -89,6 +104,7 @@ function MeasureCircle() {
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
+            if (!MouseDownCheck) return;
             MeasureCircle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
             MeasureShape_previous_choose = null;
             if (MeasureCircle_now_choose) return;
@@ -131,10 +147,13 @@ function MeasureCircle() {
                 var x2 = MeasureCircle_now_choose.pointArray[0 + 1].x * 1;
                 var y2 = MeasureCircle_now_choose.pointArray[0 + 1].y * 1;
                 var temp_distance = getDistance(Math.abs(x1 - x2), Math.abs(y1 - y2));
-
-                MeasureCircle_now_choose.dcm.Text = parseInt(
-                    (temp_distance * temp_distance * Math.PI) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
-
+                if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
+                    MeasureCircle_now_choose.dcm.Text = parseInt(
+                        (temp_distance * temp_distance * Math.PI) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
+                } else {
+                    MeasureCircle_now_choose.dcm.Text = parseInt(
+                        (temp_distance * temp_distance * Math.PI)) + "px²";
+                }
                 refreshMark(MeasureCircle_now_choose.dcm);
                 displayAllMark();
             }
@@ -150,8 +169,14 @@ function MeasureCircle() {
                 var y2 = MeasureShape_previous_choose.pointArray[0 + 1].y * 1;
                 var temp_distance = getDistance(Math.abs(x1 - x2), Math.abs(y1 - y2));
 
-                MeasureShape_previous_choose.Text = parseInt(
-                    (temp_distance * temp_distance * Math.PI) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
+                if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
+                    MeasureShape_previous_choose.Text = parseInt(
+                        (temp_distance * temp_distance * Math.PI) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
+
+                } else {
+                    MeasureShape_previous_choose.Text = parseInt(
+                        (temp_distance * temp_distance * Math.PI)) + "px²";
+                }
 
                 refreshMark(MeasureShape_previous_choose);
                 displayAllMark();

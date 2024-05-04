@@ -23,10 +23,11 @@ function angle() {
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
+            if (angle.angle_ == "rotate") return; //angle.angle_ = "stop";
+            if (!MouseDownCheck) return;
             angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
             Angle_previous_choose = null;
             if (Angle_now_choose) return;
-            if (angle.angle_ == "rotate") angle.angle_ = "stop";
             if (angle.angle_ == "stop" && !Angle_previous_choose) {
                 Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
                 var AngleMark = new BlueLightMark();
@@ -228,6 +229,7 @@ function angle() {
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
+            if (!MouseDownCheck) return;
             if (angle.angle_ == "waitline2" && Angle_previous_choose) {
                 Angle_Point2 = Angle_Point3 = rotateCalculation(e, true);
                 var AngleMark = Angle_previous_choose;
