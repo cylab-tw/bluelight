@@ -61,9 +61,9 @@ VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
         label_LT.innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
     for (var i = 0; i < DicomTags.RT.name.length; i++) {
         //避免PatientName出現中文亂碼
-        if ("x" + DicomTags.RT.tag[i] == 'x00100010') {
+        if ("x" + DicomTags.RT.tag[i] == Tag.PatientName) {
             var dataSet = image.data;
-            var data = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements['x00100010'].dataOffset, dataSet.elements['x00100010'].length);
+            var data = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length);
             var textDecoder = new TextDecoder('utf-8');
             var decodedString = textDecoder.decode(data);
             //element.PatientName = decodedString;
@@ -214,22 +214,22 @@ function displayPDF(pdf) {
 
 function parseDicomWithoutImage(dataSet, imageId) {
     //目前僅限於pdf的情況
-    if (dataSet.string("x00020002") == '1.2.840.10008.5.1.4.1.1.104.1') {
+    if (dataSet.string(Tag.MediaStorageSOPClassUID) == '1.2.840.10008.5.1.4.1.1.104.1') {
         var fileTag = dataSet.elements.x00420011;
         var pdfByteArray = dataSet.byteArray.slice(fileTag.dataOffset, fileTag.dataOffset + fileTag.length);
         var pdfObj = new Blob([pdfByteArray], { type: 'application/pdf' });
         var pdf = URL.createObjectURL(pdfObj);
 
         var DICOM_obj = {
-            study: dataSet.string('x0020000d'),
-            series: dataSet.string('x0020000e'),
-            sop: dataSet.string('x00080018'),
-            instance: dataSet.string('x00200013'),
+            study: dataSet.string(Tag.StudyInstanceUID),
+            series: dataSet.string(Tag.SeriesInstanceUID),
+            sop: dataSet.string(Tag.SOPInstanceUID),
+            instance: dataSet.string(Tag.InstanceNumber),
             imageId: imageId,
             image: null,
             pdf: pdf,
             pixelData: null,
-            patientId: dataSet.string('x00100020')
+            patientId: dataSet.string(Tag.PatientID)
         };
         loadUID(DICOM_obj);
 
@@ -243,7 +243,7 @@ function loadDicomMultiFrame(image, imageId, viewportNum0) {
     var dataSet = image.data;
     var Size = image.width * image.height;
     var pixelData;
-    var BitsAllocated = image.data.int16('x00280100');
+    var BitsAllocated = image.data.int16(Tag.BitsAllocated);
 
     if (BitsAllocated == 16) pixelData = new Int16Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 2);
     else if (BitsAllocated == 32) pixelData = new Int32Array(dataSet.byteArray.buffer, dataSet.elements.x7fe00010.dataOffset, dataSet.elements.x7fe00010.length / 4);
@@ -252,7 +252,7 @@ function loadDicomMultiFrame(image, imageId, viewportNum0) {
     if (!pixelData) return;
 
     let frames = [];
-    let totalFrames = image.data.intString('x00280008');
+    let totalFrames = image.data.intString(Tag.NumberOfFrames);
 
     for (let i = 0; i < totalFrames; i++) {
         let imageFrameId = `${imageId}?frame=${i}`;
@@ -264,22 +264,22 @@ function loadDicomMultiFrame(image, imageId, viewportNum0) {
     let checkFrameLoadedInterval = setInterval(() => {
         if (frames.length === totalFrames) {
             let DICOM_obj = {
-                study: image.data.string('x0020000d'),
-                series: image.data.string('x0020000e'),
-                sop: image.data.string('x00080018'),
-                instance: image.data.string('x00200013'),
+                study: image.data.string(Tag.StudyInstanceUID),
+                series: image.data.string(Tag.SeriesInstanceUID),
+                sop: image.data.string(Tag.SOPInstanceUID),
+                instance: image.data.string(Tag.InstanceNumber),
                 imageId: imageId,
                 image: image,
                 pixelData: frames[0],//pixelData.slice(0, Size),
                 frames: frames,
-                patientId: image.data.string('x00100020')
+                patientId: image.data.string(Tag.PatientID)
             };
 
             loadUID(DICOM_obj);
             GetViewport(viewportNum0).framesNumber = 0;
 
-            if (image.data.string('x00080016') == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(image, image.imageId);
-            else if (image.data.string("x00020002") == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(image.data, image.imageId);
+            if (image.data.string(Tag.SOPClassUID) == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(image, image.imageId);
+            else if (image.data.string(Tag.MediaStorageSOPClassUID) == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(image.data, image.imageId);
             else parseDicom(image, DICOM_obj.frames[0], viewportNum0);
             clearInterval(checkFrameLoadedInterval);
         }
@@ -296,7 +296,7 @@ function setSopToViewport(Sop, viewportNum = viewportNumber, framesNumber) {
     var MainCanvas = element.canvas, MarkCanvas = element.MarkCanvas;
     element.content.image = image;
 
-    if (image.data.intString("x00280008") > 1) element.QRLevel = "frames";
+    if (image.data.intString(Tag.NumberOfFrames) > 1) element.QRLevel = "frames";
     else element.QRLevel = "series";
 
     createDicomTagsList2Viewport(element);
@@ -314,7 +314,7 @@ function setSopToViewport(Sop, viewportNum = viewportNumber, framesNumber) {
     VIEWPORT.loadViewport(element, image, viewportNum);
 
     //改成無論是否曾出現在左側面板，都嘗試加到左側面板
-    leftLayout.setImg2Left(new QRLv(image.data), image.data.string('x00100020'));
+    leftLayout.setImg2Left(new QRLv(image.data), image.data.string(Tag.PatientID));
     leftLayout.appendCanvasBySeries(element.tags.SeriesInstanceUID, image, pixelData);
     leftLayout.refleshMarkWithSeries(element.tags.SeriesInstanceUID);
 
@@ -373,7 +373,7 @@ function parseDicom(image, pixelData, viewportNum = viewportNumber) {
     var MarkCanvas = GetViewportMark(viewportNum);
     //原始影像，通常被用於放大鏡的參考
 
-    if (image.data.intString("x00280008") > 1) element.QRLevel = "frames";
+    if (image.data.intString(Tag.NumberOfFrames) > 1) element.QRLevel = "frames";
     else element.QRLevel = "series";
 
     //var PreviousSeriesInstanceUID = element.SeriesInstanceUID == undefined ? "undefined" : element.SeriesInstanceUID;
@@ -391,7 +391,7 @@ function parseDicom(image, pixelData, viewportNum = viewportNumber) {
     VIEWPORT.loadViewport(element, image, viewportNum);
 
     //改成無論是否曾出現在左側面板，都嘗試加到左側面板
-    leftLayout.setImg2Left(new QRLv(image.data), image.data.string('x00100020'));
+    leftLayout.setImg2Left(new QRLv(image.data), image.data.string(Tag.PatientID));
     leftLayout.appendCanvasBySeries(element.tags.SeriesInstanceUID, image, pixelData);
     leftLayout.refleshMarkWithSeries(element.tags.SeriesInstanceUID);
 
@@ -465,18 +465,18 @@ function onlyLoadImage(imageId) {
             cornerstone.loadImage(imageId, {
                 usePDFJS: true
             }).then(function (image) {
-                if (image.data.intString("x00280008") > 1) {//muti frame
+                if (image.data.intString(Tag.NumberOfFrames) > 1) {//muti frame
                     loadDicomMultiFrame(image, image.imageId, viewportNum0);
                 } else {
                     var DICOM_obj = {
-                        study: image.data.string('x0020000d'),
-                        series: image.data.string('x0020000e'),
-                        sop: image.data.string('x00080018'),
-                        instance: image.data.string('x00200013'),
+                        study: image.data.string(Tag.StudyInstanceUID),
+                        series: image.data.string(Tag.SeriesInstanceUID),
+                        sop: image.data.string(Tag.SOPInstanceUID),
+                        instance: image.data.string(Tag.InstanceNumber),
                         imageId: imageId,
                         image: image,
                         pixelData: image.getPixelData(),
-                        patientId: image.data.string('x00100020')
+                        patientId: image.data.string(Tag.PatientID)
                     };
                     loadUID(DICOM_obj);
                 }
@@ -494,22 +494,22 @@ function loadAndViewImage(imageId, viewportNum = viewportNumber, framesNumber) {
                 usePDFJS: true
             }).then(function (image) {
                 resetViewport();
-                if (image.data.intString("x00280008") > 1) {//muti frame
+                if (image.data.intString(Tag.NumberOfFrames) > 1) {//muti frame
                     loadDicomMultiFrame(image, image.imageId, viewportNum);
                 } else {
                     var DICOM_obj = {
-                        study: image.data.string('x0020000d'),
-                        series: image.data.string('x0020000e'),
-                        sop: image.data.string('x00080018'),
-                        instance: image.data.string('x00200013'),
+                        study: image.data.string(Tag.StudyInstanceUID),
+                        series: image.data.string(Tag.SeriesInstanceUID),
+                        sop: image.data.string(Tag.SOPInstanceUID),
+                        instance: image.data.string(Tag.InstanceNumber),
                         imageId: imageId,
                         image: image,
                         pixelData: image.getPixelData(),
-                        patientId: image.data.string('x00100020')
+                        patientId: image.data.string(Tag.PatientID)
                     };
                     loadUID(DICOM_obj);
-                    if (image.data.string('x00080016') == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(image, DICOM_obj.imageId);
-                    else if (image.data.string("x00020002") == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(image.data, DICOM_obj.imageId);
+                    if (image.data.string(Tag.SOPClassUID) == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(image, DICOM_obj.imageId);
+                    else if (image.data.string(Tag.MediaStorageSOPClassUID) == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(image.data, DICOM_obj.imageId);
                     else parseDicom(image, DICOM_obj.pixelData, viewportNum);
                 }
             },
@@ -519,13 +519,13 @@ function loadAndViewImage(imageId, viewportNum = viewportNumber, framesNumber) {
     else {
         if (framesNumber != undefined) {
             GetViewport(viewportNum).framesNumber = framesNumber;
-            if (dicomData.image.data.string('x00080016') == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(dicomData.image, dicomData.image.imageId);
-            else if (dicomData.image.data.string("x00020002") == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(dicomData.image.data, dicomData.image.imageId);
+            if (dicomData.image.data.string(Tag.SOPClassUID) == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(dicomData.image, dicomData.image.imageId);
+            else if (dicomData.image.data.string(Tag.MediaStorageSOPClassUID) == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(dicomData.image.data, dicomData.image.imageId);
             else parseDicom(dicomData.image, dicomData.frames[framesNumber], viewportNum);
         }
         else {
-            if (dicomData.image.data.string('x00080016') == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(dicomData.image, dicomData.image.imageId);
-            else if (dicomData.image.data.string("x00020002") == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(dicomData.image.data, dicomData.image.imageId);
+            if (dicomData.image.data.string(Tag.SOPClassUID) == '1.2.840.10008.5.1.4.1.1.66.4') loadDicomSeg(dicomData.image, dicomData.image.imageId);
+            else if (dicomData.image.data.string(Tag.MediaStorageSOPClassUID) == '1.2.840.10008.5.1.4.1.1.104.1') parseDicomWithoutImage(dicomData.image.data, dicomData.image.imageId);
             else parseDicom(dicomData.image, dicomData.pixelData, viewportNum);
         }
     }

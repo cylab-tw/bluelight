@@ -6,9 +6,9 @@ var getPatientbyImageID = {};
 class QRLv {
     constructor(data) {
         if (data.constructor.name == 'DataSet') {
-            this.study = data.string('x0020000d');
-            this.series = data.string('x0020000e');
-            this.sop = data.string('x00080018');
+            this.study = data.string(Tag.StudyInstanceUID);
+            this.series = data.string(Tag.SeriesInstanceUID);
+            this.sop = data.string(Tag.SOPInstanceUID);
         }
     }
 }
@@ -21,6 +21,17 @@ onloadFunction.push2First(
         //PatientMark = new BlueLightPatientMark();
     }
 );
+
+let Tag = {};
+onloadFunction.push2First(
+    function () {
+        var tags = Object.keys(TAG_DICT);
+        for (var tag of tags) {
+            Tag[TAG_DICT[tag].name] = ('x' + tag.replace('(', '').replace(',', '').replace(')', '')).toLowerCase();
+        }
+    }
+);
+
 
 /*class BlueLightPatientMark {
     constructor() { }

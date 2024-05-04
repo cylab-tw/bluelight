@@ -1,15 +1,36 @@
-.o3DDiv{
-    position: absolute;
-    transform-style:preserve-3d;
+.o3DDiv {
+  position: absolute;
+  transform-style: preserve-3d;
 
-    -webkit-transform: translate3d(0,0,0);
-    transform: translate3d(0,0,0);
-  }
-  .canvas_3d{
-    position: absolute;
-    top: 50%;
-    left:50%;
-    transform-style:preserve-3d;
-    -webkit-transform: translate3d(0,0,0);
-    transform: translate3d(0,0,0);
-  }
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  image-rendering: pixelated;
+}
+
+.canvas_3d {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-style: preserve-3d;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  image-rendering: pixelated;
+}
+
+#VR2_Container {
+  position: absolute;
+  transform-style: preserve-3d;
+
+  /*top: 50%;
+  left: 50%;*/
+  -webkit-transform: translate3d(0, 0, 0);
+
+  display: flex;
+  justify-content: center;
+}
+
+.VrCanvas {
+  /*top: 50%;
+  left: 50%;*/
+  image-rendering: pixelated;
+}

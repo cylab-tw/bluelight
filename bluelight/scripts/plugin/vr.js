@@ -577,12 +577,12 @@ function initVR() {
                 //NewDiv.addEventListener('cornerstoneimagerendered', onImageRendered);
                 NewDiv.id = "3DDiv" + l2;
                 NewDiv.className = "o3DDiv";
-                NewDiv.sop = image.data.string('x00080018');
+                NewDiv.sop = image.data.string(Tag.SOPInstanceUID);
                 NewDiv.width = image.width;
                 NewDiv.height = image.height;
                 NewDiv.style.width = image.width + "px";
                 NewDiv.style.height = image.height + "px";
-                NewDiv.thickness = parseFloat(image.data.string('x00200032').split("\\")[2]) * GetViewport().transform.PixelSpacingX;
+                NewDiv.thickness = parseFloat(image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * GetViewport().transform.PixelSpacingX;
                 if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
                 if (NewDiv.thickness < big) big = NewDiv.thickness;
 

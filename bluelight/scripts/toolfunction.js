@@ -36,6 +36,14 @@ function securePassword(min, max, step) {
     return number;
 }
 
+function soryByKey(arr, key) {
+    return arr.sort((a, b) => a[key] - b[key]);
+}
+
+function soryByTwoKey(arr, key1, key2) {
+    return arr.sort((a, b) => a[key1][key2] - b[key1][key2]);
+}
+
 function random(min, max, step) {
     if (!step) step = 1;
     var len = ((max - min) / step) + 1;

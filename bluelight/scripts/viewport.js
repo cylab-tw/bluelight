@@ -412,7 +412,7 @@ function refleshCanvas(viewport) {
     //預先填充不透明度為255
     new Uint32Array(imgData.data.buffer).fill(0xFF000000);
 
-    if (viewport.series && viewport.series != image.data.string("x0020000e"))
+    if (viewport.series && viewport.series != image.data.string(Tag.SeriesInstanceUID))
         viewport.windowCenter = viewport.windowWidth = null;
 
     if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
