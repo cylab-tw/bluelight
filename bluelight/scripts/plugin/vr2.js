@@ -237,6 +237,7 @@ class VRCube {
 
     getElemZByPosZ(num) {
         var distance = Number.MAX_VALUE;
+        var BeforeElem = null;
         var elem = null;
         for (var obj of this.ElemZs) {
             if (Math.abs(obj.position.z - num) < distance) {
@@ -244,8 +245,41 @@ class VRCube {
                 elem = obj;
             }
         }
-        return elem;
+        BeforeElem = elem;
+        var BeforeDistance = distance;
+        var distance = Number.MAX_VALUE;
+        var AfterElem = null;
+        elem = null;
+        if (obj.position.z - num > 0) {
+            for (var obj of this.ElemZs) {
+                if (Math.abs(obj.position.z - num) < distance && obj.position.z - num < 0) {
+                    distance = Math.abs(obj.position.z - num);
+                    elem = obj;
+                }
+            }
+        } else if (obj.position.z - num < 0) {
+            for (var obj of this.ElemZs) {
+                if (Math.abs(obj.position.z - num) < distance && obj.position.z - num > 0) {
+                    distance = Math.abs(obj.position.z - num);
+                    elem = obj;
+                }
+            }
+        } else {
+            distance = BeforeDistance;
+        }
+        AfterElem = elem;
+        if (AfterElem == null) AfterElem = elem;
+        var AfterDistance = distance;
+
+        BeforeDistance = Math.abs(BeforeDistance);
+        AfterDistance = Math.abs(AfterDistance);
+        var Distance = BeforeDistance + AfterDistance;
+        return {
+            BeforeElem: BeforeElem, AfterElem: AfterElem,
+            BeforeDistance: BeforeDistance / Distance, AfterDistance: AfterDistance / Distance
+        };
     }
+
 
     buildX() {
         for (var i = 0; i < this.slice; i++) {
@@ -269,12 +303,15 @@ class VRCube {
 
                 for (var d = 0; d < deep; d++) {
                     //var originData = ctx.getImageData(d, 0, 1, NewCanvas.height);
-                    var elemZ = this.getElemZByPosZ((deep - d) * this.pixelSpacing);
-                    var TargetData = elemZ.getContext('2d').getImageData(parseInt(pos_x), 0, 1, elemZ.height)
-                    /*for (var f = 0; f < originData.data.length; f++) {
-                        originData.data[f] = TargetData.data[f];
-                    }*/
-                    ctx.putImageData(TargetData, d, 0);
+                    var TwicheElemZ = this.getElemZByPosZ((deep - d) * this.pixelSpacing);
+                    //var TargetData = elemZ.getContext('2d').getImageData(parseInt(pos_x), 0, 1, elemZ.height)
+                    //for (var f = 0; f < originData.data.length; f++) originData.data[f] = TargetData.data[f];
+                    ctx.globalAlpha = TwicheElemZ.AfterDistance;
+                    ctx.drawImage(TwicheElemZ.BeforeElem, parseInt(pos_x), 0, 1, TwicheElemZ.BeforeElem.height, d, 0, 1, NewCanvas.height);
+                    ctx.globalAlpha = TwicheElemZ.BeforeDistance;
+                    ctx.drawImage(TwicheElemZ.AfterElem, parseInt(pos_x), 0, 1, TwicheElemZ.AfterElem.height, d, 0, 1, NewCanvas.height);
+                    ctx.globalAlpha = 1;
+                    //ctx.putImageData(TargetData, d, 0);
                 }
 
                 NewCanvas.position = new Point3D(0, 0, 0);
@@ -310,12 +347,15 @@ class VRCube {
 
                 for (var d = 0; d < deep; d++) {
                     //var originData = ctx.getImageData(0, d, NewCanvas.width, 1);
-                    var elemZ = this.getElemZByPosZ(d * this.pixelSpacing);
-                    var TargetData = elemZ.getContext('2d').getImageData(0, parseInt(pos_y), elemZ.width, 1)
-                    /*for (var f = 0; f < originData.data.length; f++) {
-                        originData.data[f] = TargetData.data[f];
-                    }*/
-                    ctx.putImageData(TargetData, 0, d);
+                    var TwicheElemZ = this.getElemZByPosZ(d * this.pixelSpacing);
+                    //var TargetData = elemZ.getContext('2d').getImageData(0, parseInt(pos_y), elemZ.width, 1);
+                    //for (var f = 0; f < originData.data.length; f++)  originData.data[f] = TargetData.data[f];;
+                    ctx.globalAlpha = TwicheElemZ.AfterDistance;
+                    ctx.drawImage(TwicheElemZ.BeforeElem, 0, parseInt(pos_y), TwicheElemZ.BeforeElem.width, 1, 0, d, NewCanvas.width, 1);
+                    ctx.globalAlpha = TwicheElemZ.BeforeDistance;
+                    ctx.drawImage(TwicheElemZ.AfterElem, 0, parseInt(pos_y), TwicheElemZ.AfterElem.width, 1, 0, d, NewCanvas.width, 1);
+                    ctx.globalAlpha = 1;
+                    //ctx.putImageData(TargetData, 0, d);
                 }
 
                 NewCanvas.position = new Point3D(0, 0, 0);
