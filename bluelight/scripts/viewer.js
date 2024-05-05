@@ -395,10 +395,6 @@ function parseDicom(image, pixelData, viewportNum = viewportNumber) {
     leftLayout.appendCanvasBySeries(element.tags.SeriesInstanceUID, image, pixelData);
     leftLayout.refleshMarkWithSeries(element.tags.SeriesInstanceUID);
 
-    //顯示資訊到label
-    DisplaySeriesCount(viewportNum);
-    displayWindowLevel(viewportNum);
-
     //渲染影像到viewport和原始影像
     // showTheImage(element, image, 'normal', ifNowSeries, viewportNum);
     // showTheImage(originelement, image, 'origin', null, viewportNum);
@@ -406,6 +402,10 @@ function parseDicom(image, pixelData, viewportNum = viewportNumber) {
     //紀錄Window Level
     if (!element.windowCenter) element.windowCenter = image.windowCenter;
     if (!element.windowWidth) element.windowWidth = image.windowWidth;
+    
+    //顯示資訊到label
+    DisplaySeriesCount(viewportNum);
+    displayWindowLevel(viewportNum);
 
     var MainCanvas = element.canvas;
     SetTable();
