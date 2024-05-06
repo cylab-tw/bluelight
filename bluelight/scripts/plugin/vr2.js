@@ -77,9 +77,11 @@ class VRCube {
         this.ElemYs = [];
         this.ElemZs = [];
         this.container = null;
-        this.VR2_Point = [0, 0];
-        this.VR2_RotateDeg = [0, 0, 0];
+        this.VR2_Point = new Vector3(0, 0, 0);
+        this.VR2_RotateDeg = new Vector3(0, 0, 0);
+        this.offset = new Vector3(0, 0, 0);
         this.MouseDownCheck = false;
+        this.MiddleDownCheck = false;
         this.RightMouseDownCheck = false;
         VRCube.VRCubeList.push(this);
     }
@@ -101,7 +103,7 @@ class VRCube {
     reflesh() {
         if (this.container)
             this.container.style.transform =
-                `translate3d(0,0,0) scale(${this.scale}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg) `
+                `translate3d(${this.offset[0]}px,${this.offset[1]}px,0) scale(${this.scale}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg) rotateZ(${this.VR2_RotateDeg[2]}deg) `
     }
 
     buildContainer() {
@@ -114,6 +116,7 @@ class VRCube {
 
         function VR2Mousedown(e) {
             if (e.which == 1) this.cube.MouseDownCheck = true;
+            else if (e.which == 2) this.cube.MiddleDownCheck = true;
             else if (e.which == 3) this.cube.RightMouseDownCheck = true;
             this.cube.VR2_Point = [e.pageX, e.pageY];
         }
@@ -128,9 +131,14 @@ class VRCube {
                 this.cube.VR2_RotateDeg[1] = (this.cube.VR2_RotateDeg[1] % 360 + 360) % 360;
                 this.cube.reflesh();
             }
+            if (this.cube.MiddleDownCheck) {
+                this.cube.offset[0] -= this.cube.VR2_Point[0] - e.pageX;
+                this.cube.offset[1] -= this.cube.VR2_Point[1] - e.pageY;
+                this.cube.reflesh();
+            }
             if (this.cube.RightMouseDownCheck) {
                 if (Math.abs(this.cube.VR2_Point[0] - e.pageX) > Math.abs(this.cube.VR2_Point[1] - e.pageY)) {
-                    this.cube.scale += (this.cube.VR2_Point[0] - e.pageX) * 0.02;
+                    this.cube.scale -= (this.cube.VR2_Point[0] - e.pageX) * 0.02;
                     if (this.cube.scale > 3) this.cube.scale = 3;
                     else if (this.cube.scale < 0.1) this.cube.scale = 0.1;
                     this.cube.reflesh();
@@ -146,6 +154,7 @@ class VRCube {
 
         function VR2Mouseup(e) {
             this.cube.MouseDownCheck = false;
+            this.cube.MiddleDownCheck = false;
             this.cube.RightMouseDownCheck = false;
         }
         VR2Mousedown = VR2Mousedown.bind({ cube: this });
@@ -212,7 +221,7 @@ class VRCube {
                 var SOP = this.sopList[ll], NewCanvas = document.createElement("CANVAS");
                 NewCanvas.className = "VrCanvas";
                 NewCanvas.style.position = "absolute";
-                [NewCanvas.style.width, NewCanvas.style.height] = [SOP.image.width + "px", SOP.image.height + "px"]
+                //[NewCanvas.style.width, NewCanvas.style.height] = [SOP.image.width + "px", SOP.image.height + "px"]
 
                 if (this.rescaleMode == "resize") [NewCanvas.width, NewCanvas.height] = [SOP.image.width, SOP.image.height];
                 else[NewCanvas.width, NewCanvas.height] = [SOP.image.width / step, SOP.image.height / step];
@@ -289,8 +298,8 @@ class VRCube {
                 NewCanvas.style.position = "absolute";
                 NewCanvas.width = parseInt(this.deep);
                 NewCanvas.height = this.height;
-                NewCanvas.style.width = NewCanvas.width + "px";
-                NewCanvas.style.height = NewCanvas.height + "px";
+                //NewCanvas.style.width = NewCanvas.width + "px";
+                //NewCanvas.style.height = NewCanvas.height + "px";
 
                 var ctx = NewCanvas.getContext("2d");
                 var imgData = ctx.createImageData(NewCanvas.width, NewCanvas.height);
@@ -331,8 +340,8 @@ class VRCube {
                 NewCanvas.style.position = "absolute";
                 NewCanvas.width = this.width;
                 NewCanvas.height = parseInt(this.deep);
-                NewCanvas.style.width = NewCanvas.width + "px";
-                NewCanvas.style.height = NewCanvas.height + "px";
+                //NewCanvas.style.width = NewCanvas.width + "px";
+                //NewCanvas.style.height = NewCanvas.height + "px";
 
                 //NewCanvas.pixelData = this.ElemZs[0].pixelData;
                 var ctx = NewCanvas.getContext("2d");
