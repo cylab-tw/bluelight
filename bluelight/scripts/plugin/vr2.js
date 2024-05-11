@@ -4,7 +4,8 @@ var openVR2 = false;
 function loadVR2() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        ` <img class="img VR2" alt="VR2" id="ImgVR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/vr2.png" width="50" height="50">  `;
+        ` <img class="img VR2" alt="VR2" id="ImgVR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/vr2.png" width="50" height="50">
+          <img class="img VR2" alt="exitVR2" id="exitVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" > `;
     getByid("icon-list").appendChild(span);
 
     function createVR2_DIV(viewportNum = viewportNumber) {
@@ -45,16 +46,25 @@ getByid("ImgVR2").onclick = function () {
     openVR2 = !openVR2;
     img2darkByClass("VR2", !openVR2);
 
-    if (!openVR2) {
+    getByid("exitVR2").style.display = openVR2 == true ? "" : "none";
+    set_BL_model('VR2');
+    initVR2();
+
+    this.style.display = openVR2 != true ? "" : "none";
+    getByid("exitVR2").onclick = function () {
+        openVR2 = false;
+        img2darkByClass("VR2", !openVR2);
+        getByid("ImgVR2").style.display = openWriteGSPS != true ? "" : "none";
+        getByid("exitVR2").style.display = openWriteGSPS == true ? "" : "none";
         for (cube of VRCube.VRCubeList) {
             cube.clear();
         }
         hideVR2();
         getByid("MouseOperation").click();
-    } else {
-        set_BL_model('VR2');
-        initVR2();
+        displayMark();
+        getByid('MouseOperation').click();
     }
+
     //getByid("MouseOperation_VR").click();
 }
 
@@ -73,6 +83,8 @@ class VRCube {
         this.renderMode = "whole";
         this.width = this.SOP.image.width;
         this.height = this.SOP.image.height;
+        this.windowCenter = this.SOP.image.windowCenter;
+        this.windowWidth = this.SOP.image.windowWidth;
         this.ElemXs = [];
         this.ElemYs = [];
         this.ElemZs = [];
@@ -86,6 +98,28 @@ class VRCube {
         VRCube.VRCubeList.push(this);
     }
 
+    resetZ() {
+        for (var obj of this.ElemZs)
+            this.container.removeChild(obj);
+        this.ElemZs = [];
+        this.buildZ();
+        this.ReArrangeZ();
+    }
+
+    resetX() {
+        for (var obj of this.ElemXs)
+            this.container.removeChild(obj);
+        this.ElemXs = [];
+        this.buildX();
+    }
+
+    resetY() {
+        for (var obj of this.ElemYs)
+            this.container.removeChild(obj);
+        this.ElemYs = [];
+        this.buildY();
+    }
+
     clear() {
         for (var obj of this.ElemXs)
             this.container.removeChild(obj);
@@ -97,6 +131,8 @@ class VRCube {
         this.ElemYs = [];
         this.ElemZs = [];
         if (this.container) getByid("VR2_DIV").removeChild(this.container);
+        if (this.userDIV) getByid("VR2_DIV").removeChild(this.userDIV);
+        this.userDIV = null;
         this.container = null;
     }
 
@@ -115,6 +151,7 @@ class VRCube {
         this.container = ContainerDIV;
 
         function VR2Mousedown(e) {
+            if (e.target.tagName != "CANVAS" && e.target.tagName != "DIV") return;
             if (e.which == 1) this.cube.MouseDownCheck = true;
             else if (e.which == 2) this.cube.MiddleDownCheck = true;
             else if (e.which == 3) this.cube.RightMouseDownCheck = true;
@@ -165,9 +202,111 @@ class VRCube {
         DIV.addEventListener("mouseup", VR2Mouseup, false);
     }
 
+    buildInputer() {
+        var userDIV = document.createElement("DIV");
+        userDIV.style['flex-direction'] = "column";
+        userDIV.style['float'] = "right";
+        userDIV.style['display'] = "flex";
+        this.userDIV = userDIV;
+        getByid("VR2_DIV").appendChild(userDIV);
+
+        //////////Slice//////////
+
+        var sliceLable = document.createElement("LABEL");
+        sliceLable.innerText = "Number of both sections";
+        sliceLable.style['zIndex'] = "490";
+        sliceLable.style['color'] = "white";
+        sliceLable.style['font-size'] = "16px";
+        sliceLable.style['user-select'] = "none";
+        sliceLable.style['float'] = "right";
+
+        var sliceText = document.createElement("input");
+        sliceText.type = sliceText.className = "text";
+        sliceText.value = this.slice ? this.slice : "";
+        sliceText.style['zIndex'] = "490";
+        sliceText.style['font-size'] = "16px";
+        sliceText.style['float'] = "right";
+
+        function sliceTextKeyDown(e) {
+            if (isNaN(this.sliceText.value) || this.sliceText.value > 30 || this.sliceText.value < 0) {
+                this.sliceText.value = this.cube.slice;
+            }
+            else {
+                this.cube.slice = parseInt(Math.abs(this.sliceText.value));
+                this.sliceText.value = this.cube.slice; //abs and in
+                this.cube.resetX();
+                this.cube.resetY();
+            }
+        }
+
+        sliceTextKeyDown = sliceTextKeyDown.bind({ cube: this, sliceText: sliceText });
+        sliceText.addEventListener("change", sliceTextKeyDown, false);
+
+        userDIV.appendChild(sliceLable);
+        userDIV.appendChild(sliceText);
+
+        //////////WindowLevel//////////
+
+        var WCLable = document.createElement("LABEL");
+        var WWLable = document.createElement("LABEL");
+        WCLable.innerText = "Windtow Center";
+        WWLable.innerText = "Window Width";
+        WCLable.style['zIndex'] = WWLable.style['zIndex'] = "490";
+        WCLable.style['color'] = WWLable.style['color'] = "white";
+        WCLable.style['font-size'] = WWLable.style['font-size'] = "16px";
+        WCLable.style['user-select'] = WWLable.style['user-select'] = "none";
+        WCLable.style['float'] = WWLable.style['float'] = "right";
+
+        var WCText = document.createElement("input");
+        var WWText = document.createElement("input");
+        WCText.type = WCText.className = WWText.type = WWText.className = "text";
+        WCText.value = this.windowCenter ? this.windowCenter : "";
+        WWText.value = this.windowWidth ? this.windowWidth : "";
+        WCText.style['zIndex'] = WWText.style['zIndex'] = "490";
+        WCText.style['font-size'] = WWText.style['font-size'] = "16px";
+        WCText.style['float'] = WWText.style['float'] = "right";
+
+        function WCTextKeyDown(e) {
+            if (isNaN(this.WCText.value)) {
+                this.WCText.value = this.cube.windowCenter;
+            }
+            else {
+                this.cube.windowCenter = parseInt(Math.abs(this.WCText.value));
+                this.WCText.value = this.cube.windowCenter; //abs and in
+                this.cube.resetZ();
+                this.cube.resetX();
+                this.cube.resetY();
+            }
+        }
+
+        function WWTextKeyDown(e) {
+            if (isNaN(this.WWText.value)) {
+                this.WWText.value = this.cube.windowWidth;
+            }
+            else {
+                this.cube.windowWidth = parseInt(Math.abs(this.WWText.value));
+                this.WWText.value = this.cube.windowWidth; //abs and in
+                this.cube.resetZ();
+                this.cube.resetX();
+                this.cube.resetY();
+            }
+        }
+
+        WCTextKeyDown = WCTextKeyDown.bind({ cube: this, WCText: WCText });
+        WWTextKeyDown = WWTextKeyDown.bind({ cube: this, WWText: WWText });
+        WCText.addEventListener("change", WCTextKeyDown, false);
+        WWText.addEventListener("change", WWTextKeyDown, false);
+
+        userDIV.appendChild(WCLable);
+        userDIV.appendChild(WCText);
+        userDIV.appendChild(WWLable);
+        userDIV.appendChild(WWText);
+    }
+
     build() {
         this.clear();
         this.buildContainer();
+        this.buildInputer();
         this.buildZ();
         this.ReArrangeZ();
         this.buildX();
@@ -180,7 +319,7 @@ class VRCube {
         //預先填充不透明度為255
         canvas.imgData = new Uint32Array(imgData.data.buffer).fill(0xFF0000FF);
 
-        var high = canvas.windowCenter + (canvas.windowWidth / 2), low = canvas.windowCenter - (canvas.windowWidth / 2);
+        var high = this.windowCenter + (this.windowWidth / 2), low = this.windowCenter - (this.windowWidth / 2);
         var intercept = (intercept == undefined || intercept == null) ? 0 : intercept;
         var slope = (slope == undefined || slope == null) ? 1 : slope;
 
@@ -227,8 +366,8 @@ class VRCube {
                 else[NewCanvas.width, NewCanvas.height] = [SOP.image.width / step, SOP.image.height / step];
 
                 NewCanvas.pixelData = SOP.pixelData;
-                NewCanvas.windowCenter = SOP.image.windowCenter;
-                NewCanvas.windowWidth = SOP.image.windowWidth;
+                NewCanvas.windowCenter = this.windowCenter;
+                NewCanvas.windowWidth = this.windowWidth;
 
                 this.Render2Canvas(NewCanvas, SOP.image.intercept, SOP.image.slope, SOP.image.color, step);
 
