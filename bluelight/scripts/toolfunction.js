@@ -358,7 +358,7 @@ function GetPixel(angle2point) {
     if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
         var pixel = GetViewport().content.pixelData[y * width + x];
         if (isNaN(pixel)) return "";
-        else return `${pixel} HU`;
+        else return `${pixel} `;
     } else {
         var pixelR = GetViewport().content.pixelData[y * 4 * width + x * 4 + 0];
         var pixelG = GetViewport().content.pixelData[y * 4 * width + x * 4 + 1];

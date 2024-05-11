@@ -224,7 +224,7 @@ let BlueLightMousemove = function (e) {
     }
 
     if (isNaN(angle2point[0]) || isNaN(angle2point[1])) getClass('labelXY')[viewportNumber].innerText = "";
-    else getClass('labelXY')[viewportNumber].innerText = "Pixel: " + GetPixel(angle2point) + ` - (${parseInt(angle2point[0])},${parseInt(angle2point[1])})`;
+    else getClass('labelXY')[viewportNumber].innerText = "Pixel: " + GetPixel(angle2point) + `  (${parseInt(angle2point[0])},${parseInt(angle2point[1])})`;
     //getClass('labelXY')[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
 
     if (openLink == true) {
