@@ -348,3 +348,23 @@ function equal_TOL(a, b, tolerance) {
     if (Math.abs(a - b) <= tolerance) return true;
     return false;
 }
+
+function GetPixel(angle2point) {
+    if (!GetViewport() || !GetViewport().content || !GetViewport().content.pixelData) return "";
+    var x = parseInt(angle2point[0]);
+    var y = parseInt(angle2point[1]);
+    var width = GetViewport().width;
+    var height = GetViewport().height;
+    if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
+        var pixel = GetViewport().content.pixelData[y * width + x];
+        if (isNaN(pixel)) return "";
+        else return `${pixel} HU`;
+    } else {
+        var pixelR = GetViewport().content.pixelData[y * 4 * width + x * 4 + 0];
+        var pixelG = GetViewport().content.pixelData[y * 4 * width + x * 4 + 1];
+        var pixelB = GetViewport().content.pixelData[y * 4 * width + x * 4 + 2];
+        //var pixelA = GetViewport().content.pixelData[y * 4 * width + x * 4 + 3];
+        if (isNaN(pixelR) || isNaN(pixelG) || isNaN(pixelB)) return "";
+        else return `B=${pixelB} G=${pixelG} R=${pixelR} `;
+    }
+}

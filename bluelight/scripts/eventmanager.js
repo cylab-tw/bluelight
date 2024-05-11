@@ -223,7 +223,10 @@ let BlueLightMousemove = function (e) {
             BlueLightMousemoveList[i](e);
     }
 
-    getClass('labelXY')[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
+    if (isNaN(angle2point[0]) || isNaN(angle2point[1])) getClass('labelXY')[viewportNumber].innerText = "";
+    else getClass('labelXY')[viewportNumber].innerText = "Pixel: " + GetPixel(angle2point) + ` - (${parseInt(angle2point[0])},${parseInt(angle2point[1])})`;
+    //getClass('labelXY')[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
+
     if (openLink == true) {
         for (var i = 0; i < Viewport_Total; i++) {
             GetViewport(i).translate.x = GetViewport().translate.x;

@@ -26,6 +26,7 @@ function displayAllRuler() {
 }
 
 function displayRuler(viewportNum = viewportNumber) {
+    if (!GetViewport() || !GetViewport().content || !GetViewport().content.image) return;
     try {
         var downRule = getClass("downRule");
         var offsetWidth = GetViewport(viewportNum).div.offsetWidth;
@@ -34,25 +35,51 @@ function displayRuler(viewportNum = viewportNumber) {
         var tempctx = downRule[viewportNum].getContext("2d");
         tempctx.clearRect(0, 0, offsetWidth, 20);
         tempctx.strokeStyle = "#FFFFFF";
+        tempctx.fillStyle = "#FFFFFF";
         tempctx.lineWidth = "2";
         tempctx.beginPath();
         var x1 = 0;
         var y1 = 0;
         var canvas = GetViewport(viewportNum).canvas;
-        tempctx.moveTo(0 + (offsetWidth / 2) - (40 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), 10);
-        tempctx.lineTo((90 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale) + (offsetWidth / 2) - (40 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), 10);
-        for (var i = 0; i < 10; i++) {
-            tempctx.moveTo(x1 + (offsetWidth / 2) - (40 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), y1);
-            tempctx.lineTo(x1 + (offsetWidth / 2) - (40 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 20);
-            tempctx.stroke();
-            x1 += (10 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale);
+
+        if (GetViewport(viewportNum).transform.PixelSpacingX && GetViewport(viewportNum).transform.PixelSpacingY) {
+            tempctx.moveTo(0 + (offsetWidth / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), 10 + 10);
+            tempctx.lineTo((90 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale) + (offsetWidth / 2) - (40 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), 10 + 10);
+            for (var i = 0; i <= 10; i++) {
+                tempctx.moveTo(x1 + (offsetWidth / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 10);
+                tempctx.lineTo(x1 + (offsetWidth / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 10 + 10);
+                tempctx.stroke();
+                x1 += (10 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale);
+            }
+            tempctx.closePath();
+            x1 -= (10 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale);
+
+            tempctx.font = "" + (12) + "px Arial";
+            tempctx.fillText("100 mm", 2 + x1 + (offsetWidth / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 3 + 10 + 5)
+        } else {
+            tempctx.strokeStyle = "#4855FF";
+            var PX = 1, PY = 1;
+            tempctx.moveTo(0 + (offsetWidth / 2) - (50 * PX) * (GetViewport(viewportNum).scale), 10 + 10);
+            tempctx.lineTo((90 * PX) * (GetViewport(viewportNum).scale) + (offsetWidth / 2) - (40 * PX) * (GetViewport(viewportNum).scale), 10 + 10);
+            for (var i = 0; i <= 10; i++) {
+                tempctx.moveTo(x1 + (offsetWidth / 2) - (50 * PX) * (GetViewport(viewportNum).scale), y1 + 10);
+                tempctx.lineTo(x1 + (offsetWidth / 2) - (50 * PX) * (GetViewport(viewportNum).scale), y1 + 10 + 10);
+                tempctx.stroke();
+                x1 += (10 * PX) * (GetViewport(viewportNum).scale);
+            }
+            tempctx.closePath();
+            x1 -= (10 * PX) * (GetViewport(viewportNum).scale);
+
+            tempctx.font = "" + (12) + "px Arial";
+            tempctx.fillText("100 pix", 2 + x1 + (offsetWidth / 2) - (50 * PX) * (GetViewport(viewportNum).scale), y1 + 3 + 10 + 5)
         }
-        tempctx.closePath();
+
     } catch (ex) { }
     displayRuler2(viewportNum);
 }
 
 function displayRuler2(viewportNum = viewportNumber) {
+    if (!GetViewport() || !GetViewport().content || !GetViewport().content.image) return;
     try {
         var leftRule = getClass("leftRule");
         var offsetHeight = GetViewport(viewportNum).div.offsetHeight;
@@ -62,20 +89,43 @@ function displayRuler2(viewportNum = viewportNumber) {
         var canvas = GetViewport(viewportNum).canvas;
         tempctx.clearRect(0, 0, 20, offsetHeight);
         tempctx.strokeStyle = "#FFFFFF";
+        tempctx.fillStyle = "#FFFFFF";
         tempctx.lineWidth = "2";
         tempctx.beginPath();
         var x1 = 0;
         var y1 = 0;
-        tempctx.moveTo(0, 0 + (offsetHeight / 2) - (40 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale));
-        tempctx.lineTo(0, (90 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale) - (40 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale) + (offsetHeight / 2));
-        tempctx.stroke();
-        for (var i = 0; i < 10; i++) {
-            tempctx.moveTo(x1, y1 + (offsetHeight / 2) - (40 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale));
-            tempctx.lineTo(x1 + 20, y1 + (offsetHeight / 2) - (40 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale));
+
+        if (GetViewport(viewportNum).transform.PixelSpacingX && GetViewport(viewportNum).transform.PixelSpacingY) {
+            tempctx.font = "" + (12) + "px Arial";
+            tempctx.fillText("100 mm", 0, -5 + (offsetHeight / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale))
+
+            tempctx.moveTo(0, 0 + (offsetHeight / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale));
+            tempctx.lineTo(0, (90 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale) - (40 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale) + (offsetHeight / 2));
             tempctx.stroke();
-            y1 += (10 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale);
+            for (var i = 0; i <= 10; i++) {
+                tempctx.moveTo(x1, y1 + (offsetHeight / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale));
+                tempctx.lineTo(x1 + 10, y1 + (offsetHeight / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale));
+                tempctx.stroke();
+                y1 += (10 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale);
+            }
+            tempctx.closePath();
+        } else {
+            tempctx.strokeStyle = "#4855FF";
+            var PX = 1, PY = 1;
+            tempctx.font = "" + (12) + "px Arial";
+            tempctx.fillText("100 pix", 0, -5 + (offsetHeight / 2) - (50 * PY) * (GetViewport(viewportNum).scale))
+
+            tempctx.moveTo(0, 0 + (offsetHeight / 2) - (50 * PY) * (GetViewport(viewportNum).scale));
+            tempctx.lineTo(0, (90 * PY) * (GetViewport(viewportNum).scale) - (40 * PY) * (GetViewport(viewportNum).scale) + (offsetHeight / 2));
+            tempctx.stroke();
+            for (var i = 0; i <= 10; i++) {
+                tempctx.moveTo(x1, y1 + (offsetHeight / 2) - (50 * PY) * (GetViewport(viewportNum).scale));
+                tempctx.lineTo(x1 + 10, y1 + (offsetHeight / 2) - (50 * PY) * (GetViewport(viewportNum).scale));
+                tempctx.stroke();
+                y1 += (10 * PY) * (GetViewport(viewportNum).scale);
+            }
+            tempctx.closePath();
         }
-        tempctx.closePath();
     } catch (ex) { }
 }
 

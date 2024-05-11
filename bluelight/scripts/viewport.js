@@ -152,7 +152,7 @@ class BlueLightViewPort {
         var leftRule = document.createElement("CANVAS");
         leftRule.className = "leftRule";
         leftRule.height = 500;
-        leftRule.width = 10;
+        leftRule.width = 50;
         this.leftRule = div.leftRule = leftRule;
         div.appendChild(leftRule);
     }
@@ -160,7 +160,7 @@ class BlueLightViewPort {
     initDownRule(div, index) {
         var downRule = document.createElement("CANVAS");
         downRule.className = "downRule";
-        downRule.height = 10;
+        downRule.height = 20;
         this.downRule = div.downRule = downRule;
         div.appendChild(downRule);
     }
