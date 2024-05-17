@@ -501,6 +501,7 @@ class VRCube {
         ShadowCheck.style = "z-index: 490;float:left";
         ShadowCheck.type = "checkbox";
         ShadowCheck.setAttribute("checked", "checked");
+        this.ShadowCheck = ShadowCheck;
 
         function ChangeShadow() {
             if (this.ShadowCheck.checked) {
@@ -608,7 +609,7 @@ class VRCube {
                 NewCanvas.className = "VrCanvas VRshadow";
 
                 //講求效能的預覽模式不要放影子
-                if (VRCube.operate_mode == "window" && this.MouseDownCheck == true) NewCanvas.className = "VrCanvas";
+                if (!this.ShadowCheck.checked || (VRCube.operate_mode == "window" && this.MouseDownCheck == true)) NewCanvas.className = "VrCanvas";
 
                 NewCanvas.style.position = "absolute";
                 //[NewCanvas.style.width, NewCanvas.style.height] = [SOP.image.width + "px", SOP.image.height + "px"]
@@ -689,7 +690,7 @@ class VRCube {
                 var NewCanvas = document.createElement("CANVAS");
                 NewCanvas.className = "VrCanvas VRshadow";
                 //講求效能的預覽模式不要放影子
-                if (VRCube.operate_mode == "window" && this.MouseDownCheck == true) NewCanvas.className = "VrCanvas";
+                if (!this.ShadowCheck.checked || (VRCube.operate_mode == "window" && this.MouseDownCheck == true)) NewCanvas.className = "VrCanvas";
 
                 NewCanvas.style.position = "absolute";
                 NewCanvas.width = parseInt(this.deep);
@@ -742,8 +743,8 @@ class VRCube {
                 NewCanvas.className = "VrCanvas VRshadow";
 
                 //講求效能的預覽模式不要放影子
-                if (VRCube.operate_mode == "window" && this.MouseDownCheck == true) NewCanvas.className = "VrCanvas";
-                
+                if (!this.ShadowCheck.checked || (VRCube.operate_mode == "window" && this.MouseDownCheck == true)) NewCanvas.className = "VrCanvas";
+
                 NewCanvas.style.position = "absolute";
 
                 NewCanvas.width = this.width;
