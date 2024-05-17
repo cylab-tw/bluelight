@@ -53,6 +53,14 @@ function random(min, max, step) {
     return number;
 }
 
+function getFactor(num) {
+    var list = [];
+    for (var i = 1; i <= num; i++) {
+        if (num % i == 0) list.push(i);
+    }
+    return list;
+}
+
 function SortArrayByElem(arr, str) {
     return arr.sort((a, b) => a[str] - b[str]);
 }

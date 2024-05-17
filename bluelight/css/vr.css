@@ -34,3 +34,7 @@
   left: 50%;*/
   image-rendering: pixelated;
 }
+
+.VRshadow{
+  background-Color: rgba(0, 0, 0, 0.04);
+}
