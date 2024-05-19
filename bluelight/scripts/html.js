@@ -409,30 +409,104 @@ function html_onload() {
   }
 
   getByid("removeRuler").onclick = function () {
-    var sopList = [];
-    for (var n in PatientMark) {
-      var M = PatientMark[n];
-      if (M.hideName == "ruler") {
-        for (var M2 = 0; M2 < M.mark.length; M2++) {
-          M.mark[M2].type = "delete";
-        }
-        M.type = "delete";
-        sopList.push(M.sop);
-        refreshMark(M);
-      }
+    if ((BL_mode == 'measure') && Measure_previous_choose) {
+      PatientMark.splice(PatientMark.indexOf(Measure_previous_choose.dcm), 1);
+      displayMark();
+      Measure_previous_choose = null;
+      refreshMarkFromSop(GetViewport().sop);
     }
-    PatientMark = PatientMark.filter(m => m.type != "delete");
-    for (var n in PatientMark) { refreshMark(PatientMark[n]); }
-    //for (var s = 0; s < sopList.length; s++)
-    //   refreshMarkFromSop(sopList[s]);
-    for (var i = 0; i < Viewport_Total; i++)
-      if (GetViewport(i).series) leftLayout.refleshMarkWithSeries(GetViewport(i).series);
+    Measure_previous_choose = null;
 
-    getByid("openMeasureImg").click();
-
-    Angle_now_choose = null;
+    if ((BL_mode == 'angle' || BL_mode == 'angle2') && Angle_previous_choose) {
+      PatientMark.splice(PatientMark.indexOf(Angle_previous_choose.dcm), 1);
+      displayMark();
+      Angle_previous_choose = null;
+      refreshMarkFromSop(GetViewport().sop);
+    }
     Angle_previous_choose = null;
-    angle.angle_ = "stop";
+
+    /*if ((BL_mode == 'MeasureRect' || BL_mode == 'MeasureCircle') && MeasureShape_previous_choose) {
+      PatientMark.splice(PatientMark.indexOf(MeasureShape_previous_choose.dcm), 1);
+      displayMark();
+      MeasureShape_previous_choose = null;
+      refreshMarkFromSop(GetViewport().sop);
+    }
+    MeasureShape_previous_choose = null;
+
+
+    if ((BL_mode == 'Irregular' || BL_mode == 'TextAnnotation' || BL_mode == 'ArrowRuler') && MeasureIrregular_previous_choose) {
+      PatientMark.splice(PatientMark.indexOf(MeasureIrregular_previous_choose.dcm), 1);
+      displayMark();
+      MeasureIrregular_previous_choose = null;
+      ArrowRule_previous_choose = null;
+      refreshMarkFromSop(GetViewport().sop);
+    }
+    MeasureIrregular_previous_choose = null;
+    ArrowRule_previous_choose = null;*/
+  }
+
+  getByid("removeAllRuler").onclick = function () {
+    var removeRulerWindows = document.createElement("DIV");
+    removeRulerWindows.style.width = "40vw";
+    removeRulerWindows.style.height = "40vh";
+    removeRulerWindows.style.position = "absolute";
+    //removeRulerWindows.style.margin = "25vh 0 0 25vw";
+    removeRulerWindows.style.zIndex = "105";
+    removeRulerWindows.style.left = "0";
+    removeRulerWindows.style.right = "0";
+    removeRulerWindows.style.top = "0";
+    removeRulerWindows.style.bottom = "0";
+    removeRulerWindows.style.margin = "auto";
+    removeRulerWindows.style.backgroundColor = "rgba(30,60,90,0.8)";
+    removeRulerWindows.style["display"] = "flex";
+    removeRulerWindows.style["justify-content"] = "center";
+    var label = document.createElement("LABEL");
+    label.innerText = "Remove all measurements?";
+    label.style['color'] = "white";
+    label.style['position'] = "absolute";
+    label.style['font-size'] = "24px";
+    label.style['user-select'] = "none";
+    var btn_remove = document.createElement("BUTTON");
+    btn_remove.style.cssText = "top: 50%;left: 25%;transform: scale(1.5);position: absolute;"
+    btn_remove.innerText = "Remove";
+    var btn_cancel = document.createElement("BUTTON");
+    btn_cancel.style.cssText = "top: 50%;left: 75%;transform: scale(1.5);position: absolute;"
+    btn_cancel.innerText = "Cancel";
+    btn_cancel.window = removeRulerWindows;
+    btn_remove.window = removeRulerWindows;
+    removeRulerWindows.appendChild(label);
+    removeRulerWindows.appendChild(btn_remove);
+    removeRulerWindows.appendChild(btn_cancel);
+    getClass("container")[0].appendChild(removeRulerWindows);
+
+    btn_cancel.onclick = function () { getClass("container")[0].removeChild(this.window); };
+    btn_remove.onclick = function () {
+      var sopList = [];
+      for (var n in PatientMark) {
+        var M = PatientMark[n];
+        if (M.hideName == "ruler") {
+          for (var M2 = 0; M2 < M.mark.length; M2++) {
+            M.mark[M2].type = "delete";
+          }
+          M.type = "delete";
+          sopList.push(M.sop);
+          refreshMark(M);
+        }
+      }
+      PatientMark = PatientMark.filter(m => m.type != "delete");
+      for (var n in PatientMark) { refreshMark(PatientMark[n]); }
+      //for (var s = 0; s < sopList.length; s++)
+      //   refreshMarkFromSop(sopList[s]);
+      for (var i = 0; i < Viewport_Total; i++)
+        if (GetViewport(i).series) leftLayout.refleshMarkWithSeries(GetViewport(i).series);
+
+      //getByid("openMeasureImg").click();
+
+      Angle_now_choose = null;
+      Angle_previous_choose = null;
+      angle.angle_ = "stop";
+      getClass("container")[0].removeChild(this.window);
+    };
   }
 
   for (var element of getClass("img")) {
@@ -708,7 +782,7 @@ function drawBorder(element) {
 }
 
 function img2darkByClass(classname, dark) {
-  for(var className of ["img","cropimg"]){
+  for (var className of ["img", "cropimg"]) {
     let icon = getClass(className);
     for (let i = 0; i < icon.length; i++) {
       if (!icon[i].classList.contains(classname)) {
