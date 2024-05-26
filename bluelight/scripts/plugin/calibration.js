@@ -42,15 +42,21 @@ getByid("CalibrationValue").onchange = function () {
 }
 
 getByid("Calibration").onclick = function () {
+    if (!GetViewport() || GetViewport().tags.PixelSpacing){
+        alert("For use only in cases where pixel spacing is not available.");
+        return;
+    }
     openCalibration = !openCalibration;
     img2darkByClass("Calibration", !openCalibration);
     getByid("CalibrationValue").style.display = "none";
     getByid("CalibrationValue").value = "null";
     removeCalibrationMark();
     if (!openCalibration) {
+        openLeftImgClick = true;
         getByid("CalibrationDiv").style.display = "none";
         exit_calibration();
     } else {
+        openLeftImgClick = false;
         getByid("CalibrationDiv").style.display = "";
         set_BL_model('Calibration');
         write_calibration();
@@ -155,7 +161,7 @@ function write_calibration() {
 
             if (openLink) displayAllRuler();
         });
-        
+
         AddMouseEvent();
     }
 }

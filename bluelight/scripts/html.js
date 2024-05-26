@@ -264,26 +264,73 @@ function html_onload() {
   }
 
   getByid("clearviewportImg").onclick = function () {
-    hideAllDrawer();
-    GetViewport().clear();
-    displayMark();
-    displayRuler();
-    putLabel();
-    displayAIM();
-    displayAnnotation();
-    VIEWPORT.loadViewport(GetViewport(), null, viewportNumber);
-    DisplaySeriesCount();
-    getClass("labelLT")[viewportNumber].innerText = "";
-    getClass("labelWC")[viewportNumber].innerText = "";
-    getClass("labelRT")[viewportNumber].innerText = "";
-    getClass("labelRB")[viewportNumber].innerText = "";
-    PatientMark = [];
-    Patient = new BlueLightPatient();
-    getPatientbyImageID = {};
-    getByid("LeftPicture").innerHTML = ""; //leftLayout = new LeftLayout();
-    leftLayout.reflesh();
-    getByid("myfile").value = null;
+    var clearviewportWindows = document.createElement("DIV");
+    clearviewportWindows.style.width = "40vw";
+    clearviewportWindows.style.height = "40vh";
+    clearviewportWindows.style.position = "absolute";
+    //clearviewportWindows.style.margin = "25vh 0 0 25vw";
+    clearviewportWindows.style.zIndex = "105";
+    clearviewportWindows.style.left = "0";
+    clearviewportWindows.style.right = "0";
+    clearviewportWindows.style.top = "0";
+    clearviewportWindows.style.bottom = "0";
+    clearviewportWindows.style.margin = "auto";
+    clearviewportWindows.style.backgroundColor = "rgba(30,60,90,0.8)";
+    clearviewportWindows.style["display"] = "flex";
+    clearviewportWindows.style["justify-content"] = "center";
+    var label = document.createElement("LABEL");
+    label.innerText = "clear and reset all viewport?";
+    label.style['color'] = "white";
+    label.style['position'] = "absolute";
+    label.style['font-size'] = "24px";
+    label.style['user-select'] = "none";
+    var btn_remove = document.createElement("BUTTON");
+    btn_remove.style.cssText = "top: 50%;left: 25%;transform: scale(1.5);position: absolute;"
+    btn_remove.innerText = "Remove";
+    var btn_cancel = document.createElement("BUTTON");
+    btn_cancel.style.cssText = "top: 50%;left: 75%;transform: scale(1.5);position: absolute;"
+    btn_cancel.innerText = "Cancel";
+    btn_cancel.window = clearviewportWindows;
+    btn_remove.window = clearviewportWindows;
+    clearviewportWindows.appendChild(label);
+    clearviewportWindows.appendChild(btn_remove);
+    clearviewportWindows.appendChild(btn_cancel);
+    getClass("container")[0].appendChild(clearviewportWindows);
+
+    btn_cancel.onclick = function () { getClass("container")[0].removeChild(this.window); };
+    btn_remove.onclick = function () {
+      hideAllDrawer();
+      GetViewport().clear();
+      displayMark();
+      displayRuler();
+      putLabel();
+      displayAIM();
+      displayAnnotation();
+      VIEWPORT.loadViewport(GetViewport(), null, viewportNumber);
+      DisplaySeriesCount();
+      getClass("labelLT")[viewportNumber].innerText = "";
+      getClass("labelWC")[viewportNumber].innerText = "";
+      getClass("labelRT")[viewportNumber].innerText = "";
+      getClass("labelRB")[viewportNumber].innerText = "";
+      PatientMark = [];
+      Patient = new BlueLightPatient();
+      getPatientbyImageID = {};
+      getByid("LeftPicture").innerHTML = ""; //leftLayout = new LeftLayout();
+      leftLayout.reflesh();
+      getByid("myfile").value = null;
+      for (var i = 0; i < Viewport_Total; i++) {
+        GetViewport(i).clear();
+        VIEWPORT.loadViewport(GetViewport(), null, i);
+        getClass("labelLT")[i].innerText = "";
+        getClass("labelWC")[i].innerText = "";
+        getClass("labelRT")[i].innerText = "";
+        getClass("labelRB")[i].innerText = "";
+        displayRuler(i);
+      }
+      getClass("container")[0].removeChild(this.window);
+    }
   }
+
   getByid("OtherImg").onclick = function () {
     if (this.enable == false) return;
     hideAllDrawer("othereDIv");

@@ -37,9 +37,9 @@ function loadVR2() {
     BorderList_Icon.push("moveVR2");
     BorderList_Icon.push("windowVR2");
 
-    function loadLut() {
+    function loadLut(path, name) {
         var request = new XMLHttpRequest();
-        request.open('GET', "../data/lut/VR_Bones.txt");
+        request.open('GET', path);
         request.responseType = 'text';
         request.onload = function () {
             if (request.readyState == 4) {
@@ -64,14 +64,15 @@ function loadVR2() {
                                     parseInt(256 * 256 * 256 * 255));
                             }
                         }
-                        VR2_LutArray.push({ name: "VR Bones", array: lutArray });
+                        VR2_LutArray.push({ name: name, array: lutArray });
                     }
                 }
             }
         }
         request.send();
     }
-    loadLut();
+    loadLut("../data/lut/VR_Color.txt", "VR Color");
+    loadLut("../data/lut/VR_Bones.txt", "VR Bones");
 }
 loadVR2();
 
@@ -96,6 +97,7 @@ getByid("ImgVR2").onclick = function () {
 
     this.style.display = openVR2 != true ? "" : "none";
     getByid("exitVR2").onclick = function () {
+        openLeftImgClick = true;
         openVR2 = false;
         img2darkByClass("VR2", !openVR2);
         getByid("ImgVR2").style.display = openWriteGSPS != true ? "" : "none";
@@ -851,6 +853,7 @@ function initVR2() {
             set_BL_model.onchange = function () { return 0; };
         }
 
+        openLeftImgClick = false;
         BlueLightMousedownList = [];
         BlueLightMousemoveList = [];
         BlueLightMouseupList = [];
