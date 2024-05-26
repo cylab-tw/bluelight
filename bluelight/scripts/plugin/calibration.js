@@ -100,6 +100,7 @@ function write_calibration() {
             Calibration_previous_choose = MeasureMark;
             PatientMark.push(MeasureMark);
             getByid("CalibrationValue").style.display = "none";
+            getByid("CalibrationValue").value = "null";
 
             Calibration_Point1 = Calibration_Point2 = rotateCalculation(e, true);
             displayAllMark();
@@ -154,6 +155,8 @@ function write_calibration() {
 
             if (openLink) displayAllRuler();
         });
+        
+        AddMouseEvent();
     }
 }
 

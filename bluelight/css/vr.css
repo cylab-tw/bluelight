@@ -27,12 +27,16 @@
 
   display: flex;
   justify-content: center;
+  image-rendering: pixelated;
+  will-change: transform;
 }
 
 .VrCanvas {
   /*top: 50%;
   left: 50%;*/
   image-rendering: pixelated;
+  transform-origin: center;
+  will-change: transform;
 }
 
 .VRshadow{

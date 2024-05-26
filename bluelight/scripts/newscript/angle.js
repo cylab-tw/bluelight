@@ -109,12 +109,16 @@ function angle() {
                 AngleMark.Text = getAnglelValue(e);
                 refreshMark(AngleMark);
                 displayAllMark();
+                Mark_previous_choose = Angle_previous_choose;
             }
             if (MouseDownCheck == true) {
                 if (angle.angle_ == "line") angle.angle_ = "rotate";
                 else if (angle.angle_ == "rotate") angle.angle_ = "stop";
             }
-            if (Angle_now_choose) Angle_previous_choose = Angle_now_choose;
+            if (Angle_now_choose) {
+                Angle_previous_choose = Angle_now_choose;
+                Mark_previous_choose = Angle_now_choose;
+            }
             Angle_now_choose = null;
         });
 
@@ -322,6 +326,7 @@ function angle() {
                 refreshMark(Angle_now_choose.dcm);
                 angle.angle_ = "stop";
                 Angle_previous_choose = Angle_now_choose;
+                Mark_previous_choose = Angle_previous_choose;
                 Angle_now_choose = null;
             }
             if (angle.angle_ == "line2") {
@@ -339,6 +344,7 @@ function angle() {
                 AngleMark.Text = getAnglelValueBy2Point(Angle_previous_choose.pointArray);
                 refreshMark(AngleMark);
                 displayAllMark();
+                Mark_previous_choose = Angle_previous_choose;
             }
             if (MouseDownCheck == true) {
                 if (angle.angle_ == "line") angle.angle_ = "waitline2";

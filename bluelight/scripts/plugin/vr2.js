@@ -204,9 +204,12 @@ class VRCube {
     }
 
     reflesh() {
-        if (this.container)
+        var offsety = (this.height / 1 / 2) - (this.height / this.step / 2);
+        if (this.container) {
+            this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`
             this.container.style.transform =
-                `translate3d(${this.offset[0]}px,${this.offset[1]}px,0) scale(${this.scale}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg) rotateZ(${this.VR2_RotateDeg[2]}deg) `
+                `translate(${this.offset[0]}px,${(this.offset[1] + (offsety))}px) scale(${this.scale * this.step}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg)`;// rotateZ(${this.VR2_RotateDeg[2]}deg) `
+        }
     }
 
     buildContainer() {
@@ -250,6 +253,7 @@ class VRCube {
                     this.cube.resetX();
                     this.cube.resetY();
                     this.cube.VR2_Point = [e.pageX, e.pageY];
+                    this.cube.reflesh();
                 }
             }
             if (VRCube.operate_mode == "move") {
@@ -297,6 +301,7 @@ class VRCube {
                     this.cube.resetZ();
                     this.cube.resetX();
                     this.cube.resetY();
+                    this.cube.reflesh();
                 }
 
                 if (!isNaN(this.cube.windowCenter)) this.cube.WCText.value = this.cube.windowCenter;
@@ -345,6 +350,7 @@ class VRCube {
                 this.sliceText.value = this.cube.slice; //abs and in
                 this.cube.resetX();
                 this.cube.resetY();
+                this.cube.reflesh();
             }
         }
 
@@ -387,6 +393,7 @@ class VRCube {
                 this.cube.resetZ();
                 this.cube.resetX();
                 this.cube.resetY();
+                this.cube.reflesh();
             }
         }
 
@@ -400,6 +407,7 @@ class VRCube {
                 this.cube.resetZ();
                 this.cube.resetX();
                 this.cube.resetY();
+                this.cube.reflesh();
             }
         }
 
@@ -444,6 +452,7 @@ class VRCube {
             this.cube.resetZ();
             this.cube.resetX();
             this.cube.resetY();
+            this.cube.reflesh();
         }
 
         ChangeResolution = ChangeResolution.bind({ cube: this, resolutionSelect: resolutionSelect });
@@ -479,6 +488,7 @@ class VRCube {
             this.cube.resetZ();
             this.cube.resetX();
             this.cube.resetY();
+            this.cube.reflesh();
         }
 
         ChangeLut = ChangeLut.bind({ cube: this, lutSelect: lutSelect });
@@ -500,7 +510,7 @@ class VRCube {
         var ShadowCheck = document.createElement("input");
         ShadowCheck.style = "z-index: 490;float:left";
         ShadowCheck.type = "checkbox";
-        ShadowCheck.setAttribute("checked", "checked");
+        //ShadowCheck.setAttribute("checked", "checked");
         this.ShadowCheck = ShadowCheck;
 
         function ChangeShadow() {
@@ -617,7 +627,7 @@ class VRCube {
                 [NewCanvas.width, NewCanvas.height] = [SOP.image.width, SOP.image.height];
                 if (this.rescaleMode == "resize" && step != 1) {
                     [NewCanvas.width, NewCanvas.height] = [SOP.image.width / step, SOP.image.height / step];
-                    [NewCanvas.style.width, NewCanvas.style.height] = [SOP.image.width + "px", SOP.image.height + "px"]
+                    /////[NewCanvas.style.width, NewCanvas.style.height] = [SOP.image.width + "px", SOP.image.height + "px"]
                 }//else[NewCanvas.width, NewCanvas.height] = [SOP.image.width / step, SOP.image.height / step];
 
                 NewCanvas.pixelData = SOP.pixelData;
@@ -630,7 +640,7 @@ class VRCube {
                 NewCanvas.position.z = parseFloat(SOP.image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1 / (parseFloat(SOP.image.rowPixelSpacing)));
                 //if (this.rescaleMode == "resize" && step != 1) NewCanvas.position.z /= step;
 
-                NewCanvas.style.transform = "rotate3d(0, 0, 0 , 0deg) translateZ(-" + NewCanvas.position.z + "px)";
+                NewCanvas.style.transform = `rotate3d(0, 0, 0 , 0deg) translateZ(-` + (NewCanvas.position.z / this.step) + "px)";
                 this.container.appendChild(NewCanvas);
                 this.ElemZs.push(NewCanvas);
             } catch (ex) { };
@@ -699,8 +709,8 @@ class VRCube {
 
                 if (this.rescaleMode == "resize" && this.step != 1) {
                     NewCanvas.height = this.height / this.step;
-                    NewCanvas.style.height = this.height + "px";
-                    NewCanvas.style.width = parseInt(this.deep) + "px";
+                    ////NewCanvas.style.height = this.height + "px";
+                    ////NewCanvas.style.width = parseInt(this.deep) + "px";
                 }
                 //NewCanvas.style.width = NewCanvas.width + "px";
                 //NewCanvas.style.height = NewCanvas.height + "px";
@@ -729,7 +739,7 @@ class VRCube {
 
                 NewCanvas.position = new Point3D(0, 0, 0);
                 NewCanvas.position.x = pos_x;
-                NewCanvas.style.transform = "rotateY(90deg) translateZ(" + (NewCanvas.position.x - this.width / 2) + "px)";
+                NewCanvas.style.transform = `rotateY(90deg) translateZ(` + ((NewCanvas.position.x - this.width / 2) / this.step) + "px)";
                 this.container.appendChild(NewCanvas);
                 this.ElemXs.push(NewCanvas);
             } catch (ex) { };
@@ -752,8 +762,8 @@ class VRCube {
 
                 if (this.rescaleMode == "resize" && this.step != 1) {
                     NewCanvas.width = this.width / this.step;
-                    NewCanvas.style.width = this.width + "px";
-                    NewCanvas.style.height = parseInt(this.deep) + "px";
+                    /////NewCanvas.style.width = this.width + "px";
+                    /////NewCanvas.style.height = parseInt(this.deep) + "px";
                 }
 
                 //NewCanvas.pixelData = this.ElemZs[0].pixelData;
@@ -780,10 +790,10 @@ class VRCube {
                     //ctx.putImageData(TargetData, 0, d);
                 }
 
+                var offsety = (this.height / 1 / 2) - (this.height / this.step / 2);
                 NewCanvas.position = new Point3D(0, 0, 0);
-                NewCanvas.position.y = -pos_y;
-
-                NewCanvas.style.transform = "rotateX(90deg) translateZ(" + (NewCanvas.position.y + this.deep / 2) + "px)";
+                NewCanvas.position.y = -pos_y;//+ offsety;
+                NewCanvas.style.transform = `rotateX(90deg) translateZ(` + (((NewCanvas.position.y / this.step + (this.deep) / 2))) + "px)";
                 this.container.appendChild(NewCanvas);
                 this.ElemYs.push(NewCanvas);
             } catch (ex) { };
@@ -827,9 +837,9 @@ class VRCube {
         var CenterZ = this.GeMediumByElemZ();
         for (var obj of this.ElemZs) {
             obj.position.z = obj.position.z - CenterZ;
-            obj.style.transform = "rotate3d(0, 0, 0 , 0deg) translateZ(" + obj.position.z + "px)";
+            obj.style.transform = `rotate3d(0, 0, 0 , 0deg) translateZ(` + (obj.position.z / this.step) + "px)";
         }
-        this.deep = this.GetMaxByElemZ() - this.GetMinByElemZ();
+        this.deep = (this.GetMaxByElemZ() - this.GetMinByElemZ()) / this.step;
     }
 }
 

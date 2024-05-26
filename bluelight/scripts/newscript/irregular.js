@@ -5,6 +5,7 @@ var Arrow_Point1 = [0, 0];
 var Arrow_Point2 = [0, 0];
 var ArrowRule_previous_choose = null;
 var MeasureIrregular_previous_choose = null;
+var MeasureIrregular_now_choose = null;
 
 var openTextAnnotation = false;
 function MeasureIrregular() {
@@ -22,6 +23,9 @@ function MeasureIrregular() {
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
             if (!MouseDownCheck) return;
+            MeasureIrregular_now_choose = null;
+            MeasureIrregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+            if (MeasureIrregular_now_choose) return;
             var MeasureMark = new BlueLightMark();
             let angle2point = rotateCalculation(e, true);
             MeasureMark.setQRLevels(GetViewport().QRLevels);
@@ -41,7 +45,18 @@ function MeasureIrregular() {
         BlueLightMousemoveList.push(function (e) {
             if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
             let angle2point = rotateCalculation(e, true);
-            if (MouseDownCheck && MeasureIrregular_previous_choose) {
+            if (MeasureIrregular_now_choose && MeasureIrregular_now_choose.dcm.type == "IrregularRuler") {
+                if (!MeasureIrregular_now_choose.origin_point)
+                    MeasureIrregular_now_choose.origin_point = angle2point;
+                for (var i in MeasureIrregular_now_choose.dcm.pointArray) {
+                    MeasureIrregular_now_choose.dcm.pointArray[i].x += (angle2point[0] - MeasureIrregular_now_choose.origin_point[0]);
+                    MeasureIrregular_now_choose.dcm.pointArray[i].y += (angle2point[1] - MeasureIrregular_now_choose.origin_point[1]);
+                }
+                MeasureIrregular_now_choose.origin_point = angle2point;
+                refreshMark(MeasureIrregular_now_choose);
+                displayAllMark();
+            }
+            else if (MouseDownCheck && MeasureIrregular_previous_choose) {
                 MeasureIrregular_previous_choose.setPoint2D(angle2point[0], angle2point[1]);
                 var vector = [];
                 for (var o = 0; o < MeasureIrregular_previous_choose.pointArray.length; o++) {
@@ -61,7 +76,15 @@ function MeasureIrregular() {
 
         BlueLightMouseupList = [];
         BlueLightMouseupList.push(function (e) {
-            if (MeasureIrregular_previous_choose) MeasureIrregular_previous_choose = null;
+            if (MeasureIrregular_previous_choose) {
+                Mark_previous_choose = MeasureIrregular_previous_choose;
+                MeasureIrregular_previous_choose = null;
+            }
+            if (MeasureIrregular_now_choose) {
+                MeasureIrregular_now_choose.origin_point = null;
+                Mark_previous_choose = MeasureIrregular_now_choose;
+                MeasureIrregular_now_choose = null;
+            }
             displayMark();
         });
 
@@ -82,14 +105,37 @@ function MeasureIrregular() {
 
         getByid("span_TextAnnotation").style.display = "";
         BlueLightMousedownList = [];
+        BlueLightMousedownList.push(function (e) {
+            MeasureIrregular_now_choose = null;
+            MeasureIrregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+            if (MeasureIrregular_now_choose) return;
+        });
+
         BlueLightMousemoveList = [];
         BlueLightMousemoveList.push(function (e) {
             if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
+            let angle2point = rotateCalculation(e, true);
+            if (MeasureIrregular_now_choose && MeasureIrregular_now_choose.dcm.type == "TextAnnotation") {
+                if (!MeasureIrregular_now_choose.origin_point)
+                    MeasureIrregular_now_choose.origin_point = angle2point;
+                for (var i in MeasureIrregular_now_choose.dcm.pointArray) {
+                    MeasureIrregular_now_choose.dcm.pointArray[i].x += (angle2point[0] - MeasureIrregular_now_choose.origin_point[0]);
+                    MeasureIrregular_now_choose.dcm.pointArray[i].y += (angle2point[1] - MeasureIrregular_now_choose.origin_point[1]);
+                }
+                MeasureIrregular_now_choose.origin_point = angle2point;
+                refreshMark(MeasureIrregular_now_choose);
+                displayAllMark();
+            }
         });
         BlueLightMouseupList = [];
         BlueLightMouseupList.push(function (e) {
             if (!getByid('text_TextAnnotation').value || getByid('text_TextAnnotation').value == "") return;
-            if (MouseDownCheck) {
+            if (MeasureIrregular_now_choose) {
+                MeasureIrregular_now_choose.origin_point = null;
+                Mark_previous_choose = MeasureIrregular_now_choose;
+                MeasureIrregular_now_choose = null;
+            }
+            else if (MouseDownCheck) {
                 var MeasureMark = new BlueLightMark();
                 let angle2point = rotateCalculation(e, true);
                 MeasureMark.setQRLevels(GetViewport().QRLevels);
@@ -101,6 +147,7 @@ function MeasureIrregular() {
                 MeasureMark.setPoint2D(angle2point[0], angle2point[1]);
                 PatientMark.push(MeasureMark);
                 refreshMark(MeasureMark);
+                Mark_previous_choose = MeasureMark;
             }
             displayAllMark();
             displayMark();
@@ -120,6 +167,10 @@ function MeasureIrregular() {
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
+            MeasureIrregular_now_choose = null;
+            MeasureIrregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+            if (MeasureIrregular_now_choose) return;
+
             if (MouseDownCheck) {
                 Arrow_Point1 = Arrow_Point2 = rotateCalculation(e, true);
                 var MeasureMark = new BlueLightMark();
@@ -139,7 +190,18 @@ function MeasureIrregular() {
         BlueLightMousemoveList.push(function (e) {
             if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
             let angle2point = rotateCalculation(e, true);
-            if (MouseDownCheck) {
+            if (MeasureIrregular_now_choose && MeasureIrregular_now_choose.dcm.type == "ArrowRuler") {
+                if (!MeasureIrregular_now_choose.origin_point)
+                    MeasureIrregular_now_choose.origin_point = angle2point;
+                for (var i in MeasureIrregular_now_choose.dcm.pointArray) {
+                    MeasureIrregular_now_choose.dcm.pointArray[i].x += (angle2point[0] - MeasureIrregular_now_choose.origin_point[0]);
+                    MeasureIrregular_now_choose.dcm.pointArray[i].y += (angle2point[1] - MeasureIrregular_now_choose.origin_point[1]);
+                }
+                MeasureIrregular_now_choose.origin_point = angle2point;
+                refreshMark(MeasureIrregular_now_choose);
+                displayAllMark();
+            }
+            else if (MouseDownCheck) {
                 Arrow_Point2 = angle2point;
                 if (ArrowRule_previous_choose) {
                     var MeasureMark = ArrowRule_previous_choose;
@@ -156,13 +218,18 @@ function MeasureIrregular() {
         BlueLightMouseupList.push(function (e) {
             let angle2point = rotateCalculation(e, true);
             Arrow_Point2 = angle2point;
-
-            if (ArrowRule_previous_choose) {
+            if (MeasureIrregular_now_choose) {
+                MeasureIrregular_now_choose.origin_point = null;
+                Mark_previous_choose = MeasureIrregular_now_choose;
+                MeasureIrregular_now_choose = null;
+            }
+            else if (ArrowRule_previous_choose) {
                 var MeasureMark = ArrowRule_previous_choose;
                 MeasureMark.pointArray = [];
                 MeasureMark.setPoint2D(Arrow_Point1[0], Arrow_Point1[1]);
                 MeasureMark.setPoint2D(Arrow_Point2[0], Arrow_Point2[1]);
                 refreshMark(MeasureMark);
+                Mark_previous_choose = ArrowRule_previous_choose;
             }
 
             ArrowRule_previous_choose = null;
@@ -218,7 +285,7 @@ function drawIrregularRuler(obj) {
     try {
         if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) color = Mark.color;
         viewport.drawClosedInterval(ctx, viewport, Mark.pointArray, [color, color], [1.0, 0.3]);
-        if (BL_mode == 'erase') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#FF0000", 1.0);
+        if (BL_mode == 'erase' || BL_mode == 'Irregular') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#FF0000", 1.0);
     } catch (ex) { }
 
     if (Mark.Text) viewport.drawText(ctx, viewport, Mark.lastMark, Mark.Text, 22, "#FF0000", alpha = 1.0);
@@ -233,7 +300,7 @@ function drawTextAnnotatoin(obj) {
     var ctx = canvas.getContext("2d"), color = null;
     try {
         if (Mark.Text) viewport.drawText(ctx, viewport, Mark.pointArray[0], Mark.Text, 22, "#FF0000", alpha = 1.0);
-        if (BL_mode == 'erase') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
+        if (BL_mode == 'erase' || BL_mode == 'TextAnnotation') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
     } catch (ex) { }
 }
 PLUGIN.PushMarkList(drawTextAnnotatoin);
@@ -258,7 +325,7 @@ function drawArrowRuler(obj) {
         var y4 = y2 - L * Math.sin(a - 30 * Math.PI / 180);
         viewport.drawLine(ctx, viewport, new Point2D(x3, y3), new Point2D(x2, y2), Mark.color, 1.0);
         viewport.drawLine(ctx, viewport, new Point2D(x4, y4), new Point2D(x2, y2), Mark.color, 1.0);
-        if (BL_mode == 'erase') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
+        if (BL_mode == 'erase' || BL_mode == 'ArrowRuler') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
     } catch (ex) { console.log(ex) }
 }
 PLUGIN.PushMarkList(drawArrowRuler);

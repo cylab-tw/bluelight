@@ -81,8 +81,14 @@ function MeasureRect() {
 
         BlueLightMouseupList = [];
         BlueLightMouseupList.push(function (e) {
-            if (MeasureShape_previous_choose) MeasureShape_previous_choose = null;
-            if (MeasureRect_now_choose) MeasureRect_now_choose = null;
+            if (MeasureShape_previous_choose) {
+                Mark_previous_choose = MeasureShape_previous_choose;
+                MeasureShape_previous_choose = null;
+            }
+            if (MeasureRect_now_choose) {
+                Mark_previous_choose = MeasureRect_now_choose;
+                MeasureRect_now_choose = null;
+            }
             displayMark();
         });
 
@@ -185,7 +191,14 @@ function MeasureCircle() {
 
         BlueLightMouseupList = [];
         BlueLightMouseupList.push(function (e) {
-            if (MeasureShape_previous_choose) MeasureShape_previous_choose = null;
+            if (MeasureShape_previous_choose) {
+                Mark_previous_choose = MeasureShape_previous_choose;
+                MeasureShape_previous_choose = null;
+            }
+            if (MeasureCircle_now_choose) {
+                Mark_previous_choose = MeasureCircle_now_choose;
+                MeasureCircle_now_choose = null;
+            }
             displayMark();
         });
 

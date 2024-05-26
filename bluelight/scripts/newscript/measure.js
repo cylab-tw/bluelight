@@ -74,6 +74,7 @@ function measure() {
                 Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
                 Measure_now_choose.dcm.Text = getMeasurelValueBy2Point(Measure_now_choose.pointArray);
                 refreshMark(Measure_now_choose.dcm);
+                Mark_previous_choose = Measure_now_choose;
             }
             else if (Measure_previous_choose) {
                 var MeasureMark = Measure_previous_choose;
@@ -86,6 +87,7 @@ function measure() {
                 refreshMark(MeasureMark);
                 //Graphic_now_choose = { reference: dcm };
                 //Measure_previous_choose = dcm;
+                Mark_previous_choose = Measure_previous_choose;
             }
             if (Measure_now_choose) Measure_previous_choose = Measure_now_choose;
             Measure_now_choose = null;
