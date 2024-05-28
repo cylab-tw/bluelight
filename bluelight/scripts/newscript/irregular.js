@@ -62,12 +62,7 @@ function MeasureIrregular() {
                 for (var o = 0; o < MeasureIrregular_previous_choose.pointArray.length; o++) {
                     vector.push({ x: MeasureIrregular_previous_choose.pointArray[o].x, y: MeasureIrregular_previous_choose.pointArray[o].y });
                 }
-
-                if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
-                    MeasureIrregular_previous_choose.Text = parseInt(shoelaceFormula(vector) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
-                } else {
-                    MeasureIrregular_previous_choose.Text = parseInt(shoelaceFormula(vector)) + "px²";
-                }
+                MeasureIrregular_previous_choose.PixelNumber = parseInt(shoelaceFormula(vector));
 
                 refreshMark(MeasureIrregular_previous_choose);
                 displayAllMark();
@@ -288,7 +283,18 @@ function drawIrregularRuler(obj) {
         if (BL_mode == 'erase' || BL_mode == 'Irregular') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#FF0000", 1.0);
     } catch (ex) { }
 
-    if (Mark.Text) viewport.drawText(ctx, viewport, Mark.lastMark, Mark.Text, 22, "#FF0000", alpha = 1.0);
+    try {
+        if (Mark.PixelNumber) {
+            var value = "";
+            if (viewport.transform.PixelSpacingX && viewport.transform.PixelSpacingY) {
+                value = parseInt(Mark.PixelNumber / (viewport.transform.PixelSpacingX * viewport.transform.PixelSpacingY)) + "mm²";
+            } else {
+                value = parseInt(Mark.PixelNumber) + "px²";
+            }
+
+            viewport.drawText(ctx, viewport, Mark.lastMark, value, 22, "#FF0000", alpha = 1.0);
+        }
+    } catch (ex) { }
 }
 PLUGIN.PushMarkList(drawIrregularRuler);
 

@@ -45,17 +45,6 @@ function MeasureRect() {
             if (MouseDownCheck && MeasureRect_now_choose) {
                 MeasureRect_now_choose.pointArray[MeasureRect_now_choose.order].x = angle2point[0];
                 MeasureRect_now_choose.pointArray[MeasureRect_now_choose.order].y = angle2point[1];
-                if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
-                    MeasureRect_now_choose.dcm.Text = parseInt(
-                        (Math.abs(MeasureRect_now_choose.pointArray[0].x - MeasureRect_now_choose.pointArray[1].x)
-                            * Math.abs(MeasureRect_now_choose.pointArray[0].y - MeasureRect_now_choose.pointArray[1].y)
-                        ) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
-                } else {
-                    MeasureRect_now_choose.dcm.Text = parseInt(
-                        (Math.abs(MeasureRect_now_choose.pointArray[0].x - MeasureRect_now_choose.pointArray[1].x)
-                            * Math.abs(MeasureRect_now_choose.pointArray[0].y - MeasureRect_now_choose.pointArray[1].y)
-                        )) + "px²";
-                }
 
                 refreshMark(MeasureRect_now_choose.dcm);
                 displayAllMark();
@@ -63,17 +52,7 @@ function MeasureRect() {
             else if (MouseDownCheck && MeasureShape_previous_choose) {
                 MeasureShape_previous_choose.pointArray[1].x = angle2point[0];
                 MeasureShape_previous_choose.pointArray[1].y = angle2point[1];
-                if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
-                    MeasureShape_previous_choose.Text = parseInt(
-                        (Math.abs(MeasureShape_previous_choose.pointArray[0].x - MeasureShape_previous_choose.pointArray[1].x)
-                            * Math.abs(MeasureShape_previous_choose.pointArray[0].y - MeasureShape_previous_choose.pointArray[1].y)
-                        ) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
-                } else {
-                    MeasureShape_previous_choose.Text = parseInt(
-                        (Math.abs(MeasureShape_previous_choose.pointArray[0].x - MeasureShape_previous_choose.pointArray[1].x)
-                            * Math.abs(MeasureShape_previous_choose.pointArray[0].y - MeasureShape_previous_choose.pointArray[1].y)
-                        )) + "px²";
-                }
+
                 refreshMark(MeasureShape_previous_choose);
                 displayAllMark();
             }
@@ -152,14 +131,7 @@ function MeasureCircle() {
                 var y1 = MeasureCircle_now_choose.pointArray[0].y * 1;
                 var x2 = MeasureCircle_now_choose.pointArray[0 + 1].x * 1;
                 var y2 = MeasureCircle_now_choose.pointArray[0 + 1].y * 1;
-                var temp_distance = getDistance(Math.abs(x1 - x2), Math.abs(y1 - y2));
-                if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
-                    MeasureCircle_now_choose.dcm.Text = parseInt(
-                        (temp_distance * temp_distance * Math.PI) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
-                } else {
-                    MeasureCircle_now_choose.dcm.Text = parseInt(
-                        (temp_distance * temp_distance * Math.PI)) + "px²";
-                }
+                
                 refreshMark(MeasureCircle_now_choose.dcm);
                 displayAllMark();
             }
@@ -173,16 +145,6 @@ function MeasureCircle() {
                 var y1 = MeasureShape_previous_choose.pointArray[0].y * 1;
                 var x2 = MeasureShape_previous_choose.pointArray[0 + 1].x * 1;
                 var y2 = MeasureShape_previous_choose.pointArray[0 + 1].y * 1;
-                var temp_distance = getDistance(Math.abs(x1 - x2), Math.abs(y1 - y2));
-
-                if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
-                    MeasureShape_previous_choose.Text = parseInt(
-                        (temp_distance * temp_distance * Math.PI) / (GetViewport().transform.PixelSpacingX * GetViewport().transform.PixelSpacingY)) + "mm²";
-
-                } else {
-                    MeasureShape_previous_choose.Text = parseInt(
-                        (temp_distance * temp_distance * Math.PI)) + "px²";
-                }
 
                 refreshMark(MeasureShape_previous_choose);
                 displayAllMark();
@@ -264,13 +226,29 @@ function drawMeasureRect(obj) {
 
         viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#FF0000", 1.0);
         viewport.fillCircle(ctx, viewport, Mark.pointArray[1], 3, "#FF0000", 1.0);
-        if (Mark.Text) {
+
+
+        if (Mark.pointArray[0] && Mark.pointArray[1]) {
+            var value = "";
+            if (viewport.transform.PixelSpacingX && viewport.transform.PixelSpacingY) {
+                value = parseInt(
+                    (Math.abs(Mark.pointArray[0].x - Mark.pointArray[1].x)
+                        * Math.abs(Mark.pointArray[0].y - Mark.pointArray[1].y)
+                    ) / (viewport.transform.PixelSpacingX * viewport.transform.PixelSpacingY)) + "mm²";
+            } else {
+                value = parseInt(
+                    (Math.abs(Mark.pointArray[0].x - Mark.pointArray[1].x)
+                        * Math.abs(Mark.pointArray[0].y - Mark.pointArray[1].y)
+                    )) + "px²";
+            }
+            
             var maxX = pointArray[0].x > pointArray[1].x ? pointArray[0].x : pointArray[1].x;
             var maxY = pointArray[0].y > pointArray[1].y ? pointArray[0].y : pointArray[1].y;
-            var point = new Point2D(maxX - (Mark.Text.length * (size / 2) + size), maxY - (size / 4));
+            var point = new Point2D(maxX - (value.length * (size / 2) + size), maxY - (size / 4));
             for (var t = 0; t < 5; t++)
-                viewport.drawText(ctx, viewport, point, Mark.Text, size, "#FF0000", alpha = 1.0, [{ shadowBlur: 7 }, { shadowColor: "white" }]);
+                viewport.drawText(ctx, viewport, point, value, size, "#FF0000", alpha = 1.0, [{ shadowBlur: 7 }, { shadowColor: "white" }]);
         }
+
     } catch (ex) { console.log(ex) }
 }
 PLUGIN.PushMarkList(drawMeasureRect);
@@ -289,11 +267,18 @@ function drawMeasureCIRCLE(obj) {
         viewport.drawCircle(ctx, viewport, pointArray[0], dist, [color, color], [1.0, 0.3]);
         viewport.fillCircle(ctx, viewport, pointArray[0], 3, "#FF0000", 1.0);
         viewport.fillCircle(ctx, viewport, pointArray[1], 3, "#FF0000", 1.0);
-        if (Mark.Text) {
-            var point = new Point2D(pointArray[0].x - (Mark.Text.length * (size / 4)), pointArray[0].y - 10);
-            for (var t = 0; t < 5; t++)
-                viewport.drawText(ctx, viewport, point, Mark.Text, size, "#FF0000", alpha = 1.0, [{ shadowBlur: 7 }, { shadowColor: "white" }]);
+
+        var value = "";
+        if (viewport.transform.PixelSpacingX && viewport.transform.PixelSpacingY) {
+            value = parseInt((dist * dist * Math.PI) / (viewport.transform.PixelSpacingX * viewport.transform.PixelSpacingY)) + "mm²";
+        } else {
+            value = parseInt((dist * dist * Math.PI)) + "px²";
         }
+        
+        var point = new Point2D(pointArray[0].x - (value.length * (size / 4)), pointArray[0].y - 10);
+        for (var t = 0; t < 5; t++)
+            viewport.drawText(ctx, viewport, point, value, size, "#FF0000", alpha = 1.0, [{ shadowBlur: 7 }, { shadowColor: "white" }]);
+
     } catch (ex) { console.log(ex) }
 }
 

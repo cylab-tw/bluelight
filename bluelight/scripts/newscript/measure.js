@@ -48,7 +48,6 @@ function measure() {
                 if (Measure_now_choose) {
                     Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
                     Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
-                    Measure_now_choose.dcm.Text = getMeasurelValueBy2Point(Measure_now_choose.pointArray);
                     refreshMark(Measure_now_choose.dcm);
                 } else if (Measure_previous_choose) {
                     var MeasureMark = Measure_previous_choose;
@@ -57,7 +56,6 @@ function measure() {
                     MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
                     MeasureMark.setPoint2D(Measure_Point2[0], Measure_Point2[1]);
 
-                    MeasureMark.Text = getMeasurelValue(e);
                     refreshMark(MeasureMark);
                     displayAllMark();
                 }
@@ -72,7 +70,6 @@ function measure() {
             if (Measure_now_choose) {
                 Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
                 Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
-                Measure_now_choose.dcm.Text = getMeasurelValueBy2Point(Measure_now_choose.pointArray);
                 refreshMark(Measure_now_choose.dcm);
                 Mark_previous_choose = Measure_now_choose;
             }
@@ -83,7 +80,6 @@ function measure() {
                 MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
                 MeasureMark.setPoint2D(Measure_Point2[0], Measure_Point2[1]);
 
-                MeasureMark.Text = getMeasurelValue(e);
                 refreshMark(MeasureMark);
                 //Graphic_now_choose = { reference: dcm };
                 //Measure_previous_choose = dcm;
@@ -126,7 +122,6 @@ function measure() {
                 if (Measure_now_choose) {
                     Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
                     Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
-                    Measure_now_choose.dcm.Text = getMeasurelValueBy2Point(Measure_now_choose.pointArray);
                     refreshMark(Measure_now_choose.dcm);
                 } else if (Measure_previous_choose) {
                     var MeasureMark = Measure_previous_choose;
@@ -135,7 +130,6 @@ function measure() {
                     MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
                     MeasureMark.setPoint2D(Measure_Point2[0], Measure_Point2[1]);
 
-                    MeasureMark.Text = getMeasurelValue(e);
                     refreshMark(MeasureMark);
                     displayAllMark();
                 }
@@ -150,7 +144,6 @@ function measure() {
             if (Measure_now_choose) {
                 Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
                 Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
-                Measure_now_choose.dcm.Text = getMeasurelValueBy2Point(Measure_now_choose.pointArray);
                 refreshMark(Measure_now_choose.dcm);
             }
             else if (Measure_previous_choose) {
@@ -202,38 +195,6 @@ function measure_pounch(currX, currY) {
     }
 }
 
-function getMeasurelValueBy2Point(pointArray) {
-    if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
-        var value = parseInt(Math.sqrt(
-            Math.pow(pointArray[0].x / GetViewport().transform.PixelSpacingX - pointArray[1].x / GetViewport().transform.PixelSpacingX, 2) +
-            Math.pow(pointArray[0].y / GetViewport().transform.PixelSpacingY - pointArray[1].y / GetViewport().transform.PixelSpacingY, 2), 2)) +
-            "mm";
-        return value;
-    } else {
-        var value = parseInt(Math.sqrt(
-            Math.pow(pointArray[0].x - pointArray[1].x, 2) +
-            Math.pow(pointArray[0].y - pointArray[1].y, 2), 2)) +
-            "px";
-        return value;
-    }
-}
-
-function getMeasurelValue(e) {
-    if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
-        var value = parseInt(Math.sqrt(
-            Math.pow(Measure_Point2[0] / GetViewport().transform.PixelSpacingX - Measure_Point1[0] / GetViewport().transform.PixelSpacingX, 2) +
-            Math.pow(Measure_Point2[1] / GetViewport().transform.PixelSpacingY - Measure_Point1[1] / GetViewport().transform.PixelSpacingY, 2), 2)) +
-            "mm";
-        return value;
-    } else {
-        var value = parseInt(Math.sqrt(
-            Math.pow(Measure_Point2[0] - Measure_Point1[0], 2) +
-            Math.pow(Measure_Point2[1] - Measure_Point1[1], 2), 2)) +
-            "px";
-        return value;
-    }
-}
-
 window.addEventListener('keydown', (KeyboardKeys) => {
     var key = KeyboardKeys.which
 
@@ -264,7 +225,21 @@ function drawMeasureRuler(obj) {
         viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
         viewport.fillCircle(ctx, viewport, Mark.lastMark, 3, "#00FF00", 1.0);
 
-        if (Mark.Text) viewport.drawText(ctx, viewport, Mark.lastMark, Mark.Text, 22, "#FF0000", alpha = 1.0);
+        if (Mark.pointArray[0] && Mark.pointArray[1]) {
+            if (viewport.transform.PixelSpacingX && viewport.transform.PixelSpacingY) {
+                var value = parseInt(Math.sqrt(
+                    Math.pow(Mark.pointArray[0].x / viewport.transform.PixelSpacingX - Mark.pointArray[1].x / viewport.transform.PixelSpacingX, 2) +
+                    Math.pow(Mark.pointArray[0].y / viewport.transform.PixelSpacingY - Mark.pointArray[1].y / viewport.transform.PixelSpacingY, 2), 2)) +
+                    "mm";
+                viewport.drawText(ctx, viewport, Mark.lastMark, value, 22, "#FF0000", alpha = 1.0);
+            } else {
+                var value = parseInt(Math.sqrt(
+                    Math.pow(Mark.pointArray[0].x - Mark.pointArray[1].x, 2) +
+                    Math.pow(Mark.pointArray[0].y - Mark.pointArray[1].y, 2), 2)) +
+                    "px";
+                viewport.drawText(ctx, viewport, Mark.lastMark, value, 22, "#FF0000", alpha = 1.0);
+            }
+        }
 
     } catch (ex) { console.log(ex) }
 }

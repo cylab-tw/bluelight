@@ -264,20 +264,20 @@ function html_onload() {
   }
 
   getByid("clearviewportImg").onclick = function () {
-    var clearviewportWindows = document.createElement("DIV");
-    clearviewportWindows.style.width = "40vw";
-    clearviewportWindows.style.height = "40vh";
-    clearviewportWindows.style.position = "absolute";
-    //clearviewportWindows.style.margin = "25vh 0 0 25vw";
-    clearviewportWindows.style.zIndex = "105";
-    clearviewportWindows.style.left = "0";
-    clearviewportWindows.style.right = "0";
-    clearviewportWindows.style.top = "0";
-    clearviewportWindows.style.bottom = "0";
-    clearviewportWindows.style.margin = "auto";
-    clearviewportWindows.style.backgroundColor = "rgba(30,60,90,0.8)";
-    clearviewportWindows.style["display"] = "flex";
-    clearviewportWindows.style["justify-content"] = "center";
+    var clearviewportWindow = document.createElement("DIV");
+    clearviewportWindow.style.width = "40vw";
+    clearviewportWindow.style.height = "40vh";
+    clearviewportWindow.style.position = "absolute";
+    //clearviewportWindow.style.margin = "25vh 0 0 25vw";
+    clearviewportWindow.style.zIndex = "105";
+    clearviewportWindow.style.left = "0";
+    clearviewportWindow.style.right = "0";
+    clearviewportWindow.style.top = "0";
+    clearviewportWindow.style.bottom = "0";
+    clearviewportWindow.style.margin = "auto";
+    clearviewportWindow.style.backgroundColor = "rgba(30,60,90,0.8)";
+    clearviewportWindow.style["display"] = "flex";
+    clearviewportWindow.style["justify-content"] = "center";
     var label = document.createElement("LABEL");
     label.innerText = "clear and reset all viewport?";
     label.style['color'] = "white";
@@ -290,12 +290,12 @@ function html_onload() {
     var btn_cancel = document.createElement("BUTTON");
     btn_cancel.style.cssText = "top: 50%;left: 75%;transform: scale(1.5);position: absolute;"
     btn_cancel.innerText = "Cancel";
-    btn_cancel.window = clearviewportWindows;
-    btn_remove.window = clearviewportWindows;
-    clearviewportWindows.appendChild(label);
-    clearviewportWindows.appendChild(btn_remove);
-    clearviewportWindows.appendChild(btn_cancel);
-    getClass("container")[0].appendChild(clearviewportWindows);
+    btn_cancel.window = clearviewportWindow;
+    btn_remove.window = clearviewportWindow;
+    clearviewportWindow.appendChild(label);
+    clearviewportWindow.appendChild(btn_remove);
+    clearviewportWindow.appendChild(btn_cancel);
+    getClass("container")[0].appendChild(clearviewportWindow);
 
     btn_cancel.onclick = function () { getClass("container")[0].removeChild(this.window); };
     btn_remove.onclick = function () {
@@ -527,20 +527,20 @@ function html_onload() {
   }
 
   getByid("removeAllRuler").onclick = function () {
-    var removeRulerWindows = document.createElement("DIV");
-    removeRulerWindows.style.width = "40vw";
-    removeRulerWindows.style.height = "40vh";
-    removeRulerWindows.style.position = "absolute";
-    //removeRulerWindows.style.margin = "25vh 0 0 25vw";
-    removeRulerWindows.style.zIndex = "105";
-    removeRulerWindows.style.left = "0";
-    removeRulerWindows.style.right = "0";
-    removeRulerWindows.style.top = "0";
-    removeRulerWindows.style.bottom = "0";
-    removeRulerWindows.style.margin = "auto";
-    removeRulerWindows.style.backgroundColor = "rgba(30,60,90,0.8)";
-    removeRulerWindows.style["display"] = "flex";
-    removeRulerWindows.style["justify-content"] = "center";
+    var removeRulerWindow = document.createElement("DIV");
+    removeRulerWindow.style.width = "40vw";
+    removeRulerWindow.style.height = "40vh";
+    removeRulerWindow.style.position = "absolute";
+    //removeRulerWindow.style.margin = "25vh 0 0 25vw";
+    removeRulerWindow.style.zIndex = "105";
+    removeRulerWindow.style.left = "0";
+    removeRulerWindow.style.right = "0";
+    removeRulerWindow.style.top = "0";
+    removeRulerWindow.style.bottom = "0";
+    removeRulerWindow.style.margin = "auto";
+    removeRulerWindow.style.backgroundColor = "rgba(30,60,90,0.8)";
+    removeRulerWindow.style["display"] = "flex";
+    removeRulerWindow.style["justify-content"] = "center";
     var label = document.createElement("LABEL");
     label.innerText = "Remove all measurements?";
     label.style['color'] = "white";
@@ -553,12 +553,12 @@ function html_onload() {
     var btn_cancel = document.createElement("BUTTON");
     btn_cancel.style.cssText = "top: 50%;left: 75%;transform: scale(1.5);position: absolute;"
     btn_cancel.innerText = "Cancel";
-    btn_cancel.window = removeRulerWindows;
-    btn_remove.window = removeRulerWindows;
-    removeRulerWindows.appendChild(label);
-    removeRulerWindows.appendChild(btn_remove);
-    removeRulerWindows.appendChild(btn_cancel);
-    getClass("container")[0].appendChild(removeRulerWindows);
+    btn_cancel.window = removeRulerWindow;
+    btn_remove.window = removeRulerWindow;
+    removeRulerWindow.appendChild(label);
+    removeRulerWindow.appendChild(btn_remove);
+    removeRulerWindow.appendChild(btn_cancel);
+    getClass("container")[0].appendChild(removeRulerWindow);
 
     btn_cancel.onclick = function () { getClass("container")[0].removeChild(this.window); };
     btn_remove.onclick = function () {

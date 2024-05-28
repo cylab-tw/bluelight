@@ -152,7 +152,7 @@ function resetViewport(viewportNum = viewportNumber) {
 
 function resetAndLoadImg(viewportNum = viewportNumber, dontLoad = false) {
 
-    for (var z = 0; z < Viewport_Total; z++) {
+    /*for (var z = 0; z < Viewport_Total; z++) {
         if (openLink == false) z = viewportNum;
         var viewport = GetViewport(z);
 
@@ -160,11 +160,20 @@ function resetAndLoadImg(viewportNum = viewportNumber, dontLoad = false) {
         viewport.translate.x = viewport.translate.y = GetViewport(z).rotate = 0;
         GetViewport(z).scale = null;
         GetViewport(z).VerticalFlip = GetViewport(z).HorizontalFlip = GetViewport(z).invert = false;
-        if (getByid("removeRuler")) getByid("removeRuler").onclick();
+        if (getByid("removeAllRuler")) getByid("removeAllRuler").onclick();
 
         if (dontLoad == false) GetViewport(z).reloadImg();
         if (openLink == false) break;
-    }
+    }*/
+    var viewport = GetViewport();
+
+    viewport.windowCenter = viewport.windowWidth = null;
+    viewport.translate.x = viewport.translate.y = GetViewport().rotate = 0;
+    GetViewport().scale = null;
+    GetViewport().VerticalFlip = GetViewport().HorizontalFlip = GetViewport().invert = false;
+    if (getByid("removeAllRuler")) getByid("removeAllRuler").onclick();
+
+    if (dontLoad == false) GetViewport().reloadImg();
 }
 
 function refleshViewport() {

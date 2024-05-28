@@ -16,6 +16,7 @@ function loadCalibration() {
         `<div id="CalibrationDiv" style="background-color:#30306044;">
                 <font color="white">Calibration (mm):</font>
                 <input type="text" id="CalibrationValue" value="null" size="8" />
+                <button id="CalibrationButton">assign</button>
         </div>`
     getByid("page-header").appendChild(span);
     getByid("CalibrationDiv").style.display = "none";
@@ -23,8 +24,8 @@ function loadCalibration() {
 
 loadCalibration();
 
-getByid("CalibrationValue").onchange = function () {
-    if (Calibration_previous_choose && !isNaN(Calibration_previous_choose.value)) {
+getByid("CalibrationButton").onclick = function () {
+    if (Calibration_previous_choose && !isNaN(Calibration_previous_choose.value) && !isNaN(CalibrationValue.value)) {
         GetViewport().transform.PixelSpacingX = Calibration_previous_choose.value / CalibrationValue.value;
         GetViewport().transform.PixelSpacingY = Calibration_previous_choose.value / CalibrationValue.value;
 
@@ -42,13 +43,14 @@ getByid("CalibrationValue").onchange = function () {
 }
 
 getByid("Calibration").onclick = function () {
-    if (!GetViewport() || GetViewport().tags.PixelSpacing){
+    /*if (!GetViewport() || GetViewport().tags.PixelSpacing){
         alert("For use only in cases where pixel spacing is not available.");
         return;
-    }
+    }*/
     openCalibration = !openCalibration;
     img2darkByClass("Calibration", !openCalibration);
     getByid("CalibrationValue").style.display = "none";
+    getByid("CalibrationButton").style.display = "none";
     getByid("CalibrationValue").value = "null";
     removeCalibrationMark();
     if (!openCalibration) {
@@ -77,6 +79,7 @@ function removeCalibrationMark() {
             PatientMark.splice(PatientMark.indexOf(mark), 1);
         }
     }
+    refreshMarkFromSop(GetViewport().sop);
 }
 
 function write_calibration() {
@@ -106,6 +109,7 @@ function write_calibration() {
             Calibration_previous_choose = MeasureMark;
             PatientMark.push(MeasureMark);
             getByid("CalibrationValue").style.display = "none";
+            getByid("CalibrationButton").style.display = "none";
             getByid("CalibrationValue").value = "null";
 
             Calibration_Point1 = Calibration_Point2 = rotateCalculation(e, true);
@@ -153,6 +157,7 @@ function write_calibration() {
 
                 refreshMark(MeasureMark);
                 getByid("CalibrationValue").style.display = "";
+                getByid("CalibrationButton").style.display = "";
             }
 
             displayAllMark();
@@ -186,6 +191,7 @@ function drawCalibrationRuler(obj) {
     try {
         var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
         if (!Mark) return;
+        if (viewport != GetViewport()) return;
         if (!Mark || Mark.type != "CalibrationRuler" || Mark.pointArray.length < 2) return;
         var ctx = canvas.getContext("2d");
 
