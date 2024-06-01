@@ -155,11 +155,14 @@ function wadorsLoader(url, onlyload) {
         function maxBy(array, n) {
             let result;
             if (!array) return result;
-            result = Number.MIN_VALUE;
+            var tempN = Number.MIN_VALUE;
             for (const obj of array) {
                 if (obj && obj[n]) {
                     var value = obj[n];
-                    if (!isNaN(value) && value > result) result = value;
+                    if (!isNaN(value) && value > tempN) {
+                        tempN = value;
+                        result = obj;
+                    }
                 }
             }
             return result;
@@ -402,7 +405,7 @@ function parseDicom(image, pixelData, viewportNum = viewportNumber) {
     //紀錄Window Level
     if (!element.windowCenter) element.windowCenter = image.windowCenter;
     if (!element.windowWidth) element.windowWidth = image.windowWidth;
-    
+
     //顯示資訊到label
     DisplaySeriesCount(viewportNum);
     displayWindowLevel(viewportNum);
