@@ -20,9 +20,8 @@
 #VR2_Container {
   position: absolute;
   transform-style: preserve-3d;
+  width: 100%;height: 100%;
 
-  /*top: 50%;
-  left: 50%;*/
   -webkit-transform: translate3d(0, 0, 0);
 
   display: flex;
@@ -32,13 +31,42 @@
 }
 
 .VrCanvas {
-  /*top: 50%;
-  left: 50%;*/
-  image-rendering: pixelated;
-  transform-origin: center;
-  will-change: transform;
+  /*transform-origin: center;*/
 }
 
-.VRshadow{
+.VRshadow {
   background-Color: rgba(0, 0, 0, 0.04);
+}
+
+#VR2_DIV {
+  border-collapse: collapse;
+  position: absolute;
+  background-color: black;
+  z-index: 200;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+}
+
+#VR2_TestLabel{
+  z-index: 500;
+  color:white;
+  position: absolute;
+  font-size:32px;
+  user-select:none;
+}
+
+.VR2_Label{
+  z-index: 490;
+  color:white;
+  font-size:16px;
+  user-select:none;
+  float:right;
+}
+
+.VR2_Text{
+  z-index: 490;
+  font-size:16px;
+  float:right;
 }
