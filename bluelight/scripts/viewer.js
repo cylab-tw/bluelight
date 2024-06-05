@@ -488,6 +488,32 @@ function onlyLoadImage(imageId) {
     }
 }
 
+function pictureLoader(imageId, viewportNum = viewportNumber) {
+    var dicomData = getPatientbyImageID[imageId];
+    if (!dicomData) {
+        var img = new Image();
+        img.onload = function () {
+            var canvas = GetViewport(viewportNum).canvas;
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+            /*var DICOM_obj = {
+                study: CreateUid('study'),
+                series: CreateUid('series'),
+                sop: CreateUid('sop'),
+                instance: 0,
+                imageId: imageId,
+                pixelData: ctx.getImageData(0, 0, canvas.width, canvas.height),
+                patientId: "patientId"
+            };
+            loadUID(DICOM_obj);*/
+        }
+        img.src = imageId;
+        resetViewport();
+    }
+}
+
 //imageId:影像編碼資料，currX,currY:放大鏡座標，viewportNum0傳入的Viewport是第幾個
 function loadAndViewImage(imageId, viewportNum = viewportNumber, framesNumber) {
     var dicomData = getPatientbyImageID[imageId];

@@ -88,6 +88,10 @@ function html_onload() {
             return path.split('.').reverse()[0];
           }
           if (basename(file.name) == "mht") wadorsLoader(url);
+          else if (basename(file.name) == "jpg") pictureLoader(url);
+          else if (basename(file.name) == "jpeg") pictureLoader(url);
+          else if (basename(file.name) == "png") pictureLoader(url);
+          else if (basename(file.name) == "webp") pictureLoader(url);
           else loadAndViewImage('wadouri:' + url);
 
           function load(time) {
@@ -782,6 +786,17 @@ function html_onload() {
     for (var k = 0; k < this.files.length; k++) {
       let reader = new FileReader();
       reader.readAsDataURL(this.files[k]);
+
+      function basename(path) {
+        return path.split('.').reverse()[0];
+      }
+
+      var fileExtension = basename(this.files[k].name);
+      if (fileExtension == "jpg") pictureLoader(URL.createObjectURL(this.files[k]));
+      else if (fileExtension == "jpeg") pictureLoader(URL.createObjectURL(this.files[k]));
+      else if (fileExtension == "png") pictureLoader(URL.createObjectURL(this.files[k]));
+      else if (fileExtension == "webp") pictureLoader(URL.createObjectURL(this.files[k]));
+
       reader.onloadend = function () {
         resetViewport();
         loadAndViewImage('wadouri:' + reader.result);

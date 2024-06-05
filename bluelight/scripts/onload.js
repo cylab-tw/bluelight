@@ -166,6 +166,24 @@ function operateQueryString(queryString) {
   return NewQueryString;
 }
 
+function load_WebImg() {
+  function getQueryVariable_WebImg(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split("=");
+      if (pair[0] == variable) {
+        return pair[1];
+      }
+    }
+    return false;
+  }
+  var webimgurl = getQueryVariable_WebImg("webimgurl");
+  if (webimgurl) {
+    pictureLoader(webimgurl);
+  }
+}
+
 function readAllJson(readJson) {
   //整合QIDO-RS的URL並發送至伺服器
   var queryString = ("" + location.search).replace("?", "");
@@ -175,6 +193,7 @@ function readAllJson(readJson) {
     url = fitUrl(url);
     readJson(url);
   }
+  load_WebImg();
 }
 
 function fitUrl(url) {
@@ -330,11 +349,11 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
         "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
         "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
         "&contentType=" + "application/dicom";
-        /*
-        var url = `${ConfigLog.WADO.https}://${ConfigLog.WADO.hostname}:${ConfigLog.WADO.PORT}/${ConfigLog.WADO.service}?requestType=WADO&` +
-        `studyUID=${DicomResponse[i]["0020000D"].Value[0]}&seriesUID=${DicomResponse[i]["0020000E"].Value[0]}` +
-        `&objectUID=${DicomResponse[i]["00080018"].Value[0]}&contentType=application/dicom`;
-        */
+      /*
+      var url = `${ConfigLog.WADO.https}://${ConfigLog.WADO.hostname}:${ConfigLog.WADO.PORT}/${ConfigLog.WADO.service}?requestType=WADO&` +
+      `studyUID=${DicomResponse[i]["0020000D"].Value[0]}&seriesUID=${DicomResponse[i]["0020000E"].Value[0]}` +
+      `&objectUID=${DicomResponse[i]["00080018"].Value[0]}&contentType=application/dicom`;
+      */
     } else if (ConfigLog.WADO.WADOType == "RS") {
       var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service +
         "/studies/" + DicomResponse[i]["0020000D"].Value[0] +
