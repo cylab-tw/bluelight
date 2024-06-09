@@ -16,6 +16,7 @@ var PlayCine = function () {
     }
 
     clearInterval(Cineimer);
+    if (!GetViewport().cine) return;
     var fps = parseInt((1 / parseFloat(getByid("textPlay").value) * 1000));
     Cineimer = setInterval(function () {
         for (var i = 0; i < Viewport_Total; i++) {
@@ -38,6 +39,7 @@ getByid("playvideo").onclick = function () {
         getByid('labelPlay').style.display = 'none';
         getByid('textPlay').style.display = 'none';
     }
+    SetTable();
     PlayCine();
 }
 

@@ -670,6 +670,7 @@ function html_onload() {
         for (var i = 0; i < Viewport_Total; i++)
           dropTable(i);
       }
+      SetTable();
     }
     if (getByid('MarkStyleDiv').style.display == 'none') {
       getByid('MarkStyleDiv').style.display = '';
@@ -931,4 +932,5 @@ function hideAllDrawer(id) {
       obj.style.display = "none";
     }
   }
+  SetTable();
 }

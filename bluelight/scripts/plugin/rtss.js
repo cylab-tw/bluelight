@@ -122,6 +122,7 @@ getByid("writeRTSS").onclick = function () {
         getByid("saveRTSS").style.display = openWriteRTSS == true ? "" : "none";
         getByid("drawRTSS").style.display = openWriteRTSS == true ? "" : "none";
         displayMark();
+        SetTable();
         getByid('MouseOperation').click();
     }
     getByid("eraseRTSS").onclick = function () {
@@ -172,6 +173,7 @@ getByid("writeRTSS").onclick = function () {
         displayMark();
     }
 
+    SetTable();
     displayMark();
     getByid('MouseOperation').click();
     return;

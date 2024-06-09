@@ -49,6 +49,7 @@ getByid("writeXML").onclick = function () {
 
 
   ShowElemByID("xmlMarkName");
+  SetTable();
   displayMark();
 
   getByid("exitXML").onclick = function () {
@@ -60,6 +61,7 @@ getByid("writeXML").onclick = function () {
     getByid("exitXML").style.display = openWriteXML == true ? "" : "none";
     getByid("saveXML").style.display = openWriteXML == true ? "" : "none";
     getByid("drawXML").style.display = openWriteXML == true ? "" : "none";
+    SetTable();
     displayMark();
     xml_now_choose = null;
     getByid('MouseOperation').click();

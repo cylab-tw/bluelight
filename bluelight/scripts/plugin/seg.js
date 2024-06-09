@@ -91,6 +91,7 @@ getByid("writeSEG").onclick = function () {
         getByid("eraseSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("saveSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("drawSEG").style.display = openWriteSEG == true ? "" : "none";
+        SetTable();
         displayMark();
         getByid('MouseOperation').click();
     }
@@ -141,6 +142,7 @@ getByid("writeSEG").onclick = function () {
         displayMark();
     }
 
+    SetTable();
     displayMark();
     //getByid('MouseOperation').click();
 }

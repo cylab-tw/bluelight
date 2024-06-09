@@ -329,7 +329,7 @@ function setSopToViewport(Sop, viewportNum = viewportNumber, framesNumber) {
     if (!element.windowCenter) element.windowCenter = image.windowCenter;
     if (!element.windowWidth) element.windowWidth = image.windowWidth;
 
-    SetTable();
+    //SetTable();
 
     GetViewport().div.style.backgroundColor = "rgb(10,6,6)";
     GetViewport().div.style.border = bordersize + "px #FFC3FF groove";

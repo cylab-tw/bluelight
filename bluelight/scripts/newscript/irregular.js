@@ -95,6 +95,7 @@ function MeasureIrregular() {
             displayMark();
             openTextAnnotation = false;
             getByid("span_TextAnnotation").style.display = "none";
+            SetTable();
             set_BL_model.onchange = function () { return 0; };
         }
 
@@ -147,6 +148,7 @@ function MeasureIrregular() {
             displayAllMark();
             displayMark();
         });
+        SetTable();
         AddMouseEvent();
     }
 

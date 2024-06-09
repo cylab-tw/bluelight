@@ -140,6 +140,7 @@ getByid("writeGSPS").onclick = function () {
         getByid("exitGSPS").style.display = openWriteGSPS == true ? "" : "none";
         getByid("saveGSPS").style.display = openWriteGSPS == true ? "" : "none";
         getByid("drawGSPS").style.display = openWriteGSPS == true ? "" : "none";
+        SetTable();
         displayMark();
         getByid('MouseOperation').click();
     }
@@ -191,6 +192,7 @@ getByid("writeGSPS").onclick = function () {
         displayMark();
     }
 
+    SetTable();
     displayMark();
     //download(String(get_Graphic_context()), 'filename_GSPS.xml', 'text/plain');
 }

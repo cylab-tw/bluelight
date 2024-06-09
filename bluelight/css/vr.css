@@ -65,6 +65,13 @@
   float:right;
 }
 
+.VR2_LabelLB{
+  z-index: 490;
+  color:white;
+  font-size:20px;
+  user-select:none;
+}
+
 .VR2_Text{
   z-index: 490;
   font-size:16px;

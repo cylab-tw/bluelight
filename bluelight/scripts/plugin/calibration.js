@@ -63,6 +63,7 @@ getByid("Calibration").onclick = function () {
         set_BL_model('Calibration');
         write_calibration();
     }
+    SetTable();
 }
 
 BorderList_Icon.push("Calibration");
