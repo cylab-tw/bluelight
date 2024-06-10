@@ -74,12 +74,16 @@ VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
     }
 }
 
+VIEWPORT.settype = function (element, image, viewportNum) {
+    element.type = 'dcm';
+}
+
 VIEWPORT.loadViewport = function (viewport, image, viewportNum) {
     for (var i = 0; i < VIEWPORT.loadViewportList.length; i++) {
         VIEWPORT[VIEWPORT.loadViewportList[i]](viewport, image, viewportNum);
     }
 }
-VIEWPORT.loadViewportList = ['initTransform', 'putLabel2Element', 'delPDFView'];
+VIEWPORT.loadViewportList = ['initTransform', 'putLabel2Element', 'delPDFView', 'settype'];
 
 function wadorsLoader(url, onlyload) {
     var data = [];
@@ -492,7 +496,9 @@ function pictureLoader(imageId, viewportNum = viewportNumber) {
     var dicomData = getPatientbyImageID[imageId];
     if (!dicomData) {
         var img = new Image();
+        img.viewportNum = viewportNum;
         img.onload = function () {
+            var viewportNum = this.viewportNum;
             var canvas = GetViewport(viewportNum).canvas;
             canvas.width = img.width;
             canvas.height = img.height;
@@ -508,9 +514,21 @@ function pictureLoader(imageId, viewportNum = viewportNumber) {
                 patientId: "patientId"
             };
             loadUID(DICOM_obj);*/
+            var element = GetViewport(viewportNum);
+            element.type = 'img';
+            element.content.image = {};
+            element.content.image.data = {};
+            element.windowCenter = 127.5;
+            element.windowWidth = 255;
+            element.content.image.data.elements = [];
+            element.content.pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            [element.content.image.width, element.content.image.height] = [canvas.width, canvas.height];
+            var HandW = getViewprtStretchSize(element.width, element.height, element.div);
+            if (!element.scale && (canvas.width / HandW[0])) element.scale = (1.0 / (canvas.width / HandW[0]));
+            setTransform(viewportNum);
         }
-        img.src = imageId;
         resetViewport();
+        img.src = imageId;
     }
 }
 

@@ -143,6 +143,7 @@ function setTransform(viewportnum = viewportNumber) {
 function resetViewport(viewportNum = viewportNumber) {
     GetViewport(viewportNum).translate.x = GetViewport(viewportNum).translate.y = GetViewport(viewportNum).rotate = 0;
     GetViewport(viewportNum).scale = null;
+    GetViewport(viewportNum).type = 'dcm';
     GetViewport(viewportNum).windowCenter = GetViewport(viewportNum).windowWidth = null;
     GetViewport(viewportNum).invert = GetViewport(viewportNum).HorizontalFlip = GetViewport(viewportNum).VerticalFlip = false;
     GetViewport(viewportNum).transform = {};

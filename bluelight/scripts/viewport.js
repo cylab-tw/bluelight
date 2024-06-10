@@ -40,6 +40,7 @@ class BlueLightViewPort {
     }
     clear() {
         this.invert = false;
+        this.type = 'dcm';
         this.HorizontalFlip = false;
         this.VerticalFlip = false;
         this.rotate = 0;
@@ -70,6 +71,7 @@ class BlueLightViewPort {
 
     initViewportOption(div, index) {
         this.invert = false;
+        this.type = 'dcm';
         this.HorizontalFlip = false;
         this.VerticalFlip = false;
         this.rotate = 0;
@@ -411,6 +413,25 @@ function refleshCanvas(viewport) {
     var imgData = ctx.createImageData(image.width, image.height);
     //預先填充不透明度為255
     new Uint32Array(imgData.data.buffer).fill(0xFF000000);
+
+    if (viewport.type == 'img') {
+        var windowCenter = viewport.windowCenter ? viewport.windowCenter : image.windowCenter;
+        var windowWidth = viewport.windowWidth ? viewport.windowWidth : image.windowWidth;
+        var high = windowCenter + (windowWidth / 2);
+        var low = windowCenter - (windowWidth / 2);
+        const multiplication = 255 / ((high - low)) * 1;
+        const addition = (- low + 0) / (high - low) * 255;
+        const data = imgData.data;
+        for (var i = data.length - 4; i >= 0; i -= 4) {
+            data[i + 0] = parseInt(pixelData[i] * multiplication + addition);
+            data[i + 1] = parseInt(pixelData[i + 1] * multiplication + addition);
+            data[i + 2] = parseInt(pixelData[i + 2] * multiplication + addition);
+        }
+        ctx.putImageData(imgData, 0, 0);
+        refleshGUI();
+        return;
+    }
+
 
     if (viewport.series && viewport.series != image.data.string(Tag.SeriesInstanceUID))
         viewport.windowCenter = viewport.windowWidth = null;

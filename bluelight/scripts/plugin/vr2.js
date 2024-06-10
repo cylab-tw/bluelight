@@ -256,7 +256,7 @@ class VRCube {
             this.isRequestPending = true;
             requestAnimationFrame(() => {
                 if (VRCube.operate_mode == "window") {
-                    if (this.cube.MouseDownCheck && this.cube.step_tmp != -1) {
+                    if (this.cube.MouseDownCheck && this.cube.step_tmp != -1 && !isNaN(e.pageX) && !isNaN(e.pageY)) {
                         if (Math.abs(this.cube.VR2_Point[0] - e.pageX) > Math.abs(this.cube.VR2_Point[1] - e.pageY)) {
                             this.cube.windowCenter += (this.cube.VR2_Point[0] - e.pageX);
                         } else if (Math.abs(this.cube.VR2_Point[0] - e.pageX) < Math.abs(this.cube.VR2_Point[1] - e.pageY)) {
@@ -268,7 +268,7 @@ class VRCube {
                     }
                 }
                 if (VRCube.operate_mode == "move") {
-                    if (this.cube.MouseDownCheck) {
+                    if (this.cube.MouseDownCheck && !isNaN(e.pageX) && !isNaN(e.pageY)) {
                         this.cube.VR2_RotateDeg[1] -= this.cube.VR2_Point[0] - e.pageX;
                         this.cube.VR2_RotateDeg[0] += this.cube.VR2_Point[1] - e.pageY;
                         this.cube.VR2_RotateDeg[1] -= this.cube.VR2_Point[0] * (180 / (180 % this.cube.VR2_Point[1])) - e.pageX;
@@ -279,12 +279,12 @@ class VRCube {
                     }
                 }
                 if (VRCube.operate_mode == "move" || (VRCube.operate_mode == "window" && this.cube.MouseDownCheck && this.cube.step_tmp != -1)) {
-                    if (this.cube.MiddleDownCheck) {
+                    if (this.cube.MiddleDownCheck && !isNaN(e.pageX) && !isNaN(e.pageY)) {
                         this.cube.offset[0] -= this.cube.VR2_Point[0] - e.pageX;
                         this.cube.offset[1] -= this.cube.VR2_Point[1] - e.pageY;
                         this.cube.reflesh();
                     }
-                    if (this.cube.RightMouseDownCheck) {
+                    if (this.cube.RightMouseDownCheck && !isNaN(e.pageX) && !isNaN(e.pageY)) {
                         if (Math.abs(this.cube.VR2_Point[0] - e.pageX) > Math.abs(this.cube.VR2_Point[1] - e.pageY)) {
                             this.cube.scale -= (this.cube.VR2_Point[0] - e.pageX) * 0.02;
                             if (this.cube.scale > 3) this.cube.scale = 3;
@@ -297,7 +297,7 @@ class VRCube {
                             this.cube.reflesh();
                         }
                     }
-                    this.cube.VR2_Point = [e.pageX, e.pageY];
+                    if (!isNaN(e.pageX) && !isNaN(e.pageY)) this.cube.VR2_Point = [e.pageX, e.pageY];
                 }
                 this.isRequestPending = false;
             });
