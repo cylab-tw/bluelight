@@ -504,16 +504,7 @@ function pictureLoader(imageId, viewportNum = viewportNumber) {
             canvas.height = img.height;
             var ctx = canvas.getContext("2d");
             ctx.drawImage(img, 0, 0);
-            /*var DICOM_obj = {
-                study: CreateUid('study'),
-                series: CreateUid('series'),
-                sop: CreateUid('sop'),
-                instance: 0,
-                imageId: imageId,
-                pixelData: ctx.getImageData(0, 0, canvas.width, canvas.height),
-                patientId: "patientId"
-            };
-            loadUID(DICOM_obj);*/
+
             var element = GetViewport(viewportNum);
             element.type = 'img';
             element.content.image = {};
@@ -526,6 +517,45 @@ function pictureLoader(imageId, viewportNum = viewportNumber) {
             var HandW = getViewprtStretchSize(element.width, element.height, element.div);
             if (!element.scale && (canvas.width / HandW[0])) element.scale = (1.0 / (canvas.width / HandW[0]));
             setTransform(viewportNum);
+
+            var DICOM_obj = {
+                study: CreateUid('study'),
+                series: CreateUid('series'),
+                sop: CreateUid('sop'),
+                width: img.width,
+                height: img.height,
+                windowCenter: element. windowCenter,
+                windowWidth: element.windowWidth,
+                instance: 0,
+                imageId: imageId,
+                pixelData: ctx.getImageData(0, 0, canvas.width, canvas.height).data,
+                patientId: "patientID:" + securePassword(0, 99999, 1)
+            };
+            loadUID(DICOM_obj);
+            element.DicomTagsList = [
+                { StudyInstanceUID: DICOM_obj.study },
+                { SeriesInstanceUID: DICOM_obj.series },
+                { SOPInstanceUID: DICOM_obj.sop }
+            ];
+            element.DicomTagsList.StudyInstanceUID = DICOM_obj.study;
+            element.DicomTagsList.SeriesInstanceUID = DICOM_obj.series;
+            element.DicomTagsList.SOPInstanceUID = DICOM_obj.sop;
+            var MarkCanvas = element.MarkCanvas, MainCanvas = element.canvas;;
+            MarkCanvas.width = MainCanvas.width;
+            MarkCanvas.height = MainCanvas.height;
+
+            MainCanvas.style["zIndex"] = "6";
+            MarkCanvas.style = MainCanvas.style.cssText;
+            MarkCanvas.style["zIndex"] = "8";
+            MarkCanvas.style["pointerEvents"] = "none";
+            initNewCanvas();
+
+            //改成無論是否曾出現在左側面板，都嘗試加到左側面板
+            var qrLv = new QRLv(DICOM_obj);
+            qrLv.study = DICOM_obj.study, qrLv.series = DICOM_obj.series, qrLv.sop = DICOM_obj.sop;
+            leftLayout.setImg2Left(qrLv, DICOM_obj.patientId);
+            leftLayout.appendCanvasBySeries(qrLv.series, DICOM_obj, element.content.pixelData);
+            leftLayout.refleshMarkWithSeries(qrLv.series);
         }
         resetViewport();
         img.src = imageId;

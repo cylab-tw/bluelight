@@ -341,21 +341,21 @@ function setXml_context() {
     temp = "" + xml_format_object;
     if (PatientMark[n].sop == GetViewport().sop) {
       if (PatientMark[n].type == "XML_mark") {
-        for (var m = 0; m < PatientMark[n].pointArray.length; m++) {
-          for (var o = 0; o < PatientMark[n].pointArray.length; o += 2) {
-            var x1 = parseInt(PatientMark[n].pointArray[o].x);
-            var y1 = parseInt(PatientMark[n].pointArray[o].y);
-            var x2 = parseInt(PatientMark[n].pointArray[o + 1].x);
-            var y2 = parseInt(PatientMark[n].pointArray[o + 1].y);
-            temp = temp.replace("_xmin_", x1 < x2 ? x1 : x2);
-            temp = temp.replace("_ymin_", y1 < y2 ? y1 : y2);
-            temp = temp.replace("_xmax_", x1 > x2 ? x1 : x2);
-            temp = temp.replace("_ymax_", y1 > y2 ? y1 : y2);
-            temp = temp.replace("_name_", PatientMark[n].showName);
-            xml_format_object_list.push(temp);
-          }
+        //for (var m = 0; m < PatientMark[n].pointArray.length; m++) {
+        for (var o = 0; o < PatientMark[n].pointArray.length; o += 2) {
+          var x1 = parseInt(PatientMark[n].pointArray[o].x);
+          var y1 = parseInt(PatientMark[n].pointArray[o].y);
+          var x2 = parseInt(PatientMark[n].pointArray[o + 1].x);
+          var y2 = parseInt(PatientMark[n].pointArray[o + 1].y);
+          temp = temp.replace("_xmin_", x1 < x2 ? x1 : x2);
+          temp = temp.replace("_ymin_", y1 < y2 ? y1 : y2);
+          temp = temp.replace("_xmax_", x1 > x2 ? x1 : x2);
+          temp = temp.replace("_ymax_", y1 > y2 ? y1 : y2);
+          temp = temp.replace("_name_", PatientMark[n].showName);
+          xml_format_object_list.push(temp);
         }
       }
+      //}
     }
   }
 }

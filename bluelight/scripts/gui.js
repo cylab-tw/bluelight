@@ -263,7 +263,16 @@ function displayLeftCanvas(DicomCanvas, image, pixelData) {
     DicomCanvas.style.height = 66 + "px";
     var ctx2 = DicomCanvas.getContext("2d");
     var imgData2 = ctx2.createImageData(image.width, image.height);
-    if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
+    if (!image.data || !image.data.elements/*viewport.type == 'img'*/) {
+        for (var i = imgData2.data.length - 4; i >= 0; i -= 4) {
+            imgData2.data[i + 0] = parseInt(pixelData[i]);
+            imgData2.data[i + 1] = parseInt(pixelData[i + 1]);
+            imgData2.data[i + 2] = parseInt(pixelData[i + 2]);
+            imgData2.data[i + 3] = parseInt(pixelData[i + 3]);
+        }
+        ctx2.putImageData(imgData2, 0, 0);
+    }
+    else if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
         var max = Number.MIN_VALUE, min = Number.MAX_VALUE;
         if (image.MinPixel == undefined || image.MaxPixel == undefined) {
             for (var i in pixelData) {
