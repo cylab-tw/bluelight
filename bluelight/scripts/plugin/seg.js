@@ -84,6 +84,7 @@ getByid("writeSEG").onclick = function () {
 
     getByid("exitSEG").onclick = function () {
         openWriteSEG = false;
+        openLeftImgClick = true;
         img2darkByClass("SEG", !openWriteSEG);
         getByid('SegStyleDiv').style.display = 'none';
         getByid("writeSEG").style.display = openWriteSEG != true ? "" : "none";

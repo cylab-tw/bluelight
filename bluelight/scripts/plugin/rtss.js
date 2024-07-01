@@ -114,6 +114,7 @@ getByid("writeRTSS").onclick = function () {
     getByid("drawRTSS").style.display = openWriteRTSS == true ? "" : "none";
     getByid("exitRTSS").onclick = function () {
         openWriteRTSS = false;
+        openLeftImgClick = true;
         img2darkByClass("RTSS", !openWriteRTSS);
         getByid('RtssDiv').style.display = 'none';
         getByid("writeRTSS").style.display = openWriteRTSS != true ? "" : "none";

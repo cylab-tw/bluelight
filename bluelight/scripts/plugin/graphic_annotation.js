@@ -133,6 +133,7 @@ getByid("writeGSPS").onclick = function () {
 
     getByid("exitGSPS").onclick = function () {
         openWriteGSPS = false;
+        openLeftImgClick = true;
         img2darkByClass("GSPS", !openWriteGSPS);
         getByid('GspsStyleDiv').style.display = 'none';
         getByid("writeGSPS").style.display = openWriteGSPS != true ? "" : "none";
@@ -915,7 +916,7 @@ function drawPOLYLINE_Write(obj) {
                 ctx.fillstyle = fillStyle; ctx.strokeStyle = strokeStyle;
             }
         }
-        else if (BL_mode == 'eraseGSPS' || openWriteGraphic == true || (getByid("GspsLINE").selected == true && openWriteGSPS == true)) {
+        if (BL_mode == 'eraseGSPS' || openWriteGraphic == true || (getByid("GspsLINE").selected == true && openWriteGSPS == true)) {
             if (Mark.pointArray.length < 4) {
                 if (Mark.RotationAngle && Mark.RotationPoint) {
                     [x1, y1] = rotatePoint([x1, y1], -Mark.RotationAngle, Mark.RotationPoint);

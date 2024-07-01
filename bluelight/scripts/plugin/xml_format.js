@@ -54,6 +54,7 @@ getByid("writeXML").onclick = function () {
 
   getByid("exitXML").onclick = function () {
     openWriteXML = false;
+    openLeftImgClick = true;
     img2darkByClass("XML", !openWriteXML);
     HideElemByID("xmlMarkName");
     getByid("writeXML").style.display = openWriteXML != true ? "" : "none";
