@@ -4,7 +4,7 @@ var openChangeFile = false;
 function scroll() {
     if (BL_mode == 'scroll') {
         DeleteMouseEvent();
-        
+
         openChangeFile = true;
         set_BL_model.onchange = function () {
             openChangeFile = false;
@@ -119,12 +119,14 @@ class ScrollBar {
         if (rightLabelPadding < this.width) rightLabelPadding = this.width + 2;
     }
 }
-
-getByid("b_Scroll").onclick = function () {
-    if (this.enable == false) return;
-    //BL_mode = 'scroll';
-    hideAllDrawer();
-    set_BL_model('scroll');
-    scroll();
-    drawBorder(this);
-  }
+onloadFunction.push(
+    function () {
+        getByid("b_Scroll").onclick = function () {
+            if (this.enable == false) return;
+            //BL_mode = 'scroll';
+            hideAllDrawer();
+            set_BL_model('scroll');
+            scroll();
+            drawBorder(this);
+        }
+    });

@@ -20,9 +20,9 @@ function html_onload() {
     var key = KeyboardKeys.which
     //修復key===33和34時，GetViewport().tags.InstanceNumber為字串之問題
     if (key === 33) {
-      jump2UpOrEnd(parseInt(GetViewport().tags.InstanceNumber) - parseInt(Patient.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
+      jump2UpOrEnd(parseInt(GetViewport().tags.InstanceNumber) - parseInt(ImageManager.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
     } else if (key === 34) {
-      jump2UpOrEnd(parseInt(GetViewport().tags.InstanceNumber) + parseInt(Patient.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
+      jump2UpOrEnd(parseInt(GetViewport().tags.InstanceNumber) + parseInt(ImageManager.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
     } else if (key === 36) {
       jump2UpOrEnd(0, 'up');
     } else if (key === 35) {
@@ -81,27 +81,28 @@ function html_onload() {
         directoryReader.readEntries(fnReadEntries)
       } else {
         item.file(function (file) {
-          resetViewport();
+          //resetViewport();
           var url = URL.createObjectURL(file);
 
           function basename(path) {
             return path.split('.').reverse()[0];
           }
-          if (basename(file.name) == "mht") wadorsLoader(url);
-          else if (basename(file.name) == "jpg") pictureLoader(url);
-          else if (basename(file.name) == "jpeg") pictureLoader(url);
-          else if (basename(file.name) == "png") pictureLoader(url);
-          else if (basename(file.name) == "webp") pictureLoader(url);
-          else loadAndViewImage('wadouri:' + url);
-
-          function load(time) {
-            return new Promise((resolve) => setTimeout(resolve, time));
+          var fileExtension = basename(file.name);
+          if (fileExtension == "mht") wadorsLoader(url);
+          else if (fileExtension == "jpg") loadPicture(url);
+          else if (fileExtension == "jpeg") loadPicture(url);
+          else if (fileExtension == "png") loadPicture(url);
+          else if (fileExtension == "webp") loadPicture(url);
+          else if (fileExtension == "xml") readXML(url);
+          else {
+            let reader = new FileReader();
+            reader.readAsArrayBuffer(file);
+            reader.fileExtension = fileExtension;
+            reader.onloadend = function () {
+              //resetViewport();
+              loadDicomDataSet(reader.result, true, url);
+            }
           }
-          load(100).then(() => {
-            readXML(url);
-            readDicom(url, PatientMark, true);
-          });
-          //}
         });
       }
     }
@@ -115,23 +116,6 @@ function html_onload() {
         }
       }
     }
-    //var files = /*e.target.files ||*/ e.dataTransfer.files;
-    /*for (var k = 0; k < files.length; k++) {
-      let reader = new FileReader();
-      reader.readAsDataURL(files[k]);
-      reader.onloadend = function () {
-        //virtualLoadImage('wadouri:' + reader.result, -1);
-        loadAndViewImage('wadouri:' + reader.result);
-  
-        function load(time) {
-          return new Promise((resolve) => setTimeout(resolve, time));
-        }
-        load(100).then(() => {
-          readXML(reader.result);
-          readDicom(reader.result, PatientMark, true);
-        });
-      }
-    }*/
   }
 
   /*getByid("ClearMarkupButton").onclick = function () {
@@ -145,10 +129,10 @@ function html_onload() {
   getByid("downloadDcm").onclick = function () {
     var Export2dcm = function () {
       var link = document.createElement('a');
-      link.download = GetViewport().imageId.replace("wadouri:", "").replace("wadors:", "").replace(/^.*(\\|\/|\:)/, '');
+      link.download = GetViewport().content.image.url.replace(/^.*(\\|\/|\:)/, '');
       //console.log(link.download);
       if (link.download.includes(".dcm") == false) link.download = link.download + ".dcm";
-      link.href = GetViewport().imageId.replace("wadouri:", "").replace("wadors:", "");
+      link.href = GetViewport().content.image.url;
       link.click();
     }
     Export2dcm();
@@ -317,8 +301,7 @@ function html_onload() {
       getClass("labelRT")[viewportNumber].innerText = "";
       getClass("labelRB")[viewportNumber].innerText = "";
       PatientMark = [];
-      Patient = new BlueLightPatient();
-      getPatientbyImageID = {};
+      ImageManager = new BlueLightImageManager()
       getByid("LeftPicture").innerHTML = ""; //leftLayout = new LeftLayout();
       leftLayout.reflesh();
       getByid("myfile").value = null;
@@ -785,37 +768,28 @@ function html_onload() {
 
   getByid("myfile").onchange = function () {
     for (var k = 0; k < this.files.length; k++) {
-      let reader = new FileReader();
-      reader.readAsDataURL(this.files[k]);
 
       function basename(path) {
         return path.split('.').reverse()[0];
       }
 
       var fileExtension = basename(this.files[k].name);
-      if (fileExtension == "jpg") pictureLoader(URL.createObjectURL(this.files[k]));
-      else if (fileExtension == "jpeg") pictureLoader(URL.createObjectURL(this.files[k]));
-      else if (fileExtension == "png") pictureLoader(URL.createObjectURL(this.files[k]));
-      else if (fileExtension == "webp") pictureLoader(URL.createObjectURL(this.files[k]));
 
-      reader.onloadend = function () {
-        resetViewport();
-        loadAndViewImage('wadouri:' + reader.result);
-        /*
-        var baseUrl = window.URL || window.webkitURL;
-                var blob = new Blob(reader.result);
-               // return baseUrl.createObjectURL(blob);
-               var url=baseUrl.createObjectURL(blob);
-                loadAndViewImage('wadouri:' + url);
-                console.log(url);
-        */
-        function load(time) {
-          return new Promise((resolve) => setTimeout(resolve, time));
+      if (fileExtension == "mht") wadorsLoader(URL.createObjectURL(this.files[k]));
+      else if (fileExtension == "jpg") loadPicture(URL.createObjectURL(this.files[k]));
+      else if (fileExtension == "jpeg") loadPicture(URL.createObjectURL(this.files[k]));
+      else if (fileExtension == "png") loadPicture(URL.createObjectURL(this.files[k]));
+      else if (fileExtension == "webp") loadPicture(URL.createObjectURL(this.files[k]));
+      else if (fileExtension == "xml") readXML(URL.createObjectURL(this.files[k]));
+      else {
+        let reader = new FileReader();
+        reader.readAsArrayBuffer(this.files[k]);
+        reader.fileExtension = fileExtension;
+        reader.url = URL.createObjectURL(this.files[k]);
+        reader.onloadend = function () {
+          //resetViewport();
+          loadDicomDataSet(reader.result, true, this.url);
         }
-        load(100).then(() => {
-          readXML(reader.result);
-          readDicom(reader.result, PatientMark, true);
-        });
       }
     }
   }

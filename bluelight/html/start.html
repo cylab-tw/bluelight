@@ -15,20 +15,18 @@
   <link rel="stylesheet" type="text/css" href="../css/gui.css">
   <link rel="icon" href="../image/icon/title/bluelight.png" type="image/x-icon" />
 
-  <!--<script src="../scripts/external/other/lodash.min.js" async></script>-->
-
-  <script src="../scripts/external/cornerstone/cornerstone.min.js" async></script>
   <script src="../scripts/external/cornerstone/dicomParser.js" async></script>
   <script src="../scripts/external/cornerstone/dataDictionary.js"></script>
 
-  <script src="../scripts/external/cornerstone/cornerstoneWADOImageLoader.bundle.min.js" async></script>
-  <script src="../scripts/external/threejs/customWebWorkersConfig.js" async></script>
-  <script src="../scripts/external/threejs/initializeWebWorkers.js" async></script>
-
+  <script type="module">
+    import { decodeImageFrame } from "../scripts/external/cornerstone/decode/decodeImageFrame.js";
+    window.decodeImage = decodeImageFrame;
+  </script>
 
   <script src="../scripts/onload.js"></script>
   <script src="../scripts/patient.js"></script>
   <script src="../scripts/viewport.js"></script>
+  <script src="../scripts/dicomloader.js"></script>
 
   <script src="../scripts/toolfunction.js"></script>
   <script src="../scripts/gui.js"></script>
@@ -41,7 +39,7 @@
 
   <script src="../scripts/viewer.js"></script>
   <script src="../scripts/common.js"></script>
-  <script src="../scripts/other.js" async></script>
+  
   <script src="../scripts/readsome.js"></script>
   <!--onload-->
   <script src="../scripts/label.js"></script>
@@ -58,10 +56,6 @@
   <script src="../scripts/newscript/angle.js" async></script>
   <script src="../scripts/newscript/shape.js" async></script>
   <script src="../scripts/newscript/irregular.js" async></script>
-  <script type="module">
-    import { decodeImageFrame1 } from "../scripts/external/cornerstone/decode/decodeImageFrame.js";
-    decodeImageFrame = decodeImageFrame1;
-  </script>
 </head>
 
 <body style="background-color:#000000;" onmousewheel="/*return false;*/">

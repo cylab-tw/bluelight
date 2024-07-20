@@ -402,11 +402,11 @@ function set_SEG_context() {
     }
 
     //此更動待驗證
-    var sopList = Patient.findSeries(GetViewport().series).Sop;
+    var sopList = ImageManager.findSeries(GetViewport().series).Sop;
     for (var s = 0; s < sopList.length; s++) {
         let tail2 = "" + SEG_format_tail_2;
         // tail2 = tail2.replace("___ReferencedSOPInstanceUID___", sopList[s]);
-        tail2 = setTag(tail2, "ReferencedSOPInstanceUID", sopList[s].SopUID, true);
+        tail2 = setTag(tail2, "ReferencedSOPInstanceUID", sopList[s].SOPInstanceUID, true);
         tail2_list += tail2;
     }
     var segCount = 0;

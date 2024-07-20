@@ -132,7 +132,7 @@ getByid("writeTAG").onclick = function () {
     let i = index[0],
         j = index[1],
         k = index[2];
-    let sopUID = Patient.Study[i].Series[j].Sop[k].SopUID;
+    let sopUID = ImageManager.Study[i].Series[j].Sop[k].SOPInstanceUID;
 
     set_TAG_context(index);
 
@@ -192,10 +192,10 @@ function set_TAG_context(index) {
             selectedTag = selector.value;
         }
     });
-    let sopDcm = Patient.Study[i].Series[j].Sop[k];
-    temp = setTag(temp, "SOPInstanceUID", sopDcm.SopUID, true);
+    let sopDcm = ImageManager.Study[i].Series[j].Sop[k];
+    temp = setTag(temp, "SOPInstanceUID", sopDcm.SOPInstanceUID, true);
     temp = setTag(temp, "InstanceNumber", sopDcm.InstanceNumber, true);
-    temp = setTag(temp, "StudyInstanceUID", Patient.Study[i].StudyUID, true);
+    temp = setTag(temp, "StudyInstanceUID", ImageManager.Study[i].StudyInstanceUID, true);
     temp = setTag(temp, "ImageTag", selectedTag, true)
     TAG_format_object_list.push(temp);
 }

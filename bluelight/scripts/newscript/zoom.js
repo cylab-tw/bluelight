@@ -12,19 +12,18 @@ var magnifierWidth = 200;
 var magnifierHeight = 200;
 
 
-getByid("zoom").onclick = function () {
-    if (this.enable == false) return;
-    hideAllDrawer();
-    //BL_mode = 'zoom';
-    set_BL_model('zoom')
-    zoom();
-    drawBorder(this);
-}
-
 onloadFunction.push(
     function () {
         magnifierDiv = getByid("magnifierDiv");
         initMagnifier();
+        getByid("zoom").onclick = function () {
+            if (this.enable == false) return;
+            hideAllDrawer();
+            //BL_mode = 'zoom';
+            set_BL_model('zoom')
+            zoom();
+            drawBorder(this);
+        }
     });
 
 function initMagnifier() {

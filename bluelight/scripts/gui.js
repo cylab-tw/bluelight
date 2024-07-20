@@ -172,10 +172,10 @@ class LeftLayout {
         var showNameList = [];
         var colorList = [];
         var hideNameList = [];
-        var Series = Patient.findSeries(series);
-        for (var k = 0; k < Series.SopAmount; k++) {
+        var Series = ImageManager.findSeries(series);
+        for (var k = 0; k < Series.Sop.length; k++) {
             for (var n = 0; n < PatientMark.length; n++) {
-                if (PatientMark[n].sop == Series.Sop[k].SopUID) {
+                if (PatientMark[n].sop == Series.Sop[k].SOPInstanceUID) {
                     if (showNameList.length == 0) {
                         showNameList.push(PatientMark[n].showName);
                         colorList.push(PatientMark[n].color);
@@ -252,8 +252,10 @@ function PictureOnclick(QRLevel) {
     resetViewport();
     //drawBorder(getByid("MouseOperation"));
 
-    if (QRLevel.series) GetViewport().loadFirstImgBySeries(QRLevel.series);
-    else if (QRLevel.sop) GetViewport().loadFirstImgBySop(QRLevel.sop);
+    if (QRLevel.series) GetViewport().loadImgBySop(ImageManager.findSeries(QRLevel.series).Sop[0])
+    else if (QRLevel.sop) GetViewport().loadImgBySop(ImageManager.findSop(QRLevel.sop).parent.Sop[0]);
+    //if (QRLevel.series) GetViewport().loadFirstImgBySeries(QRLevel.series);
+    //else if (QRLevel.sop) GetViewport().loadFirstImgBySop(QRLevel.sop);
 }
 
 function displayLeftCanvas(DicomCanvas, image, pixelData) {
@@ -261,84 +263,12 @@ function displayLeftCanvas(DicomCanvas, image, pixelData) {
     DicomCanvas.height = image.height
     DicomCanvas.style.width = 66 + "px";
     DicomCanvas.style.height = 66 + "px";
-    var ctx2 = DicomCanvas.getContext("2d");
-    var imgData2 = ctx2.createImageData(image.width, image.height);
-    if (!image.data || !image.data.elements/*viewport.type == 'img'*/) {
-        for (var i = imgData2.data.length - 4; i >= 0; i -= 4) {
-            imgData2.data[i + 0] = parseInt(pixelData[i]);
-            imgData2.data[i + 1] = parseInt(pixelData[i + 1]);
-            imgData2.data[i + 2] = parseInt(pixelData[i + 2]);
-            imgData2.data[i + 3] = parseInt(pixelData[i + 3]);
-        }
-        ctx2.putImageData(imgData2, 0, 0);
-    }
-    else if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
-        var max = Number.MIN_VALUE, min = Number.MAX_VALUE;
-        if (image.MinPixel == undefined || image.MaxPixel == undefined) {
-            for (var i in pixelData) {
-                if (pixelData[i] > max) max = pixelData[i];
-                if (pixelData[i] < min) min = pixelData[i];
-            }
-            image.MinPixel = min; image.MaxPixel = max;
-        }
-        min = image.MinPixel; max = image.MaxPixel;
-        if (min != max && min != undefined && max != undefined) {
-            if (image.color == true) {
-                for (var i = imgData2.data.length; i >= 0; i -= 4) {
-                    imgData2.data[i + 0] = parseInt((pixelData[i] / (max - min)) * 255);
-                    imgData2.data[i + 1] = parseInt((pixelData[i + 1] / (max - min)) * 255);
-                    imgData2.data[i + 2] = parseInt((pixelData[i + 2] / (max - min)) * 255);
-                    imgData2.data[i + 3] = 255;
-                }
-            } else {
-                for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
-                    imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = parseInt((pixelData[j] / (max - min)) * 255);
-                    imgData2.data[i + 3] = 255;
-                }
-            }
-            ctx2.putImageData(imgData2, 0, 0);
-        }
-    } else {
-        var windowCenter = image.windowCenter;
-        var windowWidth = image.windowWidth;
-        var high = windowCenter + (windowWidth / 2);
-        var low = windowCenter - (windowWidth / 2);
-        var intercept = image.intercept;
-        if (CheckNull(intercept)) intercept = 0;
-        var slope = image.slope;
-        if (CheckNull(slope)) slope = 1;
-        var multiplication = 255 / ((high - low)) * slope;
-        var addition = (- low + intercept) / (high - low) * 255;
-        if (image.color == true) {
-            for (var i = imgData2.data.length; i >= 0; i -= 4) {
-                imgData2.data[i + 0] = pixelData[i] * multiplication + addition;
-                imgData2.data[i + 1] = pixelData[i + 1] * multiplication + addition;
-                imgData2.data[i + 2] = pixelData[i + 2] * multiplication + addition;
-                imgData2.data[i + 3] = 255;
-            }
-        } else {
-            for (var i = imgData2.data.length, j = imgData2.data.length / 4; i >= 0; i -= 4, j--) {
-                imgData2.data[i + 0] = imgData2.data[i + 1] = imgData2.data[i + 2] = pixelData[j] * multiplication + addition;
-                imgData2.data[i + 3] = 255;
-            }
-        }
-        ctx2.putImageData(imgData2, 0, 0);
-    }
-    var invert = (image.invert == true);
-    function mirrorImage(ctx, picture, x = 0, y = 0, horizontal = false, vertical = false) {
-        ctx.save();  // save the current canvas state
-        ctx.setTransform(
-            horizontal ? -1 : 1, 0, // set the direction of x axis
-            0, vertical ? -1 : 1,   // set the direction of y axis
-            x + (horizontal ? image.width : 0), // set the x origin
-            y + (vertical ? image.height : 0)   // set the y origin
-        );
-        if (invert == true) ctx.filter = "invert()";
-        ctx.drawImage(picture, 0, 0);
-        ctx.restore(); // restore the state as it was when this function was called
-    }
-    if (invert == true) {
-        mirrorImage(ctx2, DicomCanvas, 0, 0, GetViewport().HorizontalFlip, GetViewport().VerticalFlip);
+    if (pixelData) renderPixelData2Cnavas(image, pixelData, DicomCanvas);
+    else {
+        var ctx = DicomCanvas.getContext("2d");
+        var imgData = ctx.createImageData(66, 66);
+        new Uint32Array(imgData.data.buffer).fill(0xFF000000);
+        ctx.putImageData(imgData, 0, 0);
     }
 }
 
@@ -349,10 +279,9 @@ window.onresize = function () {
     //刷新每個Viewport
     for (var i = 0; i < Viewport_Total; i++) {
         try {
-            if (!(GetViewport(i) && GetViewport(i).sop)) continue;
+            if (!(GetViewport(i) && GetViewport(i).Sop)) continue;
             GetViewport(i).scale = null;
-            setSopToViewport(GetViewport(i).sop, i);
-            //loadAndViewImage(Patient.findSop(GetViewport(i).sop).imageId, i);
+            GetViewport(i).loadImgBySop(GetViewport(i).Sop);
         } catch (ex) { console.log(ex) }
     }
     hideAllDrawer();//關閉抽屜

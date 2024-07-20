@@ -3,7 +3,7 @@ var o3DPointX = 0;
 var o3DPointY = 0;
 //代表MPR模式為開啟狀態
 var openMPR = false;
-
+var originSop_of_viewport2 = undefined;
 
 var buffer_mpr_X = 0;
 var buffer_mpr_Y = 0;
@@ -106,7 +106,7 @@ getByid("b_Scroll_MPR").onclick = function () {
             let i = index[0],
                 j = index[1],
                 k = index[2];
-            var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
+            var Onum = parseInt(ImageManager.Study[i].Series[j].Sop[k].InstanceNumber);
             var list = sortInstance(sop);
             for (l = 0; l < list.length; l++) {
                 if (list[l].InstanceNumber == Onum) break;
@@ -176,7 +176,7 @@ getByid("MouseOperation_MPR").onclick = function () {
             var currY1 = (e.pageY - canvas.getBoundingClientRect().top - GetViewport().translate.y - 100) * (1.0 / GetViewport().scale)
             var sop = GetViewport(viewportNum).sop;
             try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
-            var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
+            var Onum = parseInt(ImageManager.Study[i].Series[j].Sop[k].InstanceNumber);
             var list = sortInstance(sop);
             if (list.length <= 1) continue;
             if (e.deltaY < 0) {
@@ -184,12 +184,12 @@ getByid("MouseOperation_MPR").onclick = function () {
                     if (break1 == true) break;
                     if (list[l].InstanceNumber == Onum) {
                         if (l - 1 < 0) {
-                            setSopToViewport(list[list.length - 1].SopUID, viewportNumber, 0);//loadAndViewImage(list[list.length - 1].imageId, viewportNum);
+                            GetViewport().loadImgBySop(list[list.length - 1]);
                             nextInstanceNumber = list.length - 1;
                             break1 = true;
                             break;
                         }
-                        setSopToViewport(list[l - 1].SopUID, viewportNum);
+                        GetViewport(viewportNum).loadImgBySop(list[l - 1]); //setSopToViewport(list[l - 1].SOPInstanceUID, viewportNum);
                         nextInstanceNumber = l - 1;
                         break1 = true;
                         break;
@@ -200,12 +200,12 @@ getByid("MouseOperation_MPR").onclick = function () {
                     if (break1 == true) break;
                     if (list[l].InstanceNumber == Onum) {
                         if (l + 1 >= list.length) {
-                            setSopToViewport(list[0].SopUID, viewportNum);
+                            GetViewport(viewportNum).loadImgBySop(list[0]); //setSopToViewport(list[0].SOPInstanceUID, viewportNum);
                             nextInstanceNumber = 0;
                             break1 = true;
                             break;
                         }
-                        setSopToViewport(list[l + 1].SopUID, viewportNum);
+                        GetViewport(viewportNum).loadImgBySop(list[l + 1]); //setSopToViewport(list[l + 1].SOPInstanceUID, viewportNum);
                         nextInstanceNumber = l + 1;
                         break1 = true;
                         break;
@@ -367,7 +367,7 @@ function Anatomical_Section2(nextInstanceNumber) {
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = 140;
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = 191;
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = 255;
-                } else if (dataH == parseInt(nowInstanceNumber * (o3DListLength / Patient.findSeries(GetViewport().series).SopAmount)) + 0) {
+                } else if (dataH == parseInt(nowInstanceNumber * (o3DListLength / ImageManager.findSeries(GetViewport().series).Sop.length)) + 0) {
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW] = 255;
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = 255;
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = 0;
@@ -459,7 +459,7 @@ function Anatomical_Section(nextInstanceNumber) {
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = 53;
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = 119;
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 3] = 255;
-                } else if (l == parseInt(nowInstanceNumber * (o3DListLength / Patient.findSeries(GetViewport().series).SopAmount)) + 0) {
+                } else if (l == parseInt(nowInstanceNumber * (o3DListLength / ImageManager.findSeries(GetViewport().series).Sop.length)) + 0) {
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW] = 255;
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 1] = 255;
                     imgData2.data[dataH * NewCanvas.width * 4 + dataW + 2] = 0;
@@ -556,12 +556,14 @@ function initMPR() {
         o3DListLength = 0;
         //set_BL_model('MouseTool');
         //mouseTool();
-        if (GetViewport(0).sop)
-            setSopToViewport(GetViewport(0).sop, 0, 0);//loadAndViewImage(Patient.findSop(GetViewport(0).sop).imageId, 0);
+        if (GetViewport(0).Sop)
+            GetViewport().loadImgBySop(GetViewport(0).Sop);
         //canvas = GetViewport().canvas
         if (origin_openAnnotation == true || origin_openAnnotation == false) openAnnotation = origin_openAnnotation;
         displayAnnotation();
         for (var c = 0; c < Viewport_Total; c++) GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "";
+        resetViewport(2);
+        GetViewport(2).loadImgBySop(originSop_of_viewport2);
         getByid("MouseOperation").click();
     } else if (openMPR == true) {
         enterMPR_UI();
@@ -581,8 +583,10 @@ function initMPR() {
         GetViewport(i).scale = null;
         //for (var c = 0; c < 4; c++)
         //    GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "none";
+        originSop_of_viewport2 = GetViewport(2).Sop;
+        resetViewport(2);
+        GetViewport(2).loadImgBySop(GetViewport().Sop);
         viewportNumber = 2;
-        setSopToViewport(sop, viewportNumber, 0);//loadAndViewImage(Patient.findSop(sop).imageId);
 
         ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
 
@@ -678,7 +682,6 @@ function initMPR() {
                 } catch (ex) { }
             }
         }
-
         o3DListLength = list.length;
         Thickness = 0;
         var big = 100000000000000000000000000000;
@@ -798,8 +801,8 @@ function initMPR() {
 
         for (var l = 0; l < list.length; l++) {
             const l2 = l;
-            const image = getPatientbyImageID[list[l2].imageId].image;
-            const pixelData = getPatientbyImageID[list[l2].imageId].pixelData;
+            const image = list[l2].Image;
+            const pixelData = list[l2].Image.pixelData;
             try {
                 var NewDiv = document.createElement("DIV");
                 NewDiv.addEventListener("contextmenu", contextmenuF, false);
@@ -975,8 +978,8 @@ function o3dWindowLevel() {
     Thickness = -Thickness + big;
     for (var l = 0; l < list.length; l++) {
         const l2 = l;
-        const image = getPatientbyImageID[list[l2].imageId].image;
-        const pixelData = getPatientbyImageID[list[l2].imageId].pixelData;
+        const image = list[l2].Image;
+        const pixelData = list[l2].Image.pixelData;
         var NewDiv = document.createElement("DIV");
         NewDiv.addEventListener("contextmenu", contextmenuF, false);
         // NewDiv.addEventListener('cornerstoneimagerendered', onImageRendered);
@@ -1056,7 +1059,7 @@ Anatomical_SectionMouseMove = function (e) {
                 var i = index[0],
                     j = index[1],
                     k = index[2];
-                var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
+                var Onum = parseInt(ImageManager.Study[i].Series[j].Sop[k].InstanceNumber);
                 Anatomical_Section(Onum, true);
                 // Anatomical_Section2(1);
             }
@@ -1098,7 +1101,7 @@ Anatomical_SectionMouseMove0 = function (e) {
                 var i = index[0],
                     j = index[1],
                     k = index[2];
-                var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
+                var Onum = parseInt(ImageManager.Study[i].Series[j].Sop[k].InstanceNumber);
                 // Anatomical_Section(1);
                 Anatomical_Section2(Onum);
             }

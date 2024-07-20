@@ -12,6 +12,14 @@ var viewportNumber = 0;
 
 let ViewPortList = [];
 
+class ImageInfo {
+    constructor() {
+        this.type = type;
+        this.image = image;
+        this.dataSet = dataSet;
+    }
+}
+
 class BlueLightViewPort {
     constructor(index, init = true) {
         if (init) this.initViewport(index);
@@ -46,6 +54,7 @@ class BlueLightViewPort {
         this.rotate = 0;
         this.translate = new Point2D(0, 0);
         this.scale = null;
+        this.Sop = undefined;
 
         this.windowCenter = null;
         this.windowWidth = null;
@@ -115,7 +124,6 @@ class BlueLightViewPort {
     get sop() { if (this.tags) return this.tags.SOPInstanceUID };
     get InstanceNumber() { return this.div.InstanceNumber };
     get framesNumber() { return this.content.framesNumber };
-    get imageId() { return this.div.imageId };
     get tags() { return this.DicomTagsList; }
 
     set study(v) { this.div.study = v };
@@ -123,7 +131,6 @@ class BlueLightViewPort {
     set sop(v) { this.div.sop = v };
     set InstanceNumber(v) { this.div.InstanceNumber = v };
     set framesNumber(v) { this.content.framesNumber = v };
-    set imageId(v) { this.div.imageId = v };
     initViewportCanvas(div, index) {
         //一般的Canvas
         var dicmCanvas = document.createElement("CANVAS");
@@ -209,41 +216,47 @@ class BlueLightViewPort {
             sop: this.sop
         };
     }
+
     nextFrame(invert = false) {
         if (this.QRLevel == "series" && this.tags && this.tags.length) {
-            var Sop = Patient.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.tags.InstanceNumber, invert);
-            if (Sop != undefined) setSopToViewport(Sop, this.index);//loadAndViewImage(Sop.imageId, this.index);
+            var Sop = ImageManager.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.tags.InstanceNumber, invert);
+            if (Sop != undefined) this.loadImgBySop(Sop);
         } else if (this.QRLevel == "frames" && this.framesNumber != undefined) {
-            var framsNumber = Patient.getNextFrameByQRLevelsAndFrameNumber(this.QRLevels, this.framesNumber, invert);
-            if (framsNumber != undefined) setSopToViewport(this.sop, this.index, framsNumber);//loadAndViewImage(this.imageId, this.index, framsNumber);
+            this.framesNumber += invert == true ? 1 : -1;
+            if (this.framesNumber == -1) this.framesNumber = this.content.image.NumberOfFrames - 1;
+            else if (this.framesNumber >= this.content.image.NumberOfFrames) this.framesNumber = 0;
+            DisplaySeriesCount(this.index);
+            refleshCanvas(this);
+            putLabel();
         }
     }
 
     reloadImg() {
         if (this.study == undefined) return;
-        var Sop = Patient.getSopByQRLevels(this.QRLevels);
-        if (Sop.pdf) displayPDF(Sop.pdf);
-        else setSopToViewport(Sop, this.index);//loadAndViewImage(Sop.imageId, this.index);
+        var Sop = ImageManager.getSopByQRLevels(this.QRLevels);
+        if (Sop.pdf) PdfLoader(Sop.pdf);
+        else this.loadImgBySop(Sop);
     }
 
-    reloadFirstImg() {
-        if (this.study == undefined) return;
-        var Sop = Patient.getSopByQRLevels(this.QRLevels);
-        if (Sop.pdf) displayPDF(Sop.pdf);
-        else setSopToViewport(Patient.getFirstSopByQRLevels(this.QRLevels), this.index, 0);//loadAndViewImage(Patient.getFirstSopByQRLevels(this.QRLevels).imageId, this.index);
+    //統一由這載入影像到Viewport
+    //底下那兩個和Frame要注意
+    //readDicom要注意
+    loadImgBySop(Sop) {
+        if (!Sop) return;
+        if (Sop.constructor.name == 'String') Sop = ImageManager.findSop(Sop);
+
+        this.Sop = Sop;
+        if (Sop.type == 'sop') DcmLoader(Sop.Image, this);
+        else if (Sop.type == 'frame') {
+            this.framesNumber = 0;
+            DcmLoader(Sop.Image, this);
+        }
+        else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, this);
+        else if (Sop.type == 'img') DcmLoader(Sop.Image, this);
     }
 
-    loadFirstImgBySeries(series) {
-        var Series = Patient.findSeries(series);
-        var Sop = Series.Sop[0];
-        if (Sop.pdf) displayPDF(Sop.pdf);
-        else setSopToViewport(Sop, this.index, 0);//loadAndViewImage(Sop.imageId, this.index);
-    }
-
-    loadFirstImgBySop(sop) {
-        var Sop = Patient.findSop(sop);
-        if (Sop.pdf) displayPDF(Sop.pdf);
-        else setSopToViewport(Sop, this.index, 0);//loadAndViewImage(Sop.imageId, this.index);
+    reload() {
+        this.loadImgBySop(this.Sop);
     }
 
     refleshScrollBar() {
@@ -401,20 +414,101 @@ function GetViewportMark(num) {
     return getByid("MarkCanvas" + (num - 0));
 }
 
-//function refleshCanvas(DicomCanvas, image, viewport, pixelData) {
-function refleshCanvas(viewport) {
-    var canvas = viewport.canvas;
-    var image = viewport.content.image;
-    var pixelData = viewport.content.pixelData;
-    if (!image) return;
-    canvas.width = image.width;
-    canvas.height = image.height
+function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     var ctx = canvas.getContext("2d");
     var imgData = ctx.createImageData(image.width, image.height);
     //預先填充不透明度為255
     new Uint32Array(imgData.data.buffer).fill(0xFF000000);
 
-    if (viewport.type == 'img') {
+    var windowCenter = info.windowCenter ? info.windowCenter : image.windowCenter;
+    var windowWidth = info.windowWidth ? info.windowWidth : image.windowWidth;
+    var high = windowCenter + (windowWidth / 2);
+    var low = windowCenter - (windowWidth / 2);
+    var intercept = image.intercept;
+    if (CheckNull(intercept)) intercept = 0;
+    var slope = image.slope;
+    if (CheckNull(slope)) slope = 1;
+
+    //未最佳化之版本
+    /*if (image.color == true) {
+        for (var i = imgData.data.length; i >=0 ; i -= 4) {
+            imgData.data[i + 0] = parseInt(((pixelData[i] * slope - low + intercept) / (high - low)) * 255);
+            imgData.data[i + 1] = parseInt(((pixelData[i + 1] * slope - low + intercept) / (high - low)) * 255);
+            imgData.data[i + 2] = parseInt(((pixelData[i + 2] * slope - low + intercept) / (high - low)) * 255);
+            imgData.data[i + 3] = 255;
+        }
+    } else {
+        for (var i = imgData.data.length, j = imgData.data.length/4; i>=0 ; i -= 4, j--) {
+            imgData.data[i + 0] = imgData.data[i + 1] = imgData.data[i + 2] = parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255);
+            imgData.data[i + 3] = 255;
+        }
+    }*/
+    const multiplication = 255 / ((high - low)) * slope;
+    const addition = (- low + intercept) / (high - low) * 255;
+    const data = imgData.data;
+    if (image.color == true) {
+        for (var i = 0; i < data.length; i += 4) {
+            data[i + 0] = pixelData[i] * multiplication + addition;
+            data[i + 1] = pixelData[i + 1] * multiplication + addition;
+            data[i + 2] = pixelData[i + 2] * multiplication + addition;
+        }
+    } else {
+        for (var i = 0, j = 0; i < data.length; i += 4, j++) {
+            data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
+        }
+    }
+    ctx.putImageData(imgData, 0, 0);
+    var shouldReDraw = false;
+    ctx.save();
+    /*if (CheckNull(viewport.transform.imageOrientationX) == false && CheckNull(viewport.transform.imageOrientationY) == false && CheckNull(viewport.transform.imageOrientationZ) == false) {
+        ctx.setTransform(new DOMMatrix(
+            [viewport.transform.imageOrientationX, -viewport.transform.imageOrientationX2, 0, viewport.transform.imagePositionX * viewport.transform.PixelSpacingX,
+            -viewport.transform.imageOrientationY, viewport.transform.imageOrientationY2, 0, viewport.transform.imagePositionY * viewport.transform.PixelSpacingY,
+            viewport.transform.imageOrientationZ, viewport.transform.imageOrientationZ2, 0, viewport.transform.imagePositionZ,
+                0, 0, 0, 1
+            ]
+        ));
+        shouldReDraw = true;
+    }*/
+
+    var invert = ((image.invert != true && info.invert == true) || (image.invert == true && info.invert == false));
+    if (Object.keys(info).length === 0) invert = image.invert;
+    if (invert == true) shouldReDraw = ctx.filter = "invert()";
+
+    if (info.HorizontalFlip == true || info.VerticalFlip == true) {
+        ctx.transform(
+            info.HorizontalFlip ? -1 : 1, 0, // set the direction of x axis
+            0, info.VerticalFlip ? -1 : 1,   // set the direction of y axis
+            (info.HorizontalFlip ? image.width : 0), // set the x origin
+            (info.VerticalFlip ? image.height : 0)   // set the y origin
+        );
+        shouldReDraw = true;
+    }
+
+    if (shouldReDraw != false) ctx.drawImage(cloneCanvas(canvas), 0, 0);
+
+    ctx.restore();
+}
+
+//function refleshCanvas(DicomCanvas, image, viewport, pixelData) {
+function refleshCanvas(viewport) {
+    var canvas = viewport.canvas;
+    var image = viewport.content.image, pixelData;
+    if (!viewport.Sop) return;
+    if (viewport.Sop.type == 'frame') pixelData = viewport.content.image.getPixelData(viewport.framesNumber);
+    else if (viewport.Sop.type == 'sop') pixelData = viewport.content.image.getPixelData();
+    else if (viewport.Sop.type == 'img') pixelData = viewport.content.image.getPixelData();
+    if (!image) return;
+    if (canvas.width != image.width) canvas.width = image.width;
+    if (canvas.height != image.height) canvas.height = image.height
+    renderPixelData2Cnavas(image, pixelData, canvas, viewport);
+    //setTransform(viewport.index);
+    //GetViewportMark(viewport.index).style = canvas.style.cssText;
+    refleshGUI();
+}
+
+/*
+if (viewport.type == 'img') {
         var windowCenter = viewport.windowCenter ? viewport.windowCenter : image.windowCenter;
         var windowWidth = viewport.windowWidth ? viewport.windowWidth : image.windowWidth;
         var high = windowCenter + (windowWidth / 2);
@@ -431,112 +525,7 @@ function refleshCanvas(viewport) {
         refleshGUI();
         return;
     }
-
-
-    if (viewport.series && viewport.series != image.data.string(Tag.SeriesInstanceUID))
-        viewport.windowCenter = viewport.windowWidth = null;
-
-    if ((image.data.elements.x00281050 == undefined || image.data.elements.x00281051 == undefined)) {
-        var max = Number.MIN_VALUE, min = Number.MIN_VALUE;
-        if (image.MinPixel == undefined || image.MaxPixel == undefined || (image.MinPixel == 0 && image.MaxPixel == 0)) {
-            for (var i = 0; i < pixelData.length; i++) {
-                if (pixelData[i] > max) max = pixelData[i];
-                if (pixelData[i] < min) min = pixelData[i];
-            }
-            image.MinPixel = min; image.MaxPixel = max;
-        }
-        min = image.MinPixel; max = image.MaxPixel;
-        if (min != max && min != undefined && max != undefined) {
-            const diff = (1 / (max - min)) * 255;
-            const data = imgData.data;
-            if (image.color == true) {
-                for (var i = data.length - 4; i >= 0; i -= 4) {
-                    data[i + 0] = pixelData[i] * diff;
-                    data[i + 1] = pixelData[i + 1] * diff;
-                    data[i + 2] = pixelData[i + 2] * diff;
-                }
-            } else {
-                for (var i = data.length - 4, j = data.length / 4 - 1; i >= 0; i -= 4, j--) {
-                    data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * diff;
-                }
-            }
-            ctx.putImageData(imgData, 0, 0);
-        }
-    } else {
-        var windowCenter = viewport.windowCenter ? viewport.windowCenter : image.windowCenter;
-        var windowWidth = viewport.windowWidth ? viewport.windowWidth : image.windowWidth;
-        var high = windowCenter + (windowWidth / 2);
-        var low = windowCenter - (windowWidth / 2);
-        var intercept = image.intercept;
-        if (CheckNull(intercept)) intercept = 0;
-        var slope = image.slope;
-        if (CheckNull(slope)) slope = 1;
-
-        //未最佳化之版本
-        /*if (image.color == true) {
-            for (var i = imgData.data.length; i >=0 ; i -= 4) {
-                imgData.data[i + 0] = parseInt(((pixelData[i] * slope - low + intercept) / (high - low)) * 255);
-                imgData.data[i + 1] = parseInt(((pixelData[i + 1] * slope - low + intercept) / (high - low)) * 255);
-                imgData.data[i + 2] = parseInt(((pixelData[i + 2] * slope - low + intercept) / (high - low)) * 255);
-                imgData.data[i + 3] = 255;
-            }
-        } else {
-            for (var i = imgData.data.length, j = imgData.data.length/4; i>=0 ; i -= 4, j--) {
-                imgData.data[i + 0] = imgData.data[i + 1] = imgData.data[i + 2] = parseInt(((pixelData[j] * slope - low + intercept) / (high - low)) * 255);
-                imgData.data[i + 3] = 255;
-            }
-        }*/
-        const multiplication = 255 / ((high - low)) * slope;
-        const addition = (- low + intercept) / (high - low) * 255;
-        const data = imgData.data;
-        if (image.color == true) {
-            for (var i = data.length - 4; i >= 0; i -= 4) {
-                data[i + 0] = pixelData[i] * multiplication + addition;
-                data[i + 1] = pixelData[i + 1] * multiplication + addition;
-                data[i + 2] = pixelData[i + 2] * multiplication + addition;
-            }
-        } else {
-            for (var i = data.length - 4, j = data.length / 4 - 1; i >= 0; i -= 4, j--) {
-                data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
-            }
-        }
-        ctx.putImageData(imgData, 0, 0);
-    }
-
-    var shouldReDraw = false;
-    ctx.save();
-    /*if (CheckNull(viewport.transform.imageOrientationX) == false && CheckNull(viewport.transform.imageOrientationY) == false && CheckNull(viewport.transform.imageOrientationZ) == false) {
-        ctx.setTransform(new DOMMatrix(
-            [viewport.transform.imageOrientationX, -viewport.transform.imageOrientationX2, 0, viewport.transform.imagePositionX * viewport.transform.PixelSpacingX,
-            -viewport.transform.imageOrientationY, viewport.transform.imageOrientationY2, 0, viewport.transform.imagePositionY * viewport.transform.PixelSpacingY,
-            viewport.transform.imageOrientationZ, viewport.transform.imageOrientationZ2, 0, viewport.transform.imagePositionZ,
-                0, 0, 0, 1
-            ]
-        ));
-        shouldReDraw = true;
-    }*/
-
-    var invert = ((image.invert != true && viewport.invert == true) || (image.invert == true && viewport.invert == false));
-    if (invert == true) shouldReDraw = ctx.filter = "invert()";
-    if (viewport.HorizontalFlip == true || viewport.VerticalFlip == true) {
-        ctx.transform(
-            viewport.HorizontalFlip ? -1 : 1, 0, // set the direction of x axis
-            0, viewport.VerticalFlip ? -1 : 1,   // set the direction of y axis
-            (viewport.HorizontalFlip ? image.width : 0), // set the x origin
-            (viewport.VerticalFlip ? image.height : 0)   // set the y origin
-        );
-        shouldReDraw = true;
-    }
-
-    if (shouldReDraw != false) {
-        ctx.drawImage(cloneCanvas(canvas), 0, 0);
-    }
-    ctx.restore();
-
-    //setTransform(viewport.index);
-    //GetViewportMark(viewport.index).style = canvas.style.cssText;
-    refleshGUI();
-}
+*/
 
 function cloneCanvas(canvas) {
     var newCanvas = document.createElement('canvas');

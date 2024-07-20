@@ -46,8 +46,6 @@ getByid("writeXML").onclick = function () {
   getByid("saveXML").style.display = openWriteXML == true ? "" : "none";
   getByid("drawXML").style.display = openWriteXML == true ? "" : "none";
 
-
-
   ShowElemByID("xmlMarkName");
   SetTable();
   displayMark();
@@ -431,7 +429,7 @@ function deleteXml() {
     k = index[2];
   var list = [];
   for (var n = 0; n < PatientMark.length; n++) {
-    if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
+    if (PatientMark[n].sop == ImageManager.Study[i].Series[j].Sop[k].SOPInstanceUID) {
       for (var m = 0; m < PatientMark[n].mark.length; m++) {
         if (PatientMark[n].mark[m].type == "XML_mark") {
           list.push(PatientMark[n]);
@@ -442,7 +440,7 @@ function deleteXml() {
   for (var l = 0; l < list.length; l++) {
     PatientMark.splice(PatientMark.indexOf(list), 1);
   }
-  refreshMarkFromSop(Patient.Study[i].Series[j].Sop[k].SopUID);
+  refreshMarkFromSop(ImageManager.Study[i].Series[j].Sop[k].SOPInstanceUID);
   displayMark();
 }
 

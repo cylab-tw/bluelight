@@ -243,3 +243,10 @@ button:hover {
   /*right : 0px;*/
   z-index: 105;
 }
+
+.DicomTableDIV{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  overflow-y: scroll;
+}

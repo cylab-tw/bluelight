@@ -9,6 +9,12 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
     GetViewport(viewportNum).div.style.overflowX = "hidden";
     if (getByid("DICOMTagsSelect").selected == false) return;
     if (openDisplayMarkup == false) return;
+
+    var TableDIV = document.createElement("DIV");
+    TableDIV.id = "DicomTableDIV" + (viewportNum + 1);
+    TableDIV.className = "DicomTableDIV";
+    TableDIV.onmousedown = stopPropagation;
+
     var Table = document.createElement("table");
     Table.id = "DicomTagsTable" + (viewportNum + 1);
     Table.className = "DicomTable";
@@ -49,7 +55,8 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
             cells.innerHTML = "" + GetViewport().tags[i][1];*/
         rowCount++;
     }
-    GetViewport(viewportNum).div.appendChild(Table);
+    GetViewport(viewportNum).div.appendChild(TableDIV);
+    TableDIV.appendChild(Table);
     GetViewport(viewportNum).div.style.overflowY = "scroll";
     GetViewport(viewportNum).div.style.overflowX = "scroll";
 }
@@ -63,11 +70,17 @@ function displayAIM(viewportNum = viewportNumber) {
     GetViewport(viewportNum).div.style.overflowX = "hidden"
     if (getByid("AIMSelect").selected == false) return;
     if (openDisplayMarkup == false) return;
+
+    var TableDIV = document.createElement("DIV");
+    TableDIV.id = "DicomTableDIV" + (viewportNum + 1);
+    TableDIV.onmousedown = stopPropagation;
+    TableDIV.className = "DicomTableDIV";
+
     var Table = document.createElement("table");
     Table.id = "AimTable" + (viewportNum + 1);
     Table.className = "DicomTable";
     Table.setAttribute("border", 2);
-   
+
     //SearchUid2Index
     var sop = GetViewport(viewportNum).sop;
     let index = SearchUid2Index(sop);
@@ -77,7 +90,7 @@ function displayAIM(viewportNum = viewportNumber) {
         k = index[2];
     for (var n = 0; n < PatientMark.length; n++) {
         if (break1 == true) break;
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
+        if (PatientMark[n].sop == ImageManager.Study[i].Series[j].Sop[k].SOPInstanceUID) {
             var rowCount = 0;
             for (var m = 0; m < PatientMark[n].mark.length; m++) {
                 if (PatientMark[n].mark[m].type == "Characteristic") {
@@ -124,7 +137,8 @@ function displayAIM(viewportNum = viewportNumber) {
             break;
         }
     }
-    GetViewport(viewportNum).div.appendChild(Table);
+    GetViewport(viewportNum).div.appendChild(TableDIV);
+    TableDIV.appendChild(Table);
     GetViewport(viewportNum).div.style.overflowY = "scroll";
     GetViewport(viewportNum).div.style.overflowX = "scroll";
 }
@@ -136,6 +150,10 @@ function dropTable(num) {
     }
     if (getByid("AimTable" + (num + 1))) {
         var elem = getByid("AimTable" + (num + 1));
+        elem.parentElement.removeChild(elem);
+    }
+    if (getByid("DicomTableDIV" + (num + 1))) {
+        var elem = getByid("DicomTableDIV" + (num + 1));
         elem.parentElement.removeChild(elem);
     }
 }
@@ -157,7 +175,7 @@ function createDicomTagsList2Viewport(viewport) {
     }*/
     //取得DICOM Tags放入清單
     viewport.DicomTagsList = [];
-    viewport.imageId = viewport.content.image.imageId ? viewport.content.image.imageId : "";
+    if (viewport.Sop.type == "img") viewport.DicomTagsList.SOPInstanceUID = viewport.content.image.SOPInstanceUID;
 
     for (el in viewport.content.image.data.elements) {
         try {

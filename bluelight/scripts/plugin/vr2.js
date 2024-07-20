@@ -132,16 +132,16 @@ class VRCube {
         this.perspective = "";
 
         this.scale = 1;
-        this.pixelSpacing = this.SOP.image.rowPixelSpacing;
+        this.pixelSpacing = this.SOP.Image.rowPixelSpacing;
 
         this.rescaleMode = "resize";
         //if (step != 1) this.rescaleMode = "pixel";
 
         this.renderMode = "whole";
-        this.width = this.SOP.image.width;
-        this.height = this.SOP.image.height;
-        this.windowCenter = this.SOP.image.windowCenter;
-        this.windowWidth = this.SOP.image.windowWidth;
+        this.width = this.SOP.Image.width;
+        this.height = this.SOP.Image.height;
+        this.windowCenter = this.SOP.Image.windowCenter;
+        this.windowWidth = this.SOP.Image.windowWidth;
         this.ElemXs = []; this.ElemYs = []; this.ElemZs = [];
 
         if (this.width == this.height) this.stepFactor = getFactor(this.width);
@@ -215,7 +215,9 @@ class VRCube {
         this.startRenderTime = performance.now();
         var offsety = (this.height / 1 / 2) - (this.height / this.step / 2);
         if (this.container) {
-            this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
+            if (this.PerspectiveCheck.checked) this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
+            else this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
+            
             this.container.style.transform =
                 `translate3d(${this.offset[0]}px,${(this.offset[1] + (offsety))}px,0) scale(${this.scale * this.step}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg)`;// rotateZ(${this.VR2_RotateDeg[2]}deg) `
         }
@@ -688,34 +690,33 @@ class VRCube {
                 //預覽模式可以讓左右兩側的圖正常
                 if ((ll == 0 || ll == this.sopList.length - 1) && this.step_tmp != -1 && (/*!this.ShadowCheck.checked ||*/ (VRCube.operate_mode == "window" && this.MouseDownCheck == true))) {
                     step = this.step_tmp > 1 ? this.step_tmp : 1;
-                    [NewCanvas.style.width, NewCanvas.style.height] = [parseInt(SOP.image.width / this.step) + "px", parseInt(SOP.image.height / this.step) + "px"]
+                    [NewCanvas.style.width, NewCanvas.style.height] = [parseInt(SOP.Image.width / this.step) + "px", parseInt(SOP.Image.height / this.step) + "px"]
                 }
                 else step = this.step;
 
                 NewCanvas.style.position = "absolute";
-                //[NewCanvas.style.width, NewCanvas.style.height] = [SOP.image.width + "px", SOP.image.height + "px"]
+                //[NewCanvas.style.width, NewCanvas.style.height] = [SOP.Image.width + "px", SOP.Image.height + "px"]
 
-                [NewCanvas.width, NewCanvas.height] = [SOP.image.width, SOP.image.height];
+                [NewCanvas.width, NewCanvas.height] = [SOP.Image.width, SOP.Image.height];
                 if (this.rescaleMode == "resize" && step != 1) {
-                    [NewCanvas.width, NewCanvas.height] = [SOP.image.width / step, SOP.image.height / step];
-                    /////[NewCanvas.style.width, NewCanvas.style.height] = [SOP.image.width + "px", SOP.image.height + "px"]
-                }//else[NewCanvas.width, NewCanvas.height] = [SOP.image.width / step, SOP.image.height / step];
+                    [NewCanvas.width, NewCanvas.height] = [SOP.Image.width / step, SOP.Image.height / step];
+                    /////[NewCanvas.style.width, NewCanvas.style.height] = [SOP.Image.width + "px", SOP.Image.height + "px"]
+                }//else[NewCanvas.width, NewCanvas.height] = [SOP.Image.width / step, SOP.Image.height / step];
 
-                NewCanvas.pixelData = SOP.pixelData;
+                NewCanvas.pixelData = SOP.Image.pixelData;
                 NewCanvas.windowCenter = this.windowCenter;
                 NewCanvas.windowWidth = this.windowWidth;
 
-                this.Render2Canvas(NewCanvas, SOP.image.intercept, SOP.image.slope, SOP.image.color, step);
+                this.Render2Canvas(NewCanvas, SOP.Image.intercept, SOP.Image.slope, SOP.Image.color, step);
 
                 NewCanvas.position = new Point3D(0, 0, 0);
-                NewCanvas.position.z = parseFloat(SOP.image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1 / (parseFloat(SOP.image.rowPixelSpacing)));
+                NewCanvas.position.z = parseFloat(SOP.Image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1 / (parseFloat(SOP.Image.rowPixelSpacing)));
                 NewCanvas.direction = 'z';
                 //if (this.rescaleMode == "resize" && step != 1) NewCanvas.position.z /= step;
-
                 NewCanvas.style.transform = `translate3d(0, 0, 0) translateZ(-` + (NewCanvas.position.z / step) + "px)";
                 this.container.appendChild(NewCanvas);
                 this.ElemZs.push(NewCanvas);
-            } catch (ex) { };
+            } catch (ex) { console.log(ex); };
         }
         this.ElemZs = soryByTwoKey(this.ElemZs, "position", "z");
     }

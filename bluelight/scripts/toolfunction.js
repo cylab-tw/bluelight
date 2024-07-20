@@ -139,10 +139,10 @@ function GetmouseXY(evt) {
 }
 
 function SearchUid2Index(sop) {
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
+    for (var i = 0; i < ImageManager.Study.length; i++) {
+        for (var j = 0; j < ImageManager.Study[i].Series.length; j++) {
+            for (var l = 0; l < ImageManager.Study[i].Series[j].Sop.length; l++) {
+                if (ImageManager.Study[i].Series[j].Sop[l].SOPInstanceUID == sop) {
                     return [i, j, l]
                 }
             }
@@ -155,15 +155,15 @@ function sortInstance(sop) {
     let i = index[0],
         j = index[1],
         k = index[2];
-    if (Patient.Study[i].Series[j].Sop[k].SopUID == sop) {
+    if (ImageManager.Study[i].Series[j].Sop[k].SOPInstanceUID == sop) {
         var list = [];
-        var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-        for (var l = 0; l < Patient.Study[i].Series[j].Sop.length; l++) {
-            list.push(Patient.Study[i].Series[j].Sop[l]);
+        var Onum = parseInt(ImageManager.Study[i].Series[j].Sop[k].Image.InstanceNumber);
+        for (var l = 0; l < ImageManager.Study[i].Series[j].Sop.length; l++) {
+            list.push(ImageManager.Study[i].Series[j].Sop[l]);
         }
         for (var m = 0; m < list.length; m++) {
             for (var n = 0; n < list.length; n++) {
-                if (parseInt(list[m].InstanceNumber) < parseInt(list[n].InstanceNumber)) {
+                if (parseInt(list[m].Image.InstanceNumber) < parseInt(list[n].Image.InstanceNumber)) {
                     var tempUID = list[m];
                     list[m] = list[n];
                     list[n] = tempUID;
@@ -242,10 +242,10 @@ function rotatePoint(point, RotationAngle, RotationPoint) {
 
 function jump2UpOrEnd(number, choose) {
 
-    var SopList = Patient.findSeries(GetViewport().series);
+    var Series = ImageManager.findSeries(GetViewport().series);
     var max = Number.MIN_VALUE, min = Number.MAX_VALUE;
-    for (var l = 0; l < SopList.SopAmount; l++) {
-        var instance = parseInt(SopList.Sop[l].InstanceNumber);
+    for (var l = 0; l < Series.Sop.length; l++) {
+        var instance = parseInt(Series.Sop[l].InstanceNumber);
         if (instance < min) min = instance;
         else if (instance > max) max = instance;
     }
@@ -257,9 +257,9 @@ function jump2UpOrEnd(number, choose) {
         if (number < min) number = min;
     }
 
-    for (var l = 0; l < SopList.SopAmount; l++) {
-        if (parseInt(SopList.Sop[l].InstanceNumber) == number) {
-            setSopToViewport(SopList.Sop[l].SopUID);
+    for (var l = 0; l < Series.Sop.length; l++) {
+        if (parseInt(Series.Sop[l].InstanceNumber) == number) {
+            GetViewport().loadImgBySop(Series.Sop[l]);
             break;
         }
     }
@@ -272,8 +272,7 @@ function jump2Mark(showName) {
                 for (var m = 0; m < PatientMark[n].mark.length; m++) {
                     if (checkMarkEnabled(GetViewport().series, PatientMark[n]) == 0) continue;
                     else {
-                        setSopToViewport(PatientMark[n].sop);
-                        //loadAndViewImage(Patient.findSop(PatientMark[n].sop).imageId);
+                        GetViewport().loadImgBySop(PatientMark[n].sop);
                         return;
                     }
                 }
@@ -291,12 +290,12 @@ function checkMarkEnabled(seriesUID, Mark) {
 function refreshMark(dcm, refresh) {
     if (refresh == false) return;
     leftLayout.refleshMarkWithSeries(dcm.series);
-    displayAllMark()
+    displayAllMark();
 }
 
 function refreshMarkFromSop(sop) {
-    leftLayout.refleshMarkWithSeries(Patient.findSeriesBySop(sop).SeriesUID);
-    displayAllMark()
+    leftLayout.refleshMarkWithSeries(ImageManager.findSop(sop).parent.SeriesInstanceUID);
+    displayAllMark();
 }
 
 function getDistance(x, y) {

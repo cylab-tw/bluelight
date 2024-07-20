@@ -35,8 +35,9 @@ function readJson_xnat(url) {
             let supportedImages = ["DICOM", "DCM", "secondary"];
             if (supportedImages.includes(response["ResultSet"]["Result"][i]["collection"])) {
                 var uri = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + response["ResultSet"]["Result"][i]["URI"];
-                url = "wadouri:" + uri;
-                series = loadAndViewImage(url);
+                loadDICOMFromUrl(uri);
+                //url = "wadouri:" + uri;
+                //series = loadAndViewImage(url);
             } else {
                 console.error("Not supported collection type");
             }

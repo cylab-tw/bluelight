@@ -38,6 +38,10 @@ var contextmenuF = function (e) {
     e.preventDefault();
 };
 
+var stopPropagation=function(e){
+    e.stopPropagation();
+}
+
 var SwitchViewport = function () {
     getByid("WindowDefault").selected = true;
     var viewportNum = viewportNumber;
@@ -48,10 +52,10 @@ var SwitchViewport = function () {
     else getByid('playvideo').src = '../image/icon/black/b_CinePlay.png';
 
     changeMarkImg();
-    if (GetViewport().sop) setSopToViewport(GetViewport().sop);
+    if (GetViewport().Sop) GetViewport().reload();
     else {
         try {
-            setSopToViewport(GetViewport(viewportNum).sop);
+            GetViewport().loadImgBySop(GetViewport(viewportNum).Sop);
         } catch (ex) { }
     }
     refleshGUI();
@@ -121,7 +125,7 @@ function Wheel(e) {
 }
 
 function Mouseout(e) {
-    magnifierDiv.hide();
+    if(magnifierDiv) magnifierDiv.hide();
 }
 
 let dragged = null;

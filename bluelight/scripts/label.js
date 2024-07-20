@@ -25,10 +25,10 @@ function DisplaySeriesCount(viewportNum = viewportNumber) {
   var label_RB = getClass("labelRB")[viewportNum];
 
   var SeriesCount = 1;
-  for (var i = 0; i < Patient.StudyAmount; i++) {
-    for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-      if (Patient.Study[i].Series[j].SeriesUID == tags.SeriesInstanceUID) {
-        SeriesCount = Patient.Study[i].Series[j].SopAmount;
+  for (var i = 0; i < ImageManager.Study.length; i++) {
+    for (var j = 0; j < ImageManager.Study[i].Series.length; j++) {
+      if (ImageManager.Study[i].Series[j].SeriesInstanceUID == tags.SeriesInstanceUID) {
+        SeriesCount = ImageManager.Study[i].Series[j].Sop.length;
         if (SeriesCount == 1) SeriesCount = 2;
         if (tags.InstanceNumber == null) {
           if (label_RB.innerText.indexOf('/') >= 1) {

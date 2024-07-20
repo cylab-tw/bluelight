@@ -26,26 +26,29 @@ var PlayCine = function () {
     }, fps);
 }
 
-getByid("playvideo").onclick = function () {
-    if (this.enable == false) return;
-    drawBorder(this);
-    hideAllDrawer();
-    GetViewport().cine = !GetViewport().cine;
-    if (GetViewport().cine) {
-        getByid('labelPlay').style.display = '';
-        getByid('textPlay').style.display = '';
-    }
-    else {
-        getByid('labelPlay').style.display = 'none';
-        getByid('textPlay').style.display = 'none';
-    }
-    SetTable();
-    PlayCine();
-}
+onloadFunction.push(
+    function () {
+        getByid("playvideo").onclick = function () {
+            if (this.enable == false) return;
+            drawBorder(this);
+            hideAllDrawer();
+            GetViewport().cine = !GetViewport().cine;
+            if (GetViewport().cine) {
+                getByid('labelPlay').style.display = '';
+                getByid('textPlay').style.display = '';
+            }
+            else {
+                getByid('labelPlay').style.display = 'none';
+                getByid('textPlay').style.display = 'none';
+            }
+            SetTable();
+            PlayCine();
+        }
 
-getByid("textPlay").onchange = function () {
-    if ((parseInt(getByid('textPlay').value) <= 1)) getByid('textPlay').value = 1;
-    else if (parseInt(getByid('textPlay').value) >= 60) getByid('textPlay').value = 60;
-    else if (!(parseInt(getByid('textPlay').value) >= 1)) getByid('textPlay').value = 10;
-    PlayCine();
-}
+        getByid("textPlay").onchange = function () {
+            if ((parseInt(getByid('textPlay').value) <= 1)) getByid('textPlay').value = 1;
+            else if (parseInt(getByid('textPlay').value) >= 60) getByid('textPlay').value = 60;
+            else if (!(parseInt(getByid('textPlay').value) >= 1)) getByid('textPlay').value = 10;
+            PlayCine();
+        }
+    });

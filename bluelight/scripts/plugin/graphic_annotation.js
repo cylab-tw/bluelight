@@ -521,13 +521,13 @@ function set_Graphic_context() {
             for (var c = 0; c < 5; c++) {
                 temp = setTag(temp, "StudyDate", GetViewport().studyDate, true);
                 temp = setTag(temp, "StudyTime", GetViewport().studyTime, true);
-                temp = setTag(temp, "StudyInstanceUID", Patient.Study[i].StudyUID, true);
+                temp = setTag(temp, "StudyInstanceUID", ImageManager.Study[i].StudyInstanceUID, true);
                 temp = setTag(temp, "SeriesInstanceUID", createSeriesUid, true);
                 temp = setTag(temp, "SOPInstanceUID", createSopUid, true);
                 temp = setTag(temp, "PatientID", GetViewport().tags.PatientID, true);
                 temp = setTag(temp, "PatientName", GetViewport().tags.PatientName, true);
                 temp = setTag(temp, "ReferencedSOPInstanceUID", PatientMark[n].sop, true);
-                temp = setTag(temp, "ReferencedSeriesInstanceUID", Patient.Study[i].Series[j].SeriesUID, true);
+                temp = setTag(temp, "ReferencedSeriesInstanceUID", ImageManager.Study[i].Series[j].SeriesInstanceUID, true);
                 temp = setTag(temp, "AccessionNumber", GetViewport().tags.AccessionNumber, true);
                 temp = setTag(temp, "StudyDescription", GetViewport().studyDescription, true);
                 temp = setTag(temp, "StudyID", GetViewport().studyID, true);

@@ -1,6 +1,3 @@
-//decode function
-let decodeImageFrame;
-
 function readXML(url) {
   var oReq = new XMLHttpRequest();
   try {
@@ -130,7 +127,7 @@ function readXML(url) {
   oReq.send();
 }
 
-function readDicomOverlay(byteArray, dataSet, patientmark) {
+function readDicomOverlay(dataSet) {
   for (var ov = 0; ov <= 28; ov += 2) {
     var ov_str = "" + ov;
     if (ov < 10) ov_str = "0" + ov;
@@ -200,13 +197,13 @@ function readDicomOverlay(byteArray, dataSet, patientmark) {
           pixelData.data[i + 3] = 255;
         }
       OverlayMark.ctx.putImageData(pixelData, 0, 0);
-      patientmark.push(OverlayMark);
+      PatientMark.push(OverlayMark);
       refreshMark(OverlayMark);
     } catch (ex) { console.log(ex) }
   }
 }
 
-function readDicomRTSS(byteArray, dataSet, patientmark) {
+function readDicomRTSS(dataSet) {
   if (dataSet.string(Tag.ROIContourSequence)) {
     for (var i in dataSet.elements.x30060039.items) {
       var colorStr = ("" + dataSet.elements.x30060039.items[i].dataSet.string(Tag.ROIDisplayColor)).split("\\");
@@ -228,7 +225,7 @@ function readDicomRTSS(byteArray, dataSet, patientmark) {
           } catch (ex) { }
 
           RtssMark.color = color;
-          var ROIName = getROINameList(byteArray, dataSet)[i];
+          var ROIName = getROINameList(dataSet)[i];
           if (ROIName) RtssMark.hideName = RtssMark.showName = ROIName;
           //dcm.SliceLocation=dataSet.string('x00201041');
           RtssMark.sop = dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.elements.x30060016.items[k].dataSet.string(Tag.ReferencedSOPInstanceUID);;
@@ -239,7 +236,7 @@ function readDicomRTSS(byteArray, dataSet, patientmark) {
             RtssMark.setPoint3D(parseFloat(str0[k2]), parseFloat(str0[k2 + 1]), parseFloat(str0[k2 + 2]));
             RtssMark.imagePositionZ = parseFloat(str0[k2 + 2]);
           }
-          patientmark.push(RtssMark);
+          PatientMark.push(RtssMark);
           refreshMark(RtssMark);
         }
       }
@@ -247,7 +244,7 @@ function readDicomRTSS(byteArray, dataSet, patientmark) {
   }
 }
 
-function getROINameList(byteArray, dataSet) {
+function getROINameList(dataSet) {
   var ROINameList = [];
   if (dataSet.string(Tag.StructureSetROISequence)) {
     for (var i in dataSet.elements.x30060020.items) {
@@ -259,326 +256,302 @@ function getROINameList(byteArray, dataSet) {
   return ROINameList;
 }
 
-function readDicom(url, patientmark, openfile) {
-  var oReq = new XMLHttpRequest();
-  try {
-    oReq.open("get", url, true);
-    var wadoToken = ConfigLog.WADO.token;
-    for (var to = 0; to < Object.keys(wadoToken).length; to++) {
-      if (wadoToken[Object.keys(wadoToken)[to]] != "") {
-        oReq.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
-      }
-    }
-  } catch (err) { }
-  oReq.responseType = "arraybuffer";
-  oReq.onreadystatechange = function (oEvent) {
-    if (oReq.readyState == 4) {
-      if (oReq.status == 200) {
-        var byteArray = new Uint8Array(oReq.response);
-        var dataSet = dicomParser.parseDicom(byteArray);
-        readDicomOverlay(byteArray, dataSet, patientmark);
+function readDicomMark(dataSet) {
+  readDicomOverlay(dataSet);
 
-        if (dataSet.string(Tag.GraphicAnnotationSequence)) {
-          var sop1;
-          if (dataSet.string(Tag.ReferencedSeriesSequence)) {
-            for (var ii2 in dataSet.elements.x00081115.items) {
-              var x00081115DataSet = dataSet.elements.x00081115.items[ii2].dataSet.elements.x00081140.items;
-              //console.log(x00081115DataSet.length);
-              for (var s = 0; s < x00081115DataSet.length; s++) {
-                //for (var ii3 in x00081115DataSet) {
-                sop1 = x00081115DataSet[s].dataSet.string(Tag.ReferencedSOPInstanceUID);
-                //}
+  if (dataSet.string(Tag.GraphicAnnotationSequence)) {
+    var sop1;
+    if (dataSet.string(Tag.ReferencedSeriesSequence)) {
+      for (var ii2 in dataSet.elements.x00081115.items) {
+        var x00081115DataSet = dataSet.elements.x00081115.items[ii2].dataSet.elements.x00081140.items;
+        //console.log(x00081115DataSet.length);
+        for (var s = 0; s < x00081115DataSet.length; s++) {
+          //for (var ii3 in x00081115DataSet) {
+          sop1 = x00081115DataSet[s].dataSet.string(Tag.ReferencedSOPInstanceUID);
+          //}
 
-                var tempsop = ""
-                var tempDataSet = "";
-                var GSPS_Text = "";
-                function POLYLINE_Function(tempDataSet, GSPS_Text, g) {
-                  if (tempDataSet == "") {
-                    return;
+          var tempsop = ""
+          var tempDataSet = "";
+          var GSPS_Text = "";
+          function POLYLINE_Function(tempDataSet, GSPS_Text, g) {
+            if (tempDataSet == "") {
+              return;
+            };
+            // for (var j in tempDataSet) {
+            if (g != undefined) var tempDataSetLengthList = [g];
+            else {
+              var tempDataSetLengthList = tempDataSet;
+              // console.log(tempDataSetLengthList.length);
+            }
+            for (var j1 = 0; j1 < tempDataSetLengthList.length; j1++) {
+              var j = tempDataSetLengthList[j1];
+              if (g != undefined) var j = tempDataSetLengthList[j1];
+              else {
+                var j = j1;
+              }
+              if (tempDataSet[j].dataSet.string(Tag.GraphicType) == 'POLYLINE' ||
+                tempDataSet[j].dataSet.string(Tag.GraphicType) == 'INTERPOLATED') {
+
+                var GspsMark = new BlueLightMark();
+                GspsMark.sop = sop1;
+                GspsMark.pointArray = [];
+
+                var showname = "" + tempDataSet[j].dataSet.string(Tag.GraphicType);
+                if (tempDataSet[j].dataSet.elements.x00700232) {
+                  var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
+                  var color = ConvertGraphicColor(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2));
+                  if (color) {
+                    GspsMark.color = color[0];
+                    showname = color[1];
+                  }
+                }
+
+                GspsMark.showName = showname;
+                if (GSPS_Text != "" && GSPS_Text != undefined) {
+                  GspsMark.showName = GSPS_Text;
+                };
+                GspsMark.hideName = GspsMark.showName;
+
+                GspsMark.type = tempDataSet[j].dataSet.string(Tag.GraphicType);//"POLYLINE";
+
+                GspsMark.RotationAngle = tempDataSet[j].dataSet.double('x00710230');
+                GspsMark.GraphicFilled = tempDataSet[j].dataSet.string(Tag.GraphicFilled);
+
+                GspsMark.RotationPoint = [tempDataSet[j].dataSet.float('x00710273', 0), tempDataSet[j].dataSet.float('x00710273', 1)];
+                if (GSPS_Text != "" && GSPS_Text != undefined) {
+                  GspsMark.GSPS_Text = GSPS_Text;
+                };
+                var xTemp16 = tempDataSet[j].dataSet.string(Tag.GraphicData);
+
+                function getTag(tag) {
+                  var group = tag.substring(1, 5);
+                  var element = tag.substring(5, 9);
+                  var tagIndex = ("(" + group + "," + element + ")").toUpperCase();
+                  var attr = TAG_DICT[tagIndex];
+                  return attr;
+                }
+                var rect = parseInt(tempDataSet[j].dataSet.int16(Tag.GraphicDimensions)) * parseInt(tempDataSet[j].dataSet.int16(Tag.NumberOfGraphicPoints));
+                for (var r = 0; r < rect; r += 2) {
+                  var GraphicData = getTag(Tag.GraphicData);
+                  var numX = 0,
+                    numY = 0;
+                  if (GraphicData.vr == 'US') {
+                    numX = tempDataSet[j].dataSet.uint16(Tag.GraphicData, r);
+                    numY = tempDataSet[j].dataSet.uint16(Tag.GraphicData, r + 1);
+                  } else if (GraphicData.vr === 'SS') {
+                    numX = tempDataSet[j].dataSet.int16(Tag.GraphicData, r);
+                    numY = tempDataSet[j].dataSet.int16(Tag.GraphicData, r + 1);
+                  } else if (GraphicData.vr === 'UL') {
+                    numX = tempDataSet[j].dataSet.uint32(Tag.GraphicData, r);
+                    numY = tempDataSet[j].dataSet.uint32(Tag.GraphicData, r + 1);
+                  } else if (GraphicData.vr === 'SL') {
+                    numX = tempDataSet[j].dataSet.int32(Tag.GraphicData, r);
+                    numY = tempDataSet[j].dataSet.int32(Tag.GraphicData, r + 1);
+                  } else if (GraphicData.vr === 'FD') {
+                    numX = tempDataSet[j].dataSet.double(Tag.GraphicData, r);
+                    numY = tempDataSet[j].dataSet.double(Tag.GraphicData, r + 1);
+                  } else if (GraphicData.vr === 'FL') {
+                    numX = tempDataSet[j].dataSet.float(Tag.GraphicData, r);
+                    numY = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 1);
+                  } else {
+                    numX = tempDataSet[j].dataSet.float(Tag.GraphicData, r);
+                    numY = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 1);
+                  }
+                  if (GspsMark.RotationAngle && GspsMark.RotationPoint) {
+                    [numX, numY] = rotatePoint([numX, numY], -GspsMark.RotationAngle, GspsMark.RotationPoint);
+                  }
+
+                  GspsMark.setPoint2D(parseFloat(numX), parseFloat(numY));
+                }
+                PatientMark.push(GspsMark);
+                refreshMark(GspsMark, false);
+              }
+
+              if (tempDataSet[j].dataSet.string(Tag.GraphicType) == 'CIRCLE') {
+                var GspsMark = new BlueLightMark();
+                GspsMark.sop = sop1;
+                GspsMark.pointArray = [];
+
+                var showname = 'CIRCLE';
+                if (tempDataSet[j].dataSet.elements.x00700232) {
+                  var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
+                  var color = ConvertGraphicColor(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2));
+                  if (color) {
+                    GspsMark.color = color[0];
+                    showname = color[1];
+                  }
+                }
+
+                GspsMark.hideName = GspsMark.showName = showname;
+
+                GspsMark.type = "CIRCLE";
+                GspsMark.GraphicFilled = tempDataSet[j].dataSet.string(Tag.GraphicFilled);
+                var xTemp16 = tempDataSet[j].dataSet.string(Tag.GraphicData);;
+                var rect = parseInt(tempDataSet[j].dataSet.int16(Tag.GraphicDimensions)) * parseInt(tempDataSet[j].dataSet.int16(Tag.NumberOfGraphicPoints));
+                for (var r = 0; r < rect; r += 4) {
+                  var numX = 0,
+                    numY = 0,
+                    numX2 = 0,
+                    numY2 = 0;
+                  numX = tempDataSet[j].dataSet.float(Tag.GraphicData, r);
+                  numY = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 1);
+                  numX2 = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 2);
+                  numY2 = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 3);
+                  /*if (dcm.mark[DcmMarkLength].RotationAngle && dcm.mark[DcmMarkLength].RotationPoint) {
+                    [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
+                  }*/
+                  GspsMark.setPoint2D(parseFloat(numX), parseFloat(numY));
+                  GspsMark.setPoint2D(parseFloat(numX2), parseFloat(numY2));
+                }
+                PatientMark.push(GspsMark);
+                refreshMark(GspsMark, false);
+              }
+              if (tempDataSet[j].dataSet.string(Tag.AnchorPointVisibility) && tempDataSet[j].dataSet.string(Tag.AnchorPointVisibility) == 'Y') {
+                var GspsMark = new BlueLightMark();
+                GspsMark.sop = sop1;
+                GspsMark.pointArray = [];
+
+                var showname = 'Anchor';
+                if (tempDataSet[j].dataSet.elements.x00700232) {
+                  var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
+                  var color = ConvertGraphicColor(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2));
+                  if (color) {
+                    GspsMark.color = color[0];
+                    showname = color[1];
+                  }
+                }
+
+                GspsMark.showName = showname;
+                if (GSPS_Text != "" && GSPS_Text != undefined) {
+                  GspsMark.showName = GSPS_Text;
+                };
+                GspsMark.hideName = GspsMark.showName;
+                GspsMark.type = "POLYLINE";
+                GspsMark.setPoint2D(tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 1));
+                GspsMark.setPoint2D(tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 1));
+                PatientMark.push(GspsMark);
+                refreshMark(GspsMark, false);
+              }
+
+              if (!tempDataSet[j].dataSet.string(Tag.GraphicType) && GSPS_Text == "") {
+                //var xTemp10 = [tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 1)];
+                //var yTemp10 = [tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 1)];
+                GSPS_Text = tempDataSet[j].dataSet.string(Tag.UnformattedTextValue);
+                //console.log(j+"   "+GSPS_Text);
+                if (GSPS_Text != "") {
+                  //console.log(xTemp10+"  "+yTemp10+"   "+GSPS_Text);
+                  var GspsMark = new BlueLightMark();
+                  GspsMark.sop = sop1;
+                  GspsMark.pointArray = [];
+
+                  var showname = 'TEXT';
+                  GspsMark.showName = GspsMark.hideName = showname;
+                  GspsMark.type = "TEXT";
+
+                  if (GSPS_Text != "" && GSPS_Text != undefined) {
+                    GSPS_Text = ("" + GSPS_Text).replace('\r\n', '\n');
+                    GspsMark.GSPS_Text = GSPS_Text;
                   };
-                  // for (var j in tempDataSet) {
-                  if (g != undefined) var tempDataSetLengthList = [g];
-                  else {
-                    var tempDataSetLengthList = tempDataSet;
-                    // console.log(tempDataSetLengthList.length);
-                  }
-                  for (var j1 = 0; j1 < tempDataSetLengthList.length; j1++) {
-                    var j = tempDataSetLengthList[j1];
-                    if (g != undefined) var j = tempDataSetLengthList[j1];
-                    else {
-                      var j = j1;
-                    }
-                    if (tempDataSet[j].dataSet.string(Tag.GraphicType) == 'POLYLINE' ||
-                      tempDataSet[j].dataSet.string(Tag.GraphicType) == 'INTERPOLATED') {
+                  GspsMark.setPoint2D(tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 1));
+                  GspsMark.setPoint2D(tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 1));
 
-                      var GspsMark = new BlueLightMark();
-                      GspsMark.sop = sop1;
-                      GspsMark.pointArray = [];
-
-                      var showname = "" + tempDataSet[j].dataSet.string(Tag.GraphicType);
-                      if (tempDataSet[j].dataSet.elements.x00700232) {
-                        var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
-                        var color = ConvertGraphicColor(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2));
-                        if (color) {
-                          GspsMark.color = color[0];
-                          showname = color[1];
-                        }
-                      }
-
-                      GspsMark.showName = showname;
-                      if (GSPS_Text != "" && GSPS_Text != undefined) {
-                        GspsMark.showName = GSPS_Text;
-                      };
-                      GspsMark.hideName = GspsMark.showName;
-
-                      GspsMark.type = tempDataSet[j].dataSet.string(Tag.GraphicType);//"POLYLINE";
-
-                      GspsMark.RotationAngle = tempDataSet[j].dataSet.double('x00710230');
-                      GspsMark.GraphicFilled = tempDataSet[j].dataSet.string(Tag.GraphicFilled);
-
-                      GspsMark.RotationPoint = [tempDataSet[j].dataSet.float('x00710273', 0), tempDataSet[j].dataSet.float('x00710273', 1)];
-                      if (GSPS_Text != "" && GSPS_Text != undefined) {
-                        GspsMark.GSPS_Text = GSPS_Text;
-                      };
-                      var xTemp16 = tempDataSet[j].dataSet.string(Tag.GraphicData);
-
-                      function getTag(tag) {
-                        var group = tag.substring(1, 5);
-                        var element = tag.substring(5, 9);
-                        var tagIndex = ("(" + group + "," + element + ")").toUpperCase();
-                        var attr = TAG_DICT[tagIndex];
-                        return attr;
-                      }
-                      var rect = parseInt(tempDataSet[j].dataSet.int16(Tag.GraphicDimensions)) * parseInt(tempDataSet[j].dataSet.int16(Tag.NumberOfGraphicPoints));
-                      for (var r = 0; r < rect; r += 2) {
-                        var GraphicData = getTag(Tag.GraphicData);
-                        var numX = 0,
-                          numY = 0;
-                        if (GraphicData.vr == 'US') {
-                          numX = tempDataSet[j].dataSet.uint16(Tag.GraphicData, r);
-                          numY = tempDataSet[j].dataSet.uint16(Tag.GraphicData, r + 1);
-                        } else if (GraphicData.vr === 'SS') {
-                          numX = tempDataSet[j].dataSet.int16(Tag.GraphicData, r);
-                          numY = tempDataSet[j].dataSet.int16(Tag.GraphicData, r + 1);
-                        } else if (GraphicData.vr === 'UL') {
-                          numX = tempDataSet[j].dataSet.uint32(Tag.GraphicData, r);
-                          numY = tempDataSet[j].dataSet.uint32(Tag.GraphicData, r + 1);
-                        } else if (GraphicData.vr === 'SL') {
-                          numX = tempDataSet[j].dataSet.int32(Tag.GraphicData, r);
-                          numY = tempDataSet[j].dataSet.int32(Tag.GraphicData, r + 1);
-                        } else if (GraphicData.vr === 'FD') {
-                          numX = tempDataSet[j].dataSet.double(Tag.GraphicData, r);
-                          numY = tempDataSet[j].dataSet.double(Tag.GraphicData, r + 1);
-                        } else if (GraphicData.vr === 'FL') {
-                          numX = tempDataSet[j].dataSet.float(Tag.GraphicData, r);
-                          numY = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 1);
-                        } else {
-                          numX = tempDataSet[j].dataSet.float(Tag.GraphicData, r);
-                          numY = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 1);
-                        }
-                        if (GspsMark.RotationAngle && GspsMark.RotationPoint) {
-                          [numX, numY] = rotatePoint([numX, numY], -GspsMark.RotationAngle, GspsMark.RotationPoint);
-                        }
-
-                        GspsMark.setPoint2D(parseFloat(numX), parseFloat(numY));
-                      }
-                      patientmark.push(GspsMark);
-                      refreshMark(GspsMark, false);
-                    }
-
-                    if (tempDataSet[j].dataSet.string(Tag.GraphicType) == 'CIRCLE') {
-                      var GspsMark = new BlueLightMark();
-                      GspsMark.sop = sop1;
-                      GspsMark.pointArray = [];
-
-                      var showname = 'CIRCLE';
-                      if (tempDataSet[j].dataSet.elements.x00700232) {
-                        var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
-                        var color = ConvertGraphicColor(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2));
-                        if (color) {
-                          GspsMark.color = color[0];
-                          showname = color[1];
-                        }
-                      }
-
-                      GspsMark.hideName = GspsMark.showName = showname;
-
-                      GspsMark.type = "CIRCLE";
-                      GspsMark.GraphicFilled = tempDataSet[j].dataSet.string(Tag.GraphicFilled);
-                      var xTemp16 = tempDataSet[j].dataSet.string(Tag.GraphicData);;
-                      var rect = parseInt(tempDataSet[j].dataSet.int16(Tag.GraphicDimensions)) * parseInt(tempDataSet[j].dataSet.int16(Tag.NumberOfGraphicPoints));
-                      for (var r = 0; r < rect; r += 4) {
-                        var numX = 0,
-                          numY = 0,
-                          numX2 = 0,
-                          numY2 = 0;
-                        numX = tempDataSet[j].dataSet.float(Tag.GraphicData, r);
-                        numY = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 1);
-                        numX2 = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 2);
-                        numY2 = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 3);
-                        /*if (dcm.mark[DcmMarkLength].RotationAngle && dcm.mark[DcmMarkLength].RotationPoint) {
-                          [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
-                        }*/
-                        GspsMark.setPoint2D(parseFloat(numX), parseFloat(numY));
-                        GspsMark.setPoint2D(parseFloat(numX2), parseFloat(numY2));
-                      }
-                      patientmark.push(GspsMark);
-                      refreshMark(GspsMark, false);
-                    }
-                    if (tempDataSet[j].dataSet.string(Tag.AnchorPointVisibility) && tempDataSet[j].dataSet.string(Tag.AnchorPointVisibility) == 'Y') {
-                      var GspsMark = new BlueLightMark();
-                      GspsMark.sop = sop1;
-                      GspsMark.pointArray = [];
-
-                      var showname = 'Anchor';
-                      if (tempDataSet[j].dataSet.elements.x00700232) {
-                        var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
-                        var color = ConvertGraphicColor(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2));
-                        if (color) {
-                          GspsMark.color = color[0];
-                          showname = color[1];
-                        }
-                      }
-
-                      GspsMark.showName = showname;
-                      if (GSPS_Text != "" && GSPS_Text != undefined) {
-                        GspsMark.showName = GSPS_Text;
-                      };
-                      GspsMark.hideName = GspsMark.showName;
-                      GspsMark.type = "POLYLINE";
-                      GspsMark.setPoint2D(tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 1));
-                      GspsMark.setPoint2D(tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 1));
-                      patientmark.push(GspsMark);
-                      refreshMark(GspsMark, false);
-                    }
-
-                    if (!tempDataSet[j].dataSet.string(Tag.GraphicType) && GSPS_Text == "") {
-                      //var xTemp10 = [tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 1)];
-                      //var yTemp10 = [tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 1)];
-                      GSPS_Text = tempDataSet[j].dataSet.string(Tag.UnformattedTextValue);
-                      //console.log(j+"   "+GSPS_Text);
-                      if (GSPS_Text != "") {
-                        //console.log(xTemp10+"  "+yTemp10+"   "+GSPS_Text);
-                        var GspsMark = new BlueLightMark();
-                        GspsMark.sop = sop1;
-                        GspsMark.pointArray = [];
-
-                        var showname = 'TEXT';
-                        GspsMark.showName = GspsMark.hideName = showname;
-                        GspsMark.type = "TEXT";
-
-                        if (GSPS_Text != "" && GSPS_Text != undefined) {
-                          GSPS_Text = ("" + GSPS_Text).replace('\r\n', '\n');
-                          GspsMark.GSPS_Text = GSPS_Text;
-                        };
-                        GspsMark.setPoint2D(tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 1));
-                        GspsMark.setPoint2D(tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 1));
-
-                        patientmark.push(GspsMark);
-                        refreshMark(GspsMark, false);
-                      }
-                    }
-                    if (tempDataSet[j].dataSet.string(Tag.GraphicType) == 'ELLIPSE') {
-                      var GspsMark = new BlueLightMark();
-                      GspsMark.sop = sop1;
-                      GspsMark.pointArray = [];
-                      var showname = 'ELLIPSE';
-
-                      GspsMark.showName = GspsMark.hideName = showname;
-                      GspsMark.type = "ELLIPSE";
-                      GspsMark.GraphicFilled = tempDataSet[j].dataSet.string(Tag.GraphicFilled);
-                      var xTemp16 = tempDataSet[j].dataSet.string(Tag.GraphicData);;
-                      var ablecheck = false;
-                      var mark_X = [], mark_Y = [];
-                      for (var k2 = 0; k2 < xTemp16.length; k2 += 4) {
-
-                        var output1 = xTemp16[k2].charCodeAt(0).toString(2) + "";
-                        var output2 = xTemp16[k2 + 1].charCodeAt(0).toString(2) + "";
-                        var output3 = xTemp16[k2 + 2].charCodeAt(0).toString(2) + "";
-                        var output4 = xTemp16[k2 + 3].charCodeAt(0).toString(2) + "";
-                        var data = [parseInt(output1, 2), parseInt(output2, 2), parseInt(output3, 2), parseInt(output4, 2)];
-                        var buf = new ArrayBuffer(4 /* * 4*/);
-                        var view = new DataView(buf);
-                        data.forEach(function (b, i) {
-                          view.setUint8(i, b, true);
-                        });
-                        var num = view.getFloat32(0, true);
-                        if (ablecheck == false) {
-                          mark_X.push(num);
-                        } else {
-                          mark_Y.push(num);
-                        }
-                        ablecheck = !ablecheck;
-                      }
-                      for (var xy_mark = 0; xy_mark < mark_X.length; xy_mark++) {
-                        GspsMark.setPoint2D(mark_X[xy_mark], mark_Y[xy_mark]);
-                      }
-                      patientmark.push(GspsMark);
-                      //console.log(PatientMark);
-                      refreshMark(GspsMark, false);
-                    }
-                  }
-
+                  PatientMark.push(GspsMark);
+                  refreshMark(GspsMark, false);
                 }
+              }
+              if (tempDataSet[j].dataSet.string(Tag.GraphicType) == 'ELLIPSE') {
+                var GspsMark = new BlueLightMark();
+                GspsMark.sop = sop1;
+                GspsMark.pointArray = [];
+                var showname = 'ELLIPSE';
 
-                try {
-                  for (var i in dataSet.elements.x00700001.items) {
-                    for (var d1 = 0; d1 < dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items.length; d1++) {
-                      var tempsop = dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items[d1].dataSet.string(Tag.ReferencedSOPInstanceUID)
-                      if (tempsop == sop1) {
-                        tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
-                        // for (var g = 0; g < dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items.length; g++) {
-                        try {
-                          //GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[g].dataSet.string(Tag.UnformattedTextValue);
-                          POLYLINE_Function(tempDataSet, "", undefined);
-                        } catch (ex) { }
-                        try {
-                          for (var g = 0; g < dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items.length; g++) {
-                            try {
-                              GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[g].dataSet.string(Tag.UnformattedTextValue);
-                              tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items;
-                              POLYLINE_Function(tempDataSet, "", g);
-                            } catch (ex) { }
-                          }
-                        } catch (ex) { }
+                GspsMark.showName = GspsMark.hideName = showname;
+                GspsMark.type = "ELLIPSE";
+                GspsMark.GraphicFilled = tempDataSet[j].dataSet.string(Tag.GraphicFilled);
+                var xTemp16 = tempDataSet[j].dataSet.string(Tag.GraphicData);;
+                var ablecheck = false;
+                var mark_X = [], mark_Y = [];
+                for (var k2 = 0; k2 < xTemp16.length; k2 += 4) {
 
-                        //break;
-                      };
-
-                      if (tempsop != sop1) continue;
-                    }
+                  var output1 = xTemp16[k2].charCodeAt(0).toString(2) + "";
+                  var output2 = xTemp16[k2 + 1].charCodeAt(0).toString(2) + "";
+                  var output3 = xTemp16[k2 + 2].charCodeAt(0).toString(2) + "";
+                  var output4 = xTemp16[k2 + 3].charCodeAt(0).toString(2) + "";
+                  var data = [parseInt(output1, 2), parseInt(output2, 2), parseInt(output3, 2), parseInt(output4, 2)];
+                  var buf = new ArrayBuffer(4 /* * 4*/);
+                  var view = new DataView(buf);
+                  data.forEach(function (b, i) {
+                    view.setUint8(i, b, true);
+                  });
+                  var num = view.getFloat32(0, true);
+                  if (ablecheck == false) {
+                    mark_X.push(num);
+                  } else {
+                    mark_Y.push(num);
                   }
-                  if (sop1) refreshMarkFromSop(sop1);
-                } catch (ex) {
-                  for (var i in dataSet.elements.x00700001.items) {
-                    try {
-                      tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
-
-                      POLYLINE_Function(tempDataSet, GSPS_Text);
-
-                    } catch (ex) {
-                      console.log(GSPS_Text);
-                      continue;
-                    }
-                  }
-                  if (sop1) refreshMarkFromSop(sop1);
+                  ablecheck = !ablecheck;
                 }
+                for (var xy_mark = 0; xy_mark < mark_X.length; xy_mark++) {
+                  GspsMark.setPoint2D(mark_X[xy_mark], mark_Y[xy_mark]);
+                }
+                PatientMark.push(GspsMark);
+                refreshMark(GspsMark, false);
               }
             }
           }
+
+          try {
+            for (var i in dataSet.elements.x00700001.items) {
+              for (var d1 = 0; d1 < dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items.length; d1++) {
+                var tempsop = dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items[d1].dataSet.string(Tag.ReferencedSOPInstanceUID)
+                if (tempsop == sop1) {
+                  tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
+                  // for (var g = 0; g < dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items.length; g++) {
+                  try {
+                    //GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[g].dataSet.string(Tag.UnformattedTextValue);
+                    POLYLINE_Function(tempDataSet, "", undefined);
+                  } catch (ex) { }
+                  try {
+                    for (var g = 0; g < dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items.length; g++) {
+                      try {
+                        GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[g].dataSet.string(Tag.UnformattedTextValue);
+                        tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items;
+                        POLYLINE_Function(tempDataSet, "", g);
+                      } catch (ex) { }
+                    }
+                  } catch (ex) { }
+
+                  //break;
+                };
+
+                if (tempsop != sop1) continue;
+              }
+            }
+            if (sop1) refreshMarkFromSop(sop1);
+          } catch (ex) {
+            for (var i in dataSet.elements.x00700001.items) {
+              try {
+                tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
+
+                POLYLINE_Function(tempDataSet, GSPS_Text);
+
+              } catch (ex) {
+                console.log(GSPS_Text);
+                continue;
+              }
+            }
+            if (sop1) refreshMarkFromSop(sop1);
+          }
         }
-
-        readDicomRTSS(byteArray, dataSet, patientmark);
-
       }
     }
-  };
-  oReq.send();
+  }
+  readDicomRTSS(dataSet);
 }
 
-function loadDicomSeg(image, imageId) {
+function loadDicomSeg(image) {
   var dataSet = image.data;
-  var ImageFrame = cornerstoneWADOImageLoader.getImageFrame(imageId);
+  
   var rect = (image.rows * image.columns);
   if (dataSet.elements.x7fe00010.fragments) {
     function x52009229_or_30(x52009230, x52009229) {
@@ -587,7 +560,7 @@ function loadDicomSeg(image, imageId) {
           var pixeldata = new Uint8Array(dataSet.byteArray.buffer,
             dataSet.elements.x7fe00010.fragments[i].position,
             dataSet.elements.x7fe00010.fragments[i].length)
-          var NewpixelData = decodeImageFrame(ImageFrame, dataSet.string(Tag.TransferSyntaxUID), pixeldata, {
+          var NewpixelData = decodeImage(image, dataSet.string(Tag.TransferSyntaxUID), pixeldata, {
             usePDFJS: false
           }).pixelData;
           var showname = 'SEG';

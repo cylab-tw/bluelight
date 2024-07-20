@@ -207,7 +207,7 @@ function exitMPR2() {
     window.onresize();
     //SetTable();
 
-    if (GetViewport(0).sop) setSopToViewport(GetViewport(0).sop, 0);//loadAndViewImage(Patient.findSop(GetViewport(0).sop).imageId, 0);
+    GetViewport().loadImgBySop(GetViewport(0).Sop);
 
     o3dPixelData = [];
     o3dPixelData2 = [];
@@ -240,7 +240,7 @@ function initMPR2() {
     for (var c = 0; c < 3; c++)
         GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "none";
     viewportNumber = 0;
-    setSopToViewport(GetViewport().sop, 0);//loadAndViewImage(Patient.findSop(GetViewport().sop).imageId);
+    GetViewport().reload();
     ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
     window.addEventListener("resize", resizeVR, false);
     for (var i1 = 0; i1 < Viewport_Total; i1++) {
@@ -307,8 +307,8 @@ function initMPR2() {
     Thickness_MPR = -Thickness_MPR + big;
     for (var l = 0; l < list.length; l++) {
         const l2 = l;
-        const image = getPatientbyImageID[list[l2].imageId].image;
-        const pixelData = getPatientbyImageID[list[l2].imageId].pixelData;
+        const image = list[l2].Image;
+        const pixelData = list[l2].Image.pixelData;
         o3dPixelData.push(pixelData);
         o3dImage.push(image);
 

@@ -414,9 +414,8 @@ function initVR() {
         window.onresize();
         //SetTable();
 
-        if (GetViewport(0).sop)
-            setSopToViewport(GetViewport(0).sop, 0);
-        //loadAndViewImage(Patient.findSop(GetViewport(0).sop).imageId, 0);
+        GetViewport().loadImgBySop(GetViewport(0).Sop); // setSopToViewport(GetViewport(0).sop, 0);
+
         o3DListLength = 0;
 
         if (origin_openAnnotation == true || origin_openAnnotation == false) openAnnotation = origin_openAnnotation;
@@ -441,8 +440,8 @@ function initVR() {
         SetTable(1, 1);
         GetViewport(i).scale = null;
 
-        setSopToViewport(GetViewport().sop);
-        //loadAndViewImage(Patient.findSop(GetViewport().sop).imageId);
+        GetViewport().reload();
+        
         GetViewport().canvas.style.display = "none";
         GetViewportMark().style.display = "none";
         GetViewport(0).canvas.style.display = "none";
@@ -569,8 +568,8 @@ function initVR() {
         Thickness = -Thickness + big;
         for (var l = 0; l < list.length; l++) {
             const l2 = l;
-            const image = getPatientbyImageID[list[l2].imageId].image;
-            const pixelData = getPatientbyImageID[list[l2].imageId].pixelData;
+            const image = list[l2].Image;
+            const pixelData = list[l2].Image.pixelData;
             try {
                 var NewDiv = document.createElement("DIV");
                 NewDiv.addEventListener("contextmenu", contextmenuF, false);
@@ -912,7 +911,7 @@ function Alpha3D() {
         TempCanvas.sop = getByid("3DDiv" + ll).sop;
         TempCanvas.width = canvas1.width;
         TempCanvas.height = canvas1.height;
-        display3DMark(TempCanvas, TempCanvas.sop);
+        //display3DMark(TempCanvas, TempCanvas.sop);//重構中...
         ctx1.drawImage(TempCanvas, 0, 0);
         delete TempCanvas;
     }
@@ -1967,63 +1966,3 @@ function get3dCurrPoint(e) {
         ctx.putImageData(imgData, 0, 0);
    }
 }*/
-
-function display3DMark(MarkCanvas, sop) {
-    return;//重構中...
-    var viewport = GetViewport();
-    if (!GetViewport().drawMark) return;
-    var ctx = MarkCanvas.getContext("2d");
-    ctx.clearRect(0, 0, viewport.width, viewport.height);
-
-    //注意：標記顏色選擇紅色跟自動都會先初始化為紅色
-    ctx.strokeStyle = ctx.fillStyle = "#FF0000";
-    ctx.lineJoin = ctx.lineCap = 'round';
-    ctx.lineWidth = "" + getMarkSize(MarkCanvas, false);
-    setMarkColor(ctx);
-    try { var [i, j, k] = SearchUid2Index(sop) } catch (ex) { return; }
-
-    for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                //if (checkMark(i, j, n) == 0) continue;
-                if (checkMarkEnabled(Patient.Study[i].Series[j].SeriesUID, PatientMark[n]) == 0) continue;
-                var mark = PatientMark[n].mark[m];
-                mark.parent = PatientMark[n];
-                if (mark.type == "SEG") drawSEG(MarkCanvas, mark, viewport);
-                else if (mark.type == "Overlay") drawOverLay(MarkCanvas, mark, viewport);
-            }
-        }
-    }
-
-    for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                //if (checkMark(i, j, n) == 0) continue;
-                if (checkMarkEnabled(Patient.Study[i].Series[j].SeriesUID, PatientMark[n]) == 0) continue;
-                var mark = PatientMark[n].mark[m];
-                mark.parent = PatientMark[n];
-                if (mark.type == "XML_mark") drawXML_mark(MarkCanvas, mark, PatientMark[n].showName);
-                else if (mark.type == "TEXT") drawTEXT(MarkCanvas, mark, viewport);
-                else if (mark.type == "POLYLINE") drawPOLYLINE(MarkCanvas, mark, viewport);
-                else if (mark.type == "ELLIPSE") drawELLIPSE(MarkCanvas, mark, viewport);
-                else if (mark.type == "CIRCLE") drawCIRCLE(MarkCanvas, mark, viewport);
-                else if (mark.type == "TwoDimensionPolyline") drawTwoDimensionPolyline(MarkCanvas, mark, viewport);
-                else if (mark.type == "TwoDimensionMultiPoint") drawTwoDimensionMultiPoint(MarkCanvas, mark, viewport);
-                else if (mark.type == "TwoDimensionEllipse") drawTwoDimensionEllipse(MarkCanvas, mark, viewport);
-            }
-        }
-    }
-
-    for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == Patient.Study[i].Series[j].Sop[k].SopUID) {
-            for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                //if (checkMark(i, j, n) == 0) continue;
-                if (checkMarkEnabled(Patient.Study[i].Series[j].SeriesUID, PatientMark[n]) == 0) continue;
-                var mark = PatientMark[n].mark[m];
-                mark.parent = PatientMark[n];
-                if (mark.type == "RTSS") drawRTSS(MarkCanvas, mark, viewport);
-                else if (mark.type == "TextAnnotationEntity") drawTextAnnotationEntity(MarkCanvas, mark, viewport);
-            }
-        }
-    }
-}
