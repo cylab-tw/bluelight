@@ -217,7 +217,7 @@ class VRCube {
         if (this.container) {
             if (this.PerspectiveCheck.checked) this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
             else this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
-            
+
             this.container.style.transform =
                 `translate3d(${this.offset[0]}px,${(this.offset[1] + (offsety))}px,0) scale(${this.scale * this.step}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg)`;// rotateZ(${this.VR2_RotateDeg[2]}deg) `
         }
@@ -323,7 +323,7 @@ class VRCube {
         }
         VR2Mousedown = VR2Mousedown.bind({ cube: this });
         VR2Mousemove = VR2Mousemove.bind({ cube: this, isRequestPending: false });
-        VR2Mouseup = VR2Mouseup.bind({ cube: this });
+        VR2Mouseup = VR2Mouseup.bind({ cube: this, container: this.container });
         DIV.addEventListener("mousemove", VR2Mousemove, false);
         DIV.addEventListener("mousedown", VR2Mousedown, false);
         DIV.addEventListener("mouseup", VR2Mouseup, false);
