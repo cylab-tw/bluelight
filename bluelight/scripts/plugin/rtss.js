@@ -4,11 +4,11 @@ var openWriteRTSS = false;
 function loadWriteRTSS() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        ` <img class="img RTSS" alt="writeRTSS" id="writeRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/rtssdraw_OFF.png" width="50" height="50">  
-          <img class="img RTSS" alt="drawRTSS" id="drawRTSS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/GraphicDraw.png" width="50" height="50" style="display:none;" >  
-          <img class="img RTSS" alt="eraseRTSS" id="eraseRTSS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/b_Eraser.png" width="50" height="50" style="display:none;" >
-          <img class="img RTSS" alt="exitRTSS" id="exitRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
-          <img class="img RTSS" alt="saveRTSS" id="saveRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
+        ` <img class="img RTSS" alt="writeRTSS" id="writeRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/rtssdraw_OFF.png" width="50" height="50">  
+          <img class="img RTSS" alt="drawRTSS" id="drawRTSS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >  
+          <img class="img RTSS" alt="eraseRTSS" id="eraseRTSS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >
+          <img class="img RTSS" alt="exitRTSS" id="exitRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
+          <img class="img RTSS" alt="saveRTSS" id="saveRTSS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
     getByid("icon-list").appendChild(span);
 
     var span = document.createElement("SPAN")
@@ -106,7 +106,7 @@ getByid("writeRTSS").onclick = function () {
         writertss();
     }
 
-    //this.src = openWriteRTSS == true ? '../image/icon/black/rtssdraw_ON.png' : '../image/icon/black/rtssdraw_OFF.png';
+    //this.src = openWriteRTSS == true ? '../image/icon/lite/rtssdraw_ON.png' : '../image/icon/lite/rtssdraw_OFF.png';
     this.style.display = openWriteRTSS != true ? "" : "none";
     getByid("exitRTSS").style.display = openWriteRTSS == true ? "" : "none";
     getByid("eraseRTSS").style.display = openWriteRTSS == true ? "" : "none";

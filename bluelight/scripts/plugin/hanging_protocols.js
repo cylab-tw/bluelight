@@ -129,7 +129,7 @@ function loadHaningProtocols() {
     if (getQueryVariable_HaningProtocols("HaningProtocols") == false) return;
     var span = document.createElement("SPAN");
     span.innerHTML =
-        `<img class="innerimg HP" alt="Haning Protocols" id="HaningProtocols" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/H.png" width="50" height="50">;`;
+        `<img class="innerimg HP" alt="Haning Protocols" id="HaningProtocols" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/H.png" width="50" height="50">;`;
     getByid("othereDIv").appendChild(document.createElement("BR"));
     getByid("othereDIv").appendChild(span);
     BorderList_Icon.push("HaningProtocols");

@@ -833,13 +833,13 @@ function addEvent2SplitViewport() {
 }
 
 function changeMarkImg() {
-  if (GetViewport().drawMark == true) getByid("MarkButton").src = "../image/icon/black/fist0.png";
-  else getByid("MarkButton").src = "../image/icon/black/fist1.png";
+  if (GetViewport().drawMark == true) getByid("MarkButton").src = "../image/icon/lite/fist0.png";
+  else getByid("MarkButton").src = "../image/icon/lite/fist1.png";
 }
 
 function changeLinkImg() {
-  if (openLink == true) getByid("unlink").src = "../image/icon/black/b_Link.png";
-  else getByid("unlink").src = "../image/icon/black/b_unlink translation synchronization.png";
+  if (openLink == true) getByid("unlink").src = "../image/icon/lite/b_Link.png";
+  else getByid("unlink").src = "../image/icon/lite/b_unlink translation synchronization.png";
 }
 
 function drawBorder(element) {

@@ -32,10 +32,10 @@ var origin_openAnnotation;
 function loadVR() {
     var span = document.createElement("SPAN");
     span.innerHTML =
-        `<img class="img VR" alt="VR" id="ImgVR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/b_3D_off.png" width="50" height="50">
-    <img class="img VR MPR" alt="Render" id="3dDisplay" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/b_DisplayReset.png"
+        `<img class="img VR" alt="VR" id="ImgVR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_3D_off.png" width="50" height="50">
+    <img class="img VR MPR" alt="Render" id="3dDisplay" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_DisplayReset.png"
     style="display:none;" width="50" height="50">
-    <img class="img VR" alt="Scalpel" id="3dCave" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/b_Cross-hair_OFF.png" style="display:none;"
+    <img class="img VR" alt="Scalpel" id="3dCave" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_Cross-hair_OFF.png" style="display:none;"
     width="50" height="50">`;
     getByid("icon-list").appendChild(span);
 
@@ -88,7 +88,7 @@ function loadVR() {
           id="3dZipCheckbox"><input type="text" id="3dZipText" size="3" value="50" /></label>
       <label style="color: #ffffff;display:none" id="3dPerspectiveLabel">perspective：<input type="text"
           id="3dPerspective" value="10000" /></label>
-      <img width="25" height="25" src="../image/icon/black/download.png" onclick="VRscreenshot();">
+      <img width="25" height="25" src="../image/icon/lite/download.png" onclick="VRscreenshot();">
     </div>`
     getByid("page-header").appendChild(span);
 
@@ -132,7 +132,8 @@ function loadVR_UI() {
         img.src = getByid("WindowRevision").src;
         img.id = "WindowRevision_VR";
         img.className = "VR_icon";
-        img.width = img.height = "50";
+        img.width = "38";
+        img.height = "50";
         img.style.filter = "sepia(100%)"
         getByid("WindowRevision_span").appendChild(img);
     }
@@ -288,8 +289,8 @@ getByid("3dDisplay").onclick = function () {
 
 getByid("3dCave").onclick = function () {
     openCave = !openCave;
-    if (openCave == true) this.src = '../image/icon/black/b_Cross-hair_ON.png';
-    else this.src = '../image/icon/black/b_Cross-hair_OFF.png';
+    if (openCave == true) this.src = '../image/icon/lite/b_Cross-hair_ON.png';
+    else this.src = '../image/icon/lite/b_Cross-hair_OFF.png';
 }
 
 function resizeVR(event) {
@@ -396,7 +397,7 @@ function initVR() {
         cancelTools();
         openMouseTool = true;
         drawBorder(getByid("MouseOperation"));
-        getByid("ImgVR").src = "../image/icon/black/b_3D_off.png";
+        getByid("ImgVR").src = "../image/icon/lite/b_3D_off.png";
         getByid("3dDisplay").style.display = "none";
         getByid("VR_setup").style.display = "none";
         getByid("WindowLevelDiv_VR").style.display = "none";
@@ -435,13 +436,13 @@ function initVR() {
         getByid("VR_setup").style.display = "";
         getByid("3dCave").style.display = "";
         cancelTools();
-        getByid("ImgVR").src = "../image/icon/black/b_3D_on.png";
+        getByid("ImgVR").src = "../image/icon/lite/b_3D_on.png";
         var sop = GetViewport().sop;
         SetTable(1, 1);
         GetViewport(i).scale = null;
 
         GetViewport().reload();
-        
+
         GetViewport().canvas.style.display = "none";
         GetViewportMark().style.display = "none";
         GetViewport(0).canvas.style.display = "none";

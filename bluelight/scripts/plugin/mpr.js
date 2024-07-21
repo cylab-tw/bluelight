@@ -11,7 +11,7 @@ var origin_openAnnotation;
 
 function loadMPR() {
     var span = document.createElement("SPAN");
-    span.innerHTML = `<img class="img MPR" alt="Old MPR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="ImgMPR" src="../image/icon/black/b_AdvancedMode_off.png" width="50" height="50">`;
+    span.innerHTML = `<img class="img MPR" alt="Old MPR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="ImgMPR" src="../image/icon/lite/b_AdvancedMode_off.png" width="50" height="50">`;
     getByid("icon-list").appendChild(span);
 
     var span = document.createElement("SPAN");
@@ -84,7 +84,7 @@ function drawBorderMPR(element) {
     var MPR_icon = getClass("MPR_icon");
     for (var i = 0; i < MPR_icon.length; i++) MPR_icon[i].style["border"] = "";
     element.style["border"] = 3 + "px #FFFFFF solid";
-    element.style["borderRadius"] = 3 + "3px 3px 3px 3px";
+    element.style["borderRadius"] = "3px 3px 3px 3px";
 }
 
 getByid("b_Scroll_MPR").onclick = function () {
@@ -525,7 +525,7 @@ function initMPR() {
         cancelTools();
         openMouseTool = true;
         drawBorder(getByid("MouseOperation"));
-        getByid("ImgMPR").src = "../image/icon/black/b_AdvancedMode_off.png";
+        getByid("ImgMPR").src = "../image/icon/lite/b_AdvancedMode_off.png";
         getByid("3dDisplay").style.display = "none";
         getByid("mprLightLabel").style.display = "none";
         try {
@@ -577,7 +577,7 @@ function initMPR() {
         getByid("mprLightLabel").style.display = "";
         getByid("SplitViewportDiv").style.display = "none";
         cancelTools();
-        getByid("ImgMPR").src = "../image/icon/black/b_AdvancedMode_on.png";
+        getByid("ImgMPR").src = "../image/icon/lite/b_AdvancedMode_on.png";
         var sop = GetViewport().sop;
         SetTable(2, 2);//如果MPR模式正在開啟，固定2x2
         GetViewport(i).scale = null;

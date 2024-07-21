@@ -17,7 +17,7 @@ var origin_openAnnotation;
 function loadMPR2() {
     var span = document.createElement("SPAN");
     span.id = "ImgMPR2_span";
-    span.innerHTML = `<img class="img MPR2 MPR_icon" alt="New MPR" id="ImgMPR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/b_LocalizerLines.png" width="50" height="50">`;
+    span.innerHTML = `<img class="img MPR2 MPR_icon" alt="New MPR" id="ImgMPR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_LocalizerLines.png" width="50" height="50">`;
     getByid("icon-list").appendChild(span);
 
     /*var span = document.createElement("SPAN");
@@ -186,7 +186,7 @@ function exitMPR2() {
     cancelTools();
     openMouseTool = true;
     drawBorder(getByid("MouseOperation"));
-    getByid("ImgMPR2").src = "../image/icon/black/b_LocalizerLines.png";
+    getByid("ImgMPR2").src = "../image/icon/lite/b_LocalizerLines.png";
     //getByid("3dDisplay").style.display = "none";
     //getByid("mprLightLabel").style.display = "none";
 
@@ -233,7 +233,7 @@ function initMPR2() {
     //getByid("mprLightLabel").style.display = "";
     getByid("SplitViewportDiv").style.display = "none";
     cancelTools();
-    getByid("ImgMPR2").src = "../image/icon/black/b_LocalizerLines.png";
+    getByid("ImgMPR2").src = "../image/icon/lite/b_LocalizerLines.png";
     var sop = GetViewport().sop;
     SetTable(1, 3);//如果MPR2模式正在開啟，固定1x3
     GetViewport().scale = null;

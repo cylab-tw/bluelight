@@ -4,11 +4,11 @@ var openWriteSEG = false;
 function loadWriteSEG() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        `<img class="img SEG" alt="writeSEG" id="writeSEG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/seg_off.png" width="50" height="50">
-        <img class="img SEG" alt="drawSEG" id="drawSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/GraphicDraw.png" width="50" height="50" style="display:none;" >  
-        <img class="img SEGhide" alt="eraseSEG" id="eraseSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/b_Eraser.png" width="50" height="50" style="display:none;" >
-        <img class="img SEG" alt="exitSEG" id="exitSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
-        <img class="img SEG" alt="saveSEG" id="saveSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/download.png" width="50" height="50" style="display:none;" >`;
+        `<img class="img SEG" alt="writeSEG" id="writeSEG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/seg_off.png" width="50" height="50">
+        <img class="img SEG" alt="drawSEG" id="drawSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >  
+        <img class="img SEGhide" alt="eraseSEG" id="eraseSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="exitSEG" id="exitSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="saveSEG" id="saveSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
 
     getByid("icon-list").appendChild(span);
 
@@ -75,7 +75,7 @@ getByid("writeSEG").onclick = function () {
         writeSeg();
     }
 
-    this.src = openWriteSEG == true ? '../image/icon/black/seg_on.png' : '../image/icon/black/seg_off.png';
+    this.src = openWriteSEG == true ? '../image/icon/lite/seg_on.png' : '../image/icon/lite/seg_off.png';
     this.style.display = openWriteSEG != true ? "" : "none";
     getByid("exitSEG").style.display = openWriteSEG == true ? "" : "none";
     getByid("eraseSEG").style.display = openWriteSEG == true ? "" : "none";

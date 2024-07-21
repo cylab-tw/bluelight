@@ -48,8 +48,8 @@ var SwitchViewport = function () {
 
     viewportNumber = isNaN(this.viewportNum) ? viewportNumber : this.viewportNum;
     leftLayout.setAccent(GetViewport().series);
-    if (GetViewport().cine) getByid('playvideo').src = '../image/icon/black/b_CinePause.png';
-    else getByid('playvideo').src = '../image/icon/black/b_CinePlay.png';
+    if (GetViewport().cine) getByid('playvideo').src = '../image/icon/lite/b_CinePause.png';
+    else getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
 
     changeMarkImg();
     if (GetViewport().Sop) GetViewport().reload();

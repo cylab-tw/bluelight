@@ -8,7 +8,7 @@ var Calibration_Point2 = [0, 0];
 function loadCalibration() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        ` <img class="img Calibration" alt="Calibration" id="Calibration" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/b_DistanceMeasurement.png" width="50" height="50">`;
+        ` <img class="img Calibration" alt="Calibration" id="Calibration" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_DistanceMeasurement.png" width="50" height="50">`;
     getByid("icon-list").appendChild(span);
 
     var span = document.createElement("SPAN")

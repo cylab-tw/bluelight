@@ -693,10 +693,10 @@ class BlueLightMark {
 function erase() {
     if (BL_mode == 'erase') {
         DeleteMouseEvent();
-        getByid("openMeasureImg").src = "../image/icon/black/b_Eraser.png";
+        getByid("openMeasureImg").src = "../image/icon/lite/b_Eraser.png";
 
         set_BL_model.onchange = function () {
-            getByid("openMeasureImg").src = "../image/icon/black/M.png";
+            getByid("openMeasureImg").src = "../image/icon/lite/M.png";
             displayMark();
             set_BL_model.onchange = function () { return 0; };
         }

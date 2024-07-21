@@ -4,9 +4,9 @@ var Cineimer = null;
 
 var PlayCine = function () {
     if (GetViewport().cine == false) {
-        getByid('playvideo').src = '../image/icon/black/b_CinePlay.png';
+        getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
     } else {
-        getByid('playvideo').src = '../image/icon/black/b_CinePause.png';
+        getByid('playvideo').src = '../image/icon/lite/b_CinePause.png';
     }
 
     if (openLink == true || GetViewport().cine == false) {

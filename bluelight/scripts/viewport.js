@@ -447,10 +447,18 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     const addition = (- low + intercept) / (high - low) * 255;
     const data = imgData.data;
     if (image.color == true) {
-        for (var i = 0; i < data.length; i += 4) {
-            data[i + 0] = pixelData[i] * multiplication + addition;
-            data[i + 1] = pixelData[i + 1] * multiplication + addition;
-            data[i + 2] = pixelData[i + 2] * multiplication + addition;
+        if (image.PhotometricInterpretation == "RGB") {
+            for (var i = 0, j = 0; i < data.length; i += 4, j += 3) {
+                data[i + 0] = pixelData[j] * multiplication + addition;
+                data[i + 1] = pixelData[j + 1] * multiplication + addition;
+                data[i + 2] = pixelData[j + 2] * multiplication + addition;
+            }
+        } else {
+            for (var i = 0; i < data.length; i += 4) {
+                data[i + 0] = pixelData[i] * multiplication + addition;
+                data[i + 1] = pixelData[i + 1] * multiplication + addition;
+                data[i + 2] = pixelData[i + 2] * multiplication + addition;
+            }
         }
     } else {
         for (var i = 0, j = 0; i < data.length; i += 4, j++) {

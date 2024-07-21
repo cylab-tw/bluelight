@@ -2,7 +2,7 @@ var openWriteTAG = false;
 function loadWriteTAG() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        `<img class="img TAG" alt="writeTAG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="writeTAG" src="../image/icon/black/tag_off.png" width="50" height="50">`;
+        `<img class="img TAG" alt="writeTAG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="writeTAG" src="../image/icon/lite/tag_off.png" width="50" height="50">`;
     getByid("icon-list").appendChild(span);
 
     var span = document.createElement("SPAN")
@@ -88,7 +88,7 @@ getByid("writeTAG").onclick = function () {
     cancelTools();
     openWriteTAG = !openWriteTAG;
     img2darkByClass("TAG", !openWriteTAG);
-    this.src = openWriteTAG == true ? '../image/icon/black/tag_on.png' : '../image/icon/black/tag_off.png';
+    this.src = openWriteTAG == true ? '../image/icon/lite/tag_on.png' : '../image/icon/lite/tag_off.png';
     if (openWriteTAG == true) {
         getByid('TagStyleDiv').style.display = '';
         set_BL_model('writeTAG');

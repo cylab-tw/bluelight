@@ -9,7 +9,7 @@ function cancelTools() {
     HideElemByID(["magnifierDiv", "textWC", "textWW", "WindowLevelDiv",
         "labelZoom", "labelPlay", "textZoom", "textPlay"]);
 
-    getByid('playvideo').src = '../image/icon/black/b_CinePlay.png';
+    getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
     getByid("WindowDefault").selected = true;
 
     displayWindowLevel();

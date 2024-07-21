@@ -5,10 +5,10 @@ var VR2_LutArray = [];
 function loadVR2() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        ` <img class="img VR2" alt="VR2" id="ImgVR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/black/vr2.png" width="50" height="50">
-        <img class="img VR2" alt="exitVR2" id="exitVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/exit.png" width="50" height="50" style="display:none;" >
-        <img class="img VR2" alt="moveVR2" id="moveVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/b_Pan.png" width="50" height="50" style="display:none;" >
-        <img class="img VR2" alt="windowVR2" id="windowVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/black/b_Window.png" width="50" height="50" style="display:none;" > `;
+        ` <img class="img VR2" alt="VR2" id="ImgVR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/vr2.png" width="50" height="50">
+        <img class="img VR2" alt="exitVR2" id="exitVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
+        <img class="img VR2" alt="moveVR2" id="moveVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Pan.png" width="50" height="50" style="display:none;" >
+        <img class="img VR2" alt="windowVR2" id="windowVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Window.png" width="50" height="50" style="display:none;" > `;
     getByid("icon-list").appendChild(span);
 
     function createVR2_DIV(viewportNum = viewportNumber) {

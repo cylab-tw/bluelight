@@ -56,6 +56,8 @@ function getDefaultImageObj(dataSet, type, url) {
     imageObj.photometricInterpretation = dataSet.string(Tag.PhotometricInterpretation);
     imageObj.width = imageObj.columns = dataSet.int16('x00280011');
     imageObj.height = imageObj.rows = dataSet.int16('x00280010');
+    imageObj.PhotometricInterpretation = dataSet.string(Tag.PhotometricInterpretation);
+    
     if (dataSet.elements[Tag.GridFrameOffsetVector]) {
         imageObj.GridFrameOffsetVector = dataSet.string(Tag.GridFrameOffsetVector).split("\\");
         for (var i in imageObj.GridFrameOffsetVector) imageObj.GridFrameOffsetVector[i] = parseInt(imageObj.GridFrameOffsetVector[i]);
