@@ -9,15 +9,22 @@ function loadVR2() {
         <img class="img VR2" alt="exitVR2" id="exitVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
         <img class="img VR2" alt="moveVR2" id="moveVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Pan.png" width="50" height="50" style="display:none;" >
         <img class="img VR2" alt="windowVR2" id="windowVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Window.png" width="50" height="50" style="display:none;" > `;
-    getByid("icon-list").appendChild(span);
-
+    addIconSpan(span); 
+    
     function createVR2_DIV(viewportNum = viewportNumber) {
+        var VRPage = document.createElement("DIV");
+        VRPage.className = "page";
+        VRPage.style.overflow = "hidden";
+        VRPage.id = "VRPage";
+        VRPage.addEventListener("contextmenu", contextmenuF, false);
+        getByid("pages").appendChild(VRPage);
+        VRPage.style.display = "none";
+
         var DIV = document.createElement("DIV");
         DIV.id = "VR2_DIV";
         DIV.setAttribute("border", 2);
-        DIV.style.display = "none";
+        VRPage.appendChild(DIV);
 
-        GetViewport(viewportNum).div.appendChild(DIV);
         var label = document.createElement("LABEL");
         label.id = "VR2_TestLabel"
         label.innerText = "This is a test version.";
@@ -68,14 +75,6 @@ function loadVR2() {
 }
 loadVR2();
 
-function displayVR2() {
-    getByid("VR2_DIV").style['display'] = "";
-}
-
-function hideVR2() {
-    getByid("VR2_DIV").style['display'] = "none";
-}
-
 getByid("ImgVR2").onclick = function () {
     if (this.enable == false) return;
     openVR2 = !openVR2;
@@ -99,7 +98,8 @@ getByid("ImgVR2").onclick = function () {
         for (cube of VRCube.VRCubeList) {
             cube.clear();
         }
-        hideVR2();
+
+        Pages.displayPage("DicomPage");
         getByid("MouseOperation").click();
         displayMark();
         getByid('MouseOperation').click();
@@ -134,10 +134,6 @@ class VRCube {
         this.scale = 1;
         this.pixelSpacing = this.SOP.Image.rowPixelSpacing;
 
-        this.rescaleMode = "resize";
-        //if (step != 1) this.rescaleMode = "pixel";
-
-        this.renderMode = "whole";
         this.width = this.SOP.Image.width;
         this.height = this.SOP.Image.height;
         this.windowCenter = this.SOP.Image.windowCenter;
@@ -698,7 +694,7 @@ class VRCube {
                 //[NewCanvas.style.width, NewCanvas.style.height] = [SOP.Image.width + "px", SOP.Image.height + "px"]
 
                 [NewCanvas.width, NewCanvas.height] = [SOP.Image.width, SOP.Image.height];
-                if (this.rescaleMode == "resize" && step != 1) {
+                if (step != 1) {
                     [NewCanvas.width, NewCanvas.height] = [SOP.Image.width / step, SOP.Image.height / step];
                     /////[NewCanvas.style.width, NewCanvas.style.height] = [SOP.Image.width + "px", SOP.Image.height + "px"]
                 }//else[NewCanvas.width, NewCanvas.height] = [SOP.Image.width / step, SOP.Image.height / step];
@@ -779,7 +775,7 @@ class VRCube {
                 NewCanvas.height = this.height;
 
 
-                if (this.rescaleMode == "resize" && this.step != 1) {
+                if (this.step != 1) {
                     NewCanvas.height = this.height / this.step;
                     ////NewCanvas.style.height = this.height + "px";
                     ////NewCanvas.style.width = parseInt(this.deep) + "px";
@@ -832,7 +828,7 @@ class VRCube {
                 NewCanvas.width = this.width;
                 NewCanvas.height = parseInt(this.deep);
 
-                if (this.rescaleMode == "resize" && this.step != 1) {
+                if (this.step != 1) {
                     NewCanvas.width = this.width / this.step;
                     /////NewCanvas.style.width = this.width + "px";
                     /////NewCanvas.style.height = parseInt(this.deep) + "px";
@@ -927,11 +923,12 @@ function initVR2() {
         BlueLightMousedownList = [];
         BlueLightMousemoveList = [];
         BlueLightMouseupList = [];
-        displayVR2();
+        //displayVR2();
         VRCube.operate_mode = "move";
         drawBorder(getByid("moveVR2"));
 
         var cube = new VRCube(GetViewport().sop);
+        Pages.displayPage("VRPage");
         cube.build();
     }
 }

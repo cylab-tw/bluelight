@@ -20,8 +20,7 @@ var PlayCine = function () {
     var fps = parseInt((1 / parseFloat(getByid("textPlay").value) * 1000));
     Cineimer = setInterval(function () {
         for (var i = 0; i < Viewport_Total; i++) {
-            if (GetViewport(i).cine != true) continue;
-            if (!(parseInt(GetViewport(i).div.style.height) <= 1)) GetViewport(i).nextFrame(false);
+            if (GetViewport(i).cine == true) GetViewport(i).nextFrame(false);
         }
     }, fps);
 }

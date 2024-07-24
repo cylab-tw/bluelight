@@ -12,7 +12,7 @@ var origin_openAnnotation;
 function loadMPR() {
     var span = document.createElement("SPAN");
     span.innerHTML = `<img class="img MPR" alt="Old MPR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="ImgMPR" src="../image/icon/lite/b_AdvancedMode_off.png" width="50" height="50">`;
-    getByid("icon-list").appendChild(span);
+    addIconSpan(span); 
 
     var span = document.createElement("SPAN");
     span.innerHTML = `<label style="color: #ffffff;" id="mprLightLabel">position<input type="checkbox" checked="true" name="mprLight"
@@ -252,7 +252,7 @@ getByid("MouseOperation_MPR").onclick = function () {
         if (BL_mode != 'mouseTool_MPR') return;
         var viewport = GetViewport();
         if (!GetViewport().drawMark) GetViewportMark().getContext("2d").clearRect(0, 0, GetViewportMark().width, GetViewportMark().height);
-        if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+        if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
 
         if (openMPR == true) {
             if (TouchDownCheck == true) {
@@ -548,10 +548,9 @@ function initMPR() {
             GetViewport(i).div.removeEventListener("touchend", BlueLightTouchend, false);
             GetViewport(i).div.addEventListener("touchstart", SwitchViewport, false);
             GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
-
         }
+        
         viewportNumber = 0;
-        window.onresize();
         //SetTable();
         o3DListLength = 0;
         //set_BL_model('MouseTool');
@@ -564,7 +563,9 @@ function initMPR() {
         for (var c = 0; c < Viewport_Total; c++) GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "";
         resetViewport(2);
         GetViewport(2).loadImgBySop(originSop_of_viewport2);
-        getByid("MouseOperation").click();
+
+        getByid("MouseOperation").click();        
+        window.onresize();
     } else if (openMPR == true) {
         enterMPR_UI();
         VIEWPORT.fixRow = VIEWPORT.fixCol = 2;
@@ -575,12 +576,11 @@ function initMPR() {
         displayAnnotation();
         getByid("3dDisplay").style.display = "";
         getByid("mprLightLabel").style.display = "";
-        getByid("SplitViewportDiv").style.display = "none";
         cancelTools();
         getByid("ImgMPR").src = "../image/icon/lite/b_AdvancedMode_on.png";
         var sop = GetViewport().sop;
         SetTable(2, 2);//如果MPR模式正在開啟，固定2x2
-        GetViewport(i).scale = null;
+        GetViewport().scale = null;
         //for (var c = 0; c < 4; c++)
         //    GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "none";
         originSop_of_viewport2 = GetViewport(2).Sop;

@@ -206,7 +206,7 @@ class BlueLightImageManager {
     pushStudy(imageObj) {
         var obj = this.find(this.Study, imageObj.StudyInstanceUID || imageObj.data.string(Tag.StudyInstanceUID));
         if (obj) {
-            return this.pushSeries(imageObj, obj.Series, obj.Series);
+            return this.pushSeries(imageObj, obj.Series, obj);
         } else {
             var Study = {};
             Study.StudyInstanceUID = imageObj.StudyInstanceUID || imageObj.data.string(Tag.StudyInstanceUID);
@@ -220,7 +220,7 @@ class BlueLightImageManager {
     pushSeries(imageObj, series, parent) {
         var obj = this.find(series, imageObj.SeriesInstanceUID || imageObj.data.string(Tag.SeriesInstanceUID));
         if (obj) {
-            return this.pushSop(imageObj, obj.Sop, obj.Sop);
+            return this.pushSop(imageObj, obj.Sop, obj);
         } else {
             var Seris = {};
             Seris.SeriesInstanceUID = imageObj.SeriesInstanceUID || imageObj.data.string(Tag.SeriesInstanceUID);

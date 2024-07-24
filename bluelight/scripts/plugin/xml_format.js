@@ -4,13 +4,13 @@ var openWriteXML = false;
 function loadxml_format() {
   var span = document.createElement("SPAN")
   span.innerHTML =
-    `<img class="img XML" alt="writeXML" id="writeXML" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/xml_off.png" width="50" height="50">;
+    `<img class="img XML" alt="writeXML" id="writeXML" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/xml_off.png" width="50" height="50">
     <img class="img XML" alt="drawXML" id="drawXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >  
     <img class="img XML" alt="eraseXML" id="eraseXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >  
     <img class="img XML" alt="exitXML" id="exitXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
     <img class="img XML" alt="saveXML" id="saveXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
 
-  getByid("icon-list").appendChild(span);
+  addIconSpan(span); 
 
   var span = document.createElement("SPAN")
   span.innerHTML =

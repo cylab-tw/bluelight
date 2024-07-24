@@ -8,7 +8,7 @@ function html_onload() {
   }
 
   //點到其他地方時，關閉抽屜
-  getClass("container")[0].addEventListener("mousedown", hideAllDrawer, false);
+  getByid("container").addEventListener("mousedown", hideAllDrawer, false);
 
   window.addEventListener("keydown", KeyDown, true);
   window.addEventListener("keyup", KeyUp, true);
@@ -169,15 +169,6 @@ function html_onload() {
     drawBorder(this);
   }
 
-  /*getByid("SplitWindow").onclick = function () {
-    if (this.enable == false) return;
-    hideAllDrawer();
-    if (getByid("SplitViewportDiv").style.display == "none")
-      getByid("SplitViewportDiv").style.display = "";
-    else
-      getByid("SplitViewportDiv").style.display = "none";
-  }*/
-
   getByid("MouseRotate").onclick = function () {
     if (this.enable == false) return;
     set_BL_model('rotate');
@@ -283,9 +274,9 @@ function html_onload() {
     clearviewportWindow.appendChild(label);
     clearviewportWindow.appendChild(btn_remove);
     clearviewportWindow.appendChild(btn_cancel);
-    getClass("container")[0].appendChild(clearviewportWindow);
+    getByid("container").appendChild(clearviewportWindow);
 
-    btn_cancel.onclick = function () { getClass("container")[0].removeChild(this.window); };
+    btn_cancel.onclick = function () { getByid("container").removeChild(this.window); };
     btn_remove.onclick = function () {
       hideAllDrawer();
       GetViewport().clear();
@@ -300,10 +291,11 @@ function html_onload() {
       getClass("labelWC")[viewportNumber].innerText = "";
       getClass("labelRT")[viewportNumber].innerText = "";
       getClass("labelRB")[viewportNumber].innerText = "";
+      getClass("labelXY")[viewportNumber].innerText = "";
       PatientMark = [];
       ImageManager = new BlueLightImageManager()
       getByid("LeftPicture").innerHTML = ""; //leftLayout = new LeftLayout();
-      leftLayout.reflesh();
+
       getByid("myfile").value = null;
       for (var i = 0; i < Viewport_Total; i++) {
         GetViewport(i).clear();
@@ -312,9 +304,10 @@ function html_onload() {
         getClass("labelWC")[i].innerText = "";
         getClass("labelRT")[i].innerText = "";
         getClass("labelRB")[i].innerText = "";
+        getClass("labelXY")[i].innerText = "";
         displayRuler(i);
       }
-      getClass("container")[0].removeChild(this.window);
+      getByid("container").removeChild(this.window);
     }
   }
 
@@ -419,6 +412,7 @@ function html_onload() {
             Viewport_row = this.row + 1;
             Viewport_col = this.col + 1;
             getByid("MouseOperation").click();
+            if (viewportNumber >= Viewport_row * Viewport_col) viewportNumber = 0;
             SetTable();
             window.onresize();
           }
@@ -545,9 +539,9 @@ function html_onload() {
     removeRulerWindow.appendChild(label);
     removeRulerWindow.appendChild(btn_remove);
     removeRulerWindow.appendChild(btn_cancel);
-    getClass("container")[0].appendChild(removeRulerWindow);
+    getByid("container").appendChild(removeRulerWindow);
 
-    btn_cancel.onclick = function () { getClass("container")[0].removeChild(this.window); };
+    btn_cancel.onclick = function () { getByid("container").removeChild(this.window); };
     btn_remove.onclick = function () {
       var sopList = [];
       for (var n in PatientMark) {
@@ -573,7 +567,7 @@ function html_onload() {
       Angle_now_choose = null;
       Angle_previous_choose = null;
       angle.angle_ = "stop";
-      getClass("container")[0].removeChild(this.window);
+      getByid("container").removeChild(this.window);
     };
   }
 
@@ -641,10 +635,8 @@ function html_onload() {
   getByid("MarkupImg").onclick = function () {
     if (this.enable == false) return;
     hideAllDrawer();
-    openDisplayMarkup = !openDisplayMarkup;
+    
     var TableSelectOnChange = function () {
-      GetViewport().div.style.overflowY = "hidden";
-      GetViewport().div.style.overflowX = "hidden";
       if (getByid("DICOMTagsSelect").selected == true)
         displayDicomTagsList();
       else if (getByid("AIMSelect").selected == true)
@@ -794,42 +786,7 @@ function html_onload() {
     }
   }
 
-  addEvent2SplitViewport();
   getByid("MouseOperation").click();
-}
-
-function addEvent2SplitViewport() {
-  let radio = getClass("split_radio");
-  for (var i = 0; i < radio.length; i++) {
-    radio[i].onchange = function () {
-      if (getByid("radio_1x1").checked == true) {
-        Viewport_row = 1;
-        Viewport_col = 1;
-      } else if (getByid("radio_1x2").checked == true) {
-        Viewport_row = 1;
-        Viewport_col = 2;
-      } else if (getByid("radio_2x1").checked == true) {
-        Viewport_row = 2;
-        Viewport_col = 1;
-      } else if (getByid("radio_2x2").checked == true) {
-        Viewport_row = 2;
-        Viewport_col = 2;
-      } else if (getByid("radio_3x3").checked == true) {
-        Viewport_row = 3;
-        Viewport_col = 3;
-      } else if (getByid("radio_4x4").checked == true) {
-        Viewport_row = 4;
-        Viewport_col = 4;
-      } else {
-        Viewport_row = 1;
-        Viewport_col = 1;
-      }
-      getByid("SplitViewportDiv").style.display = "none";
-      getByid("MouseOperation").click();
-      SetTable();
-      window.onresize();
-    }
-  }
 }
 
 function changeMarkImg() {

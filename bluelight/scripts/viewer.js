@@ -2,12 +2,6 @@
 let VIEWPORT = {};
 VIEWPORT.fixRow = null;
 VIEWPORT.fixCol = null;
-VIEWPORT.delPDFView = function (viewport) {
-    if (viewport && viewport.PDFView) {
-        viewport.div.removeChild(viewport.PDFView);
-        viewport.PDFView = undefined;
-    }
-}
 
 VIEWPORT.initTransform = function (viewport, image) {
     if (!viewport.Sop) return;
@@ -77,17 +71,13 @@ VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
     }
 }
 
-VIEWPORT.settype = function (element, image, viewportNum) {
-    if (!element.Sop || element.Sop.type == "img") return;
-    element.type = 'dcm';
-}
-
 VIEWPORT.loadViewport = function (viewport, image, viewportNum) {
     for (var i = 0; i < VIEWPORT.loadViewportList.length; i++) {
         VIEWPORT[VIEWPORT.loadViewportList[i]](viewport, image, viewportNum);
     }
 }
-VIEWPORT.loadViewportList = ['initTransform', 'putLabel2Element', 'delPDFView', 'settype'];
+//VIEWPORT.loadViewportList = ['initTransform', 'putLabel2Element', 'delPDFView', 'settype'];
+VIEWPORT.loadViewportList = ['initTransform', 'putLabel2Element'];
 
 function wadorsLoader(url, onlyload) {
     var data = [];
@@ -200,31 +190,30 @@ function wadorsLoader(url, onlyload) {
     return getData();
 }
 
-function PdfLoader(pdf, viewport) {
-    getClass("DicomCanvas")[viewportNumber].width = getClass("DicomCanvas")[viewportNumber].height = 1;
-    GetViewportMark().width = GetViewportMark().height = 1;
-    var element = viewport;
-    //for (var tag in element.DicomTagsList) element[element.DicomTagsList[tag][1]] = undefined;
-    element.DicomTagsList = [];
-    //element.image Width = element.image Height = 
-    element.translate.x = element.translate.y = element.rotate =
-        element.windowCenter = element.windowWidth = element.sop = undefined;
-    element.scale = null;
+function PdfLoader(pdf, Sop) {
+    Pages.displayPage("PdfPage");
+    img2darkByClass("pdf", false);
+    leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
 
-    VIEWPORT.delPDFView(element.div);
-    var iFrame = document.createElement("iframe");
-    iFrame.className = "PDFView";
-    iFrame.id = "PDFView_" + viewportNumber;
-    iFrame.src = pdf;
-    element.div.appendChild(iFrame);
-    element.PDFView = iFrame;
-
-    for (label of ["labelWC", "labelLT", "labelRT", "labelRB", "labelWC", "labelXY", "leftRule", "downRule"])
-        getClass(label)[viewportNumber].style.display = "none";
+    if (getByid("PDFView")) {
+        if (getByid("PDFView").src != pdf)
+            getByid("PDFView").src = pdf;
+    }
+    else {
+        var iFrame = document.createElement("iframe");
+        iFrame.className = "PDFView";
+        iFrame.id = "PDFView";
+        iFrame.src = pdf;
+        getByid("PdfPage").appendChild(iFrame);
+    }
 }
 
 function DcmLoader(image, viewport) {
-    if (viewport.enable == false || viewport.lockRender == true) return;
+    if (Pages.type != "DicomPage") {
+        Pages.displayPage("DicomPage");
+        img2darkByClass("dcm", true);
+    }
+
     var MarkCanvas = viewport.MarkCanvas, MainCanvas = viewport.canvas;
 
     if (image.NumberOfFrames > 1) viewport.QRLevel = "frames";
@@ -253,25 +242,22 @@ function DcmLoader(image, viewport) {
     DisplaySeriesCount(viewport.index);
     displayWindowLevel(viewport.index);
 
-    SetTable();
-
-    viewport.div.style.backgroundColor = "rgb(10,6,6)";
-    viewport.div.style.border = bordersize + "px #FFC3FF groove";
+    //SetTable();
 
     //渲染上去後畫布應該從原始大小縮小為適當大小
-    var HandW = getViewprtStretchSize(viewport.width, viewport.height, viewport.div);
-    if (!viewport.scale && (image.width / HandW[0])) viewport.scale = (1.0 / (image.width / HandW[0]));
+    if (!viewport.scale)
+        viewport.scale = Math.min(viewport.div.clientWidth / viewport.width, viewport.div.clientHeight / viewport.height);
+
+    //var HandW = getViewprtStretchSize(viewport.width, viewport.height, viewport.div);
+    //if (!viewport.scale && (image.width / HandW[0])) viewport.scale = (1.0 / (image.width / HandW[0]));
 
     MarkCanvas.width = MainCanvas.width, MarkCanvas.height = MainCanvas.height;
 
     MarkCanvas.getContext("2d").save();
-    MainCanvas.style["zIndex"] = "6";
-    MarkCanvas.style = MainCanvas.style.cssText;
-    MarkCanvas.style["zIndex"] = "8";
-    MarkCanvas.style["pointerEvents"] = "none";
     initNewCanvas();
 
     setTransform(viewport.index);
+    MarkCanvas.style.transform = MainCanvas.style.transform;
 
     if (openWindow == false && openZoom == false) openMouseTool = true;
 
@@ -283,18 +269,8 @@ function DcmLoader(image, viewport) {
     displayAIM();
     displayAnnotation();
     displayAllRuler();
+    viewport.refleshScrollBar();
 
-    //ScrollBar
-    if (viewport.tags.NumberOfFrames && viewport.tags.NumberOfFrames > 0 && viewport.tags.framesNumber != undefined && viewport.tags.framesNumber != null) {
-        viewport.ScrollBar.setTotal(parseInt(viewport.tags.NumberOfFrames));
-        viewport.ScrollBar.setIndex(parseInt(viewport.tags.framesNumber));
-        viewport.ScrollBar.reflesh();
-    } else {
-        var sopList = sortInstance(viewport.sop);
-        viewport.ScrollBar.setTotal(sopList.length);
-        viewport.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == viewport.tags.InstanceNumber));
-        viewport.ScrollBar.reflesh();
-    }
     refleshGUI();
 }
 
@@ -334,6 +310,7 @@ function loadPicture(url) {
         leftLayout.setImg2Left(qrLv, imageObj.patientId);
         leftLayout.appendCanvasBySeries(imageObj.SeriesInstanceUID, imageObj, imageObj.pixelData);
         leftLayout.refleshMarkWithSeries(imageObj.SeriesInstanceUID);
+        resetViewport();
         GetViewport().loadImgBySop(Sop);
     }
     img.src = url;
@@ -432,4 +409,60 @@ function initNewCanvas() {
         GetViewport().div.addEventListener("touchend", BlueLightTouchend, false);
     } catch (ex) { console.log(ex); }
     //GetViewport().div.addEventListener("wheel", wheelF, false); --*
+}
+
+function createDicomTagsList2Viewport(viewport) {
+    function getTag(tag) {
+        var group = tag.substring(1, 5);
+        var element = tag.substring(5, 9);
+        var tagIndex = (`(${group},${element})`).toUpperCase();
+        var attr = TAG_DICT[tagIndex];
+        return attr;
+    }
+
+    //取得DICOM Tags放入清單
+    viewport.DicomTagsList = [];
+    if (viewport.Sop.type == "img") viewport.DicomTagsList.SOPInstanceUID = viewport.content.image.SOPInstanceUID;
+
+    for (el in viewport.content.image.data.elements) {
+        try {
+            var tag = (`(${el.substring(1, 5)},${el.substring(5, 9)})`).toUpperCase();
+            var el1 = getTag(el);
+            el1.tag = "" + el;
+            var content = dicomParser.explicitElementToString(viewport.content.image.data, el1);
+            if (content) {
+                viewport.DicomTagsList.push([tag, el1.name, content]);
+                viewport.DicomTagsList[el1.name] = content;
+            } else {
+                var name = ("" + el1.name).toLowerCase();
+                if (!viewport.content.image[name]) {
+                    if (el1.vr == 'US') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.uint16(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.uint16(el);
+                    } else if (el1.vr === 'SS') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.int16(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.int16(el);
+                    } else if (el1.vr === 'UL') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.uint32(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.uint32(el);
+                    } else if (el1.vr === 'SL') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.int32(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.int32(el);
+                    } else if (el1.vr === 'FD') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.double(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.double(el);
+                    } else if (el1.vr === 'FL') {
+                        viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.float(el)]);
+                        viewport.DicomTagsList[el1.name] = image.data.float(el);
+                    } else {
+                        viewport.DicomTagsList.push([tag, el1.name, ""]);
+                        viewport.DicomTagsList[el1.name] = "";
+                    }
+                } else {
+                    viewport.DicomTagsList.push([tag, el1.name, viewport.content.image[name]]);
+                    viewport[el1.name] = viewport.content.image[name];
+                }
+            }
+        } catch (ex) { }
+    }
 }

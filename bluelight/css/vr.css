@@ -42,11 +42,13 @@
   border-collapse: collapse;
   position: absolute;
   background-color: black;
+  border: var(--bordersize) #FFC3FF groove;
   z-index: 200;
-  width: 100%;
-  height: 100%;
-  left: 0px;
-  top: 0px;
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  /*left: 0px;
+  top: 0px;*/
+  overflow: hidden;
 }
 
 #VR2_TestLabel{

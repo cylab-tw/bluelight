@@ -9,7 +9,7 @@ window.onload = function () {
   //執行其他Script提供的高優先度onload函數
   onloadFunction.ExecuteFirst();
   //執行RWD
-  EnterRWD();
+  //EnterRWD();
   //初始化參數
   loadLdcmview();
   //初始化HTML元素事件
@@ -52,11 +52,9 @@ class OnloadFunction {
 var onloadFunction = new OnloadFunction();
 
 function loadLdcmview() {
-  //左側面板樣式初始化
-  leftLayout.reflesh();
 
   //隱藏一開始不需要的元素
-  HideElemByID(["WindowLevelDiv", "labelZoom", "labelPlay", "textPlay", "textZoom", "SplitViewportDiv", "MarkStyleDiv"/*, "GraphicStyleDiv"*/]);
+  HideElemByID(["WindowLevelDiv", "labelZoom", "labelPlay", "textPlay", "textZoom", "MarkStyleDiv"/*, "GraphicStyleDiv"*/]);
 
   //初始化每一個Viewport的參數
   for (var i = 0; i < Viewport_Total; i++) {

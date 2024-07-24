@@ -27,10 +27,10 @@ class BlueLightViewPort {
 
     initViewport(index) {
         var div = document.createElement("DIV");
-        div.id = "MyDicomDiv" + index;
+        div.id = "DicomViewport" + index;
         div.viewportNum = index;
-        div.className = "MyDicomDiv";
-        document.getElementsByClassName("container")[0].appendChild(div);
+        div.className = "DicomViewport";
+        getByid("DicomPage").appendChild(div);
         this.div = div;
         this.index = index;
         this.QRLevel = "series";
@@ -48,7 +48,6 @@ class BlueLightViewPort {
     }
     clear() {
         this.invert = false;
-        this.type = 'dcm';
         this.HorizontalFlip = false;
         this.VerticalFlip = false;
         this.rotate = 0;
@@ -67,7 +66,6 @@ class BlueLightViewPort {
         this.lockRender = false;
         this.cine = false;
 
-        this.PDFView = null;
         this.content = {};
         this.div.enable = true;
         this.div.lockRender = false;
@@ -80,7 +78,6 @@ class BlueLightViewPort {
 
     initViewportOption(div, index) {
         this.invert = false;
-        this.type = 'dcm';
         this.HorizontalFlip = false;
         this.VerticalFlip = false;
         this.rotate = 0;
@@ -98,7 +95,6 @@ class BlueLightViewPort {
         this.lockRender = false;
         this.cine = false;
 
-        this.PDFView = null;
         this.content.framesNumber = 0;
 
         //div.newMousePointX = 0;
@@ -108,7 +104,6 @@ class BlueLightViewPort {
 
         div.enable = true;
         div.lockRender = false;
-        //div.openDisplayMarkup = false;
         this.DicomTagsList = [];
         this.initViewportCanvas(div, index);
     }
@@ -201,7 +196,7 @@ class BlueLightViewPort {
     initLabelXY(div, index) {
         var labelXY = document.createElement("LABEL");
         labelXY.className = "labelXY innerLabel";
-        labelXY.innerText = "X: 0 Y: 0";
+        labelXY.innerText = "";//"X: 0 Y: 0";
         this.labelXY = div.labelXY = labelXY;
         div.appendChild(labelXY);
     }
@@ -218,6 +213,7 @@ class BlueLightViewPort {
     }
 
     nextFrame(invert = false) {
+        if (this.enable == false) return;
         if (this.QRLevel == "series" && this.tags && this.tags.length) {
             var Sop = ImageManager.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.tags.InstanceNumber, invert);
             if (Sop != undefined) this.loadImgBySop(Sop);
@@ -243,6 +239,7 @@ class BlueLightViewPort {
     //readDicom要注意
     loadImgBySop(Sop) {
         if (!Sop) return;
+        if (this.enable == false || this.lockRender == true) return;
         if (Sop.constructor.name == 'String') Sop = ImageManager.findSop(Sop);
 
         this.Sop = Sop;
@@ -251,7 +248,7 @@ class BlueLightViewPort {
             this.framesNumber = 0;
             DcmLoader(Sop.Image, this);
         }
-        else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, this);
+        else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, Sop);
         else if (Sop.type == 'img') DcmLoader(Sop.Image, this);
     }
 
@@ -510,8 +507,6 @@ function refleshCanvas(viewport) {
     if (canvas.width != image.width) canvas.width = image.width;
     if (canvas.height != image.height) canvas.height = image.height
     renderPixelData2Cnavas(image, pixelData, canvas, viewport);
-    //setTransform(viewport.index);
-    //GetViewportMark(viewport.index).style = canvas.style.cssText;
     refleshGUI();
 }
 

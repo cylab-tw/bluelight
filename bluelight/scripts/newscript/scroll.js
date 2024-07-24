@@ -37,8 +37,7 @@ function scroll() {
                 if (nextBool != null && openLink == false) GetViewport().nextFrame(nextBool);
                 else if (nextBool != null && openLink == true) {
                     for (var z = 0; z < Viewport_Total; z++)
-                        if (!(parseInt(GetViewport(z).div.style.height) <= 1)) GetViewport(z).nextFrame(nextBool);
-
+                        GetViewport(z).nextFrame(nextBool);
                 }
             }
         });
@@ -53,7 +52,7 @@ function scroll() {
 
         BlueLightTouchmoveList = [];
         BlueLightTouchmoveList.push(function (e, e2) {
-            if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+            if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
 
             if (TouchDownCheck == true && rightTouchDown == false) {
                 if (Math.abs(windowMouseDiffY) < Math.abs(windowMouseDiffX)) {

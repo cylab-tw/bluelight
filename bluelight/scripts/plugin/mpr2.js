@@ -18,7 +18,7 @@ function loadMPR2() {
     var span = document.createElement("SPAN");
     span.id = "ImgMPR2_span";
     span.innerHTML = `<img class="img MPR2 MPR_icon" alt="New MPR" id="ImgMPR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_LocalizerLines.png" width="50" height="50">`;
-    getByid("icon-list").appendChild(span);
+    addIconSpan(span); 
 
     /*var span = document.createElement("SPAN");
     span.innerHTML = `<label style="color: #ffffff;" id="mprLightLabel">position<input type="checkbox" checked="true" name="mprLight"
@@ -204,8 +204,8 @@ function exitMPR2() {
         GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
     }
     viewportNumber = 0;
+    SetTable();//這個目前需要
     window.onresize();
-    //SetTable();
 
     GetViewport().loadImgBySop(GetViewport(0).Sop);
 
@@ -231,7 +231,6 @@ function initMPR2() {
     displayAnnotation();
     //getByid("3dDisplay").style.display = "";
     //getByid("mprLightLabel").style.display = "";
-    getByid("SplitViewportDiv").style.display = "none";
     cancelTools();
     getByid("ImgMPR2").src = "../image/icon/lite/b_LocalizerLines.png";
     var sop = GetViewport().sop;

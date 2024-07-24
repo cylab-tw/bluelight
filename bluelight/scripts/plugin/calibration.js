@@ -9,7 +9,7 @@ function loadCalibration() {
     var span = document.createElement("SPAN")
     span.innerHTML =
         ` <img class="img Calibration" alt="Calibration" id="Calibration" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_DistanceMeasurement.png" width="50" height="50">`;
-    getByid("icon-list").appendChild(span);
+    addIconSpan(span); 
 
     var span = document.createElement("SPAN")
     span.innerHTML =

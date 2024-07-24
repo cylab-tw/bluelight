@@ -38,7 +38,7 @@ var contextmenuF = function (e) {
     e.preventDefault();
 };
 
-var stopPropagation=function(e){
+var stopPropagation = function (e) {
     e.stopPropagation();
 }
 
@@ -47,7 +47,8 @@ var SwitchViewport = function () {
     var viewportNum = viewportNumber;
 
     viewportNumber = isNaN(this.viewportNum) ? viewportNumber : this.viewportNum;
-    leftLayout.setAccent(GetViewport().series);
+    if (GetViewport().Sop) leftLayout.setAccent(GetViewport().Sop.parent.SeriesInstanceUID);
+
     if (GetViewport().cine) getByid('playvideo').src = '../image/icon/lite/b_CinePause.png';
     else getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
 
@@ -103,7 +104,7 @@ window.addEventListener('load', function () {
 });
 
 function Wheel(e) {
-    if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+    if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
     var viewportNum = viewportNumber;
 
     if (!(openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true)) return;
@@ -113,7 +114,6 @@ function Wheel(e) {
     }
     else {
         for (var z = 0; z < Viewport_Total; z++) {
-            //if (parseInt(GetViewport(z).div.style.height) <= 1) continue;
             if (e.deltaY < 0) GetViewport(z).nextFrame(true);
             else GetViewport(z).nextFrame(false);
         }
@@ -125,18 +125,19 @@ function Wheel(e) {
 }
 
 function Mouseout(e) {
-    if(magnifierDiv) magnifierDiv.hide();
+    if (magnifierDiv) magnifierDiv.hide();
 }
 
 let dragged = null;
 onloadFunction.push2Last(function () {
-    for (var elem of getClass("MyDicomDiv")) {
+    for (var elem of getClass("DicomViewport")) {
         elem.addEventListener("drop", (event) => {
             event.preventDefault();
             if (!openLeftImgClick || !dragged) return;
             viewportNumber = parseInt(event.currentTarget.viewportNum);
             PictureOnclick(dragged.QRLevel);
             dragged = null;
+            refleshGUI();
         });
     }
 });

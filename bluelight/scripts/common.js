@@ -26,11 +26,16 @@ function displayAllRuler() {
 }
 
 function displayRuler(viewportNum = viewportNumber) {
-    if (!GetViewport() || !GetViewport().content || !GetViewport().content.image) return;
+    if (!GetViewport(viewportNum) || !GetViewport(viewportNum).content || !GetViewport(viewportNum).content.image) {
+        getClass("downRule")[viewportNum].style.display = "none";
+        getClass("leftRule")[viewportNum].style.display = "none";
+        return;
+    }
     try {
         var downRule = getClass("downRule");
         var offsetWidth = GetViewport(viewportNum).div.offsetWidth;
         downRule[viewportNum].width = offsetWidth;
+        downRule[viewportNum].style.display = "";
 
         var tempctx = downRule[viewportNum].getContext("2d");
         tempctx.clearRect(0, 0, offsetWidth, 20);
@@ -84,16 +89,17 @@ function displayRuler2(viewportNum = viewportNumber) {
         var leftRule = getClass("leftRule");
         var offsetHeight = GetViewport(viewportNum).div.offsetHeight;
         leftRule[viewportNum].height = offsetHeight;
+        leftRule[viewportNum].style.display = "";
+
         //leftRule[viewportNum].style.left = 10 + bordersize + "px";
         var tempctx = leftRule[viewportNum].getContext("2d");
-        var canvas = GetViewport(viewportNum).canvas;
+
         tempctx.clearRect(0, 0, 20, offsetHeight);
         tempctx.strokeStyle = "#FFFFFF";
         tempctx.fillStyle = "#FFFFFF";
         tempctx.lineWidth = "2";
         tempctx.beginPath();
-        var x1 = 0;
-        var y1 = 0;
+        var x1 = 0, y1 = 0;
 
         if (GetViewport(viewportNum).transform.PixelSpacingX && GetViewport(viewportNum).transform.PixelSpacingY) {
             tempctx.font = "" + (12) + "px Arial";
@@ -143,7 +149,6 @@ function setTransform(viewportnum = viewportNumber) {
 function resetViewport(viewportNum = viewportNumber) {
     GetViewport(viewportNum).translate.x = GetViewport(viewportNum).translate.y = GetViewport(viewportNum).rotate = 0;
     GetViewport(viewportNum).scale = null;
-    GetViewport(viewportNum).type = 'dcm';
     GetViewport(viewportNum).windowCenter = GetViewport(viewportNum).windowWidth = null;
     GetViewport(viewportNum).invert = GetViewport(viewportNum).HorizontalFlip = GetViewport(viewportNum).VerticalFlip = false;
     GetViewport(viewportNum).transform = {};

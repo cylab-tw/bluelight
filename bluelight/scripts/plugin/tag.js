@@ -3,7 +3,7 @@ function loadWriteTAG() {
     var span = document.createElement("SPAN")
     span.innerHTML =
         `<img class="img TAG" alt="writeTAG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="writeTAG" src="../image/icon/lite/tag_off.png" width="50" height="50">`;
-    getByid("icon-list").appendChild(span);
+    addIconSpan(span); 
 
     var span = document.createElement("SPAN")
     span.innerHTML =

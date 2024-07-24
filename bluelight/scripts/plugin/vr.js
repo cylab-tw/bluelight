@@ -37,7 +37,7 @@ function loadVR() {
     style="display:none;" width="50" height="50">
     <img class="img VR" alt="Scalpel" id="3dCave" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_Cross-hair_OFF.png" style="display:none;"
     width="50" height="50">`;
-    getByid("icon-list").appendChild(span);
+    addIconSpan(span);
 
     var span = document.createElement("SPAN");
     span.innerHTML =
@@ -219,7 +219,7 @@ getByid("ImgVR").onclick = function (catchError) {
     if (catchError == "error") openVR = false;
     img2darkByClass("VR", !openVR);
     initVR();
-    getByid("MouseOperation_VR").click();
+    if (openVR) getByid("MouseOperation_VR").click();
 }
 
 getByid("3dZipText").onchange = getByid("3dZipCheckbox").onclick = function () {
@@ -412,8 +412,8 @@ function initVR() {
             getByid("MprCanvas2").style.display = "none";
         } catch (ex) { }
         viewportNumber = 0;
+        SetTable(); //這個目前需要
         window.onresize();
-        //SetTable();
 
         GetViewport().loadImgBySop(GetViewport(0).Sop); // setSopToViewport(GetViewport(0).sop, 0);
 
@@ -432,13 +432,14 @@ function initVR() {
         openAnnotation = false;
         displayAnnotation();
         getByid("3dDisplay").style.display = "";
-        getByid("SplitViewportDiv").style.display = "none";
         getByid("VR_setup").style.display = "";
         getByid("3dCave").style.display = "";
         cancelTools();
         getByid("ImgVR").src = "../image/icon/lite/b_3D_on.png";
         var sop = GetViewport().sop;
+        var tmpviewportNumber = viewportNumber;
         SetTable(1, 1);
+        viewportNumber = tmpviewportNumber;
         GetViewport(i).scale = null;
 
         GetViewport().reload();

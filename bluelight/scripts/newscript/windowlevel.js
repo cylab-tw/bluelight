@@ -65,7 +65,7 @@ function windowlevel() {
 
         BlueLightTouchmoveList = [];
         BlueLightTouchmoveList.push(function (e, e2) {
-            if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+            if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
 
             if (TouchDownCheck && openWindow) {
                 getByid("WindowCustom").selected = true;

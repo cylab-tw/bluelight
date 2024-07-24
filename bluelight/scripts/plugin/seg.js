@@ -10,7 +10,7 @@ function loadWriteSEG() {
         <img class="img SEG" alt="exitSEG" id="exitSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
         <img class="img SEG" alt="saveSEG" id="saveSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
 
-    getByid("icon-list").appendChild(span);
+    addIconSpan(span); 
 
     var span = document.createElement("SPAN")
     span.innerHTML =

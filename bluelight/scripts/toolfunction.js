@@ -102,21 +102,21 @@ function CheckNull(str) {
 }
 
 function getViewprtStretchSize(width, height, element) {
-    var wi = (parseFloat(element.clientWidth) - (bordersize * 2)) / parseFloat(width);
-    var he = (parseFloat(element.clientHeight) - (bordersize * 2)) / parseFloat(height);
+    var wi = (parseFloat(element.clientWidth)) / parseFloat(width);
+    var he = (parseFloat(element.clientHeight)) / parseFloat(height);
     var small = he < wi ? he : wi;
     return [width * small, height * small];
 }
 
 function getViewportFixSize(width, height, row, col) {
     while (width > window.innerWidth - 100 - (bordersize * 2) && width >= 10) width -= 5;
-    while (height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2) && height >= 10) height -= 5;
+    while (height > window.innerHeight - getByid("container").offsetTop - (bordersize * 2) && height >= 10) height -= 5;
     return [width / col, height / row];
 }
 
 function getFixSize(width, height, element) {
     while (width > window.innerWidth - 100 - (bordersize * 2) && width >= 10) width -= 5;
-    while (height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2) && height >= 10) height -= 5;
+    while (height > window.innerHeight - getByid("container").offsetTop - (bordersize * 2) && height >= 10) height -= 5;
     return [width, height];
 }
 
