@@ -2,6 +2,7 @@
 function loadImageFromDataSet(dataSet, type, loadimage = true, url) {
     var imageObj = getDefaultImageObj(dataSet, type, url);
     if (type == 'pdf') setPDF(imageObj);
+    if (type == 'ecg') setECG(imageObj);
     var Sop = ImageManager.pushStudy(imageObj); //註冊此Image至Viewer
     if (!Sop) return; //發生重覆，等情況
     Sop.type = type;
@@ -27,6 +28,40 @@ function setPDF(imageObj) {
     var pdfObj = new Blob([pdfByteArray], { type: 'application/pdf' });
     var pdf = URL.createObjectURL(pdfObj);
     imageObj.pdf = pdf;
+}
+
+function setECG(imageObj) {
+    if (!imageObj.data.elements[Tag.WaveformSequence]) throw "WaveformSequence not found";
+    var WaveformSequence = imageObj.data.elements[Tag.WaveformSequence];
+    for (var i = 0; i < WaveformSequence.items.length; i++) {
+        if (WaveformSequence.items[i].dataSet.string(Tag.WaveformOriginality) == 'ORIGINAL') {
+            //Samples
+            imageObj.NumberOfWaveformSamples = WaveformSequence.items[i].dataSet.int16(Tag.NumberOfWaveformSamples);
+            //12
+            imageObj.NumberOfWaveformChannels = WaveformSequence.items[i].dataSet.int16(Tag.NumberOfWaveformChannels);
+            //BitsAllocated
+            imageObj.WaveformBitsAllocated = WaveformSequence.items[i].dataSet.int16(Tag.WaveformBitsAllocated);
+            //SamplingFrequency
+            imageObj.SamplingFrequency = WaveformSequence.items[i].dataSet.intString(Tag.SamplingFrequency);
+            //WaveformData.length=Samples*12*(BitsAllocated/8)
+            var WaveformData = WaveformSequence.items[i].dataSet.elements[Tag.WaveformData];
+
+            //check
+            if (WaveformData.length != imageObj.NumberOfWaveformSamples * imageObj.NumberOfWaveformChannels * (imageObj.WaveformBitsAllocated / 8))
+                throw "WaveformData parsing failed";
+
+            var WaveformDataOffset = WaveformSequence.items[0].dataSet.elements[Tag.WaveformData].dataOffset;
+            var WaveformDataLength = WaveformSequence.items[0].dataSet.elements[Tag.WaveformData].length;
+            switch (imageObj.WaveformBitsAllocated) {
+                case 8: imageObj.WaveformData = new Int8Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); return;
+                case 16: imageObj.WaveformData = new Int16Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); return;
+                case 32: imageObj.WaveformData = new Int32Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); return;
+            }
+            throw "WaveformData parsing failed";
+        }
+    }
+    if (WaveformSequence.items.length == 0) throw "WaveformOriginality not found";
+    throw "ORIGINAL WaveformOriginality not found";
 }
 
 function getDefaultImageObj(dataSet, type, url) {
@@ -57,7 +92,7 @@ function getDefaultImageObj(dataSet, type, url) {
     imageObj.width = imageObj.columns = dataSet.int16('x00280011');
     imageObj.height = imageObj.rows = dataSet.int16('x00280010');
     imageObj.PhotometricInterpretation = dataSet.string(Tag.PhotometricInterpretation);
-    
+
     if (dataSet.elements[Tag.GridFrameOffsetVector]) {
         imageObj.GridFrameOffsetVector = dataSet.string(Tag.GridFrameOffsetVector).split("\\");
         for (var i in imageObj.GridFrameOffsetVector) imageObj.GridFrameOffsetVector[i] = parseInt(imageObj.GridFrameOffsetVector[i]);
@@ -102,14 +137,13 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
     }
     function YBR(imageObj, dataSet, pixelData) {
         if (dataSet.string('x00280004') === 'YBR_FULL_422' && imageObj.color) {
-            //var pixelData = imageObj.pixelData;
             for (var i = 0; i < pixelData.length; i += 3) {
                 var R = pixelData[i] + 1.402 * (pixelData[i + 2] - 128);
                 var G = pixelData[i] - 0.344136 * (pixelData[i + 1] - 128) - 0.714136 * (pixelData[i + 2] - 128);
                 var B = pixelData[i] + 1.772 * (pixelData[i + 1] - 128);
-                pixelData[i] = R; // R = Y + 1.402 * (Cr - 128);
-                pixelData[i + 1] = G; // G = Y - 0.344136 * (Cb - 128) - 0.714136 * (Cr - 128);
-                pixelData[i + 2] = B; // B = Y + 1.772 * (Cb - 128);
+                pixelData[i] = Math.max(0, Math.min(255, Math.round(R))); // R = Y + 1.402 * (Cr - 128);
+                pixelData[i + 1] = Math.max(0, Math.min(255, Math.round(G))); // G = Y - 0.344136 * (Cb - 128) - 0.714136 * (Cr - 128);
+                pixelData[i + 2] = Math.max(0, Math.min(255, Math.round(B))); // B = Y + 1.772 * (Cb - 128);
             }
         }
         return pixelData;
@@ -136,8 +170,11 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
                 usePDFJS: false
             }).pixelData);
         }
-
-        return PixelProcessing(imageObj, dataSet, dicomParser.readEncapsulatedPixelDataFromFragments(dataSet, PXL, frameIndex));
+        return PixelProcessing(imageObj, dataSet, decodeImage(imageObj, dataSet.string(Tag.TransferSyntaxUID),
+            dicomParser.readEncapsulatedPixelDataFromFragments(dataSet, PXL, frameIndex), {
+            usePDFJS: false
+        }).pixelData);
+        //return PixelProcessing(imageObj, dataSet, dicomParser.readEncapsulatedPixelDataFromFragments(dataSet, PXL, frameIndex));
     } else {
         function unpackBinaryFrame(byteArray, frameOffset, pixelData) {
             if (frameOffset >= byteArray.length) throw new Error('frame exceeds size of pixelData');

@@ -111,7 +111,7 @@ class ScrollBar {
         this.outerDIV.style.height = "100%";//this.viewport.clientHeight + "px";
         if (this.total <= 1) this.innerDIV.style.height = "0%";//this.viewport.clientHeight + "px";
         else {
-            this.innerDIV.style.height = parseInt(100 / this.total) + "%";
+            this.innerDIV.style.height = this.total >= 100 ? "1%" : parseInt(100 / this.total) + "%";
             this.innerDIV.style.top = ((((this.index) / this.total) * 100)) + "%";
         }
         //避免擋到Label

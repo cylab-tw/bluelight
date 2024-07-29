@@ -228,7 +228,7 @@ function initMPR2() {
     changeLinkImg();
     origin_openAnnotation = openAnnotation;
     openAnnotation = false;
-    displayAnnotation();
+    
     //getByid("3dDisplay").style.display = "";
     //getByid("mprLightLabel").style.display = "";
     cancelTools();
@@ -240,6 +240,7 @@ function initMPR2() {
         GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "none";
     viewportNumber = 0;
     GetViewport().reload();
+    displayAnnotation();
     ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
     window.addEventListener("resize", resizeVR, false);
     for (var i1 = 0; i1 < Viewport_Total; i1++) {

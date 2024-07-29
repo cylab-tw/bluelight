@@ -218,12 +218,13 @@ class BlueLightViewPort {
             var Sop = ImageManager.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.tags.InstanceNumber, invert);
             if (Sop != undefined) this.loadImgBySop(Sop);
         } else if (this.QRLevel == "frames" && this.framesNumber != undefined) {
-            this.framesNumber += invert == true ? 1 : -1;
+            this.framesNumber += invert == true ? -1 : 1;
             if (this.framesNumber == -1) this.framesNumber = this.content.image.NumberOfFrames - 1;
             else if (this.framesNumber >= this.content.image.NumberOfFrames) this.framesNumber = 0;
             DisplaySeriesCount(this.index);
             refleshCanvas(this);
             putLabel();
+            this.refleshScrollBar();
         }
     }
 
@@ -231,6 +232,7 @@ class BlueLightViewPort {
         if (this.study == undefined) return;
         var Sop = ImageManager.getSopByQRLevels(this.QRLevels);
         if (Sop.pdf) PdfLoader(Sop.pdf);
+        else if (Sop.ecg) EcgLoader(Sop);
         else this.loadImgBySop(Sop);
     }
 
@@ -249,6 +251,7 @@ class BlueLightViewPort {
             DcmLoader(Sop.Image, this);
         }
         else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, Sop);
+        else if (Sop.type == 'ecg') EcgLoader(Sop);
         else if (Sop.type == 'img') DcmLoader(Sop.Image, this);
     }
 
@@ -258,9 +261,9 @@ class BlueLightViewPort {
 
     refleshScrollBar() {
         var element = this;
-        if (element.tags.NumberOfFrames && element.tags.NumberOfFrames > 0 && element.tags.framesNumber != undefined && element.tags.framesNumber != null) {
+        if (element.tags.NumberOfFrames && element.tags.NumberOfFrames > 0 && element.framesNumber != undefined && element.framesNumber != null) {
             element.ScrollBar.setTotal(parseInt(element.tags.NumberOfFrames));
-            element.ScrollBar.setIndex(parseInt(element.tags.framesNumber));
+            element.ScrollBar.setIndex(parseInt(element.framesNumber));
             element.ScrollBar.reflesh();
         } else {
             var sopList = sortInstance(element.sop);
@@ -444,7 +447,7 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     const addition = (- low + intercept) / (high - low) * 255;
     const data = imgData.data;
     if (image.color == true) {
-        if (image.PhotometricInterpretation == "RGB") {
+        if (("" + image.PhotometricInterpretation).includes("YBR") || ("" + image.PhotometricInterpretation).includes("RGB")) {
             for (var i = 0, j = 0; i < data.length; i += 4, j += 3) {
                 data[i + 0] = pixelData[j] * multiplication + addition;
                 data[i + 1] = pixelData[j + 1] * multiplication + addition;

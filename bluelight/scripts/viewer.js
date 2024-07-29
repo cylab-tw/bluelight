@@ -58,7 +58,7 @@ VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
         label_LT.innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
     for (var i = 0; i < DicomTags.RT.name.length; i++) {
         //避免PatientName出現中文亂碼
-        if ("x" + DicomTags.RT.tag[i] == Tag.PatientName) {
+        if ("x" + DicomTags.RT.tag[i] == Tag.PatientName && image.data.elements[Tag.PatientName]) {
             var dataSet = image.data;
             var data = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length);
             var textDecoder = new TextDecoder('utf-8');
@@ -208,6 +208,95 @@ function PdfLoader(pdf, Sop) {
     }
 }
 
+function EcgLoader(Sop) {
+    /*Pages.displayPage("EcgPage");
+    img2darkByClass("ecg", false);
+    leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
+    if (!getByid("EcgView")) {
+        var EcgView = document.createElement("div");
+        EcgView.id = "EcgView";
+        getByid("EcgPage").appendChild(EcgView);
+    }
+    if (!getByid("EcgCanvas")) {
+        var EcgCanvas = document.createElement("CANVAS");
+        EcgCanvas.id = "EcgCanvas";
+        EcgCanvas.width = 1754, EcgCanvas.height = 1240;
+        getByid("EcgView").appendChild(EcgCanvas);
+    }
+    //console.log(Sop.Image.WaveformData);
+    //WaveformData = Sop.Image.WaveformData;
+
+    var EcgCanvas = getByid("EcgCanvas");
+    var ctx = EcgCanvas.getContext("2d");
+    var imgData = ctx.createImageData(EcgCanvas.width, EcgCanvas.height);
+    new Uint32Array(imgData.data.buffer).fill(0xFFFFFFFF);
+    ctx.putImageData(imgData, 0, 0);
+
+    var Channels12 = Sop.Image.NumberOfWaveformChannels;
+    var SamplingFrequency = Sop.Image.NumberOfWaveformSamples / Sop.Image.SamplingFrequency;
+
+    var scaleX = EcgCanvas.width * 1 / (Sop.Image.NumberOfWaveformSamples);
+
+    //開始畫粗分隔線
+    ctx.strokeStyle = ctx.fillStyle = "rgb(222,113,104)";
+    ctx.lineWidth = 3;
+    var MiddleLineGap = EcgCanvas.height / 12;
+    ctx.beginPath();
+    for (var i = 1; i < 12; i++) {
+        ctx.moveTo(0, i * MiddleLineGap);
+        ctx.lineTo(EcgCanvas.width, i * MiddleLineGap);
+    }
+    ctx.stroke();
+    ctx.closePath();
+
+    //開始畫細分隔線
+    ctx.lineWidth = 0.5;
+    var MinLineGap = EcgCanvas.width / (SamplingFrequency / 0.04);
+    ctx.beginPath();
+    for (var i = 0; i < EcgCanvas.height / MinLineGap; i++) {
+        ctx.moveTo(0, i * MinLineGap);
+        ctx.lineTo(EcgCanvas.width, i * MinLineGap);
+    }
+    for (var i = 0; i < EcgCanvas.width / MinLineGap; i++) {
+        ctx.moveTo(i * MinLineGap, 0);
+        ctx.lineTo(i * MinLineGap, EcgCanvas.height);
+    }
+    ctx.stroke();
+    ctx.closePath();
+
+    //開始畫次要細分隔線
+    var SecondLineGap = EcgCanvas.width / (SamplingFrequency / 0.2);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (var i = 0; i < EcgCanvas.height / SecondLineGap; i += 1) {
+        ctx.moveTo(0, i * SecondLineGap);
+        ctx.lineTo(EcgCanvas.width, i * SecondLineGap);
+    }
+    for (var i = 0; i < EcgCanvas.width / SecondLineGap; i += 1) {
+        ctx.moveTo(i * SecondLineGap, 0);
+        ctx.lineTo(i * SecondLineGap, EcgCanvas.height);
+    }
+    ctx.stroke();
+    ctx.closePath();
+
+
+    //畫心電圖
+    ctx.strokeStyle = ctx.fillStyle = "rgb(0,0,0)";
+    ctx.lineWidth = 2;
+    var MiddleLinePosition = MiddleLineGap / 2;
+
+    for (var i_12 = 0; i_12 < Channels12; i_12++) {
+        ctx.beginPath();
+        ctx.moveTo((i_12 + 0) / Channels12 * scaleX, MiddleLinePosition + Sop.Image.WaveformData[i_12] * -1);
+        for (var i = i_12; i < Sop.Image.NumberOfWaveformSamples * Channels12; i += Channels12) {
+            ctx.lineTo((i / Channels12) * scaleX, MiddleLinePosition + Sop.Image.WaveformData[(i / 1)] * -1 / SamplingFrequency);
+        }
+        ctx.stroke();
+        ctx.closePath();
+        MiddleLinePosition += MiddleLineGap;
+    }*/
+}
+
 function DcmLoader(image, viewport) {
     if (Pages.type != "DicomPage") {
         Pages.displayPage("DicomPage");
@@ -331,6 +420,10 @@ function loadDicomDataSet(fileData, loadimage = true, url) {
         loadDicomSeg(getDefaultImageObj(dataSet, 'seg'))
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.GrayscaleSoftcopyPresentationStateStorage)
         readDicomMark(dataSet)
+
+    //ECG
+    else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID._12_leadECGWaveformStorage)
+        throw "not support ECG";//loadImageFromDataSet(dataSet, 'ecg', loadimage, url);
 
     //DiCOM Image
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.MRImageStorage)//MR

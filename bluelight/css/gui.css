@@ -269,6 +269,14 @@ button:hover {
   position: absolute;
 }
 
+#EcgView {
+  width: calc(100% - var(--bordersize)*2);
+  height: calc(100% - var(--bordersize)*2);
+  left: 0px;
+  position: absolute;
+  border: var(--bordersize) #FFC3FF groove;
+}
+
 #tooltiptext_img {
   color: white;
   position: absolute;
@@ -289,4 +297,10 @@ button:hover {
   height: 100%;
   position: absolute;
   overflow-y: scroll;
+}
+
+#EcgCanvas {
+  object-fit: contain;
+  height: 100%;
+  width: 100%;
 }
