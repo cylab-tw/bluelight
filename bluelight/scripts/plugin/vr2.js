@@ -9,8 +9,8 @@ function loadVR2() {
         <img class="img VR2" alt="exitVR2" id="exitVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
         <img class="img VR2" alt="moveVR2" id="moveVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Pan.png" width="50" height="50" style="display:none;" >
         <img class="img VR2" alt="windowVR2" id="windowVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Window.png" width="50" height="50" style="display:none;" > `;
-    addIconSpan(span); 
-    
+    addIconSpan(span);
+
     function createVR2_DIV(viewportNum = viewportNumber) {
         var VRPage = document.createElement("DIV");
         VRPage.className = "page";
@@ -36,6 +36,125 @@ function loadVR2() {
     BorderList_Icon.push("moveVR2");
     BorderList_Icon.push("windowVR2");
 
+    function createLut() {
+        var r0 = parseFloat((100 - 0) / 85);
+        var g0 = parseFloat((50 - 0) / 85);
+        var b0 = parseFloat((35 - 0) / 85);
+
+        var r1 = parseFloat((255 - 190) / 85);
+        var g1 = parseFloat((220 - 120) / 85);
+        var b1 = parseFloat((180 - 65) / 85);
+        var r2 = parseFloat((190 - 100) / 85);
+        var g2 = parseFloat((120 - 50) / 85);
+        var b2 = parseFloat((65 - 35) / 85);
+
+        var rList = [];
+        var gList = [];
+        var bList = [];
+
+        for (var i = 0; i <= 85; i++) {
+            rList.push(parseInt(0 + r0 * i));
+            gList.push(parseInt(0 + g0 * i));
+            bList.push(parseInt(0 + b0 * i));
+        }
+        for (var i = 0; i <= 85; i++) {
+            rList.push(parseInt(100 + r2 * i));
+            gList.push(parseInt(50 + g2 * i));
+            bList.push(parseInt(35 + b2 * i));
+        }
+        for (var i = 0; i <= 43; i++) {
+            rList.push(parseInt(190 + r1 * i));
+            gList.push(parseInt(120 + g1 * i));
+            bList.push(parseInt(65 + b1 * i));
+        }
+        for (var i = 0; i <= 43; i++) {
+            rList.push(parseInt(190 + r1 * i));
+            gList.push(parseInt(170 + g1 * i));
+            bList.push(parseInt(150 + b1 * i));
+        }
+
+        var lutArray = new Int32Array(256);
+        for (var i = 0; i < lutArray.length; i++) {
+            var tempcolor = 128 - Math.abs(128 - i);
+            lutArray[i] = parseInt(parseInt(93) +
+                parseInt(256 * 238) +
+                parseInt(256 * 256 * 238) +
+                parseInt(256 * 256 * 256 * parseInt(tempcolor <= 25 ? 0 : tempcolor)));
+        }
+        var Airways_LutArray = {
+            name: "Airways", array: lutArray, defaultWindow: {
+                windowWidth: 409, windowCenter: -538
+            }
+        }
+
+        var lutArray = new Int32Array(256);
+        for (var i = 0; i < lutArray.length; i++) {
+            lutArray[i] = parseInt(parseInt(rList[i]) +
+                parseInt(256 * gList[i]) +
+                parseInt(256 * 256 * bList[i]) +
+                parseInt(256 * 256 * 256 * (i <= 25 ? 0 : 255)));
+        }
+
+        var Color_LutArray = {
+            name: "Color", array: lutArray, defaultWindow: {
+                windowWidth: "origin", windowCenter: "origin"
+            }
+        }
+        var Angio_LutArray = {
+            name: "Angio", array: lutArray, defaultWindow: {
+                windowWidth: 332, windowCenter: 287
+            }
+        }
+
+        VR2_LutArray.push(Color_LutArray);
+        VR2_LutArray.push(Angio_LutArray);
+        VR2_LutArray.push(Airways_LutArray);
+        /*var lutArray = new Int32Array(256);
+        var AirlutArray = new Int32Array(256);
+        for (var i = 0; i < lutArray.length; i++) {
+            var tempcolor = 128 - Math.abs(128 - i);
+            AirlutArray[i] = parseInt(parseInt(93) +
+                parseInt(256 * 238) +
+                parseInt(256 * 256 * 238) +
+                parseInt(256 * 256 * 256 * parseInt(tempcolor <= 25 ? 0 : tempcolor)));
+        }
+        for (var i = 0; i < lutArray.length; i++) {
+            if (i > 160) lutArray[i] = Angio_LutArray.array[i]
+            else if (i > 100);
+            else lutArray[i] = AirlutArray[i]
+        }
+
+        var Combine_LutArray = {
+            name: "Combine", array: lutArray, defaultWindow: {
+                windowWidth: 1650, windowCenter: 80
+            }
+        }
+
+        VR2_LutArray.push(Combine_LutArray);*/
+        var lutArray = new Int32Array(256);
+        var AirlutArray = new Int32Array(256);
+        for (var i = 0; i < lutArray.length; i++) {
+            var tempcolor = 128 - Math.abs(128 - i);
+            AirlutArray[i] = parseInt(parseInt(93) +
+                parseInt(256 * 238) +
+                parseInt(256 * 256 * 238) +
+                parseInt(256 * 256 * 256 * parseInt(tempcolor <= 25 ? 0 : tempcolor)));
+        }
+        for (var i = 0; i < lutArray.length; i++) {
+            if (i > 200) lutArray[i] = Angio_LutArray.array[i]
+            else if (i > 128);
+            else lutArray[i] = AirlutArray[i]
+        }
+
+        var Combine_LutArray = {
+            name: "Combine", array: lutArray, defaultWindow: {
+                windowWidth: 1200, windowCenter: -150
+            }
+        }
+
+        VR2_LutArray.push(Combine_LutArray);
+    }
+    createLut();
     function loadLut(path, name) {
         var request = new XMLHttpRequest();
         request.open('GET', path);
@@ -70,8 +189,8 @@ function loadVR2() {
         }
         request.send();
     }
-    loadLut("../data/lut/VR_Color.txt", "VR Color");
-    loadLut("../data/lut/VR_Bones.txt", "VR Bones");
+    //loadLut("../data/lut/VR_Color.txt", "VR Color");
+    //loadLut("../data/lut/VR_Bones.txt", "VR Bones");
 }
 loadVR2();
 
@@ -138,6 +257,8 @@ class VRCube {
         this.height = this.SOP.Image.height;
         this.windowCenter = this.SOP.Image.windowCenter;
         this.windowWidth = this.SOP.Image.windowWidth;
+        this.OriginWindowCenter = this.SOP.Image.windowCenter;
+        this.OriginWindowWidth = this.SOP.Image.windowWidth;
         this.ElemXs = []; this.ElemYs = []; this.ElemZs = [];
 
         if (this.width == this.height) this.stepFactor = getFactor(this.width);
@@ -151,6 +272,8 @@ class VRCube {
         this.MiddleDownCheck = false;
         this.RightMouseDownCheck = false;
         this.shadow = true;
+        this.reduceSlices = false;
+        if (this.sopList.length >= 50) this.reduceSlices = true;
         VRCube.VRCubeList.push(this);
     }
 
@@ -246,6 +369,18 @@ class VRCube {
                     this.cube.step_tmp = this.cube.step;
                     this.cube.step = step;
                 }
+            } else if (VRCube.operate_mode == "move") {
+                if (this.cube.reduceSlices == true) {
+                    for (var ll = 0; ll < this.cube.ElemZs.length; ll++)
+                        if (ll % 2 != 0 && ll != 0 && ll != this.cube.ElemZs.length - 1)
+                            this.cube.ElemZs[ll].style.display = this.cube.reduceSlices == true ? "none" : "";
+                    for (var ll = 0; ll < this.cube.ElemXs.length; ll++)
+                        if (ll % 2 != 0 && ll != 0 && ll != this.cube.ElemXs.length - 1)
+                            this.cube.ElemXs[ll].style.display = this.cube.reduceSlices == true ? "none" : "";
+                    for (var ll = 0; ll < this.cube.ElemYs.length; ll++)
+                        if (ll % 2 != 0 && ll != 0 && ll != this.cube.ElemYs.length - 1)
+                            this.cube.ElemYs[ll].style.display = this.cube.reduceSlices == true ? "none" : "";
+                }
             }
         }
 
@@ -315,6 +450,19 @@ class VRCube {
 
                 if (!isNaN(this.cube.windowCenter)) this.cube.WCText.value = this.cube.windowCenter;
                 if (!isNaN(this.cube.windowWidth)) this.cube.WWText.value = this.cube.windowWidth;
+            }
+            else if (VRCube.operate_mode == "move") {
+                if (this.cube.reduceSlices == true) {
+                    for (var ll = 0; ll < this.cube.ElemZs.length; ll++)
+                        if (ll % 2 != 0 && ll != 0 && ll != this.cube.ElemZs.length - 1)
+                            this.cube.ElemZs[ll].style.display = "";
+                    for (var ll = 0; ll < this.cube.ElemXs.length; ll++)
+                        if (ll % 2 != 0 && ll != 0 && ll != this.cube.ElemXs.length - 1)
+                            this.cube.ElemXs[ll].style.display = "";
+                    for (var ll = 0; ll < this.cube.ElemYs.length; ll++)
+                        if (ll % 2 != 0 && ll != 0 && ll != this.cube.ElemYs.length - 1)
+                            this.cube.ElemYs[ll].style.display = "";
+                }
             }
         }
         VR2Mousedown = VR2Mousedown.bind({ cube: this });
@@ -401,7 +549,7 @@ class VRCube {
                 this.WCText.value = this.cube.windowCenter;
             }
             else {
-                this.cube.windowCenter = parseInt(Math.abs(this.WCText.value));
+                this.cube.windowCenter = parseInt(this.WCText.value);
                 this.WCText.value = this.cube.windowCenter; //abs and in
                 this.cube.resetZXY();
                 this.cube.reflesh();
@@ -413,7 +561,7 @@ class VRCube {
                 this.WWText.value = this.cube.windowWidth;
             }
             else {
-                this.cube.windowWidth = parseInt(Math.abs(this.WWText.value));
+                this.cube.windowWidth = parseInt(this.WWText.value);
                 this.WWText.value = this.cube.windowWidth; //abs and in
                 this.cube.resetZXY();
                 this.cube.reflesh();
@@ -479,6 +627,9 @@ class VRCube {
             option = document.createElement("option");
             option.innerText = VR2_LutArray[i].name;
             option.setAttribute("value", VR2_LutArray[i].name);
+            option.setAttribute("defaultWindow", VR2_LutArray[i].defaultWindow);
+            option.defaultWindow = VR2_LutArray[i].defaultWindow;
+
             if (option.innerText == "VR Color") option.setAttribute("selected", "selected");
             lutSelect.appendChild(option);
         }
@@ -488,6 +639,14 @@ class VRCube {
 
         function ChangeLut() {
             this.cube.lut = this.lutSelect.options[this.lutSelect.options.selectedIndex].value;
+            var defaultWindow = this.lutSelect.options[this.lutSelect.options.selectedIndex].defaultWindow;
+
+            if (defaultWindow) {
+                this.cube.windowCenter = defaultWindow.windowCenter == 'origin' ? this.cube.OriginWindowCenter : defaultWindow.windowCenter;
+                this.cube.windowWidth = defaultWindow.windowWidth == 'origin' ? this.cube.OriginWindowWidth : defaultWindow.windowWidth;
+                if (!isNaN(this.cube.windowCenter)) this.cube.WCText.value = this.cube.windowCenter;
+                if (!isNaN(this.cube.windowWidth)) this.cube.WWText.value = this.cube.windowWidth;
+            }
             this.cube.resetZXY();
             this.cube.reflesh();
         }
@@ -526,6 +685,40 @@ class VRCube {
         span.appendChild(ShadowCheck);
         span.appendChild(ShadowLable);
         userDIV.appendChild(span);
+
+        //////////Reduce Slices//////////
+
+        var span = document.createElement("span");
+        span.style['zIndex'] = "490";
+        span.style['float'] = "right";
+        var ReduceSliceLable = document.createElement("LABEL");
+        ReduceSliceLable.innerText = "Reduce Slices";
+        ReduceSliceLable.className = "VR2_Label";
+        ReduceSliceLable.style.float = "left";
+
+        var ReduceSlicesCheck = document.createElement("input");
+        ReduceSlicesCheck.style = "z-index: 490;float:left";
+        ReduceSlicesCheck.type = "checkbox";
+        ReduceSlicesCheck.id = "VR2_ReduceSlicesCheck";
+        //PerspectiveCheck.setAttribute("checked", "checked");
+        this.ReduceSlicesCheck = ReduceSlicesCheck;
+        if (this.sopList.length >= 50) ReduceSlicesCheck.setAttribute("checked", "checked");
+        function ChangeReduceSlices() {
+            if (this.ReduceSlicesCheck.checked) this.cube.reduceSlices = true;
+            else this.cube.reduceSlices = false;
+            /*
+            for (var ll = 0; ll < this.cube.ElemZs.length; ll++)
+                if (ll % 2 != 0 && ll != 0 && ll != this.cube.ElemZs.length - 1)
+                    this.cube.ElemZs[ll].style.display = this.cube.reduceSlices == true ? "none" : "";
+            this.cube.reflesh();*/
+        }
+        ChangeReduceSlices = ChangeReduceSlices.bind({ cube: this, ReduceSlicesCheck: ReduceSlicesCheck });
+        ReduceSlicesCheck.addEventListener("change", ChangeReduceSlices, false);
+
+        span.appendChild(ReduceSlicesCheck);
+        span.appendChild(ReduceSliceLable);
+        userDIV.appendChild(span);
+
 
         //////////Perspective//////////
         var span = document.createElement("span");
@@ -710,6 +903,7 @@ class VRCube {
                 NewCanvas.direction = 'z';
                 //if (this.rescaleMode == "resize" && step != 1) NewCanvas.position.z /= step;
                 NewCanvas.style.transform = `translate3d(0, 0, 0) translateZ(-` + (NewCanvas.position.z / step) + "px)";
+                //if (this.reduceSlices == true && ll % 2 != 0 && ll != 0 && ll != this.sopList.length - 1) NewCanvas.style.display = "none";
                 this.container.appendChild(NewCanvas);
                 this.ElemZs.push(NewCanvas);
             } catch (ex) { console.log(ex); };
