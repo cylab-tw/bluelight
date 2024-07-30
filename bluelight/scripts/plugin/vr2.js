@@ -795,7 +795,9 @@ class VRCube {
     RenderShadow() {
         if (!this.shadow) return;
         if (VRCube.operate_mode == "window" && this.MouseDownCheck == true) return;
-        for (var canvas of this.ElemZs) {
+        for (var ll = 0; ll < this.ElemZs.length; ll++) {
+            if (ll % 2 != 0 && ll != 0 && ll != this.ElemZs.length - 1) continue;
+            var canvas = this.ElemZs[ll];
             var length = Math.abs(this.GetMaxByElemZ() - this.GetMinByElemZ());
             var dist = 1 - (Math.abs(canvas.position.z - this.GeMediumByElemZ()) / length);
 
@@ -806,7 +808,7 @@ class VRCube {
 
             gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');  // Center: full opacity black
             gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');  // Edge: transparent black
-            ctx.globalAlpha = 0.1 * dist;
+            ctx.globalAlpha = 0.2 * dist;
             ctx.fillStyle = gradient;
             ctx.globalCompositeOperation = 'destination-over';
             ctx.fillRect(0, 0, this.width, this.height);
