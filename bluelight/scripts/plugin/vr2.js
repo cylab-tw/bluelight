@@ -274,6 +274,7 @@ class VRCube {
         this.shadow = true;
         this.reduceSlices = false;
         if (this.sopList.length >= 50) this.reduceSlices = true;
+        this.RotationMatrix = [1, 0, 0, 0, 1, 0, 0, 0, 1]; // 初始旋轉矩陣
         VRCube.VRCubeList.push(this);
     }
 
@@ -337,8 +338,12 @@ class VRCube {
             if (this.PerspectiveCheck.checked) this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
             else this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
 
-            this.container.style.transform =
-                `translate3d(${this.offset[0]}px,${(this.offset[1] + (offsety))}px,0) scale(${this.scale * this.step}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg)`;// rotateZ(${this.VR2_RotateDeg[2]}deg) `
+            var Matrix = multiplyMatrices(this.RotationMatrix, [1, 0, 0, 0, 1, 0, 0, 0, 1]);
+            var Matrix = multiplyMatrices(getScaleMatrix(this.scale * this.step), this.RotationMatrix);
+            this.container.style.transform = applyRotationMatrix(Matrix, this.offset[0], this.offset[1] + (offsety), 0);
+
+            //this.container.style.transform =
+            //   `translate3d(${this.offset[0]}px,${(this.offset[1] + (offsety))}px,0) scale(${this.scale * this.step}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg) rotateZ(${this.VR2_RotateDeg[2]}deg) `
         }
 
         requestAnimationFrame(this.calculating_time);
@@ -368,6 +373,8 @@ class VRCube {
                 if (step != -1 && step > this.cube.step) {
                     this.cube.step_tmp = this.cube.step;
                     this.cube.step = step;
+                    this.cube.resetZXY();
+                    this.cube.reflesh();
                 }
             } else if (VRCube.operate_mode == "move") {
                 if (this.cube.reduceSlices == true) {
@@ -397,17 +404,20 @@ class VRCube {
                         }
                         this.cube.resetZXY();
                         this.cube.VR2_Point = [e.pageX, e.pageY];
-                        this.cube.reflesh();
+                        //this.cube.reflesh();
                     }
                 }
                 if (VRCube.operate_mode == "move") {
                     if (this.cube.MouseDownCheck && !isNaN(e.pageX) && !isNaN(e.pageY)) {
-                        this.cube.VR2_RotateDeg[1] -= this.cube.VR2_Point[0] - e.pageX;
-                        this.cube.VR2_RotateDeg[0] += this.cube.VR2_Point[1] - e.pageY;
-                        this.cube.VR2_RotateDeg[1] -= this.cube.VR2_Point[0] * (180 / (180 % this.cube.VR2_Point[1])) - e.pageX;
-                        this.cube.VR2_RotateDeg[0] += this.cube.VR2_Point[1] * (180 / (180 % this.cube.VR2_Point[0])) - e.pageY;
-                        this.cube.VR2_RotateDeg[0] = (this.cube.VR2_RotateDeg[0] % 360 + 360) % 360;
-                        this.cube.VR2_RotateDeg[1] = (this.cube.VR2_RotateDeg[1] % 360 + 360) % 360;
+                        const deltaX = e.pageX - this.cube.VR2_Point[0];
+                        const deltaY = e.pageY - this.cube.VR2_Point[1];
+                        //this.cube.rotation[0] += -deltaY * 0.025;
+                        //this.cube.rotation[1] += deltaX * 0.025;
+                        const rotationX = -deltaY * 0.025;
+                        const rotationY = deltaX * 0.025;
+
+                        const rotationMatrix = getRotationMatrix(rotationX, rotationY);
+                        this.cube.RotationMatrix = multiplyMatrices(rotationMatrix, this.cube.RotationMatrix);
                         this.cube.reflesh();
                     }
                 }
@@ -630,7 +640,7 @@ class VRCube {
             option.setAttribute("defaultWindow", VR2_LutArray[i].defaultWindow);
             option.defaultWindow = VR2_LutArray[i].defaultWindow;
 
-            if (option.innerText == "VR Color") option.setAttribute("selected", "selected");
+            if (option.innerText == "Color") option.setAttribute("selected", "selected");
             lutSelect.appendChild(option);
         }
 
@@ -1127,4 +1137,47 @@ function initVR2() {
         Pages.displayPage("VRPage");
         cube.build();
     }
+}
+
+function multiplyMatrices(a, b) {
+    const c = [];
+    for (let i = 0; i < 3; i++) {
+        c[i * 3 + 0] = a[i * 3 + 0] * b[0] + a[i * 3 + 1] * b[3] + a[i * 3 + 2] * b[6];
+        c[i * 3 + 1] = a[i * 3 + 0] * b[1] + a[i * 3 + 1] * b[4] + a[i * 3 + 2] * b[7];
+        c[i * 3 + 2] = a[i * 3 + 0] * b[2] + a[i * 3 + 1] * b[5] + a[i * 3 + 2] * b[8];
+    }
+    return c;
+}
+function getRotationMatrix(rotateX, rotateY) {
+    const cosX = Math.cos(rotateX);
+    const sinX = Math.sin(rotateX);
+    const cosY = Math.cos(rotateY);
+    const sinY = Math.sin(rotateY);
+
+    const rotationXMatrix = [
+        1, 0, 0,
+        0, cosX, -sinX,
+        0, sinX, cosX
+    ];
+
+    const rotationYMatrix = [
+        cosY, 0, sinY,
+        0, 1, 0,
+        -sinY, 0, cosY
+    ];
+
+    return multiplyMatrices(rotationYMatrix, rotationXMatrix);
+}
+
+function getScaleMatrix(scale) {
+    return scaleMatrix = [
+        scale, 0, 0,
+        0, scale, 0,
+        0, 0, scale
+    ];
+}
+
+function applyRotationMatrix(matrix, x, y, z) {
+    const [m00, m01, m02, m10, m11, m12, m20, m21, m22] = matrix;
+    return `matrix3d(${m00}, ${m10}, ${m20}, 0, ${m01}, ${m11}, ${m21}, 0, ${m02}, ${m12}, ${m22}, 0, ${x}, ${y}, ${z}, 1)`;
 }
