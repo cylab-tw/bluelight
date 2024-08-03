@@ -430,7 +430,7 @@ function initVR() {
         changeLinkImg();
         origin_openAnnotation = openAnnotation;
         openAnnotation = false;
-        displayAnnotation();
+
         getByid("3dDisplay").style.display = "";
         getByid("VR_setup").style.display = "";
         getByid("3dCave").style.display = "";
@@ -443,6 +443,7 @@ function initVR() {
         GetViewport(i).scale = null;
 
         GetViewport().reload();
+        displayAnnotation();
 
         GetViewport().canvas.style.display = "none";
         GetViewportMark().style.display = "none";
