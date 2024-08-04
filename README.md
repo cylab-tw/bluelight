@@ -106,7 +106,7 @@
 ### Plugin : 3D Post-Processing
 * MPR (Multiplanar Reconstruction) - see [mpr.js](/bluelight/scripts/plugin/mpr.js)
 * MIP (maximum intensity projection) - implemented in MPR 
-* 3D Volume Rendering - see [vr.js](/bluelight/scripts/plugin/vr.js)
+* 3D Volume Rendering - see [vr2.js](/bluelight/scripts/plugin/vr2.js)
 
 ### Plugin : Labeling tool interfaces (on experiment state)
 * [LabelImg](https://github.com/tzutalin/labelImg)
