@@ -122,11 +122,8 @@
 
 ## Supported library
 * BlueLight Viewer uses several oepn source libraries as folowing:
-  - <a href="https://github.com/taye/interact.js">interact</a> for drag and drop objects.
   - <a href="https://github.com/cornerstonejs">cornerstone</a> for reading, parsing DICOM-formatted data.
   - <a href="https://github.com/cornerstonejs/dicomParser">dicomParser</a> for parsing DICOM tags.
-  - <a href="https://github.com/cornerstonejs/cornerstoneWADOImageLoader">cornerstoneWADOImageLoader</a> for communicating with the DICOMWeb servers such as  <a href="https://www.orthanc-server.com">Orthanc</a> and <a href="https://www.dcm4che.org">Dcm4chee</a> 
-  - <a href="https://www.npmjs.com/package/lodash">lodash</a> for decoding the multipart/related objects in WADO-RS response.
 
 # Roadmap
 * FHIR ImagingStudy Query/Retrieve Interface
