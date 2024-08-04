@@ -1,15 +1,81 @@
-.o3DDiv{
-    position: absolute;
-    transform-style:preserve-3d;
+.o3DDiv {
+  position: absolute;
+  transform-style: preserve-3d;
 
-    -webkit-transform: translate3d(0,0,0);
-    transform: translate3d(0,0,0);
-  }
-  .canvas_3d{
-    position: absolute;
-    top: 50%;
-    left:50%;
-    transform-style:preserve-3d;
-    -webkit-transform: translate3d(0,0,0);
-    transform: translate3d(0,0,0);
-  }
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  image-rendering: pixelated;
+}
+
+.canvas_3d {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-style: preserve-3d;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  image-rendering: pixelated;
+}
+
+#VR2_Container {
+  position: absolute;
+  transform-style: preserve-3d;
+  width: 100%;height: 100%;
+
+  -webkit-transform: translate3d(0, 0, 0);
+
+  display: flex;
+  justify-content: center;
+  image-rendering: pixelated;
+  will-change: transform;
+}
+
+.VrCanvas {
+  /*transform-origin: center;*/
+}
+
+.VRshadow {
+  background-Color: rgba(0, 0, 0, 0.04);
+}
+
+#VR2_DIV {
+  border-collapse: collapse;
+  position: absolute;
+  background-color: black;
+  border: var(--bordersize) #FFC3FF groove;
+  z-index: 200;
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  /*left: 0px;
+  top: 0px;*/
+  overflow: hidden;
+}
+
+#VR2_TestLabel{
+  z-index: 500;
+  color:white;
+  position: absolute;
+  font-size:32px;
+  user-select:none;
+}
+
+.VR2_Label{
+  z-index: 490;
+  color:white;
+  font-size:16px;
+  user-select:none;
+  float:right;
+}
+
+.VR2_LabelLB{
+  z-index: 490;
+  color:white;
+  font-size:20px;
+  user-select:none;
+}
+
+.VR2_Text{
+  z-index: 490;
+  font-size:16px;
+  float:right;
+}

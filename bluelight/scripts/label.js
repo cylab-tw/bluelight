@@ -1,36 +1,50 @@
-function displayWindowLevel(viewportNum0) {
-  var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
+//代表病患資訊顯示狀態
+var openAnnotation = true;
+
+//label距離邊緣多遠
+var labelPadding = 3;
+var leftLabelPadding = labelPadding;
+var rightLabelPadding = labelPadding;
+var topLabelPadding = labelPadding;
+var bottomLabelPadding = labelPadding;
+
+//數著這個Series有幾張影像
+//var SeriesCount = 0;
+
+function displayWindowLevel(viewportNum = viewportNumber) {
   getByid("textWC").value = "originWindowCenter";
   getByid("textWW").value = "originWindowWidth";
-  getByid("textWW").value = "" + parseInt(GetViewport(viewportNum).windowWidthList);
-  getByid("textWC").value = "" + parseInt(GetViewport(viewportNum).windowCenterList);
-  labelWC[viewportNum].innerText = " WC: " + parseInt(GetViewport(viewportNum).windowCenterList) + " WW: " + parseInt(GetViewport(viewportNum).windowWidthList);
+  getByid("textWW").value = "" + parseInt(GetViewport(viewportNum).windowWidth);
+  getByid("textWC").value = "" + parseInt(GetViewport(viewportNum).windowCenter);
+  getClass("labelWC")[viewportNum].innerText = ` WC: ${parseInt(GetViewport(viewportNum).windowCenter)} WW: ${parseInt(GetViewport(viewportNum).windowWidth)}`;
 }
 
-function DisplaySeriesCount(viewportNum0) {
-  var viewportNum = viewportNum0 >= 0 ? viewportNum0 : viewportNumber;
+function DisplaySeriesCount(viewportNum = viewportNumber) {
   var viewport = GetViewport(viewportNum);
-  SeriesCount = 1;
-  for (var i = 0; i < Patient.StudyAmount; i++) {
-    for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-      if (Patient.Study[i].Series[j].SeriesUID == viewport.SeriesInstanceUID) {
-        SeriesCount = Patient.Study[i].Series[j].SopAmount;
+  var tags = viewport.tags;
+  var label_RB = getClass("labelRB")[viewportNum];
+
+  var SeriesCount = 1;
+  for (var i = 0; i < ImageManager.Study.length; i++) {
+    for (var j = 0; j < ImageManager.Study[i].Series.length; j++) {
+      if (ImageManager.Study[i].Series[j].SeriesInstanceUID == tags.SeriesInstanceUID) {
+        SeriesCount = ImageManager.Study[i].Series[j].Sop.length;
         if (SeriesCount == 1) SeriesCount = 2;
-        if (viewport.InstanceNumber == null) {
-          if (labelRB[viewportNum].innerText.indexOf('/') >= 1) {
-            labelRB[viewportNum].innerText = labelRB[viewportNum].innerText.substr(0, labelRB[viewportNum].innerText.indexOf('/') + 1) + (SeriesCount - 1) + "\n" + viewport.StudyDate;
+        if (tags.InstanceNumber == null) {
+          if (label_RB.innerText.indexOf('/') >= 1) {
+            label_RB.innerText = label_RB.innerText.substr(0, label_RB.innerText.indexOf('/') + 1) + (SeriesCount - 1) + "\n" + tags.StudyDate;
             return;
           }
         } else {
-          if (viewport.NumberOfFrames && viewport.NumberOfFrames > 1) labelRB[viewportNum].innerText = "Im: " + viewport.framesNumber + "/" + (viewport.NumberOfFrames - 0) + "\n" + viewport.StudyDate;
-          else labelRB[viewportNum].innerText = "Im: " + viewport.InstanceNumber + "/" + (SeriesCount - 0) + "\n" + viewport.StudyDate;
+          if (tags.NumberOfFrames && tags.NumberOfFrames > 1) label_RB.innerText = "Im: " + GetViewport(viewportNum).framesNumber + "/" + (tags.NumberOfFrames - 0) + "\n" + tags.StudyDate;
+          else label_RB.innerText = "Im: " + tags.InstanceNumber + "/" + (SeriesCount - 0) + "\n" + tags.StudyDate;
           return;
         }
       }
     }
   }
-  if (viewport.NumberOfFrames && viewport.NumberOfFrames > 1) labelRB[viewportNum].innerText = "Im: " + viewport.framesNumber + "/" + viewport.NumberOfFrames + "\n" + viewport.StudyDate;
-  else labelRB[viewportNum].innerText = "Im: " + viewport.InstanceNumber + "/" + SeriesCount + "\n" + viewport.StudyDate;
+  if (tags.NumberOfFrames && tags.NumberOfFrames > 1) label_RB.innerText = "Im: " + GetViewport(viewportNum).framesNumber + "/" + tags.NumberOfFrames + "\n" + tags.StudyDate;
+  else label_RB.innerText = "Im: " + tags.InstanceNumber + "/" + SeriesCount + "\n" + tags.StudyDate;
 }
 
 function putLabel() {

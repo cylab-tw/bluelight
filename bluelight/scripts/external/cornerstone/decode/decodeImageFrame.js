@@ -6,7 +6,7 @@ import decodeJPEGLossless from './decoders/decodeJPEGLossless.js';
 import decodeJPEGLS from './decoders/decodeJPEGLS.js';
 import decodeJPEG2000 from './decoders/decodeJPEG2000.js';
 
-export  function decodeImageFrame1(
+export function decodeImageFrame(
   imageFrame,
   transferSyntax,
   pixelData,
@@ -92,5 +92,5 @@ export  function decodeImageFrame1(
 
   return imageFrame;
 }
-/*
-export default decodeImageFrame;*/
+
+export default decodeImageFrame;

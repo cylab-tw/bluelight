@@ -1,49 +1,67 @@
+
+//代表目前開放使用滾輪切換影像，無論處於什麼操作模式
+var openWheel = false;
+
+//表示按住了滑鼠左鍵
+var MouseDownCheck = false;
+//表示按住了滑鼠右鍵
+var rightMouseDown = false;
+//表示按住了觸控
+var TouchDownCheck = false;
+//表示按住了滑鼠左鍵
+var rightTouchDown = false;
+
+//紀錄滑鼠座標
+var windowMouseX = 0, windowMouseY = 0;
+var windowMouseX2 = 0, windowMouseY2 = 0;
+var MousePointX = 0, MousePointY = 0;
+var originalPoint_X = 0, originalPoint_Y = 0;
+var originalPoint_X2 = 0, originalPoint_Y2 = 0;
+
+//紀錄滑鼠座標差
+var windowMouseDiffX = 0, windowMouseDiffY = 0;
+//紀錄雙指距離
+var windowTouchDistX = 0, windowTouchDistY = 0;
+
+//代表按下ctrl
+let KeyCode_ctrl = false;
+
+
+let BlueLightMousedownList = [];
+let BlueLightTouchstartList = [];
+let BlueLightMousemoveList = [];
+let BlueLightTouchmoveList = [];
+let BlueLightMouseupList = [];
+let BlueLightTouchendList = [];
+
 var contextmenuF = function (e) {
     e.preventDefault();
 };
 
-var touchstartF = function (e) {
-    if (e.touches[1]) Touchstart(e.touches[0], e.touches[1]);
-    else Touchstart(e.touches[0]);
-};
-var touchendF = function (e) {
-    if (e.touches[1]) Touchend(e.touches[0], e.touches[1]);
-    else Touchend(e.touches[0]);
-};
-var touchmoveF = function (e) {
-    if (e.touches[1]) Touchmove(e.touches[0], e.touches[1]);
-    else Touchmove(e.touches[0]);
-};
-var thisF = function () {
-    getByid("WindowDefault").selected = true;
-    for (var i = 0; i < Viewport_Total; i++) {
-        if ("MyDicomDiv" + (i) == "" + this.id) {
-            var viewportNum = viewportNumber;
-            MeasureXY[0] = MeasureXY[1] = MeasureXY2[0] = MeasureXY2[1] = 0;
-            viewportNumber = i;
-            if (GetViewport().openPlay == false) {
-                getByid('playvideo').src = '../image/icon/black/b_CinePlay.png';
-            } else {
-                getByid('playvideo').src = '../image/icon/black/b_CinePause.png';
-            }
-            changeMarkImg();
-            var sop = GetViewport().sop;
-            var uid = SearchUid2Json(sop);
-            //NowResize = true;
-            //NowCanvasSizeWidth = NowCanvasSizeHeight = null;
-            if (uid)
-                loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/);
-            else {
-                sop = GetViewport(viewportNum).sop;
-                uid = SearchUid2Json(sop);
-                try {
-                    loadAndViewImage(Patient.Study[uid.studyuid].Series[uid.sreiesuid].Sop[uid.sopuid].imageId /*, null, null, viewportNumber*/);
-                } catch (ex) { }
-            }
-            break;
-        }
-    }
+var stopPropagation = function (e) {
+    e.stopPropagation();
 }
+
+var SwitchViewport = function () {
+    getByid("WindowDefault").selected = true;
+    var viewportNum = viewportNumber;
+
+    viewportNumber = isNaN(this.viewportNum) ? viewportNumber : this.viewportNum;
+    if (GetViewport().Sop) leftLayout.setAccent(GetViewport().Sop.parent.SeriesInstanceUID);
+
+    if (GetViewport().cine) getByid('playvideo').src = '../image/icon/lite/b_CinePause.png';
+    else getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
+
+    changeMarkImg();
+    if (GetViewport().Sop) GetViewport().reload();
+    else {
+        try {
+            GetViewport().loadImgBySop(GetViewport(viewportNum).Sop);
+        } catch (ex) { }
+    }
+    refleshGUI();
+}
+
 window.addEventListener("keydown", function (e) {
     e = e || window.event;
     var nextInstanceNumber = 0;
@@ -52,30 +70,9 @@ window.addEventListener("keydown", function (e) {
     else if (e.keyCode == '37') nextInstanceNumber = -1;
     else if (e.keyCode == '39') nextInstanceNumber = 1;
     if (!GetViewport() || nextInstanceNumber == 0) return;
-    var sop = GetViewport().sop;
-    let index = SearchUid2Index(sop);
 
-    let i = index[0],
-        j = index[1],
-        k = index[2];
-    var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-    var list = sortInstance(sop);
-    for (l = 0; l < list.length; l++) {
-        if (list[l].InstanceNumber == Onum) {
-            break;
-        }
-    }
-    if (nextInstanceNumber == -1) {
-        nextFrame(viewportNumber, -1);
-        if (l - 1 < 0) nextInstanceNumber = list.length - 1;
-        else nextInstanceNumber = l - 1;
-    } else if (nextInstanceNumber = 1) {
-        nextFrame(viewportNumber, 1);
-        if (list[l].InstanceNumber == Onum) {
-            if (l + 1 >= list.length) nextInstanceNumber = 0;
-            else nextInstanceNumber = l + 1;
-        }
-    }
+    if (nextInstanceNumber == -1) GetViewport().nextFrame(true);
+    else if (nextInstanceNumber = 1) GetViewport().nextFrame(false);
 });
 
 window.addEventListener('load', function () {
@@ -101,146 +98,239 @@ window.addEventListener('load', function () {
         }
 
     };
+
     document.addEventListener('touchstart', touchStartHandler, false);
     document.addEventListener('touchmove', touchMoveHandler, false);
 });
 
 function Wheel(e) {
-    if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
-    //if (openPenDraw == true) return;
-    getByid("MeasureLabel").style.display = "none";
-    var viewport = GetViewport(), canvas = viewport.canvas();
-    var nextInstanceNumber = 0;
-    var nextFramesNumber = 0;
-    var break1 = false;
+    if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
     var viewportNum = viewportNumber;
 
-    for (var z = 0; z < Viewport_Total; z++) {
-        var break1 = false;
-        if (openLink == true) viewportNum = z;
-        if (openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true) {
-            var currX1 = (e.pageX - canvas.getBoundingClientRect().left - GetViewport().newMousePointX - 100) * (GetViewport().imageWidth / parseInt(GetViewport().canvas().style.width));
-            var currY1 = (e.pageY - canvas.getBoundingClientRect().top - GetViewport().newMousePointY - 100) * (GetViewport().imageHeight / parseInt(GetViewport().canvas().style.height));
-            var sop = GetViewport(viewportNum).sop;
-            try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
-            /*let index = SearchUid2Index(sop);
-            if (!index) continue;
-            let i = index[0],
-                j = index[1],
-                k = index[2];*/
-            var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-            var list = sortInstance(sop);
-            if (list.length == 0) continue;
-            if (list.length == 1 && !list[0].frames) continue;
-            if (list.length == 1 && list[0].frames) {
-                if (GetViewport(viewportNum).framesNumber == undefined) GetViewport(viewportNum).framesNumber = 0;
-                if (e.deltaY < 0) {
-                    for (var l = 0; l < list[0].frames.length; l++) {
-                        if (break1 == true) break;
-                        if (l == GetViewport(viewportNum).framesNumber) {
-                            if (l - 1 < 0) {
-                                loadAndViewImage(list[0].imageId, viewportNum, list[0].frames.length - 1);
-                                nextFramesNumber = list[0].frames.length - 1;
-                                break1 = true;
-                                break;
-                            }
-                            loadAndViewImage(list[0].imageId, viewportNum, l - 1);
-                            nextFramesNumber = l - 1;
-                            break1 = true;
-                            break;
-                        }
-                    }
-                } else {
-                    for (var l = 0; l < list[0].frames.length; l++) {
-                        if (break1 == true) break;
-                        if (l == GetViewport(viewportNum).framesNumber) {
-                            if (l + 1 >= list[0].frames.length) {
-                                loadAndViewImage(list[0].imageId, viewportNum, 0);
-                                nextFramesNumber = 0;
-                                break1 = true;
-                                break;
-                            }
-                            loadAndViewImage(list[0].imageId, viewportNum, l + 1);
-                            nextFramesNumber = l + 1;
-                            break1 = true;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                if (e.deltaY < 0) {
-                    for (var l = 0; l < list.length; l++) {
-                        if (break1 == true) break;
-                        if (list[l].InstanceNumber == Onum) {
-                            if (l - 1 < 0) {
-                                loadAndViewImage(list[list.length - 1].imageId, viewportNum);
-                                nextInstanceNumber = list.length - 1;
-                                break1 = true;
-                                break;
-                            }
-                            loadAndViewImage(list[l - 1].imageId, viewportNum);
-                            nextInstanceNumber = l - 1;
-                            break1 = true;
-                            break;
-                        }
-                    }
-                } else {
-                    for (var l = 0; l < list.length; l++) {
-                        if (break1 == true) break;
-                        if (list[l].InstanceNumber == Onum) {
-                            if (l + 1 >= list.length) {
-                                loadAndViewImage(list[0].imageId, viewportNum);
-                                nextInstanceNumber = 0;
-                                break1 = true;
-                                break;
-                            }
-                            loadAndViewImage(list[l + 1].imageId, viewportNum);
-                            nextInstanceNumber = l + 1;
-                            break1 = true;
-                            break;
-                        }
-                    }
-                }
-            }
+    if (!(openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true)) return;
+    if (openLink == false) {
+        if (e.deltaY < 0) GetViewport(viewportNum).nextFrame(true);
+        else GetViewport(viewportNum).nextFrame(false);
+    }
+    else {
+        for (var z = 0; z < Viewport_Total; z++) {
+            if (e.deltaY < 0) GetViewport(z).nextFrame(true);
+            else GetViewport(z).nextFrame(false);
         }
-        if (openLink == false)
-            break;
+    }
+    if (openZoom) {
+        var angle2point = rotateCalculation(e);
+        magnifierIng(angle2point[0], angle2point[1]);
     }
 }
 
 function Mouseout(e) {
-    magnifierDiv.style.display = "none";
+    if (magnifierDiv) magnifierDiv.hide();
 }
 
-interact('.LeftImg').draggable({
-    onmove(event) {
-        if (!openLeftImgClick) return;
-        dragseries = event.target.series;
+let dragged = null;
+onloadFunction.push2Last(function () {
+    for (var elem of getClass("DicomViewport")) {
+        elem.addEventListener("drop", (event) => {
+            event.preventDefault();
+            if (!openLeftImgClick || !dragged) return;
+            viewportNumber = parseInt(event.currentTarget.viewportNum);
+            PictureOnclick(dragged.QRLevel);
+            dragged = null;
+            refleshGUI();
+        });
     }
-})
+});
 
-interact('.MyDicomDiv').dropzone({
-    accept: '.LeftImg',
-    ondropactivate: function (event) {
-        event.target.classList.add('drop-active')
-    },
-    ondragenter: function (event) {
-        var draggableElement = event.relatedTarget
-        var dropzoneElement = event.target
-        dropzoneElement.classList.add('drop-target')
-        draggableElement.classList.add('can-drop')
-    },
-    ondragleave: function (event) {
-        event.target.classList.remove('drop-target')
-        event.relatedTarget.classList.remove('can-drop')
-    },
-    ondrop: function (event) {
-        if (!openLeftImgClick) return;
-        viewportNumber = parseInt(event.target.viewportNum);
-        PictureOnclick(dragseries);
-    },
-    ondropdeactivate: function (event) {
-        event.target.classList.remove('drop-active')
-        event.target.classList.remove('drop-target')
+class Point2D {
+    constructor(x, y) { this.x = x, this.y = y; }
+    get 0() { return this.x }; set 0(v) { this.x = v };
+    get 1() { return this.y }; set 1(v) { this.y = v };
+    set(x, y) { this.x = x, this.y = y; };
+    get() { return [this.x, this.y] };
+    point() { return [this.x, this.y] };
+    setPoint(arr) { this.x = arr[0], this.y = arr[1]; };
+}
+
+class Size2D {
+    constructor(w, h) { this.w = w, this.h = h; }
+    get 0() { return this.w }; set 0(v) { this.w = v };
+    get 1() { return this.h }; set 1(v) { this.h = v };
+    set(w, h) { this.w = w, this.h = h; };
+    get() { return [this.w, this.h] };
+    setSize(arr) { this.w = arr[0], this.h = arr[1]; };
+}
+
+class Point3D {
+    constructor(x, y, z) { this.x = x, this.y = y, this.z = z; }
+    get 0() { return this.x }; set 0(v) { this.x = v };
+    get 1() { return this.y }; set 1(v) { this.y = v };
+    get 2() { return this.z }; set 2(v) { this.z = v };
+    set(x, y, z) { this.x = x, this.y = y, this.z = z; };
+    get() { return [this.x, this.y, , this.z] };
+    point() { return [this.x, this.y, this.z] };
+    setPoint(arr) { this.x = arr[0], this.y = arr[1], this.z = arr[2]; };
+}
+
+let MouseDownPointByWindow = new Point2D(0, 0);
+let MouseMovePointByWindow = new Point2D(0, 0);
+let MouseUpPointByWindow = new Point2D(0, 0);
+let MouseDownPointByCanvas = new Point2D(0, 0);
+let MouseMovePointByCanvas = new Point2D(0, 0);
+let MouseUpPointByCanvas = new Point2D(0, 0);
+
+let BlueLightMousedown = function (e) {
+    if (e.which == 1) MouseDownCheck = true;
+    else if (e.which == 3) rightMouseDown = true;
+
+    windowMouseDiffX = windowMouseDiffY = 0;
+    MouseDownPointByWindow.setPoint(GetmouseXY(e));
+    MouseDownPointByCanvas.setPoint(rotateCalculation(e));
+
+    [windowMouseX, windowMouseY] = GetmouseXY(e);
+    [originalPoint_X, originalPoint_Y] = getCurrPoint(e);
+
+    for (var i = 0; i < BlueLightMousedownList.length; i++) {
+        if (BlueLightMousedownList[i].constructor.name == "Function")
+            BlueLightMousedownList[i](e);
     }
-})
+}
+
+let BlueLightTouchstart = function (E) {
+    var e = E.touches[0], e2 = E.touches[1] ? E.touches[1] : null;
+
+    if (!e2) TouchDownCheck = true;
+    else rightTouchDown = true;
+
+    [windowMouseX, windowMouseY] = GetmouseXY(e);
+    [originalPoint_X, originalPoint_Y] = getCurrPoint(e);
+
+    if (rightTouchDown == true && e2) {
+        [windowMouseX2, windowMouseY2] = GetmouseXY(e2);
+        [originalPoint_X2, originalPoint_Y2] = getCurrPoint(e2);
+    }
+
+    for (var i = 0; i < BlueLightTouchstartList.length; i++) {
+        if (BlueLightTouchstartList[i].constructor.name == "Function")
+            BlueLightTouchstartList[i](e, e2);
+    }
+}
+
+let BlueLightMousemove = function (e) {
+    let angle2point = rotateCalculation(e);
+    var [MouseX, MouseY] = GetmouseXY(e);
+    windowMouseDiffX = MouseX - windowMouseX;
+    windowMouseDiffY = MouseY - windowMouseY;
+    [windowMouseX, windowMouseY] = GetmouseXY(e);
+
+    for (var i = 0; i < BlueLightMousemoveList.length; i++) {
+        if (BlueLightMousemoveList[i].constructor.name == "Function")
+            BlueLightMousemoveList[i](e);
+    }
+
+    if (isNaN(angle2point[0]) || isNaN(angle2point[1])) getClass('labelXY')[viewportNumber].innerText = "";
+    else {
+        getClass('labelXY')[viewportNumber].innerText = "Pixel: " + GetPixel(angle2point) + `  (${parseInt(angle2point[0])},${parseInt(angle2point[1])})`;
+    }//getClass('labelXY')[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
+
+    if (openLink == true) {
+        for (var i = 0; i < Viewport_Total; i++) {
+            GetViewport(i).translate.x = GetViewport().translate.x;
+            GetViewport(i).translate.y = GetViewport().translate.y;
+        }
+    }
+    putLabel();
+    displayAllRuler();
+}
+
+let BlueLightTouchmove = function (E) {
+    var e = E.touches[0], e2 = E.touches[1] ? E.touches[1] : null;
+
+    var [MouseX, MouseY] = GetmouseXY(e);
+    [windowMouseDiffX, windowMouseDiffY] = [MouseX - windowMouseX, MouseY - windowMouseY];
+
+    if (rightTouchDown == true && e2) {
+        //紀錄雙指距變化
+        windowTouchDistDiffX = Math.abs(GetmouseX(e2) - GetmouseX(e)) - Math.abs(windowMouseX - windowMouseXF2);
+        windowTouchDistDiffY = Math.abs(GetmouseY(e2) - GetmouseY(e)) - Math.abs(windowMouseY - windowMouseY2);
+    }
+
+    [windowMouseX, windowMouseY] = GetmouseXY(e);
+
+    if (rightTouchDown == true && e2) {
+        [windowMouseX2, windowMouseY2] = GetmouseXY(e2);
+        [originalPoint_X2, originalPoint_Y2] = getCurrPoint(e2);
+    }
+
+    for (var i = 0; i < BlueLightTouchmoveList.length; i++) {
+        if (BlueLightTouchmoveList[i].constructor.name == "Function")
+            BlueLightTouchmoveList[i](e, e2);
+    }
+}
+
+let BlueLightMouseup = function (e) {
+    for (var i = 0; i < BlueLightMouseupList.length; i++) {
+        if (BlueLightMouseupList[i].constructor.name == "Function")
+            BlueLightMouseupList[i](e);
+    }
+    windowMouseX = windowMouseY = windowMouseDiffX = windowMouseDiffY = 0;
+    MouseDownCheck = rightMouseDown = false;
+}
+
+let BlueLightTouchend = function (E) {
+    var e = E.touches[0], e2 = E.touches[1] ? E.touches[1] : null;
+    for (var i = 0; i < BlueLightTouchendList.length; i++) {
+        if (BlueLightTouchendList[i].constructor.name == "Function")
+            BlueLightTouchendList[i](e, e2);
+    }
+    TouchDownCheck = rightTouchDown = false;
+}
+
+
+let AddMouseEvent = function () {
+    try {
+        GetViewport().div.removeEventListener("touchstart", SwitchViewport, false);
+        GetViewport().div.removeEventListener("mousedown", SwitchViewport, false);
+        GetViewport().div.addEventListener("contextmenu", contextmenuF, false);
+        GetViewport().div.addEventListener("mousemove", BlueLightMousemove, false);
+        GetViewport().div.addEventListener("mousedown", BlueLightMousedown, false);
+        GetViewport().div.addEventListener("mouseup", BlueLightMouseup, false);
+        GetViewport().div.addEventListener("mouseout", Mouseout, false);
+        GetViewport().div.addEventListener("touchstart", BlueLightTouchstart, false);
+        GetViewport().div.addEventListener("touchmove", BlueLightTouchmove, false);
+        GetViewport().div.addEventListener("touchend", BlueLightTouchend, false);
+        GetViewport().div.addEventListener("wheel", Wheel, false);
+    } catch (ex) { console.log(ex); }
+}
+let DeleteMouseEvent = function () {
+    try {
+        for (var i = 0; i < Viewport_Total; i++) {
+            GetViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
+            GetViewport(i).div.removeEventListener("mousemove", BlueLightMousemove, false);
+            GetViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
+            GetViewport(i).div.removeEventListener("mouseup", BlueLightMouseup, false);
+            GetViewport(i).div.removeEventListener("mouseout", Mouseout, false);
+            GetViewport(i).div.removeEventListener("wheel", Wheel, false);
+            GetViewport(i).div.removeEventListener("mousedown", SwitchViewport, false);
+            GetViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
+            GetViewport(i).div.removeEventListener("touchend", BlueLightTouchend, false);
+            GetViewport(i).div.removeEventListener("wheel", Wheel, false);
+            GetViewport(i).div.addEventListener("touchstart", SwitchViewport, false);
+            GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
+            GetViewport(i).div.addEventListener("wheel", Wheel, false);
+        }
+    } catch (ex) { }
+}
+
+let BL_mode = 'MouseTool';
+let set_BL_model = function (string) {
+    BL_mode = string;
+
+    if (!this.init) {
+        set_BL_model.onchange = function () {
+            return 0;
+        }
+        this.init = true;
+    }
+    set_BL_model.onchange();
+}

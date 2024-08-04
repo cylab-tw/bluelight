@@ -36,6 +36,14 @@ function securePassword(min, max, step) {
     return number;
 }
 
+function soryByKey(arr, key) {
+    return arr.sort((a, b) => a[key] - b[key]);
+}
+
+function soryByTwoKey(arr, key1, key2) {
+    return arr.sort((a, b) => a[key1][key2] - b[key1][key2]);
+}
+
 function random(min, max, step) {
     if (!step) step = 1;
     var len = ((max - min) / step) + 1;
@@ -45,43 +53,47 @@ function random(min, max, step) {
     return number;
 }
 
-function invertDisplayById(id) {
-    if (!id && !getByid(id)) return;
-    if (getByid(id).style.display == "none") getByid(id).style.display = "";
-    else getByid(id).style.display = "none";
+function getFactor(num) {
+    var list = [];
+    for (var i = 1; i <= num; i++) {
+        if (num % i == 0) list.push(i);
+    }
+    return list;
+}
+
+function SortArrayByElem(arr, str) {
+    return arr.sort((a, b) => a[str] - b[str]);
 }
 
 function getCurrPoint(e) {
-    var canvas = GetViewport().canvas()
+    var canvas = GetViewport().canvas
     if (!canvas) return [0, 0];
-    var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().imageWidth / parseFloat(canvas.style.width)));
-    var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().imageHeight / parseFloat(canvas.style.height)));
+    //BlueLight2
+    //var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().width / parseFloat(canvas.style.width)));
+    //var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().height / parseFloat(canvas.style.height)));
+    var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (1.0 / GetViewport().scale));
+    var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (1.0 / GetViewport().scale));
     return [currX, currY];
-}
-
-function Css(element, style, value) {
-    if (value == null) return element.style[style];
-    else return element.style[style] = value;
-}
-
-function Ipx(value) {
-    return parseInt(value) + "px";
 }
 
 function Fpx(value) {
     return parseFloat(value) + "px";
 }
 
-function ToPx(value) {
-    return value + "px";
-}
-
 function getByid(str) {
     return document.getElementById(str);
 }
 
+function getByTag(str) {
+    return document.getElementsByTagName(str);
+}
+
 function getClass(str) {
     return document.getElementsByClassName(str);
+}
+
+function log(value) {
+    console.log(value);
 }
 
 function CheckNull(str) {
@@ -89,57 +101,22 @@ function CheckNull(str) {
     return false;
 }
 
-function Null2Empty(str) {
-    if (str == undefined || str == null) str = "";
-    return str;
-}
-
 function getViewprtStretchSize(width, height, element) {
-    var wi = (parseFloat(element.clientWidth) - (bordersize * 2)) / parseFloat(width);
-    var he = (parseFloat(element.clientHeight) - (bordersize * 2)) / parseFloat(height);
+    var wi = (parseFloat(element.clientWidth)) / parseFloat(width);
+    var he = (parseFloat(element.clientHeight)) / parseFloat(height);
     var small = he < wi ? he : wi;
-    height *= small;
-    width *= small;
-    return [width, height];
+    return [width * small, height * small];
 }
 
 function getViewportFixSize(width, height, row, col) {
     while (width > window.innerWidth - 100 - (bordersize * 2) && width >= 10) width -= 5;
-    while (height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2) && height >= 10) height -= 5;
+    while (height > window.innerHeight - getByid("container").offsetTop - (bordersize * 2) && height >= 10) height -= 5;
     return [width / col, height / row];
-}
-
-function getStretchSize(width, height, element) {
-    if (width > window.innerWidth || height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) {
-        while (width > window.innerWidth || height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) {
-            width *= 0.99;
-            height *= 0.99;
-            if (width < 10 || height < 10) break;
-        }
-        /* var wi = parseFloat(width) / window.innerWidth;
-        var he = parseFloat(height) / (window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2));
-        var wi_he = wi > he ? wi : he;
-        height *= wi_he;
-        width *= wi_he; */
-    } else {
-        if (window.innerWidth > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) {
-            var he = (window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) / parseFloat(height);
-            height *= he;
-            width *= he;
-
-        }
-        /*while (!width < window.innerWidth || !height < window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) {
-            width *= 1.1;
-            height *= 1.1;
-            if (width > window.innerWidth || height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) break;
-        }*/
-    }
-    return [width, height];
 }
 
 function getFixSize(width, height, element) {
     while (width > window.innerWidth - 100 - (bordersize * 2) && width >= 10) width -= 5;
-    while (height > window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2) && height >= 10) height -= 5;
+    while (height > window.innerHeight - getByid("container").offsetTop - (bordersize * 2) && height >= 10) height -= 5;
     return [width, height];
 }
 
@@ -157,83 +134,16 @@ function GetmouseY(evt) {
     else return null;
 }
 
-function SearchUid2Json(sop) {
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
-                    return {
-                        studyuid: i,
-                        sreiesuid: j,
-                        sopuid: l
-                    }
-                }
-            }
-        }
-    }
+function GetmouseXY(evt) {
+    return [GetmouseX(evt), GetmouseY(evt)];
 }
 
 function SearchUid2Index(sop) {
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
+    for (var i = 0; i < ImageManager.Study.length; i++) {
+        for (var j = 0; j < ImageManager.Study[i].Series.length; j++) {
+            for (var l = 0; l < ImageManager.Study[i].Series[j].Sop.length; l++) {
+                if (ImageManager.Study[i].Series[j].Sop[l].SOPInstanceUID == sop) {
                     return [i, j, l]
-                }
-            }
-        }
-    }
-}
-
-function getSopAmountFromSeriesBySop(series) {
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            if (Patient.Study[i].Series[j].SeriesUID == series) {
-                return Patient.Study[i].Series[j].SopAmount;
-            }
-        }
-    }
-    return 0;
-}
-
-function SearchUid2IndexBySeries(series) {
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            if (Patient.Study[i].Series[j].SeriesUID == series) {
-                return [i, j];
-            }
-        }
-    }
-}
-
-function SearchNowUid() {
-    let sop = GetViewport().sop;
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
-                    return {
-                        studyuid: Patient.Study[i],
-                        sreiesuid: Patient.Study[i].Series[j],
-                        sopuid: sop
-                    }
-                }
-            }
-        }
-    }
-}
-
-function GetNowUid() {
-    let sop = GetViewport().sop;
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
-                    return {
-                        study: Patient.Study[i].StudyUID,
-                        sreies: Patient.Study[i].Series[j].SeriesUID,
-                        sop: Patient.Study[i].Series[j].Sop[l].SopUID
-                    }
                 }
             }
         }
@@ -245,15 +155,15 @@ function sortInstance(sop) {
     let i = index[0],
         j = index[1],
         k = index[2];
-    if (Patient.Study[i].Series[j].Sop[k].SopUID == sop) {
+    if (ImageManager.Study[i].Series[j].Sop[k].SOPInstanceUID == sop) {
         var list = [];
-        var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-        for (var l = 0; l < Patient.Study[i].Series[j].Sop.length; l++) {
-            list.push(Patient.Study[i].Series[j].Sop[l]);
+        var Onum = parseInt(ImageManager.Study[i].Series[j].Sop[k].Image.InstanceNumber);
+        for (var l = 0; l < ImageManager.Study[i].Series[j].Sop.length; l++) {
+            list.push(ImageManager.Study[i].Series[j].Sop[l]);
         }
         for (var m = 0; m < list.length; m++) {
             for (var n = 0; n < list.length; n++) {
-                if (parseInt(list[m].InstanceNumber) < parseInt(list[n].InstanceNumber)) {
+                if (parseInt(list[m].Image.InstanceNumber) < parseInt(list[n].Image.InstanceNumber)) {
                     var tempUID = list[m];
                     list[m] = list[n];
                     list[n] = tempUID;
@@ -265,76 +175,48 @@ function sortInstance(sop) {
     }
 }
 
-function getAllSop(sop0) {
-    let sop;
-    if (!sop0) sop = GetViewport().sop;
-    else sop = sop0;
-
-    function getSopList(i, j, l) {
-        var list = [];
-        for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-            list.push(Patient.Study[i].Series[j].Sop[l].SopUID);
-        }
-        return list;
-    }
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-                if (Patient.Study[i].Series[j].Sop[l].SopUID == sop) {
-                    return getSopList(i, j, l);
-                }
-            }
-        }
-    }
-}
-
-function getImgaeIdFromSop(sop) {
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var k = 0; k < Patient.Study[i].Series[j].SopAmount; k++) {
-                if (sop == Patient.Study[i].Series[j].Sop[k].SopUID)
-                    return Patient.Study[i].Series[j].Sop[k].imageId;
-            }
-        }
-    }
-}
-
-function getNowInstance() {
-    var break1 = false;
-    var nowInstanceNumber = 0;
-    var sop = GetViewport().sop;
-    for (var i = 0; i < Patient.StudyAmount; i++) {
-        for (var j = 0; j < Patient.Study[i].SeriesAmount; j++) {
-            for (var k = 0; k < Patient.Study[i].Series[j].SopAmount; k++) {
-                if (Patient.Study[i].Series[j].Sop[k].SopUID == sop) {
-                    if (break1 == true) break;
-                    var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-                    var list = sortInstance(sop);
-                    for (var l = 0; l < list.length; l++) {
-                        if (break1 == true) break;
-                        if (list[l].InstanceNumber == Onum) {
-                            nowInstanceNumber = l;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return nowInstanceNumber;
-}
-
-function rotateCalculation(e) {
-    var canvas = GetViewport().canvas();
+function rotateCalculation(e, flip = false) {
+    var canvas = GetViewport().canvas;
     if (!canvas) return [0, 0];
-    let cx = (GetViewport().imageWidth / 2);
-    let cy = (GetViewport().imageHeight / 2);
-    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")";
-    let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
-        (GetViewport().imageWidth / parseFloat(canvas.style.width));
+    let cx = (GetViewport().width / 2);
+    let cy = (GetViewport().height / 2);
+    var element = GetViewport();
+    canvas.style.transform = "translate(" + "calc(-50% + " + Fpx(element.translate.x) + ")" + "," + "calc(-50% + " + Fpx(element.translate.y) + ")" + ")scale(" + element.scale + ")";
+    //BlueLight2
+    /*let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
+        (GetViewport().width / parseFloat(canvas.style.width));
     let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
-        (GetViewport().imageHeight / parseFloat(canvas.style.height));
-    canvas.style.transform = "translate(" + Fpx(GetViewport().newMousePointX) + "," + Fpx(GetViewport().newMousePointY) + ")rotate(" + GetViewport().rotateValue + "deg)";
-    let radians = GetViewport().rotateValue * (Math.PI / 180),
+        (GetViewport().height / parseFloat(canvas.style.height));*/
+    let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
+        (1.0 / element.scale);
+    let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
+        (1.0 / element.scale);
+    canvas.style.transform = "translate(" + "calc(-50% + " + Fpx(element.translate.x) + ")" + "," + "calc(-50% + " + Fpx(element.translate.y) + ")" + ")scale(" + element.scale + ")" + "rotate(" + element.rotate + "deg)";
+    let radians = element.rotate * (Math.PI / 180),
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (currX11 - cx)) + (sin * (currY11 - cy)) + cx,
+        ny = (cos * (currY11 - cy)) - (sin * (currX11 - cx)) + cy;
+    currX11 = nx;
+    currY11 = ny;
+    if (flip == true) {
+        if (GetViewport().VerticalFlip == true) currY11 = GetViewport().height - currY11;
+        if (GetViewport().HorizontalFlip == true) currX11 = GetViewport().width - currX11;
+    }
+    return [currX11, currY11];
+}
+/*function rotateCalculation(e) {
+    var canvas = GetViewport().canvas;
+    if (!canvas) return [0, 0];
+    let cx = (GetViewport().width / 2);
+    let cy = (GetViewport().height / 2);
+    canvas.style.transform = "translate(" + Fpx(GetViewport().translate.x) + "," + Fpx(GetViewport().translate.y) + ") scaleX(" + (GetViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetViewport().VerticalFlip ? -1 : 1) + ")";
+    let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
+        (GetViewport().width / parseFloat(canvas.style.width));
+    let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
+        (GetViewport().height / parseFloat(canvas.style.height));
+    canvas.style.transform = "translate(" + Fpx(GetViewport().translate.x) + "," + Fpx(GetViewport().translate.y) + ") scaleX(" + (GetViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetViewport().VerticalFlip ? -1 : 1) + ") " + "rotate(" + GetViewport().rotate + "deg)";
+    let radians = GetViewport().rotate * (Math.PI / 180),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
         nx = (cos * (currX11 - cx)) + (sin * (currY11 - cy)) + cx,
@@ -342,8 +224,7 @@ function rotateCalculation(e) {
     currX11 = nx;
     currY11 = ny;
     return [currX11, currY11];
-}
-
+}*/
 function rotatePoint(point, RotationAngle, RotationPoint) {
     let cx = RotationPoint[0];
     let cy = RotationPoint[1];
@@ -359,67 +240,39 @@ function rotatePoint(point, RotationAngle, RotationPoint) {
     return [currX, currY];
 }
 
-function GetViewport(num) {
-    if (!num) {
-        if (num === 0) {
-            return getByid("MyDicomDiv" + (0 + 0));
-        }
-        return getByid("MyDicomDiv" + (viewportNumber + 0));
-    }
-    return getByid("MyDicomDiv" + (num + 0));
-}
-
-function GetViewportMark(num) {
-    if (!num) {
-        if (num === 0) {
-            return getByid("MarkCanvas" + (0 - 0));
-        }
-        return getByid("MarkCanvas" + (viewportNumber - 0));
-    }
-    return getByid("MarkCanvas" + (num - 0));
-}
-
 function jump2UpOrEnd(number, choose) {
-    let index = SearchUid2Index(GetViewport().sop);
-    let i = index[0],
-        j = index[1],
-        k = index[2];
-    var min = 99999999;
-    var max = -9999999;
-    for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-        var instance = parseInt(Patient.Study[i].Series[j].Sop[l].InstanceNumber);
+
+    var Series = ImageManager.findSeries(GetViewport().series);
+    var max = Number.MIN_VALUE, min = Number.MAX_VALUE;
+    for (var l = 0; l < Series.Sop.length; l++) {
+        var instance = parseInt(Series.Sop[l].InstanceNumber);
         if (instance < min) min = instance;
         else if (instance > max) max = instance;
     }
+
     if (choose == 'up') number = min;
     else if (choose == 'end') number = max;
     else {
         if (number > max) number = max;
         if (number < min) number = min;
     }
-    for (var l = 0; l < Patient.Study[i].Series[j].SopAmount; l++) {
-        if (parseInt(Patient.Study[i].Series[j].Sop[l].InstanceNumber) == number) {
-            loadAndViewImage(getImgaeIdFromSop(Patient.Study[i].Series[j].Sop[l].SopUID));
-            return;
+
+    for (var l = 0; l < Series.Sop.length; l++) {
+        if (parseInt(Series.Sop[l].InstanceNumber) == number) {
+            GetViewport().loadImgBySop(Series.Sop[l]);
+            break;
         }
     }
 }
 
 function jump2Mark(showName) {
-    let index = SearchUid2Index(GetViewport().sop);
-    if (!index) return;
-    let i = index[0],
-        j = index[1],
-        k = index[2];
     for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].series == Patient.Study[i].Series[j].SeriesUID) {
+        if (PatientMark[n].series == GetViewport().series) {
             if (PatientMark[n].showName == showName) {
                 for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                    let checkRtss = 0;
-                    checkRtss = checkMark(i, j, n);
-                    if (checkRtss == 0) continue;
+                    if (checkMarkEnabled(GetViewport().series, PatientMark[n]) == 0) continue;
                     else {
-                        loadAndViewImage(getImgaeIdFromSop(PatientMark[n].sop));
+                        GetViewport().loadImgBySop(PatientMark[n].sop);
                         return;
                     }
                 }
@@ -428,102 +281,39 @@ function jump2Mark(showName) {
     }
 }
 
-function checkMark2(seriesUID, Mark) {
-    for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == seriesUID) {
-            var elem = document.querySelectorAll("#dicomDivListDIV" + dCount + " label input");
-            for (var elemNum in elem) {
-                if (elem[elemNum].name == Mark.hideName) {
-                    if (elem[elemNum].series == "true") return 1;
-                }
-            }
-        }
-    }
-    return 0;
-}
-
-function checkMark(i, j, n) {
-    let checkRtss = 0;
-    for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount)) {
-            if (getByid("dicomDivListDIV" + dCount).series == Patient.Study[i].Series[j].SeriesUID) {
-                var elem = document.querySelectorAll("#dicomDivListDIV" + dCount + " label input");
-                for (var elemNum in elem) {
-                    if (elem[elemNum].name == PatientMark[n].hideName) {
-                        if (elem[elemNum].series == "true") {
-                            //if (PatientMark[n].displayMark) PatientMark[n].displayMark();
-                            checkRtss = 1;
-                            return checkRtss;
-                        }//else if (PatientMark[n].hideMark) { PatientMark[n].hideMark(); }
-                    }
-                }
-            }
-        }
-    }
-    return checkRtss;
+function checkMarkEnabled(seriesUID, Mark) {
+    var mark = leftLayout.getCheckboxBySeriesAndHideName(seriesUID, Mark.hideName);
+    if (mark && mark.checked) return 1;
+    else return 0;
 }
 
 function refreshMark(dcm, refresh) {
     if (refresh == false) return;
-    var index = SearchUid2Index(dcm.sop);
-    if (!index) return;
-    var i3 = index[0],
-        j3 = index[1],
-        k3 = index[2];
-    var checkNum;
-    for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == Patient.Study[i3].Series[j3].SeriesUID) {
-            checkNum = dCount;
-        }
-    }
-    SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
-
-    for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(i9);
+    leftLayout.refleshMarkWithSeries(dcm.series);
+    displayAllMark();
 }
 
 function refreshMarkFromSop(sop) {
-    var index = SearchUid2Index(sop);
-    if (!index) return;
-    var i3 = index[0],
-        j3 = index[1],
-        k3 = index[2];
-    var checkNum;
-    for (var dCount = 0; dCount < dicomImageCount; dCount++) {
-        if (getByid("dicomDivListDIV" + dCount) && getByid("dicomDivListDIV" + dCount).series == Patient.Study[i3].Series[j3].SeriesUID) {
-            checkNum = dCount;
-        }
-    }
-    SetToLeft(Patient.Study[i3].Series[j3].SeriesUID, checkNum, Patient.Study[i3].PatientId);
-    for (var i9 = 0; i9 < Viewport_Total; i9++) displayMark(i9);
-}
-
-function dropTable(num) {
-    if (getByid("DicomTagsTable" + (num + 1))) {
-        var elem = getByid("DicomTagsTable" + (num + 1));
-        elem.parentElement.removeChild(elem);
-    }
-    if (getByid("AimTable" + (num + 1))) {
-        var elem = getByid("AimTable" + (num + 1));
-        elem.parentElement.removeChild(elem);
-    }
+    leftLayout.refleshMarkWithSeries(ImageManager.findSop(sop).parent.SeriesInstanceUID);
+    displayAllMark();
 }
 
 function getDistance(x, y) {
     return Math.sqrt(x * x + y * y);
 }
 
-function getRotationPoint(mark, middle) {
-    var Max_X = -999999,
-        Max_Y = -999999,
-        Min_X = 999999,
-        Min_Y = 999999;
-    for (var o = 0; o < mark.markX.length; o += 1) {
-        if (parseInt(mark.markX[o]) >= Max_X) Max_X = parseInt(mark.markX[o]);
-        if (parseInt(mark.markX[o]) <= Min_X) Min_X = parseInt(mark.markX[o]);
+function getRotationPoint(Mark, middle) {
+    var Max_X = Number.MIN_VALUE,
+        Max_Y = Number.MIN_VALUE,
+        Min_X = Number.MAX_VALUE,
+        Min_Y = Number.MAX_VALUE;
+    for (var o = 0; o < Mark.pointArray.length; o += 1) {
+        if (parseInt(Mark.pointArray[o].x) >= Max_X) Max_X = parseInt(Mark.pointArray[o].x);
+        if (parseInt(Mark.pointArray[o].x) <= Min_X) Min_X = parseInt(Mark.pointArray[o].x);
     }
-    for (var o = 0; o < mark.markY.length; o += 1) {
-        if (parseInt(mark.markY[o]) >= Max_Y) Max_Y = parseInt(mark.markY[o]);
-        if (parseInt(mark.markY[o]) <= Min_Y) Min_Y = parseInt(mark.markY[o]);
+    for (var o = 0; o < Mark.pointArray.length; o += 1) {
+        if (parseInt(Mark.pointArray[o].y) >= Max_Y) Max_Y = parseInt(Mark.pointArray[o].y);
+        if (parseInt(Mark.pointArray[o].y) <= Min_Y) Min_Y = parseInt(Mark.pointArray[o].y);
     }
     if (middle == true) return [(Max_X + Min_X) / 2, (Max_Y + Min_Y) / 2];
     return [Max_X, Min_X, Max_Y, Min_Y];
@@ -564,4 +354,24 @@ function equal_TOL(a, b, tolerance) {
     if (tolerance === undefined) tolerance = 1;
     if (Math.abs(a - b) <= tolerance) return true;
     return false;
+}
+
+function GetPixel(angle2point) {
+    if (!GetViewport() || !GetViewport().content || !GetViewport().content.pixelData) return "";
+    var x = parseInt(angle2point[0]);
+    var y = parseInt(angle2point[1]);
+    var width = GetViewport().width;
+    var height = GetViewport().height;
+    if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
+        var pixel = GetViewport().content.pixelData[y * width + x];
+        if (isNaN(pixel)) return "";
+        else return `${pixel} `;
+    } else {
+        var pixelR = GetViewport().content.pixelData[y * 4 * width + x * 4 + 0];
+        var pixelG = GetViewport().content.pixelData[y * 4 * width + x * 4 + 1];
+        var pixelB = GetViewport().content.pixelData[y * 4 * width + x * 4 + 2];
+        //var pixelA = GetViewport().content.pixelData[y * 4 * width + x * 4 + 3];
+        if (isNaN(pixelR) || isNaN(pixelG) || isNaN(pixelB)) return "";
+        else return `B=${pixelB} G=${pixelG} R=${pixelR} `;
+    }
 }

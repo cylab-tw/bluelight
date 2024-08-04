@@ -4,11 +4,14 @@
         {"path":"../scripts/plugin/mpr2.js", "name": "MPR", "disableCatch": "true"},
         {"path":"../scripts/plugin/mpr.js", "name": "MPR", "disableCatch": "true"},
         {"path":"../scripts/plugin/vr.js", "name": "VR", "disableCatch": "true"},
+        {"path":"../scripts/plugin/vr2.js", "name": "VR2", "disableCatch": "true"},
         {"path":"../scripts/plugin/xml_format.js", "name": "xml_format", "disableCatch": "true"},
         {"path":"../scripts/plugin/graphic_annotation.js", "name": "graphic_annotation", "disableCatch": "true"},
         {"path":"../scripts/plugin/rtss.js", "name": "rtss", "disableCatch": "true"},
         {"path":"../scripts/plugin/seg.js", "name": "seg", "disableCatch": "true"},
         {"path":"../scripts/plugin/tag.js", "name": "tag", "disableCatch": "true"},
-        {"path":"../scripts/plugin/xnat.js", "name": "tag", "disableCatch": "true"}
+        {"path":"../scripts/plugin/xnat.js", "name": "tag", "disableCatch": "true"},
+        {"path":"../scripts/plugin/hanging_protocols.js", "name": "tag", "disableCatch": "true"},
+        {"path":"../scripts/plugin/calibration.js", "name": "tag", "disableCatch": "true"}
     ]
 }

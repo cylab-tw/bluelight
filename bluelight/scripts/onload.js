@@ -1,240 +1,67 @@
+//裝DICOM Tags設定檔的物件
+var DicomTags = {};
+//裝伺服器設定檔的物件
+var ConfigLog = {};
+//代表config檔已經載入完畢 --*
+var configOnload = false;
+
 window.onload = function () {
+  //執行其他Script提供的高優先度onload函數
+  onloadFunction.ExecuteFirst();
   //執行RWD
-  EnterRWD();
+  //EnterRWD();
   //初始化參數
   loadLdcmview();
   //初始化HTML元素事件
   html_onload();
   //執行RWD
   EnterRWD();
+  //執行其他Script提供的低優先度onload函數
+  onloadFunction.ExecuteLast();
+  onloadFunction.onloaded = true;
 }
 
-function loadLdcmview() {
-  //左側面板樣式初始化
-  getByid("LeftPicture").style = "display: flex;flex-direction: column;position: absolute;z-index: 9";
-  if (parseInt(getByid("LeftPicture").offsetHeight) + 10 >= window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) { //getByid("LeftPicture").style.height=""+(window.innerHeight- document.getElementsByClassName("container")[0].offsetTop- (bordersize * 2))+"px";
-    getByid("LeftPicture").style = "overflow-y: scroll;display: flex;flex-direction: column;position: absolute;z-index: 9;height:" + (window.innerHeight - document.getElementsByClassName("container")[0].offsetTop - (bordersize * 2)) + "px;"
+class OnloadFunction {
+  constructor() {
+    this.FisrtList = [];
+    this.LastList = [];
+    this.onloaded = false;
   }
+  push(fun) {
+    if (fun.constructor.name == 'Function') this.LastList.push(fun);
+    else throw "not function";
+    if (this.onloaded) fun();//若已經onload過了，就直接執行
+  }
+  push2First(fun) {
+    if (fun.constructor.name == 'Function') this.FisrtList.push(fun);
+    else throw "not function";
+    if (this.onloaded) fun();
+  }
+  push2Last(fun) {
+    if (fun.constructor.name == 'Function') this.LastList.push(fun);
+    else throw "not function";
+    if (this.onloaded) fun();
+  }
+  ExecuteFirst() {
+    for (var fun of this.FisrtList) fun();
+  }
+  ExecuteLast() {
+    for (var fun of this.LastList) fun();
+  }
+}
+var onloadFunction = new OnloadFunction();
+
+function loadLdcmview() {
 
   //隱藏一開始不需要的元素
-  getByid("WindowLevelDiv").style.display = "none";
-  getByid("labelZoom").style.display = "none";
-  getByid("labelPlay").style.display = "none";
-  getByid("textPlay").style.display = "none";
-  getByid("textZoom").style.display = "none";
-  getByid("SplitViewportDiv").style.display = "none";
-  getByid('MarkStyleDiv').style.display = 'none';
-  getByid("GraphicStyleDiv").style.display = "none";
-
-  //設定放大鏡長寬
-  getByid("magnifierDiv").style.width = magnifierWidth + "px";
-  getByid("magnifierDiv").style.height = magnifierHeight + "px";
-  getByid("magnifierCanvas").style.width = magnifierWidth + "px";
-  getByid("magnifierCanvas").style.height = magnifierHeight + "px";
-  getByid("magnifierDiv").width = magnifierWidth;
-  getByid("magnifierDiv").height = magnifierHeight;
-  getByid("magnifierCanvas").width = magnifierWidth;
-  getByid("magnifierCanvas").height = magnifierHeight;
-
-  //設定裝DICOM階層資訊的物件
-  Patient.patientName = '';
-  Patient.StudyAmount = 0;
-  Patient.Study = [];
+  HideElemByID(["WindowLevelDiv", "labelZoom", "labelPlay", "textPlay", "textZoom", "MarkStyleDiv"/*, "GraphicStyleDiv"*/]);
 
   //初始化每一個Viewport的參數
   for (var i = 0; i < Viewport_Total; i++) {
-    var NewDiv = document.createElement("DIV");
-    var NewCanvas = document.createElement("CANVAS");
-    NewDiv.id = "MyDicomDiv" + i;
-    NewDiv.viewportNum = i;
-    NewDiv.className = "MyDicomDiv";
-
-    NewDiv.setAttribute("data-role", "drag-drop-container");
-    magnifierDiv = document.getElementById("magnifierDiv");
-    document.getElementsByClassName("container")[0].appendChild(NewDiv);
-
-    NewDiv.imageOrientationX = 0;
-    NewDiv.imageOrientationY = 0;
-    NewDiv.imageOrientationZ = 0;
-
-    NewDiv.imageOrientationX2 = 0;
-    NewDiv.imageOrientationY2 = 0;
-    NewDiv.imageOrientationZ2 = 0;
-
-    NewDiv.windowCenterList = 0;
-    NewDiv.windowWidthList = 0;
-    NewDiv.PixelSpacingX = 1;
-    NewDiv.PixelSpacingY = 1;
-    NewDiv.imagePositionX = 0;
-    NewDiv.imagePositionY = 0;
-    NewDiv.imagePositionZ = 0;
-    NewDiv.windowCenter = 0;
-    NewDiv.windowWidth = 0;
-    NewDiv.imageWidth = 0;
-    NewDiv.imageHeight = 0;
-    NewDiv.originalPointX = 0;
-    NewDiv.originalPointY = 0;
-    NewDiv.originalPointX2 = 0;
-    NewDiv.originalPointY2 = 0;
-    NewDiv.newMousePointX = 0;
-    NewDiv.newMousePointY = 0;
-    NewDiv.rotateValue = 0;
-    NewDiv.StudyDate = 0;
-    NewDiv.StudyTime = 0;
-    NewDiv.PatientID = "12345";
-    NewDiv.PatientName = "name";
-    NewDiv.openInvert = false;
-    NewDiv.AccessionNumber = "";
-    NewDiv.StudyDescription = "";
-    NewDiv.StudyID = "";
-    NewDiv.SliceLocation = 1;
-
-    NewDiv.ModalitiesInStudy = "";
-    NewDiv.Manufacturer = "";
-    NewDiv.InstitutionName = "";
-    NewDiv.InstitutionAddress = "";
-    NewDiv.ReferringPhysicianName = "";
-    NewDiv.StationName = "";
-    NewDiv.SeriesDescription = "";
-    NewDiv.SeriesNumber = "";
-    NewDiv.RequestingPhysician = "";
-
-    NewDiv.ImagePositionPatient = "";
-    NewDiv.SpacingBetweenSlices = "";
-    NewDiv.SliceThickness = "";
-    NewDiv.ImageType = "";
-    NewDiv.PatientBirthDate = "";
-    NewDiv.PatientSex = "";
-    NewDiv.PatientAge = "";
-    NewDiv.FrameOfReferenceUID = "";
-    NewDiv.PhotometricInterpretation = "";
-    NewDiv.Rows = "";
-    NewDiv.Columns = "";
-    NewDiv.BitsAllocated = "";
-    NewDiv.BitsStored = "";
-    NewDiv.HighBit = "";
-    NewDiv.PixelRepresentation = "";
-    NewDiv.LossyImageCompression = "";
-    NewDiv.PixelSpacing = "";
-
-    NewDiv.NowCanvasSizeWidth = null;
-    NewDiv.NowCanvasSizeHeight = null;
-    NewDiv.openHorizontalFlip = false;
-    NewDiv.openVerticalFlip = false;
-    NewDiv.openMark = true;
-    NewDiv.openPlay = false;
-    //NewDiv.openDisplayMarkup = false;
-    NewDiv.DicomTagsList = [];
-
-    //只要取得canvas()就能快速取得該Viewport的影像
-    /*
-    NewDiv.canvas = function () {
-      if (this.getElementsByClassName("cornerstone-canvas")[0])
-        return this.getElementsByClassName("cornerstone-canvas")[0];
-      else
-        return null;
-    }
-    NewDiv.ctx = function () {
-      if (this.getElementsByClassName("cornerstone-canvas")[0])
-        return this.getElementsByClassName("cornerstone-canvas")[0].getContext("2d");
-      else
-        return null;
-    }*/
-    NewDiv.canvas = function () {
-      if (this.getElementsByClassName("DicomCanvas")[0])
-        return this.getElementsByClassName("DicomCanvas")[0];
-      else
-        return null;
-    }
-    NewDiv.ctx = function () {
-      if (this.getElementsByClassName("DicomCanvas")[0])
-        return this.getElementsByClassName("DicomCanvas")[0].getContext("2d");
-      else
-        return null;
-    }
-
-    NewCanvas.id = "MarkCanvas" + i;
-    NewDiv.appendChild(NewCanvas);
-  }
-  var count = 0;
-  //增加尺規及label至適當數量
-  while (getClass("leftRule").length < Viewport_Total) {
-    var leftRule = document.createElement("CANVAS");
-    leftRule.className = "leftRule";
-    leftRule.style = "z-index:30;position:absolute;left:110px;";
-    leftRule.height = 500;
-    leftRule.width = 10;
-    GetViewport(getClass("leftRule").length).appendChild(leftRule);
-  }
-  count = 0;
-  while (getClass("downRule").length < Viewport_Total) {
-    var downRule = document.createElement("CANVAS");
-    downRule.className = "downRule";
-    downRule.style = "z-index:30;position:absolute;bottom:15px;left:100px;";
-    downRule.height = 10;
-    GetViewport(getClass("downRule").length).appendChild(downRule);
-  }
-  count = 0;
-  while (getClass("labelWC").length < Viewport_Total) {
-    count++;
-    var labelWC1 = document.createElement("LABEL");
-    labelWC1.className = "labelWC innerLabel";
-    labelWC1.style = "position:absolute;left:115px;bottom:30px;color: white;z-index: 10;-webkit-user-select: none; ";
-    GetViewport(count - 1).appendChild(labelWC1);
-  }
-  count = 0;
-  while (getClass("labelLT").length < Viewport_Total) {
-    count++;
-    var labelLT1 = document.createElement("LABEL");
-    labelLT1.className = "labelLT innerLabel";
-    labelLT1.style = "position:absolute;left:115px;top:10px;color: white;z-index: 10;-webkit-user-select: none; ";
-    GetViewport(count - 1).appendChild(labelLT1);
-  }
-  count = 0;
-  while (getClass("labelRT").length < Viewport_Total) {
-    count++;
-    var labelRT1 = document.createElement("LABEL");
-    labelRT1.className = "labelRT innerLabel";
-    labelRT1.style = "position:absolute;right:20px;top:10px;color: white;z-index: 10;-webkit-user-select: none;text-align:right;";
-    GetViewport(count - 1).appendChild(labelRT1);
-  }
-  count = 0;
-  while (getClass("labelRB").length < Viewport_Total) {
-    count++;
-    var labelRB1 = document.createElement("LABEL");
-    labelRB1.className = "labelRB innerLabel";
-    labelRB1.style = "position:absolute;right:20px;bottom:20px;color: white;z-index: 10;-webkit-user-select: none;text-align:right;";
-    GetViewport(count - 1).appendChild(labelRB1);
-  }
-  count = 0;
-  while (getClass("labelXY").length < Viewport_Total) {
-    count++;
-    var labelXY1 = document.createElement("LABEL");
-    labelXY1.className = "labelXY innerLabel";
-    labelXY1.style = "position:absolute;left:115px;bottom:10px;color: white;z-index: 10;-webkit-user-select: none; ";
-    labelXY1.innerText = "X: " + 0 + " Y: " + 0;
-    GetViewport(count - 1).appendChild(labelXY1);
-  }
-  count = 0;
-  while (getClass("DicomCanvas").length < Viewport_Total) {
-    count++;
-    var DicomCanvas1 = document.createElement("CANVAS");
-    DicomCanvas1.className = "DicomCanvas";
-    GetViewport(count - 1).appendChild(DicomCanvas1);
-  }
-  //增加右側卷軸
-  count = 0;
-  while (count < Viewport_Total) {
-    count++;
-    GetViewport(count - 1).ScrollBar = new ScrollBar(GetViewport(count - 1));
+    ViewPortList.push(new BlueLightViewPort(i));
   }
 
-  labelWC = getClass("labelWC");
-  labelLT = getClass("labelLT");
-  labelRT = getClass("labelRT");
-  labelRB = getClass("labelRB");
-
-  getByid("textWC").style.display = getByid("textWW").style.display = "none";
+  HideElemByID(["textWC", "textWW"]);
 
   //載入config檔的設定
   readDicomTags("../data/dicomTags.json", setLabelPadding);
@@ -242,11 +69,9 @@ function loadLdcmview() {
 
   //設定icon邊框
   drawBorder(getByid("MouseOperation"));
-  magnifierDiv.style.display = "none";
   //顯示label
   displayAnnotation();
 }
-
 
 function getParameterByName(name) {
   name = name.replace(/\[\[]/g, "\\[").replace(/\[\]]/g, "\\]");
@@ -339,6 +164,24 @@ function operateQueryString(queryString) {
   return NewQueryString;
 }
 
+function load_WebImg() {
+  function getQueryVariable_WebImg(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split("=");
+      if (pair[0] == variable) {
+        return pair[1];
+      }
+    }
+    return false;
+  }
+  var webimgurl = getQueryVariable_WebImg("webimgurl");
+  if (webimgurl) {
+    loadPicture(webimgurl);
+  }
+}
+
 function readAllJson(readJson) {
   //整合QIDO-RS的URL並發送至伺服器
   var queryString = ("" + location.search).replace("?", "");
@@ -348,6 +191,7 @@ function readAllJson(readJson) {
     url = fitUrl(url);
     readJson(url);
   }
+  load_WebImg();
 }
 
 function fitUrl(url) {
@@ -441,6 +285,7 @@ function getValue(obj) {
 function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
   let DicomResponse = InstanceRequest.response;
   var min = 1000000000;
+  var firstUrl;
   //取得最小的Instance Number
   for (var i = 0; i < DicomResponse.length; i++) {
     try {
@@ -467,28 +312,13 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
     }
 
     url = fitUrl(url);
-    //如果包含標記，則載入標記
-    if (DicomResponse[i]["00080016"]) { //&& getValue(DicomResponse[i]["00080016"]) == '1.2.840.10008.5.1.4.1.1.481.3') {
-      try { readDicom(url, PatientMark); } catch (ex) { console.log(ex); };
-    }
+
     try {
-      //cornerstone的WADO請求需要加"wadouri"
-      if (ConfigLog.WADO.WADOType == "URI") url = "wadouri:" + url;
-      //else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
       if (getValue(DicomResponse[i]["00200013"]) == min) {
-        //載入DICOM的階層資料至物件清單
-        var DICOM_obj = {
-          study: getValue(DicomResponse[i]["0020000D"]),
-          series: getValue(DicomResponse[i]["0020000E"]),
-          sop: getValue(DicomResponse[i]["00080018"]),
-          instance: getValue(DicomResponse[i]["00200013"]),
-          imageId: url,
-          patientId: getValue(DicomResponse[i]["00100020"])
-        };
-        // if (ConfigLog.WADO.WADOType == "URI") loadUID(DICOM_obj);
         //預載入DICOM至Viewport
-        if (ConfigLog.WADO.WADOType == "URI") loadAndViewImage(url);
+        if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(url);
         else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
+        firstUrl = url;
       }
     } catch (ex) { console.log(ex); }
   }
@@ -503,6 +333,11 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
         "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
         "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
         "&contentType=" + "application/dicom";
+      /*
+      var url = `${ConfigLog.WADO.https}://${ConfigLog.WADO.hostname}:${ConfigLog.WADO.PORT}/${ConfigLog.WADO.service}?requestType=WADO&` +
+      `studyUID=${DicomResponse[i]["0020000D"].Value[0]}&seriesUID=${DicomResponse[i]["0020000E"].Value[0]}` +
+      `&objectUID=${DicomResponse[i]["00080018"].Value[0]}&contentType=application/dicom`;
+      */
     } else if (ConfigLog.WADO.WADOType == "RS") {
       var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service +
         "/studies/" + DicomResponse[i]["0020000D"].Value[0] +
@@ -510,34 +345,12 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
         "/instances/" + DicomResponse[i]["00080018"].Value[0];
     }
     url = fitUrl(url);
+    if (url == firstUrl) return;
     try {
-      if (ConfigLog.WADO.WADOType == "URI") url = "wadouri:" + url;
-      // else if (ConfigLog.WADO.WADOType == "RS") url = "wadors:" + url;
-      //載入DICOM的階層資料至物件清單
-      var DICOM_obj = {
-        study: getValue(DicomResponse[i]["0020000D"]),
-        series: getValue(DicomResponse[i]["0020000E"]),
-        sop: getValue(DicomResponse[i]["00080018"]),
-        instance: getValue(DicomResponse[i]["00200013"]),
-        imageId: url,
-        patientId: getValue(DicomResponse[i]["00100020"])
-      };
       //預載入DICOM至Viewport
       if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url, true);
-      else onlyLoadImage(url);
+      else loadDICOMFromUrl(url, false);
 
-      try {
-        if (getValue(DicomResponse[i]["00080060"]) == 'PR' || getValue(SeriesResponse[instance]["00080060"]) == 'PR') {
-
-          function load(time) { return new Promise((resolve) => setTimeout(resolve, time)); }
-
-          load(100).then(() => {
-            //readXML(url);
-            readDicom(url.replace("wadouri:", ""), PatientMark, true);
-          });
-        }
-      }
-      catch (ex) { console.log(ex); }
     } catch (ex) { console.log(ex); }
   }
   function wait(time) { return new Promise((resolve) => setTimeout(resolve, time)); }
@@ -546,6 +359,7 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
     wait(parseInt(i_ / 50) * 2000).then(() => { loadDicom(i_); });
   }
 }
+
 function getJsonBySeriesRequest(SeriesRequest) {
   let SeriesResponse = SeriesRequest.response, InstanceUrl = "";
   for (let instance = 0; instance < SeriesResponse.length; instance++) {

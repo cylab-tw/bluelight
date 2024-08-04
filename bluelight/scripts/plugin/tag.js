@@ -2,8 +2,8 @@ var openWriteTAG = false;
 function loadWriteTAG() {
     var span = document.createElement("SPAN")
     span.innerHTML =
-        `<img class="img TAG" alt="writeTAG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="writeTAG" src="../image/icon/black/tag_off.png" width="50" height="50">`;
-    getByid("icon-list").appendChild(span);
+        `<img class="img TAG" alt="writeTAG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="writeTAG" src="../image/icon/lite/tag_off.png" width="50" height="50">`;
+    addIconSpan(span); 
 
     var span = document.createElement("SPAN")
     span.innerHTML =
@@ -88,12 +88,13 @@ getByid("writeTAG").onclick = function () {
     cancelTools();
     openWriteTAG = !openWriteTAG;
     img2darkByClass("TAG", !openWriteTAG);
-    this.src = openWriteTAG == true ? '../image/icon/black/tag_on.png' : '../image/icon/black/tag_off.png';
+    this.src = openWriteTAG == true ? '../image/icon/lite/tag_on.png' : '../image/icon/lite/tag_off.png';
     if (openWriteTAG == true) {
         getByid('TagStyleDiv').style.display = '';
         set_BL_model('writeTAG');
     } else getByid('TagStyleDiv').style.display = 'none';
-    displayMark(viewportNumber);
+    SetTable();
+    displayMark();
     if (openWriteTAG == true) return;
 
     function download(text, name, type) {
@@ -131,7 +132,7 @@ getByid("writeTAG").onclick = function () {
     let i = index[0],
         j = index[1],
         k = index[2];
-    let sopUID = Patient.Study[i].Series[j].Sop[k].SopUID;
+    let sopUID = ImageManager.Study[i].Series[j].Sop[k].SOPInstanceUID;
 
     set_TAG_context(index);
 
@@ -172,7 +173,7 @@ function set_TAG_context(index) {
         k = index[2];
 
     function setTag(temp, replace, str, len) {
-        str = Null2Empty(str);
+        if (str == undefined || str == null) str = "";
         str = "" + str;
         temp = temp.replace("___" + replace + "___", "" + str);
         var length = ("" + str).length;
@@ -191,10 +192,10 @@ function set_TAG_context(index) {
             selectedTag = selector.value;
         }
     });
-    let sopDcm = Patient.Study[i].Series[j].Sop[k];
-    temp = setTag(temp, "SOPInstanceUID", sopDcm.SopUID, true);
+    let sopDcm = ImageManager.Study[i].Series[j].Sop[k];
+    temp = setTag(temp, "SOPInstanceUID", sopDcm.SOPInstanceUID, true);
     temp = setTag(temp, "InstanceNumber", sopDcm.InstanceNumber, true);
-    temp = setTag(temp, "StudyInstanceUID", Patient.Study[i].StudyUID, true);
+    temp = setTag(temp, "StudyInstanceUID", ImageManager.Study[i].StudyInstanceUID, true);
     temp = setTag(temp, "ImageTag", selectedTag, true)
     TAG_format_object_list.push(temp);
 }

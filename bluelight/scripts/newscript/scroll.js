@@ -1,230 +1,70 @@
+//表示現在為開放用拖曳切換影像
+var openChangeFile = false;
 
 function scroll() {
     if (BL_mode == 'scroll') {
         DeleteMouseEvent();
-        Mousedown = function (e) {
+
+        openChangeFile = true;
+        set_BL_model.onchange = function () {
+            openChangeFile = false;
+            set_BL_model.onchange = function () { return 0; };
+        }
+
+        BlueLightMousedownList = [];
+        BlueLightMousedownList.push(function (e) {
             switch (e.which) {
-                case 1:
-                    MouseDownCheck = true;
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    rightMouseDown = true;
-                    break;
-                default:
-                    break
+                case 1: MouseDownCheck = true; break;
+                case 2: break;
+                case 3: rightMouseDown = true; break;
+                default: break;
             }
-            windowMouseX = GetmouseX(e);
-            windowMouseY = GetmouseY(e);
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
-        };
+        });
 
-        Mousemove = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-            var labelXY = getClass('labelXY'); {
-                let angle2point = rotateCalculation(e);
-                labelXY[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
-            }
-            if (rightMouseDown == true) {
-                scale_size(e, currX, currY);
-            }
-            if (openLink == true) {
-                for (var i = 0; i < Viewport_Total; i++) {
-                    GetViewport(i).newMousePointX = GetViewport().newMousePointX;
-                    GetViewport(i).newMousePointY = GetViewport().newMousePointY;
-                }
-            }
-            putLabel();
-            for (var i = 0; i < Viewport_Total; i++)
-                displayRuler(i);
-
+        BlueLightMousemoveList = [];
+        BlueLightMousemoveList.push(function (e) {
+            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
             if (MouseDownCheck) {
-                windowMouseX = GetmouseX(e);
-                windowMouseY = GetmouseY(e);
-
-                var nextInstanceNumber = -1;
-                var nextFramesNumber = -1;
-                var sop = GetViewport().sop;
-                let index = SearchUid2Index(sop);
-                // if (!index) continue;
-                let i = index[0],
-                    j = index[1],
-                    k = index[2];
-                var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-                var list = sortInstance(sop);
-                if (!(list.length <= 1)) {
-                    var l = 0;
-                    for (l = 0; l < list.length; l++) {
-                        if (list[l].InstanceNumber == Onum) {
-                            break;
-                        }
-                    }
-                    if (Math.abs(currY - GetViewport().originalPointY) < Math.abs(currX - GetViewport().originalPointX)) {
-                        if (currX < GetViewport().originalPointX - 3) {
-                            nextFrame(viewportNumber, -1);
-                            if (l - 1 < 0) nextInstanceNumber = list.length - 1;
-                            else nextInstanceNumber = l - 1;
-                        } else if (currX > GetViewport().originalPointX + 3) {
-                            nextFrame(viewportNumber, 1);
-                            if (list[l].InstanceNumber == Onum) {
-                                if (l + 1 >= list.length) nextInstanceNumber = 0;
-                                else nextInstanceNumber = l + 1;
-                            }
-                        }
-                    } else {
-                        if (currY < GetViewport().originalPointY - 3) {
-                            nextFrame(viewportNumber, -1);
-                            if (l - 1 < 0) nextInstanceNumber = list.length - 1;
-                            else nextInstanceNumber = l - 1;
-                        } else if (currY > GetViewport().originalPointY + 3) {
-                            nextFrame(viewportNumber, 1);
-                            if (l + 1 >= list.length) nextInstanceNumber = 0;
-                            else nextInstanceNumber = l + 1;
-                        }
-                    }
+                var nextBool = null;
+                if (Math.abs(windowMouseDiffY) < Math.abs(windowMouseDiffX)) {
+                    if (windowMouseDiffX < - 3) nextBool = true;
+                    else if (windowMouseDiffX > 3) nextBool = false;
                 } else {
-                    if (list.length == 1 && list[0].frames) {
-                        if (GetViewport().framesNumber == undefined) GetViewport().framesNumber = 0;
-                        var l = 0, NowframesNumber = GetViewport().framesNumber;
-                        for (l = 0; l < list[0].frames.length; l++) {
-                            if (l == NowframesNumber) {
-                                break;
-                            }
-                        }
-                        if (Math.abs(currY - GetViewport().originalPointY) < Math.abs(currX - GetViewport().originalPointX)) {
-                            if (currX < GetViewport().originalPointX - 3) {
-                                nextFrame(viewportNumber, -1);
-                                if (l - 1 < 0) nextFramesNumber = list[0].frames.length - 1;
-                                else nextFramesNumber = l - 1;
-                            } else if (currX > GetViewport().originalPointX + 3) {
-                                nextFrame(viewportNumber, 1);
-                                if (NowframesNumber == l) {
-                                    if (l + 1 >= list[0].frames.length) nextFramesNumber = 0;
-                                    else nextFramesNumber = l + 1;
-                                }
-
-                            }
-                        } else {
-                            if (currY < GetViewport().originalPointY - 3) {
-                                nextFrame(viewportNumber, -1);
-                                if (l - 1 < 0) nextFramesNumber = list[0].frames.length - 1;
-                                else nextFramesNumber = l - 1;
-                            } else if (currY > GetViewport().originalPointY + 3) {
-                                nextFrame(viewportNumber, 1);
-                                if (l + 1 >= list[0].frames.length) nextFramesNumber = 0;
-                                else nextFramesNumber = l + 1;
-                            }
-                        }
-                    }
+                    if (windowMouseDiffY < - 3) nextBool = true;
+                    else if (windowMouseDiffY > 3) nextBool = false;
                 }
-                GetViewport().originalPointX = currX;
-                GetViewport().originalPointY = currY;
-            }
-        }
-        Mouseup = function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-            if (openMouseTool == true && rightMouseDown == true)
-                displayMark();
-            MouseDownCheck = false;
-            rightMouseDown = false;
-            magnifierDiv.style.display = "none";
 
-            if (openLink) {
-                for (var i = 0; i < Viewport_Total; i++)
-                    displayRuler(i);
+                if (nextBool != null && openLink == false) GetViewport().nextFrame(nextBool);
+                else if (nextBool != null && openLink == true) {
+                    for (var z = 0; z < Viewport_Total; z++)
+                        GetViewport(z).nextFrame(nextBool);
+                }
             }
-        }
-        Touchstart = function (e, e2) {
+        });
 
-            if (!e2) TouchDownCheck = true;
-            else rightTouchDown = true;
-            windowMouseX = GetmouseX(e);
-            windowMouseY = GetmouseY(e);
-            if (rightTouchDown == true && e2) {
-                windowMouseX2 = GetmouseX(e2);
-                windowMouseY2 = GetmouseY(e2);
-            }
-            GetViewport().originalPointX = getCurrPoint(e)[0];
-            GetViewport().originalPointY = getCurrPoint(e)[1];
-            if (rightTouchDown == true && e2) {
-                GetViewport().originalPointX2 = getCurrPoint(e2)[0];
-                GetViewport().originalPointY2 = getCurrPoint(e2)[1];
-            }
-        }
-        Touchmove = function (e, e2) {
-            if (openDisplayMarkup && (getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+        BlueLightMouseupList = [];
+        BlueLightMouseupList.push(function (e) {
+            if (openMouseTool && rightMouseDown) displayMark();
+            if (openLink) displayAllRuler();
+        });
 
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
-            if (e2) {
-                var currX2 = getCurrPoint(e2)[0];
-                var currY2 = getCurrPoint(e2)[1];
-            }
-            var labelXY = getClass('labelXY');
-            labelXY[viewportNumber].innerText = "X: " + Math.floor(currX) + " Y: " + Math.floor(currY);
+        BlueLightTouchstartList = [];
+
+        BlueLightTouchmoveList = [];
+        BlueLightTouchmoveList.push(function (e, e2) {
+            if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+
             if (TouchDownCheck == true && rightTouchDown == false) {
-                //if (openChangeFile == true) 
-                {
-                    var nextInstanceNumber = -1;
-                    var sop = GetViewport().sop;
-                    let index = SearchUid2Index(sop);
-                    // if (!index) continue;
-                    let i = index[0],
-                        j = index[1],
-                        k = index[2];
-                    var Onum = parseInt(Patient.Study[i].Series[j].Sop[k].InstanceNumber);
-                    var list = sortInstance(sop);
-                    for (l = 0; l < list.length; l++) {
-                        if (list[l].InstanceNumber == Onum) {
-                            break;
-                        }
-                    }
-                    if (Math.abs(currY - GetViewport().originalPointY) < Math.abs(currX - GetViewport().originalPointX)) {
-                        if (currX < GetViewport().originalPointX - 3) {
-                            nextFrame(viewportNumber, -1);
-                            if (l - 1 < 0) nextInstanceNumber = list.length - 1;
-                            else nextInstanceNumber = l - 1;
-                        } else if (currX > GetViewport().originalPointX + 3) {
-                            nextFrame(viewportNumber, 1);
-                            if (list[l].InstanceNumber == Onum) {
-                                if (l + 1 >= list.length) nextInstanceNumber = 0;
-                                else nextInstanceNumber = l + 1;
-                            }
-                        }
-                    } else {
-                        if (currY < GetViewport().originalPointY - 3) {
-                            nextFrame(viewportNumber, -1);
-                            if (l - 1 < 0) nextInstanceNumber = list.length - 1;
-                            else nextInstanceNumber = l - 1;
-                        } else if (currY > GetViewport().originalPointY + 3) {
-                            nextFrame(viewportNumber, 1);
-                            if (l + 1 >= list.length) nextInstanceNumber = 0;
-                            else nextInstanceNumber = l + 1;
-                        }
-                    }
-                    GetViewport().originalPointX = currX;
-                    GetViewport().originalPointY = currY;
+                if (Math.abs(windowMouseDiffY) < Math.abs(windowMouseDiffX)) {
+                    if (windowMouseDiffX < - 3) GetViewport().nextFrame(true);
+                    else if (windowMouseDiffX > 3) GetViewport().nextFrame(false);
+                } else {
+                    if (windowMouseDiffY < - 3) GetViewport().nextFrame(true);
+                    else if (windowMouseDiffY > 3) GetViewport().nextFrame(false);
                 }
             }
-            // putLabel();
-            //  for (var i = 0; i < Viewport_Total; i++)
-            //     displayRuler(i);
-        }
-        Touchend = function (e, e2) {
-            if (TouchDownCheck == true) {
-                if (openAngle == 1) openAngle = 2;
-                else if (openAngle == 2) openAngle = 3;
-            }
-            TouchDownCheck = false;
-            rightTouchDown = false;
+        });
 
-            magnifierDiv.style.display = "none";
-
-        }
         AddMouseEvent();
     }
 };
@@ -251,8 +91,8 @@ class ScrollBar {
         this.outerDIV.style.right = "0px";
         this.innerDIV.style.right = "0px";
 
-        this.outerDIV.style.zIndex = "7";
-        this.innerDIV.style.zIndex = "8";
+        this.outerDIV.style.zIndex = "9";
+        this.innerDIV.style.zIndex = "10";
 
         this.outerDIV.appendChild(this.innerDIV);
         this.viewport.appendChild(this.outerDIV);
@@ -271,10 +111,21 @@ class ScrollBar {
         this.outerDIV.style.height = "100%";//this.viewport.clientHeight + "px";
         if (this.total <= 1) this.innerDIV.style.height = "0%";//this.viewport.clientHeight + "px";
         else {
-            this.innerDIV.style.height = parseInt(100 / this.total) + "%";
+            this.innerDIV.style.height = this.total >= 100 ? "1%" : parseInt(100 / this.total) + "%";
             this.innerDIV.style.top = ((((this.index) / this.total) * 100)) + "%";
         }
         //避免擋到Label
         if (rightLabelPadding < this.width) rightLabelPadding = this.width + 2;
     }
 }
+onloadFunction.push(
+    function () {
+        getByid("b_Scroll").onclick = function () {
+            if (this.enable == false) return;
+            //BL_mode = 'scroll';
+            hideAllDrawer();
+            set_BL_model('scroll');
+            scroll();
+            drawBorder(this);
+        }
+    });
