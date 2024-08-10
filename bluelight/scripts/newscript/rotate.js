@@ -4,7 +4,6 @@ var openRotate = false;
 
 function rotate() {
     if (BL_mode == 'rotate') {
-        DeleteMouseEvent();
         //cancelTools();
         openRotate = true;
         openChangeFile = true;
@@ -86,7 +85,5 @@ function rotate() {
                 }
             }
         });
-
-        AddMouseEvent();
     }
 }

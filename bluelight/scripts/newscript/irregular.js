@@ -10,7 +10,7 @@ var MeasureIrregular_now_choose = null;
 var openTextAnnotation = false;
 function MeasureIrregular() {
     if (BL_mode == 'Irregular') {
-        DeleteMouseEvent();
+        
         cancelTools();
         openMeasureIrregular = true;
 
@@ -82,12 +82,10 @@ function MeasureIrregular() {
             }
             displayMark();
         });
-
-        AddMouseEvent();
     }
 
     if (BL_mode == 'TextAnnotation') {
-        DeleteMouseEvent();
+        
         cancelTools();
         openTextAnnotation = true;
 
@@ -149,11 +147,10 @@ function MeasureIrregular() {
             displayMark();
         });
         SetTable();
-        AddMouseEvent();
     }
 
     if (BL_mode == 'ArrowRuler') {
-        DeleteMouseEvent();
+        
         cancelTools();
         openArrowRuler = true;
         set_BL_model.onchange = function () {
@@ -234,7 +231,6 @@ function MeasureIrregular() {
 
             if (openMouseTool == true && rightMouseDown == true) displayMark();
         });
-        AddMouseEvent();
     }
 }
 

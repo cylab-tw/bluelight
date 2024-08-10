@@ -10,7 +10,7 @@ var Measure_now_choose = null;
 var Measure_previous_choose = null;
 function measure() {
     if (BL_mode == 'measure') {
-        DeleteMouseEvent();
+        
         cancelTools();
         openMeasure = true;
         set_BL_model.onchange = function () {
@@ -166,8 +166,6 @@ function measure() {
 
             if (openLink) displayAllRuler();
         });
-
-        AddMouseEvent();
     }
 }
 

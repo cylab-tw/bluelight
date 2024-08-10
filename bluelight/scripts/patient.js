@@ -248,6 +248,14 @@ class BlueLightImageManager {
             Sop.parent = parent;
             sop.push(Sop);
             sop = SortArrayByElem(sop, "InstanceNumber");
+
+            for (var s = 0; s < sop.length - 1; s++) {
+                if (sop[s].InstanceNumber == sop[s + 1].InstanceNumber) {
+                    for (var sop_ of sop) {
+                        sop_.Image.haveSameInstanceNumber = true;
+                    }
+                }
+            }
             return Sop;
         }
     }

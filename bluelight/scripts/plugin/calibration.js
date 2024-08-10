@@ -85,7 +85,7 @@ function removeCalibrationMark() {
 
 function write_calibration() {
     if (BL_mode == 'Calibration') {
-        DeleteMouseEvent();
+        
         cancelTools();
         openCalibration = true;
         set_BL_model.onchange = function () {
@@ -167,8 +167,6 @@ function write_calibration() {
 
             if (openLink) displayAllRuler();
         });
-
-        AddMouseEvent();
     }
 }
 

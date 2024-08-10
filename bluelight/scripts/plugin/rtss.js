@@ -307,7 +307,6 @@ var temp_xml_format = "";
 
 function eraseRTSS() {
     if (BL_mode == 'eraseRTSS') {
-        DeleteMouseEvent();
 
         set_BL_model.onchange = function () {
             displayMark();
@@ -344,7 +343,6 @@ function eraseRTSS() {
         });
         BlueLightMousemoveList = [];
         BlueLightMouseupList = [];
-        AddMouseEvent();
     }
 }
 function RTSS_pounch(currX, currY) {
@@ -490,7 +488,7 @@ function get_RTSS_context() {
 
 function writertss() {
     if (BL_mode == 'writertss') {
-        DeleteMouseEvent();
+        
         drawBorder(getByid("drawRTSS"));
 
         BlueLightMousedownList = [];
@@ -573,8 +571,6 @@ function writertss() {
         BlueLightMouseupList.push(function (e) {
             if (RTSS_now_choose) RTSS_now_choose = null;
         });
-
-        AddMouseEvent();
     }
 }
 

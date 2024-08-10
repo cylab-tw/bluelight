@@ -282,7 +282,6 @@ function html_onload() {
       GetViewport().clear();
       displayMark();
       displayRuler();
-      putLabel();
       displayAIM();
       displayAnnotation();
       VIEWPORT.loadViewport(GetViewport(), null, viewportNumber);

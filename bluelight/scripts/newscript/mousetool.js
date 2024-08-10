@@ -31,7 +31,7 @@ function scale_size(e, currX, currY) {
 
 function mouseTool() {
     if (BL_mode == 'MouseTool') {
-        DeleteMouseEvent();
+        
         openMouseTool = true;
         set_BL_model.onchange = function () {
             openMouseTool = false;
@@ -129,6 +129,6 @@ function mouseTool() {
             }
         });
 
-        AddMouseEvent();
+        //initNewCanvas();
     }
 }

@@ -7,7 +7,7 @@ var MeasureCircle_now_choose = null;
 
 function MeasureRect() {
     if (BL_mode == 'MeasureRect') {
-        DeleteMouseEvent();
+        
         cancelTools();
         openMeasureShape = true;
 
@@ -70,14 +70,12 @@ function MeasureRect() {
             }
             displayMark();
         });
-
-        AddMouseEvent();
     }
 }
 
 function MeasureCircle() {
     if (BL_mode == 'MeasureCircle') {
-        DeleteMouseEvent();
+        
         cancelTools();
         openMeasureShape = true;
 
@@ -163,8 +161,6 @@ function MeasureCircle() {
             }
             displayMark();
         });
-
-        AddMouseEvent();
     }
 }
 

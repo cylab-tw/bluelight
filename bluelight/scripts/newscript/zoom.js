@@ -69,7 +69,7 @@ function magnifierIng(currX, currY) {
 
 function zoom() {
     if (BL_mode == 'zoom') {
-        DeleteMouseEvent();
+        
         openZoom = true;
         refleshViewport();
         getByid('labelZoom').style.display = '';
@@ -144,7 +144,5 @@ function zoom() {
         BlueLightTouchendList.push(function (e, e2) {
             magnifierDiv.hide();
         });
-
-        AddMouseEvent();
     }
 }

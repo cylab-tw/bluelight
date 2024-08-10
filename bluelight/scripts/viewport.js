@@ -217,13 +217,25 @@ class BlueLightViewPort {
         if (this.QRLevel == "series" && this.tags && this.tags.length) {
             var Sop = ImageManager.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.tags.InstanceNumber, invert);
             if (Sop != undefined) this.loadImgBySop(Sop);
-        } else if (this.QRLevel == "frames" && this.framesNumber != undefined) {
+        }
+        else if (this.QRLevel == "sop") {
+            var SopList = ImageManager.findSeries(this.QRLevels.series).Sop;
+            var index = SopList.findIndex((elem) => elem == this.Sop);
+            if (invert == false) {
+                if (index >= SopList.length - 1) var Sop = SopList[0];
+                else var Sop = SopList[index + 1];
+            } else {
+                if (index <= 0) var Sop = SopList[SopList.length - 1];
+                else var Sop = SopList[index - 1];
+            }
+            if (Sop != undefined) this.loadImgBySop(Sop);
+        }
+        else if (this.QRLevel == "frames" && this.framesNumber != undefined) {
             this.framesNumber += invert == true ? -1 : 1;
             if (this.framesNumber == -1) this.framesNumber = this.content.image.NumberOfFrames - 1;
             else if (this.framesNumber >= this.content.image.NumberOfFrames) this.framesNumber = 0;
             DisplaySeriesCount(this.index);
             refleshCanvas(this);
-            putLabel();
             this.refleshScrollBar();
         }
     }
@@ -245,14 +257,16 @@ class BlueLightViewPort {
         if (Sop.constructor.name == 'String') Sop = ImageManager.findSop(Sop);
 
         this.Sop = Sop;
-        if (Sop.type == 'sop') DcmLoader(Sop.Image, this);
-        else if (Sop.type == 'frame') {
-            this.framesNumber = 0;
-            DcmLoader(Sop.Image, this);
-        }
-        else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, Sop);
-        else if (Sop.type == 'ecg') EcgLoader(Sop);
-        else if (Sop.type == 'img') DcmLoader(Sop.Image, this);
+        requestAnimationFrame(() => {
+            if (Sop.type == 'sop') DcmLoader(Sop.Image, this);
+            else if (Sop.type == 'frame') {
+                this.framesNumber = 0;
+                DcmLoader(Sop.Image, this);
+            }
+            else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, Sop);
+            else if (Sop.type == 'ecg') EcgLoader(Sop);
+            else if (Sop.type == 'img') DcmLoader(Sop.Image, this);
+        });
     }
 
     reload() {

@@ -12,8 +12,6 @@ var bottomLabelPadding = labelPadding;
 //var SeriesCount = 0;
 
 function displayWindowLevel(viewportNum = viewportNumber) {
-  getByid("textWC").value = "originWindowCenter";
-  getByid("textWW").value = "originWindowWidth";
   getByid("textWW").value = "" + parseInt(GetViewport(viewportNum).windowWidth);
   getByid("textWC").value = "" + parseInt(GetViewport(viewportNum).windowCenter);
   getClass("labelWC")[viewportNum].innerText = ` WC: ${parseInt(GetViewport(viewportNum).windowCenter)} WW: ${parseInt(GetViewport(viewportNum).windowWidth)}`;
@@ -36,30 +34,17 @@ function DisplaySeriesCount(viewportNum = viewportNumber) {
             return;
           }
         } else {
-          if (tags.NumberOfFrames && tags.NumberOfFrames > 1) label_RB.innerText = "Im: " + GetViewport(viewportNum).framesNumber + "/" + (tags.NumberOfFrames - 0) + "\n" + tags.StudyDate;
+          if (tags.NumberOfFrames && tags.NumberOfFrames > 1) label_RB.innerText = "Im: " + (viewport.framesNumber + 1) + "/" + (tags.NumberOfFrames - 0) + "\n" + tags.StudyDate;
+          else if (viewport.QRLevel == "sop") label_RB.innerText = "Im: " + "/" + (SeriesCount - 0) + "\n" + tags.StudyDate;
           else label_RB.innerText = "Im: " + tags.InstanceNumber + "/" + (SeriesCount - 0) + "\n" + tags.StudyDate;
           return;
         }
       }
     }
   }
-  if (tags.NumberOfFrames && tags.NumberOfFrames > 1) label_RB.innerText = "Im: " + GetViewport(viewportNum).framesNumber + "/" + tags.NumberOfFrames + "\n" + tags.StudyDate;
+  if (tags.NumberOfFrames && tags.NumberOfFrames > 1) label_RB.innerText = "Im: " + (viewport.framesNumber + 1) + "/" + tags.NumberOfFrames + "\n" + tags.StudyDate;
+  else if (viewport.QRLevel == "sop") label_RB.innerText = "Im: " + "/" + (SeriesCount - 0) + "\n" + tags.StudyDate;
   else label_RB.innerText = "Im: " + tags.InstanceNumber + "/" + SeriesCount + "\n" + tags.StudyDate;
-}
-
-function putLabel() {
-  for (var i = 0; i < Viewport_Total; i++) {
-    getClass("labelLT")[i].style.top = topLabelPadding + "px";
-    getClass("labelLT")[i].style.left = leftLabelPadding + "px";
-    getClass("labelRT")[i].style.top = topLabelPadding + "px";
-    getClass("labelRT")[i].style.right = rightLabelPadding + "px";
-    getClass("labelRB")[i].style.right = rightLabelPadding + "px";
-    getClass("labelRB")[i].style.bottom = bottomLabelPadding + "px";
-    getClass("labelXY")[i].style.left = leftLabelPadding + "px";
-    getClass("labelXY")[i].style.bottom = bottomLabelPadding + "px";
-    getClass("labelWC")[i].style.left = leftLabelPadding + "px";
-    getClass("labelWC")[i].style.bottom = bottomLabelPadding + getClass("labelXY")[i].clientHeight + "px";
-  }
 }
 
 function displayAnnotation() {
@@ -84,5 +69,4 @@ function displayAnnotation() {
       getClass("downRule")[i].style.display = "none";
     }
   }
-  putLabel();
 }

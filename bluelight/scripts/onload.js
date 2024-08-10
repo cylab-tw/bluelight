@@ -60,6 +60,7 @@ function loadLdcmview() {
   for (var i = 0; i < Viewport_Total; i++) {
     ViewPortList.push(new BlueLightViewPort(i));
   }
+  initNewCanvas();
 
   HideElemByID(["textWC", "textWW"]);
 
@@ -96,6 +97,11 @@ function setLabelPadding() {
   rightLabelPadding = isNaN(parseInt(DicomTags.rightLabelPadding)) ? labelPadding : parseInt(DicomTags.rightLabelPadding);
   topLabelPadding = isNaN(parseInt(DicomTags.topLabelPadding)) ? labelPadding : parseInt(DicomTags.topLabelPadding);
   bottomLabelPadding = isNaN(parseInt(DicomTags.bottomLabelPadding)) ? labelPadding : parseInt(DicomTags.bottomLabelPadding);
+  document.documentElement.style.setProperty('--labelPadding', `${labelPadding}px`);
+  document.documentElement.style.setProperty('--leftLabelPadding', `${leftLabelPadding}px`);
+  document.documentElement.style.setProperty('--rightLabelPadding', `${rightLabelPadding}px`);
+  document.documentElement.style.setProperty('--topLabelPadding', `${topLabelPadding}px`);
+  document.documentElement.style.setProperty('--bottomLabelPadding', `${bottomLabelPadding}px`);
 }
 
 function readDicomTags(url, setLabelPadding) {

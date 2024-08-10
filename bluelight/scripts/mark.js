@@ -689,7 +689,6 @@ class BlueLightMark {
 
 function erase() {
     if (BL_mode == 'erase') {
-        DeleteMouseEvent();
         getByid("openMeasureImg").src = "../image/icon/lite/b_Eraser.png";
 
         set_BL_model.onchange = function () {
@@ -753,6 +752,5 @@ function erase() {
         });
         BlueLightMousemoveList = [];
         BlueLightMouseupList = [];
-        AddMouseEvent();
     }
 }

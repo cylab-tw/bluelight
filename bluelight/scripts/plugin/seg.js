@@ -337,7 +337,6 @@ var temp_SEG_format = "";
 
 function eraseSEG() {
     if (BL_mode == 'eraseSEG') {
-        DeleteMouseEvent();
 
         set_BL_model.onchange = function () {
             displayMark();
@@ -357,7 +356,6 @@ function eraseSEG() {
         });
         BlueLightMousemoveList = [];
         BlueLightMouseupList = [];
-        AddMouseEvent();
     }
 }
 
@@ -579,7 +577,7 @@ function Line_setSEG2PixelData(point1, point2) {
 
 function writeSeg() {
     if (BL_mode == 'writeSeg') {
-        DeleteMouseEvent();
+        
         drawBorder(getByid("drawSEG"));
 
         BlueLightMousedownList = [];
@@ -670,8 +668,6 @@ function writeSeg() {
 
             if (openLink) displayAllRuler();
         });
-
-        AddMouseEvent();
         return;
     }
 }

@@ -7,7 +7,7 @@ var WindowOpen = false;
 
 function windowlevel() {
     if (BL_mode == 'windowlevel') {
-        DeleteMouseEvent();
+        
         ShowElemByID(["textWC", "textWW", "WindowLevelDiv"]);
         openWindow = true;
 
@@ -94,7 +94,5 @@ function windowlevel() {
                 WindowOpen = true;
             }
         });
-
-        AddMouseEvent();
     }
 }

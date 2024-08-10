@@ -3,7 +3,6 @@ var openChangeFile = false;
 
 function scroll() {
     if (BL_mode == 'scroll') {
-        DeleteMouseEvent();
 
         openChangeFile = true;
         set_BL_model.onchange = function () {
@@ -64,8 +63,6 @@ function scroll() {
                 }
             }
         });
-
-        AddMouseEvent();
     }
 };
 
@@ -114,8 +111,9 @@ class ScrollBar {
             this.innerDIV.style.height = this.total >= 100 ? "1%" : parseInt(100 / this.total) + "%";
             this.innerDIV.style.top = ((((this.index) / this.total) * 100)) + "%";
         }
+
         //避免擋到Label
-        if (rightLabelPadding < this.width) rightLabelPadding = this.width + 2;
+        document.documentElement.style.setProperty('--rightLabelPadding', `${this.width + rightLabelPadding}px`);
     }
 }
 onloadFunction.push(

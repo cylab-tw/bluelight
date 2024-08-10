@@ -92,7 +92,6 @@ getByid("writeXML").onclick = function () {
 
 function eraseXML() {
   if (BL_mode == 'eraseXML') {
-    DeleteMouseEvent();
 
     set_BL_model.onchange = function () {
       displayMark();
@@ -113,7 +112,6 @@ function eraseXML() {
     });
     BlueLightMousemoveList = [];
     BlueLightMouseupList = [];
-    AddMouseEvent();
   }
 }
 
@@ -487,7 +485,6 @@ function importXml(url) {
 function writexml() {
 
   if (BL_mode == 'writexml') {
-    DeleteMouseEvent();
     drawBorder(getByid("drawXML"));
 
     GetViewport().rotate = 0;
@@ -540,6 +537,4 @@ function writexml() {
       }
     });
   }
-
-  AddMouseEvent();
 }

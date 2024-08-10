@@ -26,27 +26,26 @@ function displayAllRuler() {
 }
 
 function displayRuler(viewportNum = viewportNumber) {
-    if (!GetViewport(viewportNum) || !GetViewport(viewportNum).content || !GetViewport(viewportNum).content.image) {
+    if (!openAnnotation || !GetViewport(viewportNum) || !GetViewport(viewportNum).content || !GetViewport(viewportNum).content.image) {
         getClass("downRule")[viewportNum].style.display = "none";
         getClass("leftRule")[viewportNum].style.display = "none";
         return;
     }
     try {
-        var downRule = getClass("downRule");
-        var offsetWidth = GetViewport(viewportNum).div.offsetWidth;
-        downRule[viewportNum].width = offsetWidth;
-        downRule[viewportNum].style.display = "";
+        var downRule = getClass("downRule")[viewportNum];
 
-        var tempctx = downRule[viewportNum].getContext("2d");
+        const offsetWidth = GetViewport(viewportNum).div.offsetWidth;
+        if (downRule.width != offsetWidth) downRule.width = offsetWidth;
+
+        downRule.style.display = "";
+
+        var tempctx = downRule.getContext("2d");
         tempctx.clearRect(0, 0, offsetWidth, 20);
-        tempctx.strokeStyle = "#FFFFFF";
-        tempctx.fillStyle = "#FFFFFF";
+        tempctx.strokeStyle = tempctx.fillStyle = "#FFFFFF";
         tempctx.lineWidth = "2";
-        tempctx.beginPath();
-        var x1 = 0;
-        var y1 = 0;
-        var canvas = GetViewport(viewportNum).canvas;
+        var x1 = 0, y1 = 0;
 
+        tempctx.beginPath();
         if (GetViewport(viewportNum).transform.PixelSpacingX && GetViewport(viewportNum).transform.PixelSpacingY) {
             tempctx.moveTo(0 + (offsetWidth / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), 10 + 10);
             tempctx.lineTo((90 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale) + (offsetWidth / 2) - (40 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), 10 + 10);
@@ -86,17 +85,16 @@ function displayRuler(viewportNum = viewportNumber) {
 function displayRuler2(viewportNum = viewportNumber) {
     if (!GetViewport() || !GetViewport().content || !GetViewport().content.image) return;
     try {
-        var leftRule = getClass("leftRule");
+        var leftRule = getClass("leftRule")[viewportNum];
         var offsetHeight = GetViewport(viewportNum).div.offsetHeight;
-        leftRule[viewportNum].height = offsetHeight;
-        leftRule[viewportNum].style.display = "";
+        leftRule.height = offsetHeight;
+        leftRule.style.display = "";
 
         //leftRule[viewportNum].style.left = 10 + bordersize + "px";
-        var tempctx = leftRule[viewportNum].getContext("2d");
+        var tempctx = leftRule.getContext("2d");
 
         tempctx.clearRect(0, 0, 20, offsetHeight);
-        tempctx.strokeStyle = "#FFFFFF";
-        tempctx.fillStyle = "#FFFFFF";
+        tempctx.strokeStyle = tempctx.fillStyle = "#FFFFFF";
         tempctx.lineWidth = "2";
         tempctx.beginPath();
         var x1 = 0, y1 = 0;

@@ -18,7 +18,6 @@ function loadImageFromDataSet(dataSet, type, loadimage = true, url) {
         GetViewport().loadImgBySop(Sop);
     } else {
         for (var z = 0; z < Viewport_Total; z++) DisplaySeriesCount();
-        putLabel();
     }
 }
 

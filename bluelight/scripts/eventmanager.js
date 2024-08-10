@@ -60,6 +60,7 @@ var SwitchViewport = function () {
         } catch (ex) { }
     }
     refleshGUI();
+    initNewCanvas();
 }
 
 window.addEventListener("keydown", function (e) {
@@ -106,7 +107,6 @@ window.addEventListener('load', function () {
 function Wheel(e) {
     if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
     var viewportNum = viewportNumber;
-
     if (!(openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true)) return;
     if (openLink == false) {
         if (e.deltaY < 0) GetViewport(viewportNum).nextFrame(true);
@@ -239,7 +239,7 @@ let BlueLightMousemove = function (e) {
             GetViewport(i).translate.y = GetViewport().translate.y;
         }
     }
-    putLabel();
+    
     displayAllRuler();
 }
 
@@ -284,42 +284,6 @@ let BlueLightTouchend = function (E) {
             BlueLightTouchendList[i](e, e2);
     }
     TouchDownCheck = rightTouchDown = false;
-}
-
-
-let AddMouseEvent = function () {
-    try {
-        GetViewport().div.removeEventListener("touchstart", SwitchViewport, false);
-        GetViewport().div.removeEventListener("mousedown", SwitchViewport, false);
-        GetViewport().div.addEventListener("contextmenu", contextmenuF, false);
-        GetViewport().div.addEventListener("mousemove", BlueLightMousemove, false);
-        GetViewport().div.addEventListener("mousedown", BlueLightMousedown, false);
-        GetViewport().div.addEventListener("mouseup", BlueLightMouseup, false);
-        GetViewport().div.addEventListener("mouseout", Mouseout, false);
-        GetViewport().div.addEventListener("touchstart", BlueLightTouchstart, false);
-        GetViewport().div.addEventListener("touchmove", BlueLightTouchmove, false);
-        GetViewport().div.addEventListener("touchend", BlueLightTouchend, false);
-        GetViewport().div.addEventListener("wheel", Wheel, false);
-    } catch (ex) { console.log(ex); }
-}
-let DeleteMouseEvent = function () {
-    try {
-        for (var i = 0; i < Viewport_Total; i++) {
-            GetViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
-            GetViewport(i).div.removeEventListener("mousemove", BlueLightMousemove, false);
-            GetViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
-            GetViewport(i).div.removeEventListener("mouseup", BlueLightMouseup, false);
-            GetViewport(i).div.removeEventListener("mouseout", Mouseout, false);
-            GetViewport(i).div.removeEventListener("wheel", Wheel, false);
-            GetViewport(i).div.removeEventListener("mousedown", SwitchViewport, false);
-            GetViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
-            GetViewport(i).div.removeEventListener("touchend", BlueLightTouchend, false);
-            GetViewport(i).div.removeEventListener("wheel", Wheel, false);
-            GetViewport(i).div.addEventListener("touchstart", SwitchViewport, false);
-            GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
-            GetViewport(i).div.addEventListener("wheel", Wheel, false);
-        }
-    } catch (ex) { }
 }
 
 let BL_mode = 'MouseTool';

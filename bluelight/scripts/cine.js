@@ -1,7 +1,7 @@
 
 //播放動畫用的計時器
-var Cineimer = null;
-
+var CineTimer = null;
+var CineEnd = null;
 var PlayCine = function () {
     if (GetViewport().cine == false) {
         getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
@@ -15,13 +15,18 @@ var PlayCine = function () {
         }
     }
 
-    clearInterval(Cineimer);
+    clearInterval(CineTimer);
     if (!GetViewport().cine) return;
     var fps = parseInt((1 / parseFloat(getByid("textPlay").value) * 1000));
-    Cineimer = setInterval(function () {
+    CineEnd = true;
+    
+    CineTimer = setInterval(function () {
+        if (!CineEnd) return;
+        CineEnd = false;
         for (var i = 0; i < Viewport_Total; i++) {
             if (GetViewport(i).cine == true) GetViewport(i).nextFrame(false);
         }
+        CineEnd = true;
     }, fps);
 }
 

@@ -564,7 +564,8 @@ function initMPR() {
         resetViewport(2);
         GetViewport(2).loadImgBySop(originSop_of_viewport2);
 
-        getByid("MouseOperation").click();        
+        getByid("MouseOperation").click();   
+        initNewCanvas(); 
         window.onresize();
     } else if (openMPR == true) {
         enterMPR_UI();
@@ -586,7 +587,6 @@ function initMPR() {
         originSop_of_viewport2 = GetViewport(2).Sop;
         resetViewport(2);
         GetViewport(2).loadImgBySop(GetViewport().Sop);
-        viewportNumber = 2;
 
         ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
 
@@ -857,6 +857,7 @@ function initMPR() {
 
         }
         onImageRendered();
+        viewportNumber = 2;
         return;
     }
 }

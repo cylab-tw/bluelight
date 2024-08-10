@@ -293,7 +293,6 @@ var temp_xml_format = "";
 
 function eraseGSPS() {
     if (BL_mode == 'eraseGSPS') {
-        DeleteMouseEvent();
 
         set_BL_model.onchange = function () {
             displayMark();
@@ -313,7 +312,6 @@ function eraseGSPS() {
         });
         BlueLightMousemoveList = [];
         BlueLightMouseupList = [];
-        AddMouseEvent();
     }
 }
 
@@ -659,7 +657,7 @@ function set_GSPS_context() {
 var Gsps_previous_choose = null;
 function writegsps() {
     if (BL_mode == 'writegsps') {
-        DeleteMouseEvent();
+        
         drawBorder(getByid("drawGSPS"));
 
         GetViewport().rotate = 0;
@@ -848,7 +846,6 @@ function writegsps() {
             if (Gsps_previous_choose) Graphic_now_choose = { reference: Gsps_previous_choose };
         });
     }
-    AddMouseEvent();
 }
 
 function drawPOLYLINE_Write(obj) {

@@ -422,6 +422,8 @@ function initVR() {
         if (origin_openAnnotation == true || origin_openAnnotation == false) openAnnotation = origin_openAnnotation;
         displayAnnotation();
         for (var c = 0; c < Viewport_Total; c++) GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "";
+        getByid("MouseOperation").click();
+        initNewCanvas();
     } else if (openVR == true) {
         enterVR_UI();
         getByid("3dYellow").checked = true;

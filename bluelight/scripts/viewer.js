@@ -306,6 +306,7 @@ function DcmLoader(image, viewport) {
     var MarkCanvas = viewport.MarkCanvas, MainCanvas = viewport.canvas;
 
     if (image.NumberOfFrames > 1) viewport.QRLevel = "frames";
+    else if (image.haveSameInstanceNumber) viewport.QRLevel = "sop";
     else viewport.QRLevel = "series";
 
     viewport.content.image = image;
@@ -331,19 +332,15 @@ function DcmLoader(image, viewport) {
     DisplaySeriesCount(viewport.index);
     displayWindowLevel(viewport.index);
 
-    //SetTable();
 
     //渲染上去後畫布應該從原始大小縮小為適當大小
     if (!viewport.scale)
         viewport.scale = Math.min(viewport.div.clientWidth / viewport.width, viewport.div.clientHeight / viewport.height);
 
-    //var HandW = getViewprtStretchSize(viewport.width, viewport.height, viewport.div);
-    //if (!viewport.scale && (image.width / HandW[0])) viewport.scale = (1.0 / (image.width / HandW[0]));
-
     MarkCanvas.width = MainCanvas.width, MarkCanvas.height = MainCanvas.height;
 
     MarkCanvas.getContext("2d").save();
-    initNewCanvas();
+    //initNewCanvas();
 
     setTransform(viewport.index);
     MarkCanvas.style.transform = MainCanvas.style.transform;
@@ -354,12 +351,10 @@ function DcmLoader(image, viewport) {
     getByid("TableSelectNone").selected = true;
     displayMark(viewport.index);//BlueLight2//
     displayRuler(viewport.index);
-    putLabel();
     displayAIM();
-    displayAnnotation();
-    displayAllRuler();
+    //displayAnnotation();
+    //displayAllRuler();
     viewport.refleshScrollBar();
-
     refleshGUI();
 }
 
