@@ -153,6 +153,20 @@ function loadVR2() {
         }
 
         VR2_LutArray.push(Combine_LutArray);
+
+        var MIP_LutArray = {
+            name: "MIP", filter: "lighten", defaultWindow: {
+                windowWidth: "origin", windowCenter: "origin",
+            }
+        }
+        VR2_LutArray.push(MIP_LutArray);
+
+        var MinIP_LutArray = {
+            name: "MinIP", filter: "darken", defaultWindow: {
+                windowWidth: "origin", windowCenter: "origin",
+            }
+        }
+        VR2_LutArray.push(MinIP_LutArray);
     }
     createLut();
     function loadLut(path, name) {
@@ -273,8 +287,9 @@ class VRCube {
         this.RightMouseDownCheck = false;
         this.shadow = true;
         this.reduceSlices = false;
+        this.filter = null;
         if (this.sopList.length >= 50) this.reduceSlices = true;
-        this.RotationMatrix = [1, 0, 0, 0, 1, 0, 0, 0, 1]; // 初始旋轉矩陣
+        this.RotationMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; // 初始旋轉矩陣
         VRCube.VRCubeList.push(this);
     }
 
@@ -335,15 +350,61 @@ class VRCube {
         this.startRenderTime = performance.now();
         var offsety = (this.height / 1 / 2) - (this.height / this.step / 2);
         if (this.container) {
-            if (this.PerspectiveCheck.checked) this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
-            else this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
+            if (!this.filter) {
+                if (this.PerspectiveCheck.checked) this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
+                else this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
 
-            var Matrix = multiplyMatrices(this.RotationMatrix, [1, 0, 0, 0, 1, 0, 0, 0, 1]);
-            var Matrix = multiplyMatrices(getScaleMatrix(this.scale * this.step), this.RotationMatrix);
-            this.container.style.transform = applyRotationMatrix(Matrix, this.offset[0], this.offset[1] + (offsety), 0);
+                var Matrix = multiplyMatrices(getScaleMatrix(this.scale * this.step), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+                var Matrix = multiplyMatrices(this.RotationMatrix, Matrix);
+                var Matrix = multiplyMatrices(getTranslateMatrix(this.offset[0], this.offset[1] + (offsety), 0), Matrix);
+                this.container.style.transform = applyRotationMatrix(Matrix);
+                //this.container.style.transform =
+                //   `translate3d(${this.offset[0]}px,${(this.offset[1] + (offsety))}px,0) scale(${this.scale * this.step}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg) rotateZ(${this.VR2_RotateDeg[2]}deg) `
+            } else {
+                this.container.style.transform = "";
+                for (var obj of this.ElemZs) {
+                    if (this.PerspectiveCheck.checked) objstyle['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
+                    else obj.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
 
-            //this.container.style.transform =
-            //   `translate3d(${this.offset[0]}px,${(this.offset[1] + (offsety))}px,0) scale(${this.scale * this.step}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg) rotateZ(${this.VR2_RotateDeg[2]}deg) `
+                    var Matrix = multiplyMatrices(getTranslateMatrix(0, 0, (obj.position.z / this.step)), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+
+                    var Matrix = multiplyMatrices(getScaleMatrix(this.scale * this.step), Matrix);
+                    var Matrix = multiplyMatrices(this.RotationMatrix, Matrix);
+                    var Matrix = multiplyMatrices(getTranslateMatrix(this.offset[0], this.offset[1] + (offsety), 0), Matrix);
+
+                    obj.style.transform = applyRotationMatrix(Matrix);
+                    obj.style.mixBlendMode = this.filter;
+                }
+                for (var obj of this.ElemXs) {
+                    if (this.PerspectiveCheck.checked) objstyle['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
+                    else obj.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
+
+                    var Matrix = multiplyMatrices(getRotationMatrix(0, Math.PI / 2), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+                    var Matrix = multiplyMatrices(getTranslateMatrix(((((obj.position.x - this.width / 2) / this.step))), 0, 0), Matrix);
+
+                    var Matrix = multiplyMatrices(getScaleMatrix(this.scale * this.step), Matrix);
+                    var Matrix = multiplyMatrices(this.RotationMatrix, Matrix);
+                    var Matrix = multiplyMatrices(getTranslateMatrix(this.offset[0], this.offset[1] + (offsety), 0), Matrix);
+
+                    obj.style.transform = applyRotationMatrix(Matrix);
+                    obj.style.mixBlendMode = this.filter;
+                }
+                for (var obj of this.ElemYs) {
+                    if (this.PerspectiveCheck.checked) objstyle['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
+                    else obj.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
+
+                    var Matrix = multiplyMatrices(getRotationMatrix(Math.PI / 2, 0), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+                    var Matrix = multiplyMatrices(getTranslateMatrix(0, -((((obj.position.y + this.width / 2) / this.step))), ((this.width / this.step - this.deep) / 2)), Matrix);
+                    //var Matrix = multiplyMatrices(getTranslateMatrix(0, -this.width / 2, (this.width - this.deep) / 2), Matrix);
+
+                    var Matrix = multiplyMatrices(getScaleMatrix(this.scale * this.step), Matrix);
+                    var Matrix = multiplyMatrices(this.RotationMatrix, Matrix);
+                    var Matrix = multiplyMatrices(getTranslateMatrix(this.offset[0], this.offset[1] + (offsety), 0), Matrix);
+
+                    obj.style.transform = applyRotationMatrix(Matrix);
+                    obj.style.mixBlendMode = this.filter;
+                }
+            }
         }
 
         requestAnimationFrame(this.calculating_time);
@@ -362,7 +423,7 @@ class VRCube {
             else if (e.which == 2) this.cube.MiddleDownCheck = true;
             else if (e.which == 3) this.cube.RightMouseDownCheck = true;
             this.cube.VR2_Point = [e.pageX, e.pageY];
-            if (VRCube.operate_mode == "window") {
+            if (VRCube.operate_mode == "window" && !this.cube.filter) {
                 var step = -1;
                 if (this.cube.stepFactor) {
                     for (var i = 0; i < this.cube.stepFactor.length; i++) {
@@ -395,7 +456,7 @@ class VRCube {
             if (this.isRequestPending) return;
             this.isRequestPending = true;
             requestAnimationFrame(() => {
-                if (VRCube.operate_mode == "window") {
+                if (VRCube.operate_mode == "window" && !this.cube.filter) {
                     if (this.cube.MouseDownCheck && this.cube.step_tmp != -1 && !isNaN(e.pageX) && !isNaN(e.pageY)) {
                         if (Math.abs(this.cube.VR2_Point[0] - e.pageX) > Math.abs(this.cube.VR2_Point[1] - e.pageY)) {
                             this.cube.windowCenter += (this.cube.VR2_Point[0] - e.pageX);
@@ -450,7 +511,7 @@ class VRCube {
             this.cube.MouseDownCheck = false;
             this.cube.MiddleDownCheck = false;
             this.cube.RightMouseDownCheck = false;
-            if (VRCube.operate_mode == "window") {
+            if (VRCube.operate_mode == "window" && !this.cube.filter) {
                 if (this.cube.step_tmp != -1) {
                     this.cube.step = this.cube.step_tmp;
                     this.cube.step_tmp = -1;
@@ -637,8 +698,10 @@ class VRCube {
             option = document.createElement("option");
             option.innerText = VR2_LutArray[i].name;
             option.setAttribute("value", VR2_LutArray[i].name);
+            option.setAttribute("filter", VR2_LutArray[i].filter);
             option.setAttribute("defaultWindow", VR2_LutArray[i].defaultWindow);
             option.defaultWindow = VR2_LutArray[i].defaultWindow;
+            option.filter = VR2_LutArray[i].filter;
 
             if (option.innerText == "Color") option.setAttribute("selected", "selected");
             lutSelect.appendChild(option);
@@ -650,6 +713,7 @@ class VRCube {
         function ChangeLut() {
             this.cube.lut = this.lutSelect.options[this.lutSelect.options.selectedIndex].value;
             var defaultWindow = this.lutSelect.options[this.lutSelect.options.selectedIndex].defaultWindow;
+            var filter = this.lutSelect.options[this.lutSelect.options.selectedIndex].filter;
 
             if (defaultWindow) {
                 this.cube.windowCenter = defaultWindow.windowCenter == 'origin' ? this.cube.OriginWindowCenter : defaultWindow.windowCenter;
@@ -657,6 +721,9 @@ class VRCube {
                 if (!isNaN(this.cube.windowCenter)) this.cube.WCText.value = this.cube.windowCenter;
                 if (!isNaN(this.cube.windowWidth)) this.cube.WWText.value = this.cube.windowWidth;
             }
+            if (filter) {
+                this.cube.filter = filter;
+            } else this.cube.filter = null;
             this.cube.resetZXY();
             this.cube.reflesh();
         }
@@ -863,7 +930,7 @@ class VRCube {
             }
         }
 
-        if (this.lut != "default") {
+        if (this.lut != "MIP" && this.lut != "MinIP" && this.lut != "default") {
             if (VR2_LutArray[0]) {
                 var lut = null;
                 for (var lutobj of VR2_LutArray) if (lutobj.name == this.lut) lut = lutobj;
@@ -913,8 +980,11 @@ class VRCube {
                 NewCanvas.position = new Point3D(0, 0, 0);
                 NewCanvas.position.z = parseFloat(SOP.Image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1 / (parseFloat(SOP.Image.rowPixelSpacing)));
                 NewCanvas.direction = 'z';
+
+                var Matrix = multiplyMatrices(getTranslateMatrix(0, 0, (NewCanvas.position.z / step)), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+                NewCanvas.style.transform = applyRotationMatrix(Matrix);
                 //if (this.rescaleMode == "resize" && step != 1) NewCanvas.position.z /= step;
-                NewCanvas.style.transform = `translate3d(0, 0, 0) translateZ(-` + (NewCanvas.position.z / step) + "px)";
+                //NewCanvas.style.transform = `translate3d(0, 0, -` + (NewCanvas.position.z / step) + ")";
                 //if (this.reduceSlices == true && ll % 2 != 0 && ll != 0 && ll != this.sopList.length - 1) NewCanvas.style.display = "none";
                 this.container.appendChild(NewCanvas);
                 this.ElemZs.push(NewCanvas);
@@ -1015,7 +1085,12 @@ class VRCube {
                 NewCanvas.position = new Point3D(0, 0, 0);
                 NewCanvas.position.x = pos_x;
                 NewCanvas.direction = 'x';
-                NewCanvas.style.transform = `translate3d(0, 0, 0) rotateY(90deg) translateZ(` + ((NewCanvas.position.x - this.width / 2) / this.step) + "px)";
+
+                var Matrix = multiplyMatrices(getRotationMatrix(0, Math.PI / 2), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+                var Matrix = multiplyMatrices(getTranslateMatrix(((NewCanvas.position.x - this.width / 2) / this.step), 0, 0), Matrix);
+                NewCanvas.style.transform = applyRotationMatrix(Matrix);
+                //NewCanvas.style.transform = applyRotationMatrix(Matrix, ((NewCanvas.position.x - this.width / 2) / this.step), 0, 0);
+                //NewCanvas.style.transform = `translate3d(0, 0, 0) rotateY(90deg) translateZ(` + ((NewCanvas.position.x - this.width / 2) / this.step) + "px)";
                 this.container.appendChild(NewCanvas);
                 this.ElemXs.push(NewCanvas);
             } catch (ex) { };
@@ -1066,8 +1141,12 @@ class VRCube {
 
                 NewCanvas.position = new Point3D(0, 0, 0);
                 NewCanvas.position.y = -pos_y;//+ offsety;
-                NewCanvas.direction = 'x';
-                NewCanvas.style.transform = `translate3d(0, 0, 0) rotateX(90deg) translateZ(` + (((NewCanvas.position.y / this.step + (this.deep) / 2))) + "px)";
+                NewCanvas.direction = 'y';
+
+                var Matrix = multiplyMatrices(getRotationMatrix(Math.PI / 2, 0), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+                var Matrix = multiplyMatrices(getTranslateMatrix(0, -((((NewCanvas.position.y / this.step + (this.deep) / 2)))), 0), Matrix);
+                NewCanvas.style.transform = applyRotationMatrix(Matrix);
+                //NewCanvas.style.transform = `translate3d(0, 0, 0) rotateX(90deg) translateZ(` + (((NewCanvas.position.y / this.step + (this.deep) / 2))) + "px)";
                 this.container.appendChild(NewCanvas);
                 this.ElemYs.push(NewCanvas);
             } catch (ex) { };
@@ -1141,29 +1220,52 @@ function initVR2() {
 
 function multiplyMatrices(a, b) {
     const c = [];
-    for (let i = 0; i < 3; i++) {
-        c[i * 3 + 0] = a[i * 3 + 0] * b[0] + a[i * 3 + 1] * b[3] + a[i * 3 + 2] * b[6];
-        c[i * 3 + 1] = a[i * 3 + 0] * b[1] + a[i * 3 + 1] * b[4] + a[i * 3 + 2] * b[7];
-        c[i * 3 + 2] = a[i * 3 + 0] * b[2] + a[i * 3 + 1] * b[5] + a[i * 3 + 2] * b[8];
+    for (let i = 0; i < 4; i++) {
+        c[i * 4 + 0] = a[i * 4 + 0] * b[0] + a[i * 4 + 1] * b[4] + a[i * 4 + 2] * b[8] + a[i * 4 + 3] * b[12];
+        c[i * 4 + 1] = a[i * 4 + 0] * b[1] + a[i * 4 + 1] * b[5] + a[i * 4 + 2] * b[9] + a[i * 4 + 3] * b[13];
+        c[i * 4 + 2] = a[i * 4 + 0] * b[2] + a[i * 4 + 1] * b[6] + a[i * 4 + 2] * b[10] + a[i * 4 + 3] * b[14];
+        c[i * 4 + 3] = a[i * 4 + 0] * b[3] + a[i * 4 + 1] * b[7] + a[i * 4 + 2] * b[11] + a[i * 4 + 3] * b[15];
     }
     return c;
 }
-function getRotationMatrix(rotateX, rotateY) {
+
+function getTranslateMatrix(translateX = 0, translateY = 0, translateZ = 0) {
+    const translateMatrix = [
+        1, 0, 0, translateX,
+        0, 1, 0, translateY,
+        0, 0, 1, translateZ,
+        0, 0, 0, 1
+    ];
+    return translateMatrix;
+}
+
+function getRotationMatrix(rotateX = 0, rotateY = 0, rotateZ = 0) {
     const cosX = Math.cos(rotateX);
     const sinX = Math.sin(rotateX);
     const cosY = Math.cos(rotateY);
     const sinY = Math.sin(rotateY);
+    const cosZ = Math.cos(rotateZ);
+    const sinZ = Math.sin(rotateZ);
 
     const rotationXMatrix = [
-        1, 0, 0,
-        0, cosX, -sinX,
-        0, sinX, cosX
+        1, 0, 0, 0,
+        0, cosX, -sinX, 0,
+        0, sinX, cosX, 0,
+        0, 0, 0, 1
     ];
 
     const rotationYMatrix = [
-        cosY, 0, sinY,
-        0, 1, 0,
-        -sinY, 0, cosY
+        cosY, 0, sinY, 0,
+        0, 1, 0, 0,
+        -sinY, 0, cosY, 0,
+        0, 0, 0, 1
+    ];
+
+    const rotationZMatrix = [
+        cosZ, -sinZ, 0, 0,
+        sinZ, cosZ, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
     ];
 
     return multiplyMatrices(rotationYMatrix, rotationXMatrix);
@@ -1171,13 +1273,13 @@ function getRotationMatrix(rotateX, rotateY) {
 
 function getScaleMatrix(scale) {
     return scaleMatrix = [
-        scale, 0, 0,
-        0, scale, 0,
-        0, 0, scale
+        scale, 0, 0, 0,
+        0, scale, 0, 0,
+        0, 0, scale, 0,
+        0, 0, 0, 1
     ];
 }
 
-function applyRotationMatrix(matrix, x, y, z) {
-    const [m00, m01, m02, m10, m11, m12, m20, m21, m22] = matrix;
-    return `matrix3d(${m00}, ${m10}, ${m20}, 0, ${m01}, ${m11}, ${m21}, 0, ${m02}, ${m12}, ${m22}, 0, ${x}, ${y}, ${z}, 1)`;
+function applyRotationMatrix(m) {
+    return `matrix3d(${m[0]}, ${m[4]}, ${m[8]}, 0, ${m[1]}, ${m[5]}, ${m[9]}, 0, ${m[2]}, ${m[6]}, ${m[10]}, 0, ${m[3]}, ${m[7]}, ${m[11]}, 1)`;
 }
