@@ -351,6 +351,7 @@ class VRCube {
         var offsety = (this.height / 1 / 2) - (this.height / this.step / 2);
         if (this.container) {
             if (!this.filter) {
+                this.container.style.transformStyle = "";
                 if (this.PerspectiveCheck.checked) this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
                 else this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
 
@@ -362,6 +363,7 @@ class VRCube {
                 //   `translate3d(${this.offset[0]}px,${(this.offset[1] + (offsety))}px,0) scale(${this.scale * this.step}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg) rotateZ(${this.VR2_RotateDeg[2]}deg) `
             } else {
                 this.container.style.transform = "";
+                this.container.style.transformStyle = "flat";
                 for (var obj of this.ElemZs) {
                     if (this.PerspectiveCheck.checked) objstyle['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
                     else obj.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
