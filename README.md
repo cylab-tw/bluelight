@@ -6,9 +6,16 @@
 
 <a href="https://blsearch.dicom.tw"><strong>Live DEMO</strong></a>&ensp;&ensp;&ensp;
 <a href="https://bl.dicom.tw"><strong>Online Viewer</strong></a>&ensp;&ensp;&ensp;
-<a href="https://youtu.be/UkZt_Qbw1Rk"><strong> Video - Basic operation</strong></a> &ensp;&ensp;&ensp;
-<a href="https://youtu.be/N2VLWxpTWjg"><strong> Video - Labeling tools</strong></a> 
 
+## Demo Videos
+* [Video - Basic operation](https://youtu.be/AbeiOjQNHjk)
+* [Video - Labeling tools](https://youtu.be/1WZ6VshkWpc)
+* [Video - 2D MPR](https://youtu.be/p-2agvZ-mSc)
+* Volume Rendering
+  - <a href="https://youtu.be/NfoktLofJL8"><strong> Video - Volume Rendering Scenario #1 </a>
+  - <a href="https://youtu.be/CrLJsGuIgtI"><strong> Video - Volume Rendering Scenario #2 </a> 
+* [Video - MIP and minIP](https://youtu.be/pC70KfSqVPY)
+* [Video - Dig](https://youtu.be/HEd9--DCp_4)
 
 ## Install
 * Put all files into any directory in the static directory on any HTTP server.
@@ -61,7 +68,7 @@
 * Annotation and Image Markup (AIM)
 * DICOM SEG (Segementation)
 * [LabelImg](https://github.com/tzutalin/labelImg)
-* *Provide the function to convert the DICOM Overalys to a DICOM SEG object.*
+* Provide the function to convert the DICOM Overalys to a DICOM SEG object.
 
 ## Plugins
 * Some advanced features are separated from the native parts of Bluelight to facilitate better performance. All supported functions are placed in folder `/scripts/plugin`. Using the [config](/bluelight/data/plugin.json) enable the selected plugins. If disableCatch is set as false, the plugin is enabled.
@@ -121,9 +128,7 @@
 * Display LUT- see [table.js](/bluelight/scripts/plugin/table.js)
 
 ## Supported library
-* BlueLight Viewer uses several oepn source libraries as folowing:
-  - <a href="https://github.com/cornerstonejs">cornerstone</a> for reading, parsing DICOM-formatted data.
-  - <a href="https://github.com/cornerstonejs/dicomParser">dicomParser</a> for parsing DICOM tags.
+* BlueLight Viewer uses - <a href="https://github.com/cornerstonejs/dicomParser">dicomParser</a> for parsing DICOM tags.
 
 # Roadmap
 * FHIR ImagingStudy Query/Retrieve Interface
