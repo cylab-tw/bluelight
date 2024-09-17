@@ -375,3 +375,12 @@ function GetPixel(angle2point) {
         else return `B=${pixelB} G=${pixelG} R=${pixelR} `;
     }
 }
+
+function saveStringToFile(filename, content) {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(link.href); // 釋放 URL 物件
+}
