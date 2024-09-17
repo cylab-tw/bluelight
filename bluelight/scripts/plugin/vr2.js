@@ -333,7 +333,7 @@ endsolid name`
         for (var obj of VRCube.cube.ElemZs) {
             segList.push({
                 pixelData: obj.imgData,
-                PositionZ: obj.position.z
+                PositionZ: parseInt(obj.originPositionZ)
             });
         }
 
@@ -388,16 +388,20 @@ endsolid name`
 
         //針對第一面和最後一面
         for (var p0 = 0; p0 < segList.length; p0++) {
+
+            //如果選擇空心，非0層就直接跳最後一層
+            if (getByid("VR2_STLCheck").checked) {
+                if (p0 != 0) p0 = segList.length - 1;
+            }
+
             var seg0 = segList[p0];
-            //if (p0 == 0) var seg0 = segList[0];
-            //else var seg0 = segList[segList.length - 1];
             var pixel = seg0.pixelData;
             //左到右
             for (var h = 1; h < height - 1; h += 1) {
                 for (var w = 1; w < width; w++) {
-                    if (pixel[h * width + w] != 0 && pixel[h * width + w - 1] == 0) {
+                    if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w - 1] <= 0xFF000000) {
                         for (var w2 = w; w2 < width; w2++) {
-                            if (pixel[h * width + w2] == 0 && pixel[h * width + w2 - 1] != 0) {
+                            if (pixel[h * width + w2] <= 0xFF000000 && pixel[h * width + w2 - 1] > 0xFF000000) {
                                 pushIntters(
                                     h, w, seg0.PositionZ,
                                     h + 1, w, seg0.PositionZ,
@@ -428,9 +432,9 @@ endsolid name`
             //上到下
             for (var w = 1; w < width; w += 1) {
                 for (var h = 1; h < height; h++) {
-                    if (pixel[h * width + w] != 0 && pixel[(h - 1) * width + w] == 0) {
+                    if (pixel[h * width + w] > 0xFF000000 && pixel[(h - 1) * width + w] <= 0xFF000000) {
                         for (var h2 = h; h2 < height; h2++) {
-                            if (pixel[h2 * width + w] == 0 && pixel[(h2 - 1) * width + w] != 0) {
+                            if (pixel[h2 * width + w] <= 0xFF000000 && pixel[(h2 - 1) * width + w] > 0xFF000000) {
                                 pushIntters(
                                     h, w, seg0.PositionZ,
                                     h, w + 1, seg0.PositionZ,
@@ -467,7 +471,7 @@ endsolid name`
             var pixel = seg1.pixelData;
             for (var h = 0; h < height; h += 5) {
                 for (var w = 1; w < width; w++) {
-                    if (pixel[h * width + w] != 0 && pixel[h * width + w - 1] == 0) {
+                    if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w - 1] <= 0xFF000000) {
                         pointlist1.push([h, w]);
                         break;
                     }
@@ -478,7 +482,7 @@ endsolid name`
             var pixel = seg2.pixelData;
             for (var h = 0; h < height; h += 5) {
                 for (var w = 1; w < width; w++) {
-                    if (pixel[h * width + w] != 0 && pixel[h * width + w - 1] == 0) {
+                    if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w - 1] <= 0xFF000000) {
                         pointlist2.push([h, w]);
                         break;
                     }
@@ -494,7 +498,7 @@ endsolid name`
             var pixel = seg1.pixelData;
             for (var h = 0; h < height; h += 5) {
                 for (var w = width - 2; w > 0; w--) {
-                    if (pixel[h * width + w] != 0 && pixel[h * width + w + 1] == 0) {
+                    if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w + 1] <= 0xFF000000) {
                         pointlist1.push([h, w]);
                         break;
                     }
@@ -505,7 +509,7 @@ endsolid name`
             var pixel = seg2.pixelData;
             for (var h = 0; h < height; h += 5) {
                 for (var w = width - 2; w > 0; w--) {
-                    if (pixel[h * width + w] != 0 && pixel[h * width + w + 1] == 0) {
+                    if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w + 1] <= 0xFF000000) {
                         pointlist2.push([h, w]);
                         break;
                     }
@@ -522,7 +526,7 @@ endsolid name`
             var pixel = seg1.pixelData;
             for (var w = 0; w < width; w += 5) {
                 for (var h = 1; h < height; h++) {
-                    if (pixel[h * width + w] != 0 && pixel[(h - 1) * width + w] == 0) {
+                    if (pixel[h * width + w] > 0xFF000000 && pixel[(h - 1) * width + w] <= 0xFF000000) {
                         pointlist1.push([h, w]);
                         break;
                     }
@@ -533,7 +537,7 @@ endsolid name`
             var pixel = seg2.pixelData;
             for (var w = 0; w < width; w += 5) {
                 for (var h = 1; h < height; h++) {
-                    if (pixel[h * width + w] != 0 && pixel[(h - 1) * width + w] == 0) {
+                    if (pixel[h * width + w] > 0xFF000000 && pixel[(h - 1) * width + w] <= 0xFF000000) {
                         pointlist2.push([h, w]);
                         break;
                     }
@@ -549,7 +553,7 @@ endsolid name`
             var pixel = seg1.pixelData;
             for (var w = 0; w < width; w += 5) {
                 for (var h = height - 2; h > 0; h--) {
-                    if (pixel[h * width + w] != 0 && pixel[(h + 1) * width + w] == 0) {
+                    if (pixel[h * width + w] > 0xFF000000 && pixel[(h + 1) * width + w] <= 0xFF000000) {
                         pointlist1.push([h, w]);
                         break;
                     }
@@ -560,7 +564,7 @@ endsolid name`
             var pixel = seg2.pixelData;
             for (var w = 0; w < width; w += 5) {
                 for (var h = height - 2; h > 0; h--) {
-                    if (pixel[h * width + w] != 0 && pixel[(h + 1) * width + w] == 0) {
+                    if (pixel[h * width + w] > 0xFF000000 && pixel[(h + 1) * width + w] <= 0xFF000000) {
                         pointlist2.push([h, w]);
                         break;
                     }
@@ -1080,7 +1084,24 @@ endsolid name`
         span.appendChild(ReduceSliceLable);
         userDIV.appendChild(span);
 
+        //////////STL//////////
+        var span = document.createElement("span");
+        span.style['zIndex'] = "490";
+        span.style['float'] = "right";
+        var STLLable = document.createElement("LABEL");
+        STLLable.innerText = "Download as hollow STL model";
+        STLLable.className = "VR2_Label";
+        STLLable.style.float = "left";
 
+        var STLCheck = document.createElement("input");
+        STLCheck.style = "z-index: 490;float:left";
+        STLCheck.type = "checkbox";
+        STLCheck.id = "VR2_STLCheck";
+        STLCheck.setAttribute("checked", "checked");
+
+        span.appendChild(STLCheck);
+        span.appendChild(STLLable);
+        userDIV.appendChild(span);
         //////////Perspective//////////
         var span = document.createElement("span");
         span.style['zIndex'] = "490";
@@ -1263,6 +1284,7 @@ endsolid name`
 
                 NewCanvas.position = new Point3D(0, 0, 0);
                 NewCanvas.position.z = parseFloat(SOP.Image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1 / (parseFloat(SOP.Image.rowPixelSpacing)));
+                NewCanvas.originPositionZ = NewCanvas.position.z;
                 NewCanvas.direction = 'z';
 
                 var Matrix = multiplyMatrices(getTranslateMatrix(0, 0, (NewCanvas.position.z / step)), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
