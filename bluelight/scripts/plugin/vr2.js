@@ -8,7 +8,8 @@ function loadVR2() {
         ` <img class="img VR2" alt="VR2" id="ImgVR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/vr2.png" width="50" height="50">
         <img class="img VR2" alt="exitVR2" id="exitVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
         <img class="img VR2" alt="moveVR2" id="moveVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Pan.png" width="50" height="50" style="display:none;" >
-        <img class="img VR2" alt="windowVR2" id="windowVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Window.png" width="50" height="50" style="display:none;" > `;
+        <img class="img VR2" alt="windowVR2" id="windowVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Window.png" width="50" height="50" style="display:none;" >
+        <img class="img VR2" alt="saveVR2" id="saveVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;;
     addIconSpan(span);
 
     function createVR2_DIV(viewportNum = viewportNumber) {
@@ -35,6 +36,7 @@ function loadVR2() {
 
     BorderList_Icon.push("moveVR2");
     BorderList_Icon.push("windowVR2");
+    BorderList_Icon.push("saveVR2");
 
     function createLut() {
         var r0 = parseFloat((100 - 0) / 85);
@@ -215,6 +217,7 @@ getByid("ImgVR2").onclick = function () {
 
     getByid("exitVR2").style.display = openVR2 == true ? "" : "none";
     getByid("windowVR2").style.display = openVR2 == true ? "" : "none";
+    getByid("saveVR2").style.display = openVR2 == true ? "" : "none";
     getByid("moveVR2").style.display = openVR2 == true ? "" : "none";
     set_BL_model('VR2');
     initVR2();
@@ -227,10 +230,12 @@ getByid("ImgVR2").onclick = function () {
         getByid("ImgVR2").style.display = openWriteGSPS != true ? "" : "none";
         getByid("exitVR2").style.display = openWriteGSPS == true ? "" : "none";
         getByid("windowVR2").style.display = openWriteRTSS == true ? "" : "none";
+        getByid("saveVR2").style.display = openWriteRTSS == true ? "" : "none";
         getByid("moveVR2").style.display = openWriteRTSS == true ? "" : "none";
         for (cube of VRCube.VRCubeList) {
             cube.clear();
         }
+        VRCube.cube = null;
 
         Pages.displayPage("DicomPage");
         getByid("MouseOperation").click();
@@ -291,6 +296,283 @@ class VRCube {
         if (this.sopList.length >= 50) this.reduceSlices = true;
         this.RotationMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; // 初始旋轉矩陣
         VRCube.VRCubeList.push(this);
+        VRCube.cube = this;
+        getByid("saveVR2").onclick = this.saveVR2;
+    }
+
+    saveVR2() {
+
+        var outer = `solid name
+    facet normal 0 0 0
+    __intter__
+    endfacet
+endsolid name`
+        var intter = `
+    outer loop
+        vertex v1x v1y v1z
+        vertex v2x v2y v2z
+        vertex v3x v3y v3z
+    endloop
+    `
+        var intters = "";
+
+        function pushIntters(v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z) {
+            var intter_ = intter;
+            intter_ = intter_.replace("v1x", "" + v1x);
+            intter_ = intter_.replace("v1y", "" + v1y);
+            intter_ = intter_.replace("v1z", "" + v1z);
+            intter_ = intter_.replace("v2x", "" + v2x);
+            intter_ = intter_.replace("v2y", "" + v2y);
+            intter_ = intter_.replace("v2z", "" + v2z);
+            intter_ = intter_.replace("v3x", "" + v3x);
+            intter_ = intter_.replace("v3y", "" + v3y);
+            intter_ = intter_.replace("v3z", "" + v3z);
+            intters += intter_;
+        }
+        var segList = [];
+        for (var obj of VRCube.cube.ElemZs) {
+            segList.push({
+                pixelData: obj.imgData,
+                PositionZ: obj.position.z
+            });
+        }
+
+        segList = soryByKey(segList, "PositionZ");
+        var height = GetViewport().height, width = GetViewport().width;
+
+        if (segList.length <= 1) return;
+
+        function iterPointList(pointlist1, pointlist2) {
+            //開始遍歷pointlist1，並找出pointlist2距離最近的兩個，若未滿兩個則跳過
+            for (var p = 0; p < pointlist1.length - 1; p++) {
+                var point = pointlist1[p];
+                var dists = new Array(pointlist2.length);
+
+                //得到一張距離表
+                for (var p2 = 0; p2 < pointlist2.length; p2++) {
+                    dists[p2] = {
+                        index: p2,
+                        dist: (point[0] - pointlist2[p2][0]) ** 2 + (point[1] - pointlist2[p2][1]) ** 2
+                    }
+                }
+
+                //將距離由小到大排序
+                dists = soryByKey(dists, "dist");
+                if (dists[0] * 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
+                if (dists[1] * 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
+                if ((pointlist2[dists[0]['index']][0] - pointlist2[dists[1]['index']][0]) ** 2 + (pointlist2[dists[0]['index']][1] - pointlist2[dists[1]['index']][1]) ** 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
+                if ((pointlist1[p][0] - pointlist1[p + 1][0]) ** 2 + (pointlist1[p][1] - pointlist1[p + 1][1]) ** 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
+
+                pushIntters(
+                    pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ,
+                    pointlist2[dists[1]['index']][0], pointlist2[dists[1]['index']][1], seg2.PositionZ,
+                    pointlist1[p + 0][0], pointlist1[p + 0][1], seg1.PositionZ
+                );
+                pushIntters(
+                    pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ,
+                    pointlist2[dists[1]['index']][0], pointlist2[dists[1]['index']][1], seg2.PositionZ,
+                    pointlist1[p + 1][0], pointlist1[p + 1][1], seg1.PositionZ
+                );
+                pushIntters(
+                    pointlist1[p][0], pointlist1[p][1], seg1.PositionZ,
+                    pointlist1[p + 1][0], pointlist1[p + 1][1], seg1.PositionZ,
+                    pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ
+                );
+                pushIntters(
+                    pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ,
+                    pointlist2[dists[1]['index']][0], pointlist2[dists[1]['index']][1], seg2.PositionZ,
+                    pointlist1[p + 1][0], pointlist1[p + 1][1], seg1.PositionZ
+                );
+            }
+        }
+
+        //針對第一面和最後一面
+        for (var p0 = 0; p0 < segList.length; p0++) {
+            var seg0 = segList[p0];
+            //if (p0 == 0) var seg0 = segList[0];
+            //else var seg0 = segList[segList.length - 1];
+            var pixel = seg0.pixelData;
+            //左到右
+            for (var h = 1; h < height - 1; h += 1) {
+                for (var w = 1; w < width; w++) {
+                    if (pixel[h * width + w] != 0 && pixel[h * width + w - 1] == 0) {
+                        for (var w2 = w; w2 < width; w2++) {
+                            if (pixel[h * width + w2] == 0 && pixel[h * width + w2 - 1] != 0) {
+                                pushIntters(
+                                    h, w, seg0.PositionZ,
+                                    h + 1, w, seg0.PositionZ,
+                                    h, w2, seg0.PositionZ
+                                );
+                                pushIntters(
+                                    h, w2, seg0.PositionZ,
+                                    h + 1, w2, seg0.PositionZ,
+                                    h, w, seg0.PositionZ
+                                );
+                                pushIntters(
+                                    h, w, seg0.PositionZ,
+                                    h - 1, w, seg0.PositionZ,
+                                    h, w2, seg0.PositionZ
+                                );
+                                pushIntters(
+                                    h, w2, seg0.PositionZ,
+                                    h - 1, w2, seg0.PositionZ,
+                                    h, w, seg0.PositionZ
+                                );
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+                }
+            }
+            //上到下
+            for (var w = 1; w < width; w += 1) {
+                for (var h = 1; h < height; h++) {
+                    if (pixel[h * width + w] != 0 && pixel[(h - 1) * width + w] == 0) {
+                        for (var h2 = h; h2 < height; h2++) {
+                            if (pixel[h2 * width + w] == 0 && pixel[(h2 - 1) * width + w] != 0) {
+                                pushIntters(
+                                    h, w, seg0.PositionZ,
+                                    h, w + 1, seg0.PositionZ,
+                                    h2, w, seg0.PositionZ
+                                );
+                                pushIntters(
+                                    h2, w, seg0.PositionZ,
+                                    h2, w + 1, seg0.PositionZ,
+                                    h, w, seg0.PositionZ
+                                );
+                                pushIntters(
+                                    h, w, seg0.PositionZ,
+                                    h, w - 1, seg0.PositionZ,
+                                    h2, w, seg0.PositionZ
+                                );
+                                pushIntters(
+                                    h2, w, seg0.PositionZ,
+                                    h2, w - 1, seg0.PositionZ,
+                                    h, w, seg0.PositionZ
+                                );
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+                }
+            }
+        }
+
+
+        //左到右
+        for (var s = 0; s < segList.length - 1; s++) {
+            var seg1 = segList[s], pointlist1 = [];
+            var pixel = seg1.pixelData;
+            for (var h = 0; h < height; h += 5) {
+                for (var w = 1; w < width; w++) {
+                    if (pixel[h * width + w] != 0 && pixel[h * width + w - 1] == 0) {
+                        pointlist1.push([h, w]);
+                        break;
+                    }
+                }
+            }
+
+            var seg2 = segList[s + 1], pointlist2 = [];
+            var pixel = seg2.pixelData;
+            for (var h = 0; h < height; h += 5) {
+                for (var w = 1; w < width; w++) {
+                    if (pixel[h * width + w] != 0 && pixel[h * width + w - 1] == 0) {
+                        pointlist2.push([h, w]);
+                        break;
+                    }
+                }
+            }
+
+            iterPointList(pointlist1, pointlist2);
+        }
+
+        //右到左
+        for (var s = 0; s < segList.length - 1; s++) {
+            var seg1 = segList[s], pointlist1 = [];
+            var pixel = seg1.pixelData;
+            for (var h = 0; h < height; h += 5) {
+                for (var w = width - 2; w > 0; w--) {
+                    if (pixel[h * width + w] != 0 && pixel[h * width + w + 1] == 0) {
+                        pointlist1.push([h, w]);
+                        break;
+                    }
+                }
+            }
+
+            var seg2 = segList[s + 1], pointlist2 = [];
+            var pixel = seg2.pixelData;
+            for (var h = 0; h < height; h += 5) {
+                for (var w = width - 2; w > 0; w--) {
+                    if (pixel[h * width + w] != 0 && pixel[h * width + w + 1] == 0) {
+                        pointlist2.push([h, w]);
+                        break;
+                    }
+                }
+            }
+
+            iterPointList(pointlist1, pointlist2);
+        }
+
+
+        //上到下
+        for (var s = 0; s < segList.length - 1; s++) {
+            var seg1 = segList[s], pointlist1 = [];
+            var pixel = seg1.pixelData;
+            for (var w = 0; w < width; w += 5) {
+                for (var h = 1; h < height; h++) {
+                    if (pixel[h * width + w] != 0 && pixel[(h - 1) * width + w] == 0) {
+                        pointlist1.push([h, w]);
+                        break;
+                    }
+                }
+            }
+
+            var seg2 = segList[s + 1], pointlist2 = [];
+            var pixel = seg2.pixelData;
+            for (var w = 0; w < width; w += 5) {
+                for (var h = 1; h < height; h++) {
+                    if (pixel[h * width + w] != 0 && pixel[(h - 1) * width + w] == 0) {
+                        pointlist2.push([h, w]);
+                        break;
+                    }
+                }
+            }
+
+            iterPointList(pointlist1, pointlist2);
+        }
+
+        //下到上
+        for (var s = 0; s < segList.length - 1; s++) {
+            var seg1 = segList[s], pointlist1 = [];
+            var pixel = seg1.pixelData;
+            for (var w = 0; w < width; w += 5) {
+                for (var h = height - 2; h > 0; h--) {
+                    if (pixel[h * width + w] != 0 && pixel[(h + 1) * width + w] == 0) {
+                        pointlist1.push([h, w]);
+                        break;
+                    }
+                }
+            }
+
+            var seg2 = segList[s + 1], pointlist2 = [];
+            var pixel = seg2.pixelData;
+            for (var w = 0; w < width; w += 5) {
+                for (var h = height - 2; h > 0; h--) {
+                    if (pixel[h * width + w] != 0 && pixel[(h + 1) * width + w] == 0) {
+                        pointlist2.push([h, w]);
+                        break;
+                    }
+                }
+            }
+
+            iterPointList(pointlist1, pointlist2);
+        }
+
+        var export_ = outer.replace("__intter__", intters);
+        saveStringToFile("seg.stl", export_);
+        return;
     }
 
     resetZ() {
