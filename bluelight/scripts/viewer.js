@@ -195,16 +195,37 @@ function PdfLoader(pdf, Sop) {
     img2darkByClass("pdf", false);
     leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
 
-    if (getByid("PDFView")) {
-        if (getByid("PDFView").src != pdf)
-            getByid("PDFView").src = pdf;
-    }
-    else {
-        var iFrame = document.createElement("iframe");
-        iFrame.className = "PDFView";
-        iFrame.id = "PDFView";
-        iFrame.src = pdf;
-        getByid("PdfPage").appendChild(iFrame);
+    //如果瀏覽器支援顯示pdf
+    if ('PDF Viewer' in navigator.plugins) {
+        if (getByid("PDFView")) {
+            if (getByid("PDFView").src != pdf)
+                getByid("PDFView").src = pdf;
+        }
+        else {
+            var iFrame = document.createElement("iframe");
+            iFrame.className = "PDFView";
+            iFrame.id = "PDFView";
+            iFrame.src = pdf;
+            getByid("PdfPage").appendChild(iFrame);
+        }
+    } else {
+        if (getByid("PDFDownloadImg")) {
+            if (getByid("PDFDownloadImg").pdf != pdf)
+                getByid("PDFDownloadImg").pdf = pdf;
+        } else {
+            var img = new Image();
+            img.id = "PDFDownloadImg";
+            img.width = 100, img.height = 100;
+            img.src = "../image/icon/lite/download_pdf.png";
+            img.pdf = pdf;
+            img.onclick = function () {
+                var link = document.createElement('a');
+                link.href = this.pdf;
+                link.download = 'file.pdf';
+                link.dispatchEvent(new MouseEvent('click'));
+            }
+            getByid("PdfPage").appendChild(img);
+        }
     }
 }
 
