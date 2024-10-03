@@ -38,7 +38,7 @@ function createHaningProtocolsDIV(viewportNum = viewportNumber) {
     function addRow(container, type, text, content, name) {
         function htmlEntities(str) {
             if (str == undefined || str == null) str = "";
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace("\r\n", "<br/>").replace("\n", "<br/>");
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/\r\n/g, "<br/>").replace(/\n/g, "<br/>");
         }
 
         var row = document.createElement("div");

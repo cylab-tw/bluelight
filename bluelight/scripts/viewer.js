@@ -51,7 +51,7 @@ VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
     //依照dicom tags設定檔載入影像
     function htmlEntities(str) {
         if (str == undefined || str == null) str = "";
-        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace("\r\n", "<br/>").replace("\n", "<br/>");
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/\r\n/g, "<br/>").replace(/\n/g, "<br/>");
     }
 
     for (var i = 0; i < DicomTags.LT.name.length; i++)
