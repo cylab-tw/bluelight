@@ -2,7 +2,7 @@
 function loadImageFromDataSet(dataSet, type, loadimage = true, url) {
     var imageObj = getDefaultImageObj(dataSet, type, url);
     if (type == 'pdf') setPDF(imageObj);
-    if (type == 'ecg') setECG(imageObj);
+    if (type == 'ecg' && openECG) setECG(imageObj);
     var Sop = ImageManager.pushStudy(imageObj); //註冊此Image至Viewer
     if (!Sop) return; //發生重覆，等情況
     Sop.type = type;
@@ -27,40 +27,6 @@ function setPDF(imageObj) {
     var pdfObj = new Blob([pdfByteArray], { type: 'application/pdf' });
     var pdf = URL.createObjectURL(pdfObj);
     imageObj.pdf = pdf;
-}
-
-function setECG(imageObj) {
-    if (!imageObj.data.elements[Tag.WaveformSequence]) throw "WaveformSequence not found";
-    var WaveformSequence = imageObj.data.elements[Tag.WaveformSequence];
-    for (var i = 0; i < WaveformSequence.items.length; i++) {
-        if (WaveformSequence.items[i].dataSet.string(Tag.WaveformOriginality) == 'ORIGINAL') {
-            //Samples
-            imageObj.NumberOfWaveformSamples = WaveformSequence.items[i].dataSet.int16(Tag.NumberOfWaveformSamples);
-            //12
-            imageObj.NumberOfWaveformChannels = WaveformSequence.items[i].dataSet.int16(Tag.NumberOfWaveformChannels);
-            //BitsAllocated
-            imageObj.WaveformBitsAllocated = WaveformSequence.items[i].dataSet.int16(Tag.WaveformBitsAllocated);
-            //SamplingFrequency
-            imageObj.SamplingFrequency = WaveformSequence.items[i].dataSet.intString(Tag.SamplingFrequency);
-            //WaveformData.length=Samples*12*(BitsAllocated/8)
-            var WaveformData = WaveformSequence.items[i].dataSet.elements[Tag.WaveformData];
-
-            //check
-            if (WaveformData.length != imageObj.NumberOfWaveformSamples * imageObj.NumberOfWaveformChannels * (imageObj.WaveformBitsAllocated / 8))
-                throw "WaveformData parsing failed";
-
-            var WaveformDataOffset = WaveformSequence.items[0].dataSet.elements[Tag.WaveformData].dataOffset;
-            var WaveformDataLength = WaveformSequence.items[0].dataSet.elements[Tag.WaveformData].length;
-            switch (imageObj.WaveformBitsAllocated) {
-                case 8: imageObj.WaveformData = new Int8Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); return;
-                case 16: imageObj.WaveformData = new Int16Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); return;
-                case 32: imageObj.WaveformData = new Int32Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); return;
-            }
-            throw "WaveformData parsing failed";
-        }
-    }
-    if (WaveformSequence.items.length == 0) throw "WaveformOriginality not found";
-    throw "ORIGINAL WaveformOriginality not found";
 }
 
 function getDefaultImageObj(dataSet, type, url) {

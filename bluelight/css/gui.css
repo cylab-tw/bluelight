@@ -305,10 +305,11 @@ button:hover {
 
 #EcgView {
   width: calc(100% - var(--bordersize)*2);
-  height: calc(100% - var(--bordersize)*2);
+  height: calc(100% - 25px - var(--bordersize)*2);
   left: 0px;
   position: absolute;
   border: var(--bordersize) #FFC3FF groove;
+  overflow: scroll;
 }
 
 #tooltiptext_img {
@@ -334,7 +335,14 @@ button:hover {
 }
 
 #EcgCanvas {
-  object-fit: contain;
+  /*object-fit: scale-down;
   height: 100%;
   width: 100%;
+  image-rendering: pixelated;*/
+}
+
+#ECGOptionsDIV {
+  background-color: #00306044;
+  color: #ffffff;
+  height: 25px;
 }
