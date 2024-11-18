@@ -12,7 +12,7 @@ function cancelTools() {
     getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
     getByid("WindowDefault").selected = true;
 
-    displayWindowLevel();
+    setWindowLevel();
     displayMark();
     for (var i = 0; i < Viewport_Total; i++) {
         GetViewport(i).cine = false;
@@ -141,6 +141,8 @@ function setTransform(viewportnum = viewportNumber) {
     //element.canvas.style.transform=" translate(-50%,-50%)"
     element.canvas.style.position = "absolute";
     GetViewportMark(viewportnum).style.position = "absolute";
+    element.setLabel("scale", "" + element.scale);
+    element.refleshLabel();
     refleshGUI();
 }
 

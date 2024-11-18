@@ -19,6 +19,11 @@
   text-align: right;
 }
 
+.labelLB {
+  left: var(--leftLabelPadding);
+  bottom: var(--bottomLabelPadding);
+}
+
 .labelRB {
   right: var(--rightLabelPadding);
   bottom: var(--bottomLabelPadding);

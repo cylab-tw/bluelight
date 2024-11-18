@@ -40,11 +40,12 @@ class BlueLightViewPort {
         this.initViewportOption(div, index);
         this.initLeftRule(div, index);
         this.initDownRule(div, index);
-        this.initLabelWC(div, index);
+        //this.initLabelWC(div, index);
         this.initLabelLT(div, index);
         this.initLabelRT(div, index);
+        this.initLabelLB(div, index);
         this.initLabelRB(div, index);
-        this.initLabelXY(div, index);
+        //this.initLabelXY(div, index);
         this.initScrollBar(div, index);
     }
     clear() {
@@ -106,6 +107,7 @@ class BlueLightViewPort {
         div.enable = true;
         div.lockRender = false;
         this.DicomTagsList = [];
+        this.labelDict = {};
         this.initViewportCanvas(div, index);
     }
     get enable() { return this.div.enable };
@@ -170,12 +172,12 @@ class BlueLightViewPort {
         div.appendChild(downRule);
     }
 
-    initLabelWC(div, index) {
+    /*initLabelWC(div, index) {
         var labelWC = document.createElement("LABEL");
         labelWC.className = "labelWC innerLabel";
         this.labelWC = div.labelWC = labelWC;
         div.appendChild(labelWC);
-    }
+    }*/
     initLabelLT(div, index) {
         var labelLT = document.createElement("LABEL");
         labelLT.className = "labelLT innerLabel";
@@ -188,19 +190,62 @@ class BlueLightViewPort {
         this.labelRT = div.labelRT = labelRT;
         div.appendChild(labelRT);
     }
+    initLabelLB(div, index) {
+        var labelLB = document.createElement("LABEL");
+        labelLB.className = "labelLB innerLabel";
+        this.labelLB = div.labelLB = labelLB;
+        div.appendChild(labelLB);
+    }
     initLabelRB(div, index) {
         var labelRB = document.createElement("LABEL");
         labelRB.className = "labelRB innerLabel";
         this.labelRB = div.labelRB = labelRB;
         div.appendChild(labelRB);
     }
-    initLabelXY(div, index) {
+    setLabel(key, value) {
+        this.labelDict[key] = value;
+    }
+    getLabel(key) {
+        return this.labelDict[key] ? this.labelDict[key] : "";
+    }
+    refleshLabel() {
+        if (!this.content.image) return;
+        function extractTags(input) {
+            var regex = /\{tag:([^}]+)\}/g, matches = [], match;
+            while ((match = regex.exec(input)) !== null) matches.push(match[1]);
+            return matches;
+        }
+
+        function extractVals(input) {
+            var regex = /\{val:([^}]+)\}/g, matches = [], match;
+            while ((match = regex.exec(input)) !== null) matches.push(match[1]);
+            return matches;
+        }
+
+        this.labelLT.innerHTML = this.labelLB.innerHTML = this.labelRT.innerHTML = this.labelRB.innerHTML = "";
+
+        for (var labels of [DicomTags.LT, DicomTags.LB, DicomTags.RT, DicomTags.RB]) {
+            for (var i = 0; i < labels.value.length; i++) {
+                var tags = extractTags(labels.value[i]), vals = extractVals(labels.value[i]);
+                var str = labels.value[i];
+                for (var j = 0; j < tags.length; j++)str = str.replace("{tag:" + tags[j] + "}", htmlEntities(this.content.image.data.string("x" + tags[j].toLowerCase())));
+                for (var j = 0; j < vals.length; j++)str = str.replace("{val:" + vals[j] + "}", htmlEntities(this.getLabel(vals[j])));
+                if (labels == DicomTags.LT) this.labelLT.innerHTML += " " + str + "<br/>";
+                if (labels == DicomTags.LB) this.labelLB.innerHTML += " " + str + "<br/>";
+                if (labels == DicomTags.RT) this.labelRT.innerHTML += " " + str + "<br/>";
+                if (labels == DicomTags.RB) this.labelRB.innerHTML += " " + str + "<br/>";
+            }
+        }
+        this.refleshScrollBar();
+        //labelLT.innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
+    }
+    /*initLabelXY(div, index) {
         var labelXY = document.createElement("LABEL");
         labelXY.className = "labelXY innerLabel";
         labelXY.innerText = "";//"X: 0 Y: 0";
         this.labelXY = div.labelXY = labelXY;
         div.appendChild(labelXY);
-    }
+    }*/
     initScrollBar(div, index) {
         this.ScrollBar = new ScrollBar(div);//增加右側卷軸
     }
@@ -235,7 +280,7 @@ class BlueLightViewPort {
             this.framesNumber += invert == true ? -1 : 1;
             if (this.framesNumber == -1) this.framesNumber = this.content.image.NumberOfFrames - 1;
             else if (this.framesNumber >= this.content.image.NumberOfFrames) this.framesNumber = 0;
-            DisplaySeriesCount(this.index);
+            setSeriesCount(this.index);
             refleshCanvas(this);
             this.refleshScrollBar();
         }
@@ -255,6 +300,7 @@ class BlueLightViewPort {
     loadImgBySop(Sop) {
         if (!Sop) return;
         if (this.enable == false || this.lockRender == true) return;
+        this.labelDict = {};
         if (Sop.constructor.name == 'String') Sop = ImageManager.findSop(Sop);
 
         this.Sop = Sop;

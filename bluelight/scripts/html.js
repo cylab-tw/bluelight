@@ -285,12 +285,12 @@ function html_onload() {
       displayAIM();
       displayAnnotation();
       VIEWPORT.loadViewport(GetViewport(), null, viewportNumber);
-      DisplaySeriesCount();
+      setSeriesCount();
       getClass("labelLT")[viewportNumber].innerText = "";
-      getClass("labelWC")[viewportNumber].innerText = "";
+      //getClass("labelWC")[viewportNumber].innerText = "";
       getClass("labelRT")[viewportNumber].innerText = "";
       getClass("labelRB")[viewportNumber].innerText = "";
-      getClass("labelXY")[viewportNumber].innerText = "";
+      //getClass("labelXY")[viewportNumber].innerText = "";
       PatientMark = [];
       ImageManager = new BlueLightImageManager()
       getByid("LeftPicture").innerHTML = ""; //leftLayout = new LeftLayout();
@@ -300,10 +300,10 @@ function html_onload() {
         GetViewport(i).clear();
         VIEWPORT.loadViewport(GetViewport(), null, i);
         getClass("labelLT")[i].innerText = "";
-        getClass("labelWC")[i].innerText = "";
+        //getClass("labelWC")[i].innerText = "";
         getClass("labelRT")[i].innerText = "";
         getClass("labelRB")[i].innerText = "";
-        getClass("labelXY")[i].innerText = "";
+        //getClass("labelXY")[i].innerText = "";
         displayRuler(i);
       }
       getByid("container").removeChild(this.window);

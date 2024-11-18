@@ -17,7 +17,7 @@ function loadImageFromDataSet(dataSet, type, loadimage = true, url) {
         resetViewport();
         GetViewport().loadImgBySop(Sop);
     } else {
-        for (var z = 0; z < Viewport_Total; z++) DisplaySeriesCount();
+        for (var z = 0; z < Viewport_Total; z++) setSeriesCount();
     }
 }
 

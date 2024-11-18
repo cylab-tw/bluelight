@@ -7,47 +7,43 @@
     "bottomLabelPadding": 5,
     "LT": [
       {
-        "name": "Number of Frames:",
-        "tag": "00280008"
+        "value": "Number of Frames: {tag:00280008}"
       },
       {
-        "name": "Instance Number:",
-        "tag": "00200013"
+        "value": "Instance Number: {tag:00200013}"
       }
     ],
     "RT": [
       {
-        "name": "",
-        "tag": "00100010"
+        "value": "{tag:00100010}"
       },
       {
-        "name": "",
-        "tag": "00100020"
-      }
-      ,
-      {
-        "name": "",
-        "tag": "00100040"
-      }
-      ,
-      {
-        "name": "",
-        "tag": "00101010"
+        "value": "{tag:00100020}"
       },
       {
-        "name": "",
-        "tag": "00081030"
+        "value": "{tag:00100040}"
+      },
+      {
+        "value": "{tag:00101010}"
+      },
+      {
+        "value": "{tag:00081030}"
       }
     ],
-    "LB": {},
-    "RB": [
+    "LB": [
       {
-        "name": "InstanceNumber:",
-        "tag": "00200013"
+        "value": "WC: {val:WindowCenter} WW: {val:WindowWidth}"
       },
       {
-        "name": "Date:",
-        "tag": "00080020"
+        "value": "Pixel: {val:PixelValue}"
+      }
+    ],
+    "RB": [
+      {
+        "value": "Im: {val:Im}"
+      },
+      {
+        "value": "{tag:00080020}"
       }
     ]
   },

@@ -124,32 +124,24 @@ function readDicomTags(url, setLabelPadding) {
     dicomtags.bottomLabelPadding = parseInt(DicomResponse["bottomLabelPadding"]) ? parseInt(DicomResponse["bottomLabelPadding"]) : dicomtags.labelPadding;
 
     dicomtags.LT = {};
-    dicomtags.LT.name = [];
-    dicomtags.LT.tag = [];
+    dicomtags.LT.value = [];
     for (var i = 0; i < DicomResponse["LT"].length; i++) {
-      dicomtags.LT.name.push(DicomResponse["LT"][i].name)
-      dicomtags.LT.tag.push(DicomResponse["LT"][i].tag)
+      dicomtags.LT.value.push(DicomResponse["LT"][i].value);
     }
     dicomtags.RT = {};
-    dicomtags.RT.name = [];
-    dicomtags.RT.tag = [];
+    dicomtags.RT.value = [];
     for (var i = 0; i < DicomResponse["RT"].length; i++) {
-      dicomtags.RT.name.push(DicomResponse["RT"][i].name)
-      dicomtags.RT.tag.push(DicomResponse["RT"][i].tag)
+      dicomtags.RT.value.push(DicomResponse["RT"][i].value);
     }
     dicomtags.LB = {};
-    dicomtags.LB.name = [];
-    dicomtags.LB.tag = [];
+    dicomtags.LB.value = [];
     for (var i = 0; i < DicomResponse["LB"].length; i++) {
-      dicomtags.LB.name.push(DicomResponse["LB"][i].name)
-      dicomtags.LB.tag.push(DicomResponse["LB"][i].tag)
+      dicomtags.LB.value.push(DicomResponse["LB"][i].value);
     }
     dicomtags.RB = {};
-    dicomtags.RB.name = [];
-    dicomtags.RB.tag = [];
+    dicomtags.RB.value = [];
     for (var i = 0; i < DicomResponse["RB"].length; i++) {
-      dicomtags.RB.name.push(DicomResponse["RB"][i].name)
-      dicomtags.RB.tag.push(DicomResponse["RB"][i].tag)
+      dicomtags.RB.value.push(DicomResponse["RB"][i].value);
     }
     //指派至全域變數
     Object.assign(DicomTags, dicomtags);
@@ -320,7 +312,7 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
     url = fitUrl(url);
 
     try {
-      if (getValue(DicomResponse[i]["00200013"]) == min) {
+      if (getValue(DicomResponse[i]["00200013"]) == min || DicomResponse.length == 1) {
         //預載入DICOM至Viewport
         if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(url);
         else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);

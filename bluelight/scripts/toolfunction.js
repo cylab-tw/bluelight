@@ -36,6 +36,11 @@ function securePassword(min, max, step) {
     return number;
 }
 
+function htmlEntities(str) {
+    if (str == undefined || str == null) str = "";
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/\r\n/g, "<br/>").replace(/\n/g, "<br/>");
+}
+
 function soryByKey(arr, key) {
     return arr.sort((a, b) => a[key] - b[key]);
 }

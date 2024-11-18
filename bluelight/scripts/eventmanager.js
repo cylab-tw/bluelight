@@ -228,10 +228,10 @@ let BlueLightMousemove = function (e) {
             BlueLightMousemoveList[i](e);
     }
 
-    if (isNaN(angle2point[0]) || isNaN(angle2point[1])) getClass('labelXY')[viewportNumber].innerText = "";
-    else {
-        getClass('labelXY')[viewportNumber].innerText = "Pixel: " + GetPixel(angle2point) + `  (${parseInt(angle2point[0])},${parseInt(angle2point[1])})`;
-    }//getClass('labelXY')[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
+    if (isNaN(angle2point[0]) || isNaN(angle2point[1])) GetViewport().setLabel("PixelValue", "");//getClass('labelXY')[viewportNumber].innerText = "";
+    else GetViewport().setLabel("PixelValue", GetPixel(angle2point) + `  (${parseInt(angle2point[0])},${parseInt(angle2point[1])})`);// getClass('labelXY')[viewportNumber].innerText = "Pixel: " + GetPixel(angle2point) + `  (${parseInt(angle2point[0])},${parseInt(angle2point[1])})`;
+    //getClass('labelXY')[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
+    GetViewport().refleshLabel();
 
     if (openLink == true) {
         for (var i = 0; i < Viewport_Total; i++) {
@@ -239,7 +239,7 @@ let BlueLightMousemove = function (e) {
             GetViewport(i).translate.y = GetViewport().translate.y;
         }
     }
-    
+
     displayAllRuler();
 }
 

@@ -49,12 +49,8 @@ VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
     //清空label的數值
 
     //依照dicom tags設定檔載入影像
-    function htmlEntities(str) {
-        if (str == undefined || str == null) str = "";
-        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/\r\n/g, "<br/>").replace(/\n/g, "<br/>");
-    }
-
-    for (var i = 0; i < DicomTags.LT.name.length; i++)
+    element.refleshLabel();
+    /*for (var i = 0; i < DicomTags.LT.name.length; i++)
         label_LT.innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
     for (var i = 0; i < DicomTags.RT.name.length; i++) {
         //避免PatientName出現中文亂碼
@@ -68,7 +64,7 @@ VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
         } else {
             label_RT.innerHTML += "" + DicomTags.RT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.RT.tag[i])) + "<br/>";
         }
-    }
+    }*/
 }
 
 VIEWPORT.loadViewport = function (viewport, image, viewportNum) {
@@ -261,9 +257,8 @@ function DcmLoader(image, viewport) {
     if (!viewport.windowWidth) viewport.windowWidth = image.windowWidth;
 
     //顯示資訊到label
-    DisplaySeriesCount(viewport.index);
-    displayWindowLevel(viewport.index);
-
+    setSeriesCount(viewport.index);
+    setWindowLevel(viewport.index);
 
     //渲染上去後畫布應該從原始大小縮小為適當大小
     if (!viewport.scale)

@@ -48,7 +48,7 @@ function windowlevel() {
                             GetViewport(z).windowCenter = GetViewport().windowCenter;
                         }
                     }
-                    displayWindowLevel();
+                    setWindowLevel();
                     refleshViewport();
                     WindowOpen = true;
                 }
@@ -89,7 +89,7 @@ function windowlevel() {
                         GetViewport(z).windowCenter = GetViewport().windowCenter;
                     }
                 }
-                displayWindowLevel();
+                setWindowLevel();
                 refleshViewport();
                 WindowOpen = true;
             }
