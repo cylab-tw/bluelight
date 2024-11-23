@@ -343,6 +343,23 @@ function SetTable(row0, col0) {
     if (VIEWPORT.fixRow) row = VIEWPORT.fixRow;
     if (VIEWPORT.fixCol) col = VIEWPORT.fixCol;
 
+    //如果限制只顯示其中一個viewport
+    if (BlueLightViewPort.only1Viewport >= 0) {
+        for (var i = 0; i < row * col; i++) {
+            if (i == BlueLightViewPort.only1Viewport) {
+                GetViewport(i).div.style.display = "";
+                GetViewport(i).enable = true;
+            } else {
+                GetViewport(i).div.style.display = "none";
+                GetViewport(i).enable = false;
+            }
+        }
+        GetViewport(BlueLightViewPort.only1Viewport).div.style.width = `calc(${100 / 1}% - ${bordersize * 2}px)`;
+        GetViewport(BlueLightViewPort.only1Viewport).div.style.height = `calc(${100 / 1}% - ${bordersize * 2}px)`;
+        refleshGUI();
+        return;
+    }
+
     //重置各個Viewport的長寬大小(有顯示時)
     try {
         for (var r = 0; r < row; r++) {
@@ -362,7 +379,7 @@ function SetTable(row0, col0) {
         GetViewport(i).div.style.display = "none";
         GetViewport(i).enable = false;
     }
-    
+
     //if (viewportNumber >= row * col) viewportNumber = 0;
 
     refleshGUI();

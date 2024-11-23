@@ -143,6 +143,19 @@ function GetmouseXY(evt) {
     return [GetmouseX(evt), GetmouseY(evt)];
 }
 
+function getDicomTagString(dataSet, tag) {
+    if (!dataSet.elements[tag]) return "";
+
+    var vr = dataSet.elements[tag].vr;
+    if (vr == 'US') return dataSet.uint16(tag);
+    else if (vr === 'SS') return dataSet.uint16(tag);
+    else if (vr === 'UL') return dataSet.uint32(tag);
+    else if (vr === 'SL') return dataSet.int32(tag);
+    else if (vr === 'FD') return dataSet.double(tag);
+    else if (vr === 'FL') return dataSet.float(tag);
+    else return dataSet.string(tag);
+}
+
 function SearchUid2Index(sop) {
     for (var i = 0; i < ImageManager.Study.length; i++) {
         for (var j = 0; j < ImageManager.Study[i].Series.length; j++) {

@@ -22,6 +22,7 @@ class ImageInfo {
 }
 
 class BlueLightViewPort {
+    static only1Viewport = -1;
     constructor(index, init = true) {
         if (init) this.initViewport(index);
     }
@@ -47,6 +48,8 @@ class BlueLightViewPort {
         this.initLabelRB(div, index);
         //this.initLabelXY(div, index);
         this.initScrollBar(div, index);
+
+        this.div.ondblclick = DoubleClickF;
     }
     clear() {
         this.invert = false;
@@ -228,7 +231,7 @@ class BlueLightViewPort {
             for (var i = 0; i < labels.value.length; i++) {
                 var tags = extractTags(labels.value[i]), vals = extractVals(labels.value[i]);
                 var str = labels.value[i];
-                for (var j = 0; j < tags.length; j++)str = str.replace("{tag:" + tags[j] + "}", htmlEntities(this.content.image.data.string("x" + tags[j].toLowerCase())));
+                for (var j = 0; j < tags.length; j++)str = str.replace("{tag:" + tags[j] + "}", htmlEntities(getDicomTagString(this.content.image.data, "x" + tags[j].toLowerCase())));
                 for (var j = 0; j < vals.length; j++)str = str.replace("{val:" + vals[j] + "}", htmlEntities(this.getLabel(vals[j])));
                 if (labels == DicomTags.LT) this.labelLT.innerHTML += " " + str + "<br/>";
                 if (labels == DicomTags.LB) this.labelLB.innerHTML += " " + str + "<br/>";

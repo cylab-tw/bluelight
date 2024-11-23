@@ -412,6 +412,7 @@ function html_onload() {
             Viewport_col = this.col + 1;
             getByid("MouseOperation").click();
             if (viewportNumber >= Viewport_row * Viewport_col) viewportNumber = 0;
+            BlueLightViewPort.only1Viewport = -1;
             SetTable();
             window.onresize();
           }
@@ -634,7 +635,7 @@ function html_onload() {
   getByid("MarkupImg").onclick = function () {
     if (this.enable == false) return;
     hideAllDrawer();
-    
+
     var TableSelectOnChange = function () {
       if (getByid("DICOMTagsSelect").selected == true)
         displayDicomTagsList();

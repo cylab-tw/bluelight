@@ -42,6 +42,13 @@ var stopPropagation = function (e) {
     e.stopPropagation();
 }
 
+var DoubleClickF = function (e) {
+    if (BlueLightViewPort.only1Viewport == -1) BlueLightViewPort.only1Viewport = e.currentTarget.viewportNum;
+    else BlueLightViewPort.only1Viewport = -1;
+    SetTable();
+    window.onresize();
+};
+
 var SwitchViewport = function () {
     getByid("WindowDefault").selected = true;
     var viewportNum = viewportNumber;

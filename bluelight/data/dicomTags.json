@@ -36,6 +36,9 @@
       },
       {
         "value": "Pixel: {val:PixelValue}"
+      },
+      {
+        "value": "{tag:00080060} ({tag:00280011}×{tag:00280010})"
       }
     ],
     "RB": [
