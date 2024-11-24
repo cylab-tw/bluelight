@@ -175,12 +175,6 @@ class BlueLightViewPort {
         div.appendChild(downRule);
     }
 
-    /*initLabelWC(div, index) {
-        var labelWC = document.createElement("LABEL");
-        labelWC.className = "labelWC innerLabel";
-        this.labelWC = div.labelWC = labelWC;
-        div.appendChild(labelWC);
-    }*/
     initLabelLT(div, index) {
         var labelLT = document.createElement("LABEL");
         labelLT.className = "labelLT innerLabel";
@@ -233,6 +227,13 @@ class BlueLightViewPort {
                 var str = labels.value[i];
                 for (var j = 0; j < tags.length; j++)str = str.replace("{tag:" + tags[j] + "}", htmlEntities(getDicomTagString(this.content.image.data, "x" + tags[j].toLowerCase())));
                 for (var j = 0; j < vals.length; j++)str = str.replace("{val:" + vals[j] + "}", htmlEntities(this.getLabel(vals[j])));
+
+                //若都空白則什麼都不顯示
+                var emptyCount = 0;
+                for (var j = 0; j < tags.length; j++)if ('' == getDicomTagString(this.content.image.data, "x" + tags[j].toLowerCase())) emptyCount++;
+                for (var j = 0; j < vals.length; j++)if ('' == this.getLabel(vals[j])) emptyCount++;
+                if (emptyCount == tags.length + vals.length && emptyCount > 0) continue;
+
                 if (labels == DicomTags.LT) this.labelLT.innerHTML += " " + str + "<br/>";
                 if (labels == DicomTags.LB) this.labelLB.innerHTML += " " + str + "<br/>";
                 if (labels == DicomTags.RT) this.labelRT.innerHTML += " " + str + "<br/>";
@@ -242,13 +243,7 @@ class BlueLightViewPort {
         this.refleshScrollBar();
         //labelLT.innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
     }
-    /*initLabelXY(div, index) {
-        var labelXY = document.createElement("LABEL");
-        labelXY.className = "labelXY innerLabel";
-        labelXY.innerText = "";//"X: 0 Y: 0";
-        this.labelXY = div.labelXY = labelXY;
-        div.appendChild(labelXY);
-    }*/
+
     initScrollBar(div, index) {
         this.ScrollBar = new ScrollBar(div);//增加右側卷軸
     }

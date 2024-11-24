@@ -32,13 +32,16 @@
     ],
     "LB": [
       {
-        "value": "WC: {val:WindowCenter} WW: {val:WindowWidth}"
-      },
-      {
         "value": "Pixel: {val:PixelValue}"
       },
       {
+        "value": "WC: {val:WindowCenter} WW: {val:WindowWidth}"
+      },
+      {
         "value": "{tag:00080060} ({tag:00280011}×{tag:00280010})"
+      },
+      {
+        "value": "T: {val:SliceThickness} mm  L:{val:imagePositionZ} mm"
       }
     ],
     "RB": [

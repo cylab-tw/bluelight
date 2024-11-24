@@ -81,6 +81,9 @@ class ScrollBar {
 
         this.outerDIV.style.position = "absolute";
         this.innerDIV.style.position = "absolute";
+        
+        this.outerDIV.className = "ScrollBar"
+        this.innerDIV.className = "ScrollBar"
 
         this.outerDIV.style.top = "0px";
         this.innerDIV.style.top = "0px";
@@ -88,8 +91,8 @@ class ScrollBar {
         this.outerDIV.style.right = "0px";
         this.innerDIV.style.right = "0px";
 
-        this.outerDIV.style.zIndex = "9";
-        this.innerDIV.style.zIndex = "10";
+        this.outerDIV.style.zIndex = "17";
+        this.innerDIV.style.zIndex = "18";
 
         this.outerDIV.appendChild(this.innerDIV);
         this.viewport.appendChild(this.outerDIV);

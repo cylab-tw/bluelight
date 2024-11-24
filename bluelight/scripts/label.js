@@ -19,6 +19,11 @@ function setWindowLevel(viewportNum = viewportNumber) {
   GetViewport(viewportNum).refleshLabel();
 }
 
+function setCommonLabel(viewportNum = viewportNumber) {
+  if (!isNaN(GetViewport(viewportNum).tags.SliceThickness)) GetViewport(viewportNum).setLabel("SliceThickness", parseFloat(GetViewport(viewportNum).tags.SliceThickness).toFixed(1));
+  GetViewport(viewportNum).refleshLabel();
+}
+
 function setSeriesCount(viewportNum = viewportNumber) {
   var viewport = GetViewport(viewportNum), tags = viewport.tags, SeriesCount = 1;
   for (var i = 0; i < ImageManager.Study.length; i++) {
@@ -34,6 +39,15 @@ function setSeriesCount(viewportNum = viewportNumber) {
       }
     }
   }
+}
+
+function setTransformLabel(viewportNum = viewportNumber) {
+  var viewport = GetViewport(viewportNum);
+  if (!viewport.transform || !viewport.transform.imagePositionZ) return;
+  viewport.setLabel("imagePositionX", viewport.transform.imagePositionX.toFixed(1));
+  viewport.setLabel("imagePositionY", viewport.transform.imagePositionY.toFixed(1));
+  viewport.setLabel("imagePositionZ", viewport.transform.imagePositionZ.toFixed(1));
+  viewport.refleshLabel();
 }
 
 function displayAnnotation() {

@@ -33,6 +33,8 @@ VIEWPORT.initTransform = function (viewport, image) {
     } else {
         viewport.transform.imagePositionX = viewport.transform.imagePositionY = viewport.transform.imagePositionZ = 0;
     }
+    
+    setTransformLabel(viewport.index);
 }
 
 VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
@@ -46,6 +48,8 @@ VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
     date = ("" + date).replace(/^(\d{4})(\d\d)(\d\d)$/, '$1/$2/$3');
     time = ("" + time).replace(/^(\d{2})(\d\d)(\d\d)/, '$1:$2:$3');
     date = date + " " + time.substr(0, 8);
+    
+    setCommonLabel(viewportNum);
     //清空label的數值
 
     //依照dicom tags設定檔載入影像

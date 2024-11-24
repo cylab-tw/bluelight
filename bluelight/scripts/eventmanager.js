@@ -66,6 +66,10 @@ var SwitchViewport = function () {
             GetViewport().loadImgBySop(GetViewport(viewportNum).Sop);
         } catch (ex) { }
     }
+    for (var z = 0; z < Viewport_Total; z++) {
+        GetViewport(z).setLabel("PixelValue", "");
+        GetViewport(z).refleshLabel();
+    }
     refleshGUI();
     initNewCanvas();
 }
@@ -133,6 +137,10 @@ function Wheel(e) {
 
 function Mouseout(e) {
     if (magnifierDiv) magnifierDiv.hide();
+    for (var z = 0; z < Viewport_Total; z++) {
+        GetViewport(z).setLabel("PixelValue", "");
+        GetViewport(z).refleshLabel();
+    }
 }
 
 let dragged = null;
@@ -187,6 +195,8 @@ let MouseMovePointByCanvas = new Point2D(0, 0);
 let MouseUpPointByCanvas = new Point2D(0, 0);
 
 let BlueLightMousedown = function (e) {
+    if (e.target && e.target.className == "ScrollBar") return;
+
     if (e.which == 1) MouseDownCheck = true;
     else if (e.which == 3) rightMouseDown = true;
 
