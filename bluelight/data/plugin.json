@@ -13,6 +13,7 @@
         {"path":"../scripts/plugin/xnat.js", "name": "tag", "disableCatch": "true"},
         {"path":"../scripts/plugin/hanging_protocols.js", "name": "tag", "disableCatch": "true"},
         {"path":"../scripts/plugin/calibration.js", "name": "tag", "disableCatch": "true"},
+        {"path":"../scripts/plugin/mtss.js", "name": "tag", "disableCatch": "true"},
         {"path":"../scripts/plugin/ecg.js", "name": "tag", "disableCatch": "true"}
     ]
 }

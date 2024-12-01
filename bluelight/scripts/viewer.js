@@ -39,36 +39,8 @@ VIEWPORT.initTransform = function (viewport, image) {
 
 VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
     if (!element.Sop || element.Sop.type == "img") return;
-    var label_LT = getClass("labelLT")[viewportNum];
-    var label_RT = getClass("labelRT")[viewportNum];
-    label_LT.innerHTML = label_RT.innerHTML = "";
-    if (!image) return;
-    var date = element.StudyDate;
-    var time = element.StudyTime;
-    date = ("" + date).replace(/^(\d{4})(\d\d)(\d\d)$/, '$1/$2/$3');
-    time = ("" + time).replace(/^(\d{2})(\d\d)(\d\d)/, '$1:$2:$3');
-    date = date + " " + time.substr(0, 8);
-    
     setCommonLabel(viewportNum);
-    //清空label的數值
-
-    //依照dicom tags設定檔載入影像
     element.refleshLabel();
-    /*for (var i = 0; i < DicomTags.LT.name.length; i++)
-        label_LT.innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
-    for (var i = 0; i < DicomTags.RT.name.length; i++) {
-        //避免PatientName出現中文亂碼
-        if ("x" + DicomTags.RT.tag[i] == Tag.PatientName && image.data.elements[Tag.PatientName]) {
-            var dataSet = image.data;
-            var data = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length);
-            var textDecoder = new TextDecoder('utf-8');
-            var decodedString = textDecoder.decode(data);
-            //element.PatientName = decodedString;
-            label_RT.innerHTML += "" + DicomTags.RT.name[i] + " " + htmlEntities(decodedString) + "<br/>";
-        } else {
-            label_RT.innerHTML += "" + DicomTags.RT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.RT.tag[i])) + "<br/>";
-        }
-    }*/
 }
 
 VIEWPORT.loadViewport = function (viewport, image, viewportNum) {

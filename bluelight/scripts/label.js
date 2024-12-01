@@ -24,6 +24,9 @@ function setCommonLabel(viewportNum = viewportNumber) {
   if (!isNaN(viewport.tags.SliceThickness)) viewport.setLabel("SliceThickness", parseFloat(viewport.tags.SliceThickness).toFixed(1));
 
   if (viewport.content.image) {
+
+    if (viewport.tags.PatientName) viewport.setLabel("PatientName", "" + viewport.content.image.PatientName);
+
     if (viewport.content.image.Orientation) {
       var orien = viewport.content.image.Orientation;
       //左右

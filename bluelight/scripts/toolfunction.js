@@ -316,6 +316,12 @@ function refreshMark(dcm, refresh) {
     displayAllMark();
 }
 
+
+function refreshMarkFromSeries(series) {
+    leftLayout.refleshMarkWithSeries(series);
+    displayAllMark();
+}
+
 function refreshMarkFromSop(sop) {
     leftLayout.refleshMarkWithSeries(ImageManager.findSop(sop).parent.SeriesInstanceUID);
     displayAllMark();

@@ -15,7 +15,7 @@
     ],
     "RT": [
       {
-        "value": "{tag:00100010}"
+        "value": "{val:PatientName}"
       },
       {
         "value": "{tag:00100020}"

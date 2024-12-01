@@ -37,18 +37,11 @@ class BlueLightViewPort {
         this.index = index;
         this.QRLevel = "series";
         this.content = {};
-        //this.dcm = null;
+        
         this.initViewportOption(div, index);
         this.initLeftRule(div, index);
         this.initDownRule(div, index);
-        //this.initLabelWC(div, index);
         this.initLabel(div, index);
-        //this.initLabelLT(div, index);
-        //this.initLabelRT(div, index);
-        //this.initLabelLB(div, index);
-        //this.initLabelRB(div, index);
-        //this.initLabelOrientation(div, index);
-        //this.initLabelXY(div, index);
         this.initScrollBar(div, index);
 
         this.div.ondblclick = DoubleClickF;

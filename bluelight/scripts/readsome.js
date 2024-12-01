@@ -205,6 +205,7 @@ function readDicomOverlay(dataSet) {
 
 function readDicomRTSS(dataSet) {
   if (dataSet.string(Tag.ROIContourSequence)) {
+    var referenceSeries = null;
     for (var i in dataSet.elements.x30060039.items) {
       var colorStr = ("" + dataSet.elements.x30060039.items[i].dataSet.string(Tag.ROIDisplayColor)).split("\\");
       var color;
@@ -216,12 +217,14 @@ function readDicomRTSS(dataSet) {
       }
 
       for (var j in dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items) {
+        var ContourData = ("" + dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.string(Tag.ContourData)).split("\\");
         for (var k in dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.elements.x30060016.items) {
           var RtssMark = new BlueLightMark();
           RtssMark.study = dataSet.string(Tag.StudyInstanceUID);
           RtssMark.series = dataSet.string(Tag.SeriesInstanceUID);
           try {
             RtssMark.series = dataSet.elements.x30060010.items[0].dataSet.elements.x30060012.items[0].dataSet.elements.x30060014.items[0].dataSet.string(Tag.SeriesInstanceUID);
+            referenceSeries = RtssMark.series;
           } catch (ex) { }
 
           RtssMark.color = color;
@@ -231,16 +234,16 @@ function readDicomRTSS(dataSet) {
           RtssMark.sop = dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.elements.x30060016.items[k].dataSet.string(Tag.ReferencedSOPInstanceUID);;
           RtssMark.type = "RTSS";
 
-          var str0 = ("" + dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.string(Tag.ContourData)).split("\\");
-          for (var k2 = 0; k2 < str0.length; k2 += 3) {
-            RtssMark.setPoint3D(parseFloat(str0[k2]), parseFloat(str0[k2 + 1]), parseFloat(str0[k2 + 2]));
-            RtssMark.imagePositionZ = parseFloat(str0[k2 + 2]);
+          for (var k2 = 0; k2 < ContourData.length; k2 += 3) {
+            RtssMark.setPoint3D(parseFloat(ContourData[k2]), parseFloat(ContourData[k2 + 1]), parseFloat(ContourData[k2 + 2]));
+            RtssMark.imagePositionZ = parseFloat(ContourData[k2 + 2]);
           }
           PatientMark.push(RtssMark);
-          refreshMark(RtssMark);
+          //refreshMark(RtssMark);
         }
       }
     }
+    if (referenceSeries) refreshMarkFromSeries(referenceSeries);
   }
 }
 
@@ -551,7 +554,7 @@ function readDicomMark(dataSet) {
 
 function loadDicomSeg(image) {
   var dataSet = image.data;
-  
+
   var rect = (image.rows * image.columns);
   if (dataSet.elements.x7fe00010.fragments) {
     function x52009229_or_30(x52009230, x52009229) {
