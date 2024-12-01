@@ -38,7 +38,7 @@
         "value": "WC: {val:WindowCenter} WW: {val:WindowWidth}"
       },
       {
-        "value": "{tag:00080060} ({tag:00280011}×{tag:00280010})"
+        "value": "{tag:00080060} ({tag:00280011}×{tag:00280010}) - {val:AnatomicalPlane}"
       },
       {
         "value": "T: {val:SliceThickness} mm  L:{val:imagePositionZ} mm"
@@ -50,6 +50,26 @@
       },
       {
         "value": "{tag:00080020}"
+      }
+    ],
+    "MT": [
+      {
+        "value": "{val:PostionTop}"
+      }
+    ],
+    "MB": [
+      {
+        "value": "{val:PostionBottom}"
+      }
+    ],
+    "LM": [
+      {
+        "value": "{val:PostionLeft}"
+      }
+    ],
+    "RM": [
+      {
+        "value": "{val:PostionRight}"
       }
     ]
   },

@@ -81,7 +81,7 @@ class ScrollBar {
 
         this.outerDIV.style.position = "absolute";
         this.innerDIV.style.position = "absolute";
-        
+
         this.outerDIV.className = "ScrollBar"
         this.innerDIV.className = "ScrollBar"
 
@@ -96,6 +96,15 @@ class ScrollBar {
 
         this.outerDIV.appendChild(this.innerDIV);
         this.viewport.appendChild(this.outerDIV);
+
+        this.innerDIV.onmousedown = (e) => {
+            ScrollBar.selectedScrollBar = this.viewport.viewportNum;
+            e.stopPropagation();
+        };
+        this.innerDIV.ondblclick = (e) => { e.stopPropagation(); };
+        this.outerDIV.onmousedown = (e) => { e.stopPropagation(); };
+        this.outerDIV.ondblclick = (e) => { e.stopPropagation(); };
+
         this.reflesh();
     }
     setTotal(num) {

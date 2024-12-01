@@ -56,12 +56,37 @@ function getDefaultImageObj(dataSet, type, url) {
     imageObj.photometricInterpretation = dataSet.string(Tag.PhotometricInterpretation);
     imageObj.width = imageObj.columns = dataSet.int16('x00280011');
     imageObj.height = imageObj.rows = dataSet.int16('x00280010');
+    imageObj.StudyInstanceUID = dataSet.string(Tag.StudyInstanceUID);
+    imageObj.SeriesInstanceUID = dataSet.string(Tag.SeriesInstanceUID);
+    imageObj.SOPInstanceUID = dataSet.string(Tag.SOPInstanceUID);
     imageObj.PhotometricInterpretation = dataSet.string(Tag.PhotometricInterpretation);
 
     if (dataSet.elements[Tag.GridFrameOffsetVector]) {
         imageObj.GridFrameOffsetVector = dataSet.string(Tag.GridFrameOffsetVector).split("\\");
         for (var i in imageObj.GridFrameOffsetVector) imageObj.GridFrameOffsetVector[i] = parseInt(imageObj.GridFrameOffsetVector[i]);
     }
+
+    ////////////////////////////
+    if (dataSet.elements[Tag.ImageOrientationPatient]) {
+        imageObj.Orientation = dataSet.string(Tag.ImageOrientationPatient).split("\\");
+        for (var o in imageObj.Orientation) imageObj.Orientation[o] = parseFloat(imageObj.Orientation[o]);
+
+        var orien = dataSet.string(Tag.ImageOrientationPatient).split("\\");
+        for (var o in orien) orien[o] = Math.round(orien[o]);
+        if (orien[0] == 1 && orien[1] == 0 && orien[2] == 0 && orien[3] == 0 && orien[4] == 0 && orien[5] == -1)
+            imageObj.AnatomicalPlane = "Coronal"; //['1', '0', '0', '0', '0', '-1']
+        else if (orien[0] == 0 && orien[1] == 1 && orien[2] == 0 && orien[3] == 0 && orien[4] == 0 && orien[5] == -1)
+            imageObj.AnatomicalPlane = "Sagittal"; //['0', '1', '0', '0', '0', '-1']
+        else if (orien[0] == 1 && orien[1] == 0 && orien[2] == 0 && orien[3] == 0 && orien[4] == 1 && orien[5] == 0)
+            imageObj.AnatomicalPlane = "Axial"; //['1', '0', '0', '0', '1', '0']
+        else imageObj.AnatomicalPlane = null;
+    } else imageObj.AnatomicalPlane = null;
+
+    if (dataSet.elements[Tag.ImagePositionPatient]) {
+        imageObj.imagePosition = dataSet.string(Tag.ImagePositionPatient).split("\\");
+        for (var i in imageObj.imagePosition) imageObj.imagePosition[i] = parseFloat(imageObj.imagePosition[i]) / (imageObj.rowPixelSpacing ? imageObj.rowPixelSpacing : 1);
+    }
+    ////////////////////////////
 
     imageObj.intercept = dataSet.intString('x00281052');
     imageObj.slope = dataSet.floatString('x00281053');

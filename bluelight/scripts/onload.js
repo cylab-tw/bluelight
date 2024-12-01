@@ -143,6 +143,27 @@ function readDicomTags(url, setLabelPadding) {
     for (var i = 0; i < DicomResponse["RB"].length; i++) {
       dicomtags.RB.value.push(DicomResponse["RB"][i].value);
     }
+
+    dicomtags.MT = {};
+    dicomtags.MT.value = [];
+    for (var i = 0; i < DicomResponse["MT"].length; i++) {
+      dicomtags.MT.value.push(DicomResponse["MT"][i].value);
+    }
+    dicomtags.MB = {};
+    dicomtags.MB.value = [];
+    for (var i = 0; i < DicomResponse["MB"].length; i++) {
+      dicomtags.MB.value.push(DicomResponse["MB"][i].value);
+    }
+    dicomtags.LM = {};
+    dicomtags.LM.value = [];
+    for (var i = 0; i < DicomResponse["LM"].length; i++) {
+      dicomtags.LM.value.push(DicomResponse["LM"][i].value);
+    }
+    dicomtags.RM = {};
+    dicomtags.RM.value = [];
+    for (var i = 0; i < DicomResponse["RM"].length; i++) {
+      dicomtags.RM.value.push(DicomResponse["RM"][i].value);
+    }
     //指派至全域變數
     Object.assign(DicomTags, dicomtags);
     if (setLabelPadding) setLabelPadding();

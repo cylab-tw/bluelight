@@ -42,10 +42,12 @@ class BlueLightViewPort {
         this.initLeftRule(div, index);
         this.initDownRule(div, index);
         //this.initLabelWC(div, index);
-        this.initLabelLT(div, index);
-        this.initLabelRT(div, index);
-        this.initLabelLB(div, index);
-        this.initLabelRB(div, index);
+        this.initLabel(div, index);
+        //this.initLabelLT(div, index);
+        //this.initLabelRT(div, index);
+        //this.initLabelLB(div, index);
+        //this.initLabelRB(div, index);
+        //this.initLabelOrientation(div, index);
         //this.initLabelXY(div, index);
         this.initScrollBar(div, index);
 
@@ -175,29 +177,46 @@ class BlueLightViewPort {
         div.appendChild(downRule);
     }
 
-    initLabelLT(div, index) {
+    initLabel(div, index) {
         var labelLT = document.createElement("LABEL");
         labelLT.className = "labelLT innerLabel";
         this.labelLT = div.labelLT = labelLT;
         div.appendChild(labelLT);
-    }
-    initLabelRT(div, index) {
+
         var labelRT = document.createElement("LABEL");
         labelRT.className = "labelRT innerLabel";
         this.labelRT = div.labelRT = labelRT;
         div.appendChild(labelRT);
-    }
-    initLabelLB(div, index) {
+
         var labelLB = document.createElement("LABEL");
         labelLB.className = "labelLB innerLabel";
         this.labelLB = div.labelLB = labelLB;
         div.appendChild(labelLB);
-    }
-    initLabelRB(div, index) {
+
         var labelRB = document.createElement("LABEL");
         labelRB.className = "labelRB innerLabel";
         this.labelRB = div.labelRB = labelRB;
         div.appendChild(labelRB);
+
+        var labelMT = document.createElement("LABEL");
+        labelMT.className = "labelMT innerLabel";
+        this.labelMT = div.labelMT = labelMT;
+        div.appendChild(labelMT);
+
+        var labelMB = document.createElement("LABEL");
+        labelMB.className = "labelMB innerLabel";
+        this.labelMB = div.labelMB = labelMB;
+        div.appendChild(labelMB);
+
+        var labelLM = document.createElement("LABEL");
+        labelLM.className = "labelLM innerLabel";
+        this.labelLM = div.labelLM = labelLM;
+        div.appendChild(labelLM);
+
+        var labelRM = document.createElement("LABEL");
+        labelRM.className = "labelRM innerLabel";
+        this.labelRM = div.labelRM = labelRM;
+        div.appendChild(labelRM);
     }
     setLabel(key, value) {
         this.labelDict[key] = value;
@@ -220,8 +239,9 @@ class BlueLightViewPort {
         }
 
         this.labelLT.innerHTML = this.labelLB.innerHTML = this.labelRT.innerHTML = this.labelRB.innerHTML = "";
+        this.labelMT.innerHTML= this.labelMB.innerHTML = this.labelLM.innerHTML = this.labelRM.innerHTML = "";
 
-        for (var labels of [DicomTags.LT, DicomTags.LB, DicomTags.RT, DicomTags.RB]) {
+        for (var labels of [DicomTags.LT, DicomTags.LB, DicomTags.RT, DicomTags.RB, DicomTags.MT, DicomTags.MB, DicomTags.LM, DicomTags.RM]) {
             for (var i = 0; i < labels.value.length; i++) {
                 var tags = extractTags(labels.value[i]), vals = extractVals(labels.value[i]);
                 var str = labels.value[i];
@@ -238,6 +258,10 @@ class BlueLightViewPort {
                 if (labels == DicomTags.LB) this.labelLB.innerHTML += " " + str + "<br/>";
                 if (labels == DicomTags.RT) this.labelRT.innerHTML += " " + str + "<br/>";
                 if (labels == DicomTags.RB) this.labelRB.innerHTML += " " + str + "<br/>";
+                if (labels == DicomTags.MT) this.labelMT.innerHTML += " " + str + "<br/>";
+                if (labels == DicomTags.MB) this.labelMB.innerHTML += " " + str + "<br/>";
+                if (labels == DicomTags.LM) this.labelLM.innerHTML += " " + str + "<br/>";
+                if (labels == DicomTags.RM) this.labelRM.innerHTML += " " + str + "<br/>";
             }
         }
         this.refleshScrollBar();

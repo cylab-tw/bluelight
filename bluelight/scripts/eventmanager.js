@@ -195,7 +195,6 @@ let MouseMovePointByCanvas = new Point2D(0, 0);
 let MouseUpPointByCanvas = new Point2D(0, 0);
 
 let BlueLightMousedown = function (e) {
-    if (e.target && e.target.className == "ScrollBar") return;
 
     if (e.which == 1) MouseDownCheck = true;
     else if (e.which == 3) rightMouseDown = true;

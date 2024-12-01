@@ -144,7 +144,7 @@ class LeftLayout {
         if (this.findSeries(QRLevel.series)) return;
         var series_div = document.createElement("DIV");
         series_div.className = "LeftImgAndMark";
-        series_div.style = "width:" + 65 + "px;height:" + 65 + "px;border:" + bordersize + "px #D3D9FF groove;";
+        //series_div.style = "width:" + 65 + "px;height:" + 65 + "px;border:" + bordersize + "px #D3D9FF groove;";
         series_div.series = QRLevel.series;
         series_div.style.touchAction = 'none';
 
@@ -180,14 +180,22 @@ class LeftLayout {
         var ImgDiv = series_div.ImgDiv;
 
         if (ImgDiv.canvas()) {
-            return;
-            displayLeftCanvas(ImgDiv.canvas(), image, pixelData);
+            //return;
+            //displayLeftCanvas(ImgDiv.canvas(), image, pixelData);
         } else {
             var leftCanvas = document.createElement("CANVAS");
             leftCanvas.className = "LeftCanvas";
             ImgDiv.appendChild(leftCanvas);
             displayLeftCanvas(leftCanvas, image, pixelData);
+            var label = document.createElement("label");
+            label.className = "LeftImgCountLabel";
+            series_div.series_label = label;
+            ImgDiv.appendChild(label);
         }
+
+        if (image.NumberOfFrames > 1) series_div.series_label.innerText = htmlEntities("" + image.NumberOfFrames);
+        else if (image.haveSameInstanceNumber) series_div.series_label.innerText = "";
+        else series_div.series_label.innerText = "" + htmlEntities(ImageManager.findSeries(image.SeriesInstanceUID).Sop.length);
     }
 
     refleshMarkWithSeries(series) {
@@ -195,7 +203,7 @@ class LeftLayout {
         if (!series_div) return;
         if (getByid("menu" + series)) {
             getByid("menu" + series).innerHTML = "";
-            series_div.style.height = 65 + "px";
+            //series_div.style.height = 65 + "px";
         }
 
         var showNameList = [];
@@ -227,7 +235,7 @@ class LeftLayout {
         }
 
         for (var o = 0; o < showNameList.length; o++) {
-            series_div.style.height = parseInt(series_div.style.height) + 35 + "px";
+            //series_div.style.height = parseInt(series_div.style.height) + 35 + "px";
             var label = document.createElement('LABEL');
             label.innerText = "" + showNameList[o];
             label.name = "" + hideNameList[o];
@@ -260,6 +268,11 @@ class LeftLayout {
                 series_div.appendChild(smallDiv);
             }
         }
+
+        if(getByid("LeftPicture"))
+        if (hasScroll(getByid("LeftPicture")))
+            document.documentElement.style.setProperty('--ishaveLeftScroll', `1`);
+        else document.documentElement.style.setProperty('--ishaveLeftScroll', `0`);
     }
 
     reflesh() {
@@ -284,8 +297,8 @@ function PictureOnclick(QRLevel) {
 function displayLeftCanvas(DicomCanvas, image, pixelData) {
     DicomCanvas.width = image.width;
     DicomCanvas.height = image.height
-    DicomCanvas.style.width = 66 + "px";
-    DicomCanvas.style.height = 66 + "px";
+    //DicomCanvas.style.width = 66 + "px";
+    //DicomCanvas.style.height = 66 + "px";
     if (pixelData) renderPixelData2Cnavas(image, pixelData, DicomCanvas);
     else {
         var ctx = DicomCanvas.getContext("2d");

@@ -11,6 +11,7 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
     TableDIV.id = "DicomTableDIV" + (viewportNum + 1);
     TableDIV.className = "DicomTableDIV";
     TableDIV.onmousedown = stopPropagation;
+    TableDIV.ondblclick = stopPropagation;
 
     var Table = document.createElement("table");
     Table.id = "DicomTagsTable" + (viewportNum + 1);

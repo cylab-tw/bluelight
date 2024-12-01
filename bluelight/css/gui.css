@@ -6,6 +6,10 @@
   --rightLabelPadding: 5px;
   --topLabelPadding: 5px;
   --bottomLabelPadding: 5px;
+
+  --leftImagePadding: 150px;
+  --leftScrollSize: 15px;
+  --ishaveLeftScroll: 0;
 }
 
 .labelLT {
@@ -28,6 +32,27 @@
   right: var(--rightLabelPadding);
   bottom: var(--bottomLabelPadding);
   text-align: right;
+}
+
+.labelMT {
+  top: var(--topLabelPadding);
+  left: 50%;
+}
+
+.labelMB {
+  bottom: var(--bottomLabelPadding);
+  left: 50%;
+}
+
+.labelLM {
+  left: var(--leftLabelPadding);
+  top: 50%;
+}
+
+.labelRM {
+  right: var(--rightLabelPadding);
+  text-align: right;
+  top: 50%;
 }
 
 .labelXY {
@@ -77,8 +102,8 @@ html {
 }
 
 .page {
-  width: calc(100% - 100px);
-  left: 100px;
+  width: calc(100% - var(--leftImagePadding) - var(--bordersize) * 1 - var(--leftScrollSize)*var(--ishaveLeftScroll));
+  left: calc(var(--leftImagePadding) + var(--bordersize) * 1 + var(--leftScrollSize)*var(--ishaveLeftScroll));
   height: 100%;
   position: relative;
   overflow: hidden;
@@ -87,6 +112,7 @@ html {
 }
 
 #LeftPicture {
+  width: calc(var(--leftImagePadding) + var(--leftScrollSize)*var(--ishaveLeftScroll));
   height: 100%;
   overflow-y: auto;
 }
@@ -237,17 +263,30 @@ button:hover {
   padding: 1px 1px 1px 1px;
 }
 
-/*
+.LeftCanvas {
+  width: calc(var(--leftImagePadding) - var(--bordersize) * 5);
+  height: calc(var(--leftImagePadding) - var(--bordersize) * 5);
+}
+
 .LeftImgAndMark {
-  width: 65px;
-  height: 65px;
+  /*width: calc(var(--leftImagePadding)/2);
+  height: calc(var(--leftImagePadding)/2);
   border: var(--bordersize) #D3D9FF groove;
-  touch-action: none;
-}*/
+  /*touch-action: none;*/
+}
 
 .LeftImgDiv {
-  width: 65px;
-  height: 65px;
+  /*width: calc(var(--leftImagePadding) - var(--bordersize) * 2);
+  height: calc(var(--leftImagePadding) - var(--bordersize) * 2);*/
+  position: relative;
+}
+
+.LeftImgCountLabel {
+  position: absolute;
+  color: white;
+  bottom: 1px;
+  right: 1px;
+  background-color: black;
 }
 
 .LeftShadowLabel {

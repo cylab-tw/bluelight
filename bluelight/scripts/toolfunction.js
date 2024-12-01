@@ -106,6 +106,11 @@ function CheckNull(str) {
     return false;
 }
 
+function hasScroll(element) {
+    // 檢查是否出現垂直或水平卷軸
+    return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
+}
+
 function getViewprtStretchSize(width, height, element) {
     var wi = (parseFloat(element.clientWidth)) / parseFloat(width);
     var he = (parseFloat(element.clientHeight)) / parseFloat(height);

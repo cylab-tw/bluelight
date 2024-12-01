@@ -20,8 +20,58 @@ function setWindowLevel(viewportNum = viewportNumber) {
 }
 
 function setCommonLabel(viewportNum = viewportNumber) {
-  if (!isNaN(GetViewport(viewportNum).tags.SliceThickness)) GetViewport(viewportNum).setLabel("SliceThickness", parseFloat(GetViewport(viewportNum).tags.SliceThickness).toFixed(1));
-  GetViewport(viewportNum).refleshLabel();
+  var viewport = GetViewport(viewportNum);
+  if (!isNaN(viewport.tags.SliceThickness)) viewport.setLabel("SliceThickness", parseFloat(viewport.tags.SliceThickness).toFixed(1));
+
+  if (viewport.content.image) {
+    if (viewport.content.image.Orientation) {
+      var orien = viewport.content.image.Orientation;
+      //左右
+      if (Math.round(orien[0]) == 1 && Math.round(orien[1]) == 0 && Math.round(orien[2]) == 0) {
+        viewport.setLabel("PostionRight", "L"); viewport.setLabel("PostionLeft", "R");
+      }
+      if (Math.round(orien[0]) == -1 && Math.round(orien[1]) == 0 && Math.round(orien[2]) == 0) {
+        viewport.setLabel("PostionRight", "R"); viewport.setLabel("PostionLeft", "L");
+      }
+      if (Math.round(orien[0]) == 0 && Math.round(orien[1]) == 1 && Math.round(orien[2]) == 0) {
+        viewport.setLabel("PostionRight", "P"); viewport.setLabel("PostionLeft", "A");
+      }
+      if (Math.round(orien[0]) == 0 && Math.round(orien[1]) == -1 && Math.round(orien[2]) == 0) {
+        viewport.setLabel("PostionRight", "A"); viewport.setLabel("PostionLeft", "P");
+      }
+      if (Math.round(orien[0]) == 0 && Math.round(orien[1]) == 0 && Math.round(orien[2]) == 1) {
+        viewport.setLabel("PostionRight", "S"); viewport.setLabel("PostionLeft", "I");
+      }
+      if (Math.round(orien[0]) == 0 && Math.round(orien[1]) == 0 && Math.round(orien[2]) == -1) {
+        viewport.setLabel("PostionRight", "I"); viewport.setLabel("PostionLeft", "S");
+      }
+      //上下
+      if (Math.round(orien[3]) == 1 && Math.round(orien[4]) == 0 && Math.round(orien[5]) == 0) {
+        viewport.setLabel("PostionBottom", "L"); viewport.setLabel("PostionTop", "R");
+      }
+      if (Math.round(orien[3]) == -1 && Math.round(orien[4]) == 0 && Math.round(orien[5]) == 0) {
+        viewport.setLabel("PostionBottom", "R"); viewport.setLabel("PostionTop", "L");
+      }
+      if (Math.round(orien[3]) == 0 && Math.round(orien[4]) == 1 && Math.round(orien[5]) == 0) {
+        viewport.setLabel("PostionBottom", "P"); viewport.setLabel("PostionTop", "A");
+      }
+      if (Math.round(orien[3]) == 0 && Math.round(orien[4]) == -1 && Math.round(orien[5]) == 0) {
+        viewport.setLabel("PostionBottom", "A"); viewport.setLabel("PostionTop", "P");
+      }
+      if (Math.round(orien[3]) == 0 && Math.round(orien[4]) == 0 && Math.round(orien[5]) == 1) {
+        viewport.setLabel("PostionBottom", "S"); viewport.setLabel("PostionTop", "I");
+      }
+      if (Math.round(orien[3]) == 0 && Math.round(orien[4]) == 0 && Math.round(orien[5]) == -1) {
+        viewport.setLabel("PostionBottom", "I"); viewport.setLabel("PostionTop", "S");
+      }
+    }
+
+    if (viewport.content.image.AnatomicalPlane == "Axial") viewport.setLabel("AnatomicalPlane", "Axial");
+    if (viewport.content.image.AnatomicalPlane == "Sagittal") viewport.setLabel("AnatomicalPlane", "Sagittal");
+    if (viewport.content.image.AnatomicalPlane == "Coronal") viewport.setLabel("AnatomicalPlane", "Coronal");
+  }
+
+  viewport.refleshLabel();
 }
 
 function setSeriesCount(viewportNum = viewportNumber) {
