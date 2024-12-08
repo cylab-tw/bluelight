@@ -37,7 +37,7 @@ class BlueLightViewPort {
         this.index = index;
         this.QRLevel = "series";
         this.content = {};
-        
+
         this.initViewportOption(div, index);
         this.initLeftRule(div, index);
         this.initDownRule(div, index);
@@ -232,7 +232,7 @@ class BlueLightViewPort {
         }
 
         this.labelLT.innerHTML = this.labelLB.innerHTML = this.labelRT.innerHTML = this.labelRB.innerHTML = "";
-        this.labelMT.innerHTML= this.labelMB.innerHTML = this.labelLM.innerHTML = this.labelRM.innerHTML = "";
+        this.labelMT.innerHTML = this.labelMB.innerHTML = this.labelLM.innerHTML = this.labelRM.innerHTML = "";
 
         for (var labels of [DicomTags.LT, DicomTags.LB, DicomTags.RT, DicomTags.RB, DicomTags.MT, DicomTags.MB, DicomTags.LM, DicomTags.RM]) {
             for (var i = 0; i < labels.value.length; i++) {
@@ -271,6 +271,23 @@ class BlueLightViewPort {
             series: this.series,
             sop: this.sop
         };
+    }
+
+    specifiedFrame(index) {
+        if (this.enable == false) return;
+        if (this.QRLevel == "series" && this.tags && this.tags.length) {
+            var Sop = SortArrayByElem(ImageManager.findSeries(this.QRLevels.series).Sop, "InstanceNumber")[index];
+            //var Sop = ImageManager.getTargetSopByQRLevelsAndInstanceNumber(this.QRLevels, index);
+            if (Sop != undefined) this.loadImgBySop(Sop);
+        }
+        else if (this.QRLevel == "frames" && this.framesNumber != undefined) {
+            this.framesNumber = index;
+            if (this.framesNumber < 0) this.framesNumber = 0;
+            else if (this.framesNumber >= this.content.image.NumberOfFrames) this.framesNumber = this.content.image.NumberOfFrames - 1;
+            setSeriesCount(this.index);
+            refleshCanvas(this);
+            this.refleshScrollBar();
+        }
     }
 
     nextFrame(invert = false) {
@@ -337,7 +354,7 @@ class BlueLightViewPort {
 
     refleshScrollBar() {
         var element = this;
-        if (element.tags.NumberOfFrames && element.tags.NumberOfFrames > 0 && element.framesNumber != undefined && element.framesNumber != null) {
+        if (element.tags.NumberOfFrames && element.tags.NumberOfFrames > 1 && element.framesNumber != undefined && element.framesNumber != null) {
             element.ScrollBar.setTotal(parseInt(element.tags.NumberOfFrames));
             element.ScrollBar.setIndex(parseInt(element.framesNumber));
             element.ScrollBar.reflesh();

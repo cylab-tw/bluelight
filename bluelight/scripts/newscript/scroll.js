@@ -68,11 +68,15 @@ function scroll() {
 
 
 class ScrollBar {
+    static selectedScrollBar = -1;
+    static startPointY = -1;
+    static endPointY = -1;
+
     constructor(viewport) {
         this.viewport = viewport;
         this.total = 0;
         this.index = 0;
-        this.width = 15;
+        this.width = 20;
         this.outerDIV = document.createElement("DIV");
         this.innerDIV = document.createElement("DIV");
 
@@ -91,8 +95,8 @@ class ScrollBar {
         this.outerDIV.style.right = "0px";
         this.innerDIV.style.right = "0px";
 
-        this.outerDIV.style.zIndex = "17";
-        this.innerDIV.style.zIndex = "18";
+        this.outerDIV.style.zIndex = "37";
+        this.innerDIV.style.zIndex = "38";
 
         this.outerDIV.appendChild(this.innerDIV);
         this.viewport.appendChild(this.outerDIV);
@@ -120,7 +124,7 @@ class ScrollBar {
         this.outerDIV.style.height = "100%";//this.viewport.clientHeight + "px";
         if (this.total <= 1) this.innerDIV.style.height = "0%";//this.viewport.clientHeight + "px";
         else {
-            this.innerDIV.style.height = this.total >= 100 ? "1%" : parseInt(100 / this.total) + "%";
+            this.innerDIV.style.height = this.total >= 100 ? "1%" : parseFloat(100 / this.total) + "%";
             this.innerDIV.style.top = ((((this.index) / this.total) * 100)) + "%";
         }
 
@@ -138,4 +142,23 @@ onloadFunction.push(
             scroll();
             drawBorder(this);
         }
+
+        document.addEventListener("mousedown", (e) => {
+            ScrollBar.startPointY = e.clientY;
+        });
+
+        document.addEventListener("mousemove", (e) => {
+            var index = ScrollBar.selectedScrollBar;
+            if (!(ScrollBar.selectedScrollBar >= 0)) return;
+
+            var pointY = e.clientY - GetViewport().ScrollBar.outerDIV.getBoundingClientRect().y; //加上偏移
+            //var NumOfBlocks = GetViewport(index).ScrollBar.outerDIV.clientHeight / GetViewport(index).ScrollBar.innerDIV.clientHeight; //一共多少格
+            var targetGap = GetViewport(index).ScrollBar.outerDIV.clientHeight / GetViewport(index).ScrollBar.total; //動多少一格
+            var nextFrame = parseInt((pointY + targetGap / 2) / targetGap);
+            GetViewport(index).specifiedFrame(nextFrame, false);
+        });
+
+        document.addEventListener("mouseup", (e) => {
+            ScrollBar.selectedScrollBar = -2;
+        });
     });
