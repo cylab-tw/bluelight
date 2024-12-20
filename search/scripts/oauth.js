@@ -122,7 +122,7 @@ function requestToken(code, session_state) {
         let redirectUri = removeURLParameter(window.location.href, "code");
         redirectUri = removeURLParameter(redirectUri, "session_state");
         let responseToken = "";
-        let params = `grant_type=authorization_code&client_id=${OAuthConfig.client_id}&code=${code}&session_state=${session_state}&redirect_uri=${redirectUri}`;
+        let params = `grant_type=authorization_code&client_id=${OAuthConfig.client_id}&client_secret=${OAuthConfig.client_secret}&scope=${OAuthConfig.scope}&code=${code}&session_state=${session_state}&redirect_uri=${redirectUri}`;
         let request = new XMLHttpRequest();
         request.open('POST', tokenAPI);
         request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');

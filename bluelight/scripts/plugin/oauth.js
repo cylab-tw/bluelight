@@ -1,8 +1,8 @@
-var OAuthConfig = {};
-var keycloakAPI = "";
+let OAuthConfig = {};
+let keycloakAPI = "";
 
 auth();
-window.addEventListener("load", function(event) {
+window.addEventListener("load", (event) => {
     auth();
 });
 /**
@@ -27,27 +27,26 @@ async function auth() {
         if (tokenVaild) {
             if(window.location.href.indexOf(`code=`) != -1)
             {
-                let originalUrl = removeURLParameter(window.location.href, "code");
-                originalUrl = removeURLParameter(originalUrl, "session_state");
+                let originalUrl = removeURLParameter(window.location.href, "code","session_state","iss");
                 window.location.href = originalUrl;
             }
             if(OAuthConfig.tokenInRequest == true)
             {
-                ConfigLog.QIDO.token.Authorization = "Bearer " + theToken;
-                ConfigLog.WADO.token.Authorization = "Bearer " + theToken;
-                ConfigLog.STOW.token.Authorization = "Bearer " + theToken;
-                readAllJson(readJson);
+                XMLHttpRequest.prototype.origOpen = XMLHttpRequest.prototype.open;
+                XMLHttpRequest.prototype.open   = function () {
+                    this.origOpen.apply(this, arguments);
+                    this.setRequestHeader('Authorization', "Bearer " + theToken);
+                };
+                loadLdcmview();
             }
-            console.log(ConfigLog);
             return true;
         }
         // No token or token is not vaild, redirect to keycloak login page and put current url in the Callback URL parameter.
         else {
             setCookie("access_token","",7);
-            let redirectUri = removeURLParameter(window.location.href, "code");
-            redirectUri = removeURLParameter(redirectUri, "session_state");
+            let redirectUri = removeURLParameter(window.location.href, "code","session_state","iss");
             let loginPage = `${keycloakAPI}${OAuthConfig.endpoints.auth}?client_id=${OAuthConfig.client_id}&grant_type=authorization_code&response_type=code&redirect_uri=${redirectUri}`;
-            window.location.href = loginPage;
+            //window.location.href = loginPage;
             return false;
         }
     }
@@ -119,10 +118,9 @@ function isTokenVaild(theToken) {
 function requestToken(code, session_state) {
     return new Promise((resolve, reject) => {
         let tokenAPI = `${keycloakAPI}${OAuthConfig.endpoints.token}`;
-        let redirectUri = removeURLParameter(window.location.href, "code");
-        redirectUri = removeURLParameter(redirectUri, "session_state");
+        let redirectUri = removeURLParameter(window.location.href, "code","session_state","iss");
         let responseToken = "";
-        let params = `grant_type=authorization_code&client_id=${OAuthConfig.client_id}&code=${code}&session_state=${session_state}&redirect_uri=${redirectUri}`;
+        let params = `grant_type=authorization_code&client_id=${OAuthConfig.client_id}&client_secret=${OAuthConfig.client_secret}&scope=${OAuthConfig.scope}&code=${code}&session_state=${session_state}&redirect_uri=${redirectUri}`;
         let request = new XMLHttpRequest();
         request.open('POST', tokenAPI);
         request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -176,4 +174,10 @@ function removeURLParameter(url, parameter) {
         return urlparts[0] + (pars.length > 0 ? "?" + pars.join("&") : "");
     }
     return url;
+}
+
+function removeURLParameters(url, ...parameters) {
+    const urlObj = new URL(url);
+    parameters.forEach(param => urlObj.searchParams.delete(param));
+    return urlObj.toString();
 }
