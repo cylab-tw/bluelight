@@ -200,3 +200,50 @@ function refleshViewport() {
         displayMark();
     }
 }
+
+class Matrix4x4 {
+    constructor() {
+        this.matrix = [[0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]]
+    }
+
+    static applyMatrixToCoordinate(matrix, coordinate) {
+        const [x, y, z] = coordinate;
+        const w = 1; // 齊次座標的第四個分量
+
+        // 計算新座標
+        const newX = matrix[0][0] * x + matrix[0][1] * y + matrix[0][2] * z + matrix[0][3] * w;
+        const newY = matrix[1][0] * x + matrix[1][1] * y + matrix[1][2] * z + matrix[1][3] * w;
+        const newZ = matrix[2][0] * x + matrix[2][1] * y + matrix[2][2] * z + matrix[2][3] * w;
+        const newW = matrix[3][0] * x + matrix[3][1] * y + matrix[3][2] * z + matrix[3][3] * w;
+
+        // 除以 w 確保齊次坐標轉為常規坐標
+        return [newX / 1, newY / 1, newZ / 1];
+    }
+
+    static multiplyMatrices(matrixA, matrixB) {
+        const result = Array.from({ length: 4 }, () => Array(4).fill(0));
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                for (let k = 0; k < 4; k++) {
+                    result[i][j] += matrixA[i][k] * matrixB[k][j];
+                }
+            }
+        }
+        return result;
+    }
+
+    static multiplyMatrices_invert(matrixA, matrixB) {
+        const result = Array.from({ length: 4 }, () => Array(4).fill(0));
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                for (let k = 0; k < 4; k++) {
+                    result[i][j] -= matrixA[i][k] * matrixB[k][j];
+                }
+            }
+        }
+        return result;
+    }
+}

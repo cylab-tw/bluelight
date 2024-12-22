@@ -10,10 +10,11 @@
         {"path":"../scripts/plugin/rtss.js", "name": "rtss", "disableCatch": "true"},
         {"path":"../scripts/plugin/seg.js", "name": "seg", "disableCatch": "true"},
         {"path":"../scripts/plugin/tag.js", "name": "tag", "disableCatch": "true"},
-        {"path":"../scripts/plugin/xnat.js", "name": "tag", "disableCatch": "true"},
-        {"path":"../scripts/plugin/hanging_protocols.js", "name": "tag", "disableCatch": "true"},
-        {"path":"../scripts/plugin/calibration.js", "name": "tag", "disableCatch": "true"},
-        {"path":"../scripts/plugin/mtss.js", "name": "tag", "disableCatch": "true"},
-        {"path":"../scripts/plugin/ecg.js", "name": "tag", "disableCatch": "true"}
+        {"path":"../scripts/plugin/xnat.js", "name": "xnat", "disableCatch": "true"},
+        {"path":"../scripts/plugin/hanging_protocols.js", "name": "hanging_protocols", "disableCatch": "true"},
+        {"path":"../scripts/plugin/calibration.js", "name": "calibration", "disableCatch": "true"},
+        {"path":"../scripts/plugin/mtss.js", "name": "mtss", "disableCatch": "true"},
+        {"path":"../scripts/plugin/ecg.js", "name": "ecg", "disableCatch": "true"},
+        {"path":"../scripts/plugin/anatomical_plane.js", "name": "anatomical_plane", "disableCatch": "true"}
     ]
 }

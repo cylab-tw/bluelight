@@ -41,7 +41,7 @@ function getDefaultImageObj(dataSet, type, url) {
     imageObj.institutionName = dataSet.string('x00080080');
     imageObj.PatientAge = dataSet.string('x00101010');
     imageObj.PatientID = dataSet.string('x00100020');
-    
+
     //imageObj.PatientName = dataSet.string('x00100010');
     imageObj.PatientName = (new TextDecoder('utf-8')).decode(new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length));
 
@@ -89,6 +89,7 @@ function getDefaultImageObj(dataSet, type, url) {
         imageObj.imagePosition = dataSet.string(Tag.ImagePositionPatient).split("\\");
         for (var i in imageObj.imagePosition) imageObj.imagePosition[i] = parseFloat(imageObj.imagePosition[i]) / (imageObj.rowPixelSpacing ? imageObj.rowPixelSpacing : 1);
     }
+
     ////////////////////////////
 
     imageObj.intercept = dataSet.intString('x00281052');
@@ -100,6 +101,15 @@ function getDefaultImageObj(dataSet, type, url) {
     imageObj.data = dataSet;
     imageObj.url = url;
 
+    //////////
+    imageObj.RCS = new Matrix4x4();
+    imageObj.RCS.matrix = [
+        [imageObj.Orientation[0] * parseFloat(imageObj.rowPixelSpacing), imageObj.Orientation[3] * parseFloat(imageObj.rowPixelSpacing), 0, imageObj.imagePosition[0]],
+        [imageObj.Orientation[1] * parseFloat(imageObj.rowPixelSpacing), imageObj.Orientation[4] * parseFloat(imageObj.rowPixelSpacing), 0, imageObj.imagePosition[1]],
+        [imageObj.Orientation[2] * parseFloat(imageObj.rowPixelSpacing), imageObj.Orientation[5] * parseFloat(imageObj.rowPixelSpacing), 0, imageObj.imagePosition[2]],
+        [0, 0, 0, 1]
+    ]
+    ////////////////
     if (type == "sop")
         imageObj.pixelData = getPixelDataFromDataSet(imageObj, dataSet);
 

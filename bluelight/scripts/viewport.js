@@ -389,6 +389,10 @@ class BlueLightViewPort {
         ctx.restore();
     }
 
+    clearRect(){
+        this.MarkCanvas.getContext('2d').clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
     drawRect(ctx, viewport, pointArray, colorGroup = null, alphaGroup = null) {
         ctx.save();
         setMarkSetting(ctx, viewport);

@@ -260,6 +260,13 @@ class BlueLightImageManager {
         }
     }
 
+    getTargetSopByQRLevelsAndInstanceNumber(QRLevel, TargetInstanceNumber) {
+        var SopList = this.findSeries(QRLevel.series).Sop;
+        SopList = SortArrayByElem(SopList, "InstanceNumber");
+        var index = SopList.findIndex((S) => S.InstanceNumber == TargetInstanceNumber);
+        return SopList[index];
+    }
+
     getNextSopByQRLevelsAndInstanceNumber(QRLevel, InstanceNumber, invert = false) {
         var SopList = this.findSeries(QRLevel.series).Sop;//this.Study[QRLevel.study].Series[QRLevel.series].Sop;
 

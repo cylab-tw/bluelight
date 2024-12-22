@@ -1,5 +1,5 @@
 //上一個選擇的標記
-var Mark_previous_choose= null;
+var Mark_previous_choose = null;
 
 //裝標記的物件
 var PatientMark = [];
