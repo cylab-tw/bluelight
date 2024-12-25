@@ -1,5 +1,5 @@
 {
-    "enabled":fasle,
+    "enabled":"fasle",
     "hostname":"localhost",
     "port":"8080",
     "http":"http",
