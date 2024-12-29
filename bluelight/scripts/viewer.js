@@ -33,7 +33,7 @@ VIEWPORT.initTransform = function (viewport, image) {
     } else {
         viewport.transform.imagePositionX = viewport.transform.imagePositionY = viewport.transform.imagePositionZ = 0;
     }
-    
+
     setTransformLabel(viewport.index);
 }
 

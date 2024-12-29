@@ -153,6 +153,7 @@ onloadFunction.push2Last(function () {
             PictureOnclick(dragged.QRLevel);
             dragged = null;
             refleshGUI();
+            initNewCanvas();
         });
     }
 });

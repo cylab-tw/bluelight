@@ -102,17 +102,22 @@ function getDefaultImageObj(dataSet, type, url) {
     imageObj.url = url;
 
     //////////
-    if(imageObj.Orientation) {
+    if (imageObj.Orientation) {
         imageObj.RCS = new Matrix4x4();
         imageObj.RCS.matrix = [
-            [imageObj.Orientation[0] * parseFloat(imageObj.rowPixelSpacing), imageObj.Orientation[3] * parseFloat(imageObj.rowPixelSpacing), 0, imageObj.imagePosition[0]],
-            [imageObj.Orientation[1] * parseFloat(imageObj.rowPixelSpacing), imageObj.Orientation[4] * parseFloat(imageObj.rowPixelSpacing), 0, imageObj.imagePosition[1]],
-            [imageObj.Orientation[2] * parseFloat(imageObj.rowPixelSpacing), imageObj.Orientation[5] * parseFloat(imageObj.rowPixelSpacing), 0, imageObj.imagePosition[2]],
+            [imageObj.Orientation[0] / parseFloat(imageObj.rowPixelSpacing), imageObj.Orientation[3] / parseFloat(imageObj.rowPixelSpacing), 0, imageObj.imagePosition[0] / parseFloat(imageObj.rowPixelSpacing)],
+            [imageObj.Orientation[1] / parseFloat(imageObj.rowPixelSpacing), imageObj.Orientation[4] / parseFloat(imageObj.rowPixelSpacing), 0, imageObj.imagePosition[1] / parseFloat(imageObj.rowPixelSpacing)],
+            [imageObj.Orientation[2] / parseFloat(imageObj.rowPixelSpacing), imageObj.Orientation[5] / parseFloat(imageObj.rowPixelSpacing), 0, imageObj.imagePosition[2] / parseFloat(imageObj.rowPixelSpacing)],
             [0, 0, 0, 1]
-    ]
-
+        ]
+        imageObj.RCS.invertmatrix = [
+            [-imageObj.Orientation[0] / parseFloat(imageObj.rowPixelSpacing), -imageObj.Orientation[3] / parseFloat(imageObj.rowPixelSpacing), 0, -imageObj.imagePosition[0] / parseFloat(imageObj.rowPixelSpacing)],
+            [-imageObj.Orientation[1] / parseFloat(imageObj.rowPixelSpacing), -imageObj.Orientation[4] / parseFloat(imageObj.rowPixelSpacing), 0, -imageObj.imagePosition[1] / parseFloat(imageObj.rowPixelSpacing)],
+            [-imageObj.Orientation[2] / parseFloat(imageObj.rowPixelSpacing), -imageObj.Orientation[5] / parseFloat(imageObj.rowPixelSpacing), 0, -imageObj.imagePosition[2] / parseFloat(imageObj.rowPixelSpacing)],
+            [0, 0, 0, 1]
+        ]
     }
-    
+
     ////////////////
     if (type == "sop")
         imageObj.pixelData = getPixelDataFromDataSet(imageObj, dataSet);
