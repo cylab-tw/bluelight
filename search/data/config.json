@@ -15,7 +15,7 @@
             "includefield": false,
             "target": "../../bluelight/html/start.html",
             "target-SM": "https://ditto-wsiviewer.dicom.tw/viewer",
-            "server-SM": "NewRaccoon",
+            "server-SM": "RACCOONORG",
             "token": {
                 "apikey":"",
                 "bearer":""
@@ -36,7 +36,7 @@
             "includefield": false,
             "target": "../../bluelight/html/start.html",
             "target-SM": "https://ditto-wsiviewer.dicom.tw/viewer",
-            "server-SM": "NewRaccoon",
+            "server-SM": "RACCOONORG",
             "token": {
                 "apikey":"",
                 "bearer":""
