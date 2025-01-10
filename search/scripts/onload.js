@@ -255,7 +255,8 @@ function createTable() {
       if (!this.Modality.includes("SM"))
         cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
       else
-        cell.alt = ConfigLog.QIDO.targetSM + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
+        // cell.alt = ConfigLog.QIDO.targetSM + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
+        cell.alt = ConfigLog.QIDO.targetSM + "?server=" + ConfigLog.QIDO.serverSM + '&' + "studyUid=" + this.Study.StudyUID;
 
       cell.onclick = function () { window.open(this.alt, '_blank'); }
       var cell = row1.insertCell(1); cell.innerHTML = "StudyInstanceUID=" + this.Study.StudyUID;

@@ -141,6 +141,7 @@ function readConfigJson(url, onLosdSerch) {
     tempConfig.includefield = tempDicomResponse["includefield"];
     tempConfig.target = tempDicomResponse["target"];
     tempConfig.targetSM = tempDicomResponse["target-SM"];
+    tempConfig.serverSM = tempDicomResponse["server-SM"];
     tempConfig.enableRetrieveURI = tempDicomResponse["enableRetrieveURI"];
     tempConfig.token = tempDicomResponse["token"];
 
@@ -156,6 +157,7 @@ function readConfigJson(url, onLosdSerch) {
     tempConfig.includefield = tempDicomResponse["includefield"];
     tempConfig.target = tempDicomResponse["target"];
     tempConfig.targetSM = tempDicomResponse["target-SM"];
+    tempConfig.serverSM = tempDicomResponse["server-SM"];
     tempConfig.enableRetrieveURI = tempDicomResponse["enableRetrieveURI"];
     tempConfig.token = tempDicomResponse["token"];
 
@@ -171,6 +173,7 @@ function readConfigJson(url, onLosdSerch) {
     tempConfig.includefield = tempDicomResponse["includefield"];
     tempConfig.target = tempDicomResponse["target"];
     tempConfig.targetSM = tempDicomResponse["target-SM"];
+    tempConfig.serverSM = tempDicomResponse["server-SM"];
     tempConfig.enableRetrieveURI = tempDicomResponse["enableRetrieveURI"];
     tempConfig.token = tempDicomResponse["token"];
 
