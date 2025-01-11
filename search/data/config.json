@@ -14,7 +14,8 @@
             "enableRetrieveURI": true,
             "includefield": false,
             "target": "../../bluelight/html/start.html",
-            "target-SM": "../../bluelight/html/start.html",
+            "target-SM": "https://ditto-wsiviewer.dicom.tw/viewer",
+            "server-SM": "RACCOONORG",
             "token": {
                 "apikey":"",
                 "bearer":""
@@ -34,7 +35,8 @@
             "enableRetrieveURI": true,
             "includefield": false,
             "target": "../../bluelight/html/start.html",
-            "target-SM": ".../../bluelight/html/start.html",
+            "target-SM": "https://ditto-wsiviewer.dicom.tw/viewer",
+            "server-SM": "RACCOONORG",
             "token": {
                 "apikey":"",
                 "bearer":""
