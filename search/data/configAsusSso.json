@@ -1,0 +1,6 @@
+{
+    "enabled": false,
+    "loginUrl": "<Your Raccoon SSO Login URL>",
+    "redirectUrl": "<BlueLight asusSsoCallback.html URL>",
+    "tokenInRequest": true
+}

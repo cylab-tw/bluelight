@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        Processing SSO login...
+    </body>
+</html>
+
+<script>
+    (async function () {
+        let config = await loadConfig("../data/configAsusSso.json");
+
+        if (config.enabled) {
+            let loginUrl = config.loginUrl;
+
+            window.addEventListener("message", (event) => {
+                const allowedOrigin = new URL(
+                    loginUrl
+                ).origin;
+                if (event.origin !== allowedOrigin) return;
+
+                if (event.data.type === "SSO_TOKEN" && event.data.token) {
+                    localStorage.setItem(
+                        "asusWebStorageToken",
+                        event.data.token
+                    );
+                    window.location.href =
+                        localStorage.getItem("bluelightUrl") ||
+                        "/bluelight/html/start.html";
+                }
+            });
+
+            const iframe = document.createElement("iframe");
+            iframe.style.display = "none";
+            iframe.src = loginUrl;
+            document.body.append(iframe);
+        }
+
+        async function loadConfig(url) {
+            return new Promise((resolve, reject) => {
+                let config = {};
+                let requestURL = url;
+                let request = new XMLHttpRequest();
+                request.open("GET", requestURL);
+                request.responseType = "json";
+                request.send();
+
+                request.onload = function () {
+                    config = request.response;
+                    return resolve(config);
+                };
+            });
+        }
+    })();
+</script>

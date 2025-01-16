@@ -1,6 +1,7 @@
 {
     "plugin": [
         {"path":"../scripts/plugin/oauth.js", "name": "oauth", "disableCatch": "true"},
+        {"path":"../scripts/plugin/asusSso/asusSso.js", "name": "asusSso", "disableCatch": "true"},
         {"path":"../scripts/plugin/mpr2.js", "name": "MPR", "disableCatch": "true"},
         {"path":"../scripts/plugin/mpr.js", "name": "MPR", "disableCatch": "true"},
         {"path":"../scripts/plugin/vr.js", "name": "VR", "disableCatch": "true"},
