@@ -23,6 +23,7 @@
                 let currentTime = Math.floor(Date.now() / 1000);
 
                 if (expiresAt < currentTime) {
+                    localStorage.setItem("bluelightUrl", window.location.href);
                     window.location.href = raccoonLoginUrl;
                 }
                 this.setRequestHeader('Authorization', "Bearer " + token);
