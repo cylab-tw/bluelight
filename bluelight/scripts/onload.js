@@ -108,15 +108,16 @@ function readDicomTags(url, setLabelPadding) {
   //讀取DICOM Tags設定檔
   var request = new XMLHttpRequest();
   request.open('GET', url);
-  request.responseType = 'json';
-  request.send();
+  request.responseType = 'text';
   var dicomtags = {};
   //LT代表left  top
   //RT代表right top
   //LB代表left  bottom
   //RB代表right bottom
   request.onload = function () {
-    var DicomResponse = request.response["default"];
+    if (request.readyState != 4)  { return; }
+    var responseJson = JSON.parse(request.responseText);
+    var DicomResponse = responseJson["default"];
     dicomtags.labelPadding = parseInt(DicomResponse["labelPadding"]) ? parseInt(DicomResponse["labelPadding"]) : 5;
     dicomtags.leftLabelPadding = parseInt(DicomResponse["leftLabelPadding"]) ? parseInt(DicomResponse["leftLabelPadding"]) : dicomtags.labelPadding;
     dicomtags.rightLabelPadding = parseInt(DicomResponse["rightLabelPadding"]) ? parseInt(DicomResponse["rightLabelPadding"]) : dicomtags.labelPadding;
@@ -168,6 +169,7 @@ function readDicomTags(url, setLabelPadding) {
     Object.assign(DicomTags, dicomtags);
     if (setLabelPadding) setLabelPadding();
   }
+  request.send();
 }
 
 function operateQueryString(queryString) {
@@ -227,10 +229,10 @@ function readConfigJson(url, readAllJson, readJson) {
   var config = {};
   var request = new XMLHttpRequest();
   request.open('GET', url);
-  request.responseType = 'json';
+  request.responseType = 'text';
   request.send();
   request.onload = function () {
-    var DicomResponse = request.response;
+    var DicomResponse = JSON.parse(request.responseText);
     config.QIDO = {};
 
     tempResponse = DicomResponse["DICOMWebServersConfig"][0];

@@ -24,10 +24,12 @@ onloadFunction.push(
         }
         var request = new XMLHttpRequest();
         request.open('GET', "../data/plugin.json");
-        request.responseType = 'json';
+        request.responseType = 'text';
         request.send();
         request.onload = function () {
-            var plugins = request.response["plugin"];
+            if (request.readyState != 4)  { return; }
+            var responseJson = JSON.parse(request.responseText);
+            var plugins = responseJson["plugin"];
             plugins = plugins.sort((a, b) => a.value - b.value);
             for (var i = 0; i < plugins.length; i++) {
                 const plugin = plugins[i];
