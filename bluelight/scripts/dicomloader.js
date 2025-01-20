@@ -43,7 +43,8 @@ function getDefaultImageObj(dataSet, type, url) {
     imageObj.PatientID = dataSet.string('x00100020');
 
     //imageObj.PatientName = dataSet.string('x00100010');
-    imageObj.PatientName = (new TextDecoder('utf-8')).decode(new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length));
+    if(dataSet.elements[Tag.PatientName])
+        imageObj.PatientName = (new TextDecoder('utf-8')).decode(new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length));
 
     imageObj.patentSex = dataSet.string('x00100040');
     imageObj.pixelRepresentation = dataSet.int16('x00280103');

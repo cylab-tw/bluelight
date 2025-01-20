@@ -20,10 +20,12 @@ loadWriteTAG();
 function readImageTags(url) {
     let request = new XMLHttpRequest();
     request.open('GET', url);
-    request.responseType = 'json';
+    request.responseType = 'text';
     request.send();
     request.onload = function () {
-        let response = Object.entries(request.response['medicalSpecialty']);
+        if (request.readyState != 4)  { return; }
+        var responseJson = JSON.parse(request.responseText);
+        let response = Object.entries(responseJson['medicalSpecialty']);
 
         response.forEach(medicalSpecialityObject => {
             let [key, value] = medicalSpecialityObject;

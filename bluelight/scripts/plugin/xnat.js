@@ -26,10 +26,11 @@ function readJson_xnat(url) {
     var requestURL = url;
     var request = new XMLHttpRequest();
     request.open('GET', requestURL);
-    request.responseType = 'json';
+    request.responseType = 'text';
     request.send();
     request.onload = function () {
-        var response = request.response;
+        if (request.readyState != 4)  { return; }
+        var response = JSON.parse(request.responseText);
         for (var i = 0; i < response["ResultSet"]["Result"].length; i++) {
 
             let supportedImages = ["DICOM", "DCM", "secondary"];
