@@ -353,13 +353,14 @@ class BlueLightViewPort {
     }
 
     refleshScrollBar() {
-        var element = this;
+        let element = this;
         if (element.tags.NumberOfFrames && element.tags.NumberOfFrames > 1 && element.framesNumber != undefined && element.framesNumber != null) {
             element.ScrollBar.setTotal(parseInt(element.tags.NumberOfFrames));
             element.ScrollBar.setIndex(parseInt(element.framesNumber));
             element.ScrollBar.reflesh();
         } else {
-            var sopList = sortInstance(element.sop);
+            // var sopList = sortInstance(element.sop);
+            let sopList = ImageManager.findSeries(element.QRLevels.series).Sop;
             element.ScrollBar.setTotal(sopList.length);
             element.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == element.tags.InstanceNumber));
             element.ScrollBar.reflesh();
