@@ -1,6 +1,6 @@
 function CreateUid(UidClass) {
-    var Uid = "2.16.886.119.102568.9.";
-    var date = new Date();
+    let Uid = "2.16.886.119.102568.9.";
+    let date = new Date();
     Uid += date.getFullYear() + "." + (date.getMonth() + 1) + "." + (date.getDate()) + ".";
     Uid += (date.getHours() + 1) + "." + (date.getMinutes()) + "." +
         (date.getSeconds()) + "." + (date.getMilliseconds()) + ".";
@@ -16,8 +16,8 @@ function CreateUid(UidClass) {
 }
 
 function CreateSecurePassword() {
-    var Uid = "xml_";
-    var date = new Date();
+    let Uid = "xml_";
+    let date = new Date();
     Uid += date.getFullYear() + "y" + (date.getMonth() + 1) + "m" + (date.getDate()) + "d";
     Uid += (date.getHours() + 1) + "h" + (date.getMinutes()) + "mm" +
         (date.getSeconds()) + "ss" + (date.getMilliseconds()) + "mmm";
@@ -29,8 +29,8 @@ function CreateSecurePassword() {
 
 function securePassword(min, max, step) {
     if (!step) step = 1;
-    var len = ((max - min) / step) + 1;
-    var number = Math.floor((window.crypto.getRandomValues(new Uint32Array(1))[0] / (4294967295)) * (len)) * step + min;
+    let len = ((max - min) / step) + 1;
+    let number = Math.floor((window.crypto.getRandomValues(new Uint32Array(1))[0] / (4294967295)) * (len)) * step + min;
     if (number < min) number = min;
     if (number > max) number = max;
     return number;
@@ -51,16 +51,16 @@ function soryByTwoKey(arr, key1, key2) {
 
 function random(min, max, step) {
     if (!step) step = 1;
-    var len = ((max - min) / step) + 1;
-    var number = Math.floor(Math.random() * (len)) * step + min;
+    let len = ((max - min) / step) + 1;
+    let number = Math.floor(Math.random() * (len)) * step + min;
     if (number < min) number = min;
     if (number > max) number = max;
     return number;
 }
 
 function getFactor(num) {
-    var list = [];
-    for (var i = 1; i <= num; i++) {
+    let list = [];
+    for (let i = 1; i <= num; i++) {
         if (num % i == 0) list.push(i);
     }
     return list;
@@ -71,13 +71,13 @@ function SortArrayByElem(arr, str) {
 }
 
 function getCurrPoint(e) {
-    var canvas = GetViewport().canvas
+    let canvas = GetViewport().canvas
     if (!canvas) return [0, 0];
     //BlueLight2
     //var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().width / parseFloat(canvas.style.width)));
     //var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().height / parseFloat(canvas.style.height)));
-    var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (1.0 / GetViewport().scale));
-    var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (1.0 / GetViewport().scale));
+    let currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (1.0 / GetViewport().scale));
+    let currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (1.0 / GetViewport().scale));
     return [currX, currY];
 }
 
@@ -112,9 +112,9 @@ function hasScroll(element) {
 }
 
 function getViewprtStretchSize(width, height, element) {
-    var wi = (parseFloat(element.clientWidth)) / parseFloat(width);
-    var he = (parseFloat(element.clientHeight)) / parseFloat(height);
-    var small = he < wi ? he : wi;
+    let wi = (parseFloat(element.clientWidth)) / parseFloat(width);
+    let he = (parseFloat(element.clientHeight)) / parseFloat(height);
+    let small = he < wi ? he : wi;
     return [width * small, height * small];
 }
 
@@ -151,7 +151,7 @@ function GetmouseXY(evt) {
 function getDicomTagString(dataSet, tag) {
     if (!dataSet.elements[tag]) return "";
 
-    var vr = dataSet.elements[tag].vr;
+    let vr = dataSet.elements[tag].vr;
     if (vr == 'US') return dataSet.uint16(tag);
     else if (vr === 'SS') return dataSet.uint16(tag);
     else if (vr === 'UL') return dataSet.uint32(tag);
@@ -162,9 +162,9 @@ function getDicomTagString(dataSet, tag) {
 }
 
 function SearchUid2Index(sop) {
-    for (var i = 0; i < ImageManager.Study.length; i++) {
-        for (var j = 0; j < ImageManager.Study[i].Series.length; j++) {
-            for (var l = 0; l < ImageManager.Study[i].Series[j].Sop.length; l++) {
+    for (let i = 0; i < ImageManager.Study.length; i++) {
+        for (let j = 0; j < ImageManager.Study[i].Series.length; j++) {
+            for (let l = 0; l < ImageManager.Study[i].Series[j].Sop.length; l++) {
                 if (ImageManager.Study[i].Series[j].Sop[l].SOPInstanceUID == sop) {
                     return [i, j, l]
                 }
@@ -179,15 +179,14 @@ function sortInstance(sop) {
         j = index[1],
         k = index[2];
     if (ImageManager.Study[i].Series[j].Sop[k].SOPInstanceUID == sop) {
-        var list = [];
-        var Onum = parseInt(ImageManager.Study[i].Series[j].Sop[k].Image.InstanceNumber);
-        for (var l = 0; l < ImageManager.Study[i].Series[j].Sop.length; l++) {
+        let list = [];
+        for (let l = 0; l < ImageManager.Study[i].Series[j].Sop.length; l++) {
             list.push(ImageManager.Study[i].Series[j].Sop[l]);
         }
-        for (var m = 0; m < list.length; m++) {
-            for (var n = 0; n < list.length; n++) {
+        for (let m = 0; m < list.length; m++) {
+            for (let n = 0; n < list.length; n++) {
                 if (parseInt(list[m].Image.InstanceNumber) < parseInt(list[n].Image.InstanceNumber)) {
-                    var tempUID = list[m];
+                    let tempUID = list[m];
                     list[m] = list[n];
                     list[n] = tempUID;
                 }
@@ -199,11 +198,11 @@ function sortInstance(sop) {
 }
 
 function rotateCalculation(e, flip = false) {
-    var canvas = GetViewport().canvas;
+    let canvas = GetViewport().canvas;
     if (!canvas) return [0, 0];
     let cx = (GetViewport().width / 2);
     let cy = (GetViewport().height / 2);
-    var element = GetViewport();
+    let element = GetViewport();
     canvas.style.transform = "translate(" + "calc(-50% + " + Fpx(element.translate.x) + ")" + "," + "calc(-50% + " + Fpx(element.translate.y) + ")" + ")scale(" + element.scale + ")";
     //BlueLight2
     /*let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
@@ -265,10 +264,10 @@ function rotatePoint(point, RotationAngle, RotationPoint) {
 
 function jump2UpOrEnd(number, choose) {
 
-    var Series = ImageManager.findSeries(GetViewport().series);
-    var max = Number.MIN_VALUE, min = Number.MAX_VALUE;
-    for (var l = 0; l < Series.Sop.length; l++) {
-        var instance = parseInt(Series.Sop[l].InstanceNumber);
+    let Series = ImageManager.findSeries(GetViewport().series);
+    let max = Number.MIN_VALUE, min = Number.MAX_VALUE;
+    for (let l = 0; l < Series.Sop.length; l++) {
+        let instance = parseInt(Series.Sop[l].InstanceNumber);
         if (instance < min) min = instance;
         else if (instance > max) max = instance;
     }
@@ -280,7 +279,7 @@ function jump2UpOrEnd(number, choose) {
         if (number < min) number = min;
     }
 
-    for (var l = 0; l < Series.Sop.length; l++) {
+    for (let l = 0; l < Series.Sop.length; l++) {
         if (parseInt(Series.Sop[l].InstanceNumber) == number) {
             GetViewport().loadImgBySop(Series.Sop[l]);
             break;
@@ -289,10 +288,10 @@ function jump2UpOrEnd(number, choose) {
 }
 
 function jump2Mark(showName) {
-    for (var n = 0; n < PatientMark.length; n++) {
+    for (let n = 0; n < PatientMark.length; n++) {
         if (PatientMark[n].series == GetViewport().series) {
             if (PatientMark[n].showName == showName) {
-                for (var m = 0; m < PatientMark[n].mark.length; m++) {
+                for (let m = 0; m < PatientMark[n].mark.length; m++) {
                     if (checkMarkEnabled(GetViewport().series, PatientMark[n]) == 0) continue;
                     else {
                         GetViewport().loadImgBySop(PatientMark[n].sop);
@@ -305,7 +304,7 @@ function jump2Mark(showName) {
 }
 
 function checkMarkEnabled(seriesUID, Mark) {
-    var mark = leftLayout.getCheckboxBySeriesAndHideName(seriesUID, Mark.hideName);
+    let mark = leftLayout.getCheckboxBySeriesAndHideName(seriesUID, Mark.hideName);
     if (mark && mark.checked) return 1;
     else return 0;
 }
@@ -332,15 +331,15 @@ function getDistance(x, y) {
 }
 
 function getRotationPoint(Mark, middle) {
-    var Max_X = Number.MIN_VALUE,
+    let Max_X = Number.MIN_VALUE,
         Max_Y = Number.MIN_VALUE,
         Min_X = Number.MAX_VALUE,
         Min_Y = Number.MAX_VALUE;
-    for (var o = 0; o < Mark.pointArray.length; o += 1) {
+    for (let o = 0; o < Mark.pointArray.length; o += 1) {
         if (parseInt(Mark.pointArray[o].x) >= Max_X) Max_X = parseInt(Mark.pointArray[o].x);
         if (parseInt(Mark.pointArray[o].x) <= Min_X) Min_X = parseInt(Mark.pointArray[o].x);
     }
-    for (var o = 0; o < Mark.pointArray.length; o += 1) {
+    for (let o = 0; o < Mark.pointArray.length; o += 1) {
         if (parseInt(Mark.pointArray[o].y) >= Max_Y) Max_Y = parseInt(Mark.pointArray[o].y);
         if (parseInt(Mark.pointArray[o].y) <= Min_Y) Min_Y = parseInt(Mark.pointArray[o].y);
     }
@@ -349,7 +348,7 @@ function getRotationPoint(Mark, middle) {
 }
 
 function ConvertGraphicColor(r, g, b) {
-    var str = "" + r + "\\" + g + "\\" + b;
+    let str = "" + r + "\\" + g + "\\" + b;
     if (str == "0\\32896\\32896") return ["#000000", "T7"];
     else if (str == "0\\32896\\33153") return ["#0000FF", "T8"];
     else if (str == "393\\32998\\32947") return ["#844200", "T9"];
@@ -387,18 +386,18 @@ function equal_TOL(a, b, tolerance) {
 
 function GetPixel(angle2point) {
     if (!GetViewport() || !GetViewport().content || !GetViewport().content.pixelData) return "";
-    var x = parseInt(angle2point[0]);
-    var y = parseInt(angle2point[1]);
-    var width = GetViewport().width;
-    var height = GetViewport().height;
+    let x = parseInt(angle2point[0]);
+    let y = parseInt(angle2point[1]);
+    let width = GetViewport().width;
+    let height = GetViewport().height;
     if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
-        var pixel = GetViewport().content.pixelData[y * width + x];
+        let pixel = GetViewport().content.pixelData[y * width + x];
         if (isNaN(pixel)) return "";
         else return `${pixel} `;
     } else {
-        var pixelR = GetViewport().content.pixelData[y * 4 * width + x * 4 + 0];
-        var pixelG = GetViewport().content.pixelData[y * 4 * width + x * 4 + 1];
-        var pixelB = GetViewport().content.pixelData[y * 4 * width + x * 4 + 2];
+        let pixelR = GetViewport().content.pixelData[y * 4 * width + x * 4 + 0];
+        let pixelG = GetViewport().content.pixelData[y * 4 * width + x * 4 + 1];
+        let pixelB = GetViewport().content.pixelData[y * 4 * width + x * 4 + 2];
         //var pixelA = GetViewport().content.pixelData[y * 4 * width + x * 4 + 3];
         if (isNaN(pixelR) || isNaN(pixelG) || isNaN(pixelB)) return "";
         else return `B=${pixelB} G=${pixelG} R=${pixelR} `;
