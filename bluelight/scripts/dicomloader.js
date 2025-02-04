@@ -1,6 +1,6 @@
 
 function loadImageFromDataSet(dataSet, type, loadimage = true, url) {
-    var imageObj = getDefaultImageObj(dataSet, type, url);
+    var imageObj = getDefaultImageObj(dataSet, type, url, loadimage);
     if (type == 'pdf') setPDF(imageObj);
     if (type == 'ecg' && openECG) setECG(imageObj);
     var Sop = ImageManager.pushStudy(imageObj); //註冊此Image至Viewer
@@ -8,10 +8,17 @@ function loadImageFromDataSet(dataSet, type, loadimage = true, url) {
     Sop.type = type;
     readDicomOverlay(imageObj.data, PatientMark);
 
-    //改成無論是否曾出現在左側面板，都嘗試加到左側面板
-    leftLayout.setImg2Left(new QRLv(dataSet), dataSet.string(Tag.PatientID));
-    leftLayout.appendCanvasBySeries(dataSet.string(Tag.SeriesInstanceUID), imageObj, imageObj.getPixelData());
-    leftLayout.refleshMarkWithSeries(dataSet.string(Tag.SeriesInstanceUID));
+    if (loadimage) {
+        //改成無論是否曾出現在左側面板，都嘗試加到左側面板
+        leftLayout.setImg2Left(new QRLv(dataSet), dataSet.string(Tag.PatientID));
+        leftLayout.appendCanvasBySeries(dataSet.string(Tag.SeriesInstanceUID), imageObj, imageObj.getPixelData());
+        leftLayout.refleshMarkWithSeries(dataSet.string(Tag.SeriesInstanceUID));
+    } else {
+        ImageManager.preLoadSops.push({
+            dataSet: dataSet, image: imageObj, Sop: Sop, SeriesInstanceUID: imageObj.SeriesInstanceUID,
+            Index: imageObj.NumberOfFrames | imageObj.InstanceNumber
+        });
+    }
 
     if (loadimage) {
         resetViewport();
@@ -29,7 +36,7 @@ function setPDF(imageObj) {
     imageObj.pdf = pdf;
 }
 
-function getDefaultImageObj(dataSet, type, url) {
+function getDefaultImageObj(dataSet, type, url, imageDataLoaded) {
     var imageObj = {};
     imageObj.windowCenter = dataSet.intString('x00281050');
     imageObj.windowWidth = dataSet.intString('x00281051');
@@ -43,7 +50,7 @@ function getDefaultImageObj(dataSet, type, url) {
     imageObj.PatientID = dataSet.string('x00100020');
 
     //imageObj.PatientName = dataSet.string('x00100010');
-    if(dataSet.elements[Tag.PatientName])
+    if (dataSet.elements[Tag.PatientName])
         imageObj.PatientName = (new TextDecoder('utf-8')).decode(new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length));
 
     imageObj.patentSex = dataSet.string('x00100040');
@@ -120,7 +127,15 @@ function getDefaultImageObj(dataSet, type, url) {
     }
 
     ////////////////
-    if (type == "sop")
+    imageObj.imageDataLoaded = imageDataLoaded;
+    if (type == "sop" && imageDataLoaded == false) {
+        imageObj.pixelData = null;
+        imageObj.loadImageData = function () {
+            this.imageDataLoaded = true;
+            this.pixelData = getPixelDataFromDataSet(this, this.data);
+        }
+    }
+    else if (type == "sop")
         imageObj.pixelData = getPixelDataFromDataSet(imageObj, dataSet);
 
     if (type == "sop") imageObj.getPixelData = function () { return this.pixelData; }
@@ -128,6 +143,7 @@ function getDefaultImageObj(dataSet, type, url) {
         return getPixelDataFromDataSet(this, this.data, isNaN(framesNumber) ? 0 : framesNumber);
     }
     else imageObj.getPixelData = function () { return; }
+
 
     return imageObj;
 }

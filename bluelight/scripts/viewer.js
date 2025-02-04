@@ -214,6 +214,7 @@ function DcmLoader(image, viewport) {
     else viewport.QRLevel = "series";
 
     viewport.content.image = image;
+    if (image.imageDataLoaded == false) image.loadImageData();
     viewport.content.pixelData = image.pixelData;
     //需要setimage到element
     createDicomTagsList2Viewport(viewport);
@@ -305,7 +306,13 @@ function loadPicture(url) {
 
 function loadDicomDataSet(fileData, loadimage = true, url) {
     var byteArray = new Uint8Array(fileData);
-    var dataSet = dicomParser.parseDicom(byteArray);
+    try {
+        var dataSet = dicomParser.parseDicom(byteArray);
+    } catch (ex) {
+        if (loadimage && ImageManager.NumOfPreLoadSops >= 1) ImageManager.NumOfPreLoadSops -= 1;
+        return;
+    }
+
 
     //PDF
     if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EncapsulatedPDFStorage)

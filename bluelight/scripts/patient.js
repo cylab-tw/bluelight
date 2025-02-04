@@ -153,6 +153,31 @@ onloadFunction.push2First(
 class BlueLightImageManager {
     constructor() {
         this.Study = [];
+        this.preLoadSops = [];
+        this.NumOfPreLoadSops = 0;
+    }
+
+    loadPreLoadSops() {
+        var preLoadSeries = splitArrayByElem(this.preLoadSops, "SeriesInstanceUID");
+        this.preLoadSops = [];
+
+        for (var series in preLoadSeries) {
+            var preLoadSops = preLoadSeries[series];
+            var preLoadSops = SortArrayByElem(preLoadSops, "Index").reverse();
+
+            for (var sop of preLoadSops) {
+                if (!leftLayout.findSeries(sop.dataSet.string(Tag.SeriesInstanceUID))) {
+                    leftLayout.setImg2Left(new QRLv(sop.dataSet), sop.dataSet.string(Tag.PatientID));
+                    if (sop.image.imageDataLoaded == false) sop.image.loadImageData();
+                    leftLayout.appendCanvasBySeries(sop.dataSet.string(Tag.SeriesInstanceUID), sop.image, sop.image.getPixelData());
+                    requestAnimationFrame(() => {
+                        resetViewport();
+                        GetViewport().loadImgBySop(sop.Sop);
+                    });
+                }
+                leftLayout.refleshMarkWithSeries(sop.dataSet.string(Tag.SeriesInstanceUID));
+            }
+        }
     }
 
     find(objs, uid) {

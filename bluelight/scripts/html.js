@@ -72,40 +72,49 @@ function html_onload() {
 
         var fnReadEntries = function (entries) {
           entries.forEach(function (entry) {
-            addDirectory(entry);
+            addFile(entry);
           });
           if (entries.length > 0) {
             directoryReader.readEntries(fnReadEntries);
           }
         };
         directoryReader.readEntries(fnReadEntries)
-      } else {
-        item.file(function (file) {
-          //resetViewport();
-          var url = URL.createObjectURL(file);
-
-          function basename(path) {
-            return path.split('.').reverse()[0];
-          }
-          var fileExtension = basename(file.name);
-          if (fileExtension == "mht") wadorsLoader(url);
-          else if (fileExtension == "jpg") loadPicture(url);
-          else if (fileExtension == "jpeg") loadPicture(url);
-          else if (fileExtension == "png") loadPicture(url);
-          else if (fileExtension == "webp") loadPicture(url);
-          else if (fileExtension == "xml") readXML(url);
-          else {
-            let reader = new FileReader();
-            reader.readAsArrayBuffer(file);
-            reader.fileExtension = fileExtension;
-            reader.onloadend = function () {
-              //resetViewport();
-              loadDicomDataSet(reader.result, true, url);
-            }
-          }
-        });
+      }
+      else {
+        addFile(item);
       }
     }
+    function addFile(item) {
+      item.file(function (file) {
+        //resetViewport();
+        var url = URL.createObjectURL(file);
+
+        function basename(path) {
+          return path.split('.').reverse()[0];
+        }
+        var fileExtension = basename(file.name);
+        if (fileExtension == "mht") wadorsLoader(url);
+        else if (fileExtension == "jpg") loadPicture(url);
+        else if (fileExtension == "jpeg") loadPicture(url);
+        else if (fileExtension == "png") loadPicture(url);
+        else if (fileExtension == "webp") loadPicture(url);
+        else if (fileExtension == "xml") readXML(url);
+        else {
+          let reader = new FileReader();
+          reader.readAsArrayBuffer(file);
+          reader.fileExtension = fileExtension;
+
+          ImageManager.NumOfPreLoadSops += 1;
+          reader.onloadend = function () {
+            //resetViewport();
+            loadDicomDataSet(reader.result, false, url);
+            ImageManager.NumOfPreLoadSops -= 1;
+            if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
+          }
+        }
+      });
+    }
+
     if (e.dataTransfer && e.dataTransfer.items) {
       var items = e.dataTransfer.items;
       for (var i = 0; i < items.length; i++) {
@@ -220,7 +229,7 @@ function html_onload() {
       }
     }
   }
-
+  
   getByid("Rotate_270").onclick = function () {
     GetViewport().rotate = 270;
     setTransform();
@@ -494,8 +503,8 @@ function html_onload() {
       refreshMarkFromSop(GetViewport().sop);
     }
     MeasureShape_previous_choose = null;
-
-
+  
+  
     if ((BL_mode == 'Irregular' || BL_mode == 'TextAnnotation' || BL_mode == 'ArrowRuler') && MeasureIrregular_previous_choose) {
       PatientMark.splice(PatientMark.indexOf(MeasureIrregular_previous_choose.dcm), 1);
       displayMark();
@@ -778,9 +787,12 @@ function html_onload() {
         reader.readAsArrayBuffer(this.files[k]);
         reader.fileExtension = fileExtension;
         reader.url = URL.createObjectURL(this.files[k]);
+        ImageManager.NumOfPreLoadSops += 1;
         reader.onloadend = function () {
           //resetViewport();
-          loadDicomDataSet(reader.result, true, this.url);
+          loadDicomDataSet(reader.result, false, this.url);
+          ImageManager.NumOfPreLoadSops -= 1;
+          if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
         }
       }
     }

@@ -70,6 +70,17 @@ function SortArrayByElem(arr, str) {
     return arr.sort((a, b) => a[str] - b[str]);
 }
 
+function splitArrayByElem(arr, str) {
+    return arr.reduce((result, obj) => {
+        const key = obj[str];
+        if (!result[key]) {
+            result[key] = [];
+        }
+        result[key].push(obj);
+        return result;
+    }, {});
+}
+
 function getCurrPoint(e) {
     var canvas = GetViewport().canvas
     if (!canvas) return [0, 0];
