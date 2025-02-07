@@ -214,7 +214,7 @@ function DcmLoader(image, viewport) {
     else viewport.QRLevel = "series";
 
     viewport.content.image = image;
-    if (image.imageDataLoaded == false) image.loadImageData();
+    if (image.imageDataLoaded == false && image.loadImageData) image.loadImageData();
     viewport.content.pixelData = image.pixelData;
     //需要setimage到element
     createDicomTagsList2Viewport(viewport);

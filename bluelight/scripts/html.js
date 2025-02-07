@@ -72,7 +72,7 @@ function html_onload() {
 
         var fnReadEntries = function (entries) {
           entries.forEach(function (entry) {
-            addFile(entry);
+            addDirectory(entry);
           });
           if (entries.length > 0) {
             directoryReader.readEntries(fnReadEntries);
