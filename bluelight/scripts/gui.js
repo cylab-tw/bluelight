@@ -192,7 +192,12 @@ class LeftLayout {
             series_div.series_label = label;
             ImgDiv.appendChild(label);
         }
+        this.refreshNumberOfFramesOrSops(image);
+    }
 
+    refreshNumberOfFramesOrSops(image) {
+        var series_div = this.findSeries(image.SeriesInstanceUID);
+        if (!series_div) return;
         if (image.NumberOfFrames > 1) series_div.series_label.innerText = htmlEntities("" + image.NumberOfFrames);
         else if (image.haveSameInstanceNumber) series_div.series_label.innerText = "";
         else series_div.series_label.innerText = "" + htmlEntities(ImageManager.findSeries(image.SeriesInstanceUID).Sop.length);
@@ -269,10 +274,10 @@ class LeftLayout {
             }
         }
 
-        if(getByid("LeftPicture"))
-        if (hasScroll(getByid("LeftPicture")))
-            document.documentElement.style.setProperty('--ishaveLeftScroll', `1`);
-        else document.documentElement.style.setProperty('--ishaveLeftScroll', `0`);
+        if (getByid("LeftPicture"))
+            if (hasScroll(getByid("LeftPicture")))
+                document.documentElement.style.setProperty('--ishaveLeftScroll', `1`);
+            else document.documentElement.style.setProperty('--ishaveLeftScroll', `0`);
     }
 
     reflesh() {

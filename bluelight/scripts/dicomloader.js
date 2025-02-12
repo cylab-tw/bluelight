@@ -1,5 +1,5 @@
 
-function loadImageFromDataSet(dataSet, type, loadimage = true, url) {
+function loadImageFromDataSet(dataSet, type, loadimage = true, url, fromLocal = false) {
     var imageObj = getDefaultImageObj(dataSet, type, url, loadimage);
     if (type == 'pdf') setPDF(imageObj);
     if (type == 'ecg' && openECG) setECG(imageObj);
@@ -13,11 +13,13 @@ function loadImageFromDataSet(dataSet, type, loadimage = true, url) {
         leftLayout.setImg2Left(new QRLv(dataSet), dataSet.string(Tag.PatientID));
         leftLayout.appendCanvasBySeries(dataSet.string(Tag.SeriesInstanceUID), imageObj, imageObj.getPixelData());
         leftLayout.refleshMarkWithSeries(dataSet.string(Tag.SeriesInstanceUID));
-    } else {
+    } else if (fromLocal == true) {
         ImageManager.preLoadSops.push({
             dataSet: dataSet, image: imageObj, Sop: Sop, SeriesInstanceUID: imageObj.SeriesInstanceUID,
             Index: imageObj.NumberOfFrames | imageObj.InstanceNumber
         });
+    } else if (fromLocal == false) {
+        leftLayout.refreshNumberOfFramesOrSops(imageObj);
     }
 
     if (loadimage) {

@@ -107,7 +107,7 @@ function html_onload() {
           ImageManager.NumOfPreLoadSops += 1;
           reader.onloadend = function () {
             //resetViewport();
-            loadDicomDataSet(reader.result, false, url);
+            loadDicomDataSet(reader.result, false, url, true);
             ImageManager.NumOfPreLoadSops -= 1;
             if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
           }
@@ -790,7 +790,7 @@ function html_onload() {
         ImageManager.NumOfPreLoadSops += 1;
         reader.onloadend = function () {
           //resetViewport();
-          loadDicomDataSet(reader.result, false, this.url);
+          loadDicomDataSet(reader.result, false, this.url, true);
           ImageManager.NumOfPreLoadSops -= 1;
           if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
         }
