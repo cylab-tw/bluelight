@@ -7,6 +7,7 @@ function loadWriteSEG() {
         `<img class="img SEG" alt="writeSEG" id="writeSEG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/seg_off.png" width="50" height="50">
         <img class="img SEG" alt="drawSEG" id="drawSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >  
         <img class="img SEGhide" alt="eraseSEG" id="eraseSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="fillSEG" id="fillSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Oil.png" width="50" height="50" style="display:none;" >
         <img class="img SEG" alt="exitSEG" id="exitSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
         <img class="img SEG" alt="saveSEG" id="saveSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
 
@@ -238,7 +239,7 @@ endsolid name`
                 }
             }
         }
-        
+
         iterPointList(pointlist1, pointlist2);
     }
 
@@ -265,7 +266,7 @@ endsolid name`
                 }
             }
         }
-        
+
         iterPointList(pointlist1, pointlist2);
     }
 
@@ -293,7 +294,7 @@ endsolid name`
                 }
             }
         }
-        
+
         iterPointList(pointlist1, pointlist2);
     }
 
@@ -334,8 +335,15 @@ getByid("drawSEG").onclick = function () {
     writeSeg();
     drawBorder(getByid("drawSEG"));
 }
+
+getByid("fillSEG").onclick = function () {
+    set_BL_model('fillSEG');
+    fillSEG();
+    drawBorder(getByid("fillSEG"));
+}
 BorderList_Icon.push("drawSEG");
 BorderList_Icon.push("eraseSEG");
+BorderList_Icon.push("fillSEG");
 
 getByid("writeSEG").onclick = function () {
     if (this.enable == false) return;
@@ -355,6 +363,7 @@ getByid("writeSEG").onclick = function () {
     this.style.display = openWriteSEG != true ? "" : "none";
     getByid("exitSEG").style.display = openWriteSEG == true ? "" : "none";
     getByid("eraseSEG").style.display = openWriteSEG == true ? "" : "none";
+    getByid("fillSEG").style.display = openWriteSEG == true ? "" : "none";
     getByid("saveSEG").style.display = openWriteSEG == true ? "" : "none";
     getByid("drawSEG").style.display = openWriteSEG == true ? "" : "none";
 
@@ -366,6 +375,7 @@ getByid("writeSEG").onclick = function () {
         getByid("writeSEG").style.display = openWriteSEG != true ? "" : "none";
         getByid("exitSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("eraseSEG").style.display = openWriteSEG == true ? "" : "none";
+        getByid("fillSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("saveSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("drawSEG").style.display = openWriteSEG == true ? "" : "none";
         SetTable();
@@ -851,6 +861,68 @@ function Line_setSEG2PixelData(point1, point2) {
     }
 };
 
+
+function fillSEG() {
+    if (BL_mode == 'fillSEG') {
+        drawBorder(getByid("fillSEG"));
+        BlueLightMousedownList = [];
+        BlueLightMousemoveList = [];
+        BlueLightMouseupList = [];
+        BlueLightMousedownList.push(function (e) {
+            if (openWindow == true) return;
+            var break1 = false;
+            for (var n_s = 0; n_s < PatientMark.length; n_s++) {
+                if (PatientMark[n_s].sop == GetViewport().sop) {
+                    if (break1 == true) break;
+                    if (PatientMark[n_s].type == "SEG") {
+                        SEG_now_choose = PatientMark[n_s];
+                        break1 = true;
+                    }
+                }
+            }
+            if (break1 == false) {
+                var SegMark = new BlueLightMark();
+                SegMark.setQRLevels(GetViewport().QRLevels);
+                SegMark.type = SegMark.hideName = SegMark.showName = "SEG";
+                SegMark.ImagePositionPatient = GetViewport().tags.ImagePositionPatient;
+                SegMark.pixelData = new Uint8ClampedArray(GetViewport().canvas.width * GetViewport().canvas.height);
+
+                if (!SegMark.canvas) {
+                    SegMark.canvas = document.createElement("CANVAS");
+                    SegMark.canvas.width = GetViewport().canvas.width;
+                    SegMark.canvas.height = GetViewport().canvas.height;
+                    SegMark.ctx = SegMark.canvas.getContext('2d');
+
+                    var pixelData = SegMark.ctx.getImageData(0, 0, SegMark.canvas.width, SegMark.canvas.height);
+
+                    for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
+                        if (SegMark.pixelData[j] != 0) {
+                            pixelData.data[i] = 0;
+                            pixelData.data[i + 1] = 0;
+                            pixelData.data[i + 2] = 255;
+                            pixelData.data[i + 3] = 255;
+                        }
+                    }
+                    SegMark.ctx.putImageData(pixelData, 0, 0);
+                }
+                let angle2point = rotateCalculation(e, true);
+                PatientMark.push(SegMark);
+                SEG_now_choose = SegMark;
+                //setSEG2PixelData(angle2point);
+                fillSEG2PixelData(angle2point, SegMark.canvas);
+                refreshMark(SegMark);
+            } else {
+                let angle2point = rotateCalculation(e, true);
+                var SegMark = SEG_now_choose;
+                //setSEG2PixelData(angle2point);
+                fillSEG2PixelData(angle2point, SegMark.canvas);
+                refreshMark(SegMark);
+            }
+            displayAllMark();
+        })
+    }
+}
+
 function writeSeg() {
     if (BL_mode == 'writeSeg') {
 
@@ -946,6 +1018,105 @@ function writeSeg() {
         });
         return;
     }
+}
+
+function fillSEG2PixelData(angle2point, canvas) {
+    var pixelData = SEG_now_choose.ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var originPixel = GetViewport().canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+    var X = Math.floor(angle2point[0]), Y = Math.floor(angle2point[1]);
+    function CrossWater(arr) {
+        var nextArr = []
+        for (var i = 0; i < arr.length; i++) {
+            var x = arr[i][0], y = arr[i][1];
+            //由左至右
+            for (var w = 1, p = 4; w < canvas.width - x; w++, p += 4) {
+                //如果尚未填滿且下一格的顏色跟原點差不多
+                if (SEG_now_choose.pixelData[y * canvas.width + x + w] == 0 &&
+                    Math.abs(originPixel[y * canvas.width * 4 + x * 4 + p + 0] -
+                        originPixel[Y * canvas.width * 4 + X * 4 + 0]) <= 35
+                ) {
+                    SEG_now_choose.pixelData[y * canvas.width + x + w] = 1;
+                    pixelData.data[y * canvas.width * 4 + x * 4 + p + 0] = 0;
+                    pixelData.data[y * canvas.width * 4 + x * 4 + p + 1] = 0;
+                    pixelData.data[y * canvas.width * 4 + x * 4 + p + 2] = 255;
+                    pixelData.data[y * canvas.width * 4 + x * 4 + p + 3] = 255;
+                    nextArr.push([x + w, y]);
+                } else { break; }
+            }
+            //由右至左
+            for (var w = 1, p = 4; w <= x; w++, p += 4) {
+                //如果尚未填滿且下一格的顏色跟原點差不多
+                if (SEG_now_choose.pixelData[y * canvas.width + x - w] == 0 &&
+                    Math.abs(originPixel[y * canvas.width * 4 + x * 4 - p + 0] -
+                        originPixel[Y * canvas.width * 4 + X * 4 + 0]) <= 35
+                ) {
+                    SEG_now_choose.pixelData[y * canvas.width + x - w] = 1;
+                    pixelData.data[y * canvas.width * 4 + x * 4 - p + 0] = 0;
+                    pixelData.data[y * canvas.width * 4 + x * 4 - p + 1] = 0;
+                    pixelData.data[y * canvas.width * 4 + x * 4 - p + 2] = 255;
+                    pixelData.data[y * canvas.width * 4 + x * 4 - p + 3] = 255;
+                    nextArr.push([x - w, y]);
+                } else break;
+            }
+            //由上至下
+            for (var h = 1; h < canvas.height - y; h++) {
+                //如果尚未填滿且下一格的顏色跟原點差不多
+                if (SEG_now_choose.pixelData[(y + h) * canvas.width + x] == 0 &&
+                    Math.abs(originPixel[(y + h) * canvas.width * 4 + x * 4 + 0] -
+                        originPixel[Y * canvas.width * 4 + X * 4 + 0]) <= 35
+                ) {
+                    SEG_now_choose.pixelData[(y + h) * canvas.width + x] = 1;
+                    pixelData.data[(y + h) * canvas.width * 4 + x * 4 + 0] = 0;
+                    pixelData.data[(y + h) * canvas.width * 4 + x * 4 + 1] = 0;
+                    pixelData.data[(y + h) * canvas.width * 4 + x * 4 + 2] = 255;
+                    pixelData.data[(y + h) * canvas.width * 4 + x * 4 + 3] = 255;
+                    nextArr.push([x, y + h]);
+                } else break;
+            }
+
+            //由下至上
+            for (var h = 1; h <= y; h++) {
+                //如果尚未填滿且下一格的顏色跟原點差不多
+                if (SEG_now_choose.pixelData[(y - h) * canvas.width + x] == 0 &&
+                    Math.abs(originPixel[(y - h) * canvas.width * 4 + x * 4 + 0] -
+                        originPixel[Y * canvas.width * 4 + X * 4 + 0]) <= 35
+                ) {
+                    SEG_now_choose.pixelData[(y - h) * canvas.width + x] = 1;
+                    pixelData.data[(y - h) * canvas.width * 4 + x * 4 + 0] = 0;
+                    pixelData.data[(y - h) * canvas.width * 4 + x * 4 + 1] = 0;
+                    pixelData.data[(y - h) * canvas.width * 4 + x * 4 + 2] = 255;
+                    pixelData.data[(y - h) * canvas.width * 4 + x * 4 + 3] = 255;
+                    nextArr.push([x, y - h]);
+                } else break;
+            }
+        }
+        return nextArr;
+    }
+
+    var arr = [[Math.floor(X), Math.floor(Y)]];
+    while (arr.length >= 1) {
+        arr = CrossWater(arr);
+    }
+
+    //原點也要填充
+    SEG_now_choose.pixelData[Y * canvas.width + X] = 1;
+    pixelData.data[Y * canvas.width * 4 + X * 4 + 0] = pixelData.data[Y * canvas.width * 4 + X * 4 + 1] = 0;
+    pixelData.data[Y * canvas.width * 4 + X * 4 + 2] = pixelData.data[Y * canvas.width * 4 + X * 4 + 3] = 255;
+
+    SEG_now_choose.ctx.putImageData(pixelData, 0, 0);
+    /*try {
+        var pixelData = SEG_now_choose.ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var x = angle2point[0], y = angle2point[1];
+        for (var w = 0, p = 0; w < canvas.width; w++, p += 4) {
+            SEG_now_choose.pixelData[Math.floor(angle2point[1] + 0) * canvas.width + Math.floor(0 + w)] = 1;
+            pixelData.data[Math.floor(y) * canvas.width * 4 + Math.floor(0 + p) + 0] = 0;
+            pixelData.data[Math.floor(y) * canvas.width * 4 + Math.floor(0 + p) + 1] = 0;
+            pixelData.data[Math.floor(y) * canvas.width * 4 + Math.floor(0 + p) + 2] = 255;
+            pixelData.data[Math.floor(y) * canvas.width * 4 + Math.floor(0 + p) + 3] = 255;
+        }
+
+        SEG_now_choose.ctx.putImageData(pixelData, 0, 0);
+    } catch (ex) { console.log(ex); }*/
 }
 
 function setSEG2PixelData(angle2point) {
