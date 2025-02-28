@@ -155,6 +155,9 @@ class BlueLightImageManager {
         this.Study = [];
         this.preLoadSops = [];
         this.NumOfPreLoadSops = 0;
+        this.StudyMap = {};
+        this.SeriesMap = {};
+        this.SopMap = {};
     }
 
     loadPreLoadSops() {
@@ -233,7 +236,7 @@ class BlueLightImageManager {
     }
 
     pushStudy(imageObj) {
-        var obj = this.find(this.Study, imageObj.StudyInstanceUID || imageObj.data.string(Tag.StudyInstanceUID));
+        var obj = this.StudyMap[imageObj.StudyInstanceUID || imageObj.data.string(Tag.StudyInstanceUID)];//this.find(this.Study, imageObj.StudyInstanceUID || imageObj.data.string(Tag.StudyInstanceUID));
         if (obj) {
             return this.pushSeries(imageObj, obj.Series, obj);
         } else {
@@ -241,13 +244,14 @@ class BlueLightImageManager {
             Study.StudyInstanceUID = imageObj.StudyInstanceUID || imageObj.data.string(Tag.StudyInstanceUID);
             Study.Instance = "StudyInstanceUID";
             Study.Series = [];
+            this.StudyMap[Study.StudyInstanceUID] = Study;
             this.Study.push(Study);
             return this.pushSeries(imageObj, Study.Series, Study);
         }
     }
 
     pushSeries(imageObj, series, parent) {
-        var obj = this.find(series, imageObj.SeriesInstanceUID || imageObj.data.string(Tag.SeriesInstanceUID));
+        var obj = this.SeriesMap[imageObj.SeriesInstanceUID || imageObj.data.string(Tag.SeriesInstanceUID)];//this.find(series, imageObj.SeriesInstanceUID || imageObj.data.string(Tag.SeriesInstanceUID));
         if (obj) {
             return this.pushSop(imageObj, obj.Sop, obj);
         } else {
@@ -257,12 +261,13 @@ class BlueLightImageManager {
             Seris.Sop = [];
             Seris.parent = parent;
             series.push(Seris);
+            this.SeriesMap[Seris.SeriesInstanceUID] = Seris;
             return this.pushSop(imageObj, Seris.Sop, Seris);
         }
     }
 
     pushSop(imageObj, sop, parent) {
-        var obj = this.find(sop, imageObj.SOPInstanceUID || imageObj.data.string(Tag.SOPInstanceUID));
+        var obj = this.SopMap[imageObj.SOPInstanceUID || imageObj.data.string(Tag.SOPInstanceUID)];//this.find(sop, imageObj.SOPInstanceUID || imageObj.data.string(Tag.SOPInstanceUID));
         if (obj) {
             console.log("repeat");
         } else {
@@ -275,6 +280,7 @@ class BlueLightImageManager {
             //Sop.frames = Sop.Image.frames;
             Sop.dataSet = imageObj.data;
             Sop.parent = parent;
+            this.SopMap[Sop.SOPInstanceUID] = Sop;
             sop.push(Sop);
             sop = SortArrayByElem(sop, "InstanceNumber");
 

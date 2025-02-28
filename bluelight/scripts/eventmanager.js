@@ -74,6 +74,11 @@ var SwitchViewport = function () {
     initNewCanvas();
 }
 
+window.addEventListener("beforeunload", () => {
+    localStorage.clear();  // 清除 localStorage
+    sessionStorage.clear(); // 清除 sessionStorage
+});
+
 window.addEventListener("keydown", function (e) {
     e = e || window.event;
     var nextInstanceNumber = 0;

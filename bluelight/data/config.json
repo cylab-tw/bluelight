@@ -10,20 +10,21 @@
             "WADO-PORT": 443,
             "contentType": "application/json",
             "timeout": 80000,
+            "limit": 100,
             "charset": "UTF=8",
             "QIDO": "dicom-web",
             "WADO-URI": "api/dicom/wado",
             "WADO-RS": "dicom-web",
-            "WADO-RS/URI":"RS",
+            "WADO-RS/URI": "RS",
             "STOW": "stow",
             "enableRetrieveURI": false,
             "includefield": false,
-            "enableXml2Dcm":false,
-            "Xml2DcmUrl":"/upload",
+            "enableXml2Dcm": false,
+            "Xml2DcmUrl": "/upload",
             "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
             "token": {
-                "apikey":"",
-                "bearer":""
+                "apikey": "",
+                "bearer": ""
             }
         },
         {
@@ -36,20 +37,21 @@
             "WADO-PORT": 443,
             "contentType": "application/json",
             "timeout": 80000,
+            "limit": 100,
             "charset": "UTF=8",
             "QIDO": "dicom-web",
             "WADO-URI": "api/dicom/wado",
             "WADO-RS": "dicom-web",
-            "WADO-RS/URI":"RS",
+            "WADO-RS/URI": "RS",
             "STOW": "stow",
             "enableRetrieveURI": false,
             "includefield": false,
-            "enableXml2Dcm":false,
-            "Xml2DcmUrl":"/upload",
+            "enableXml2Dcm": false,
+            "Xml2DcmUrl": "/upload",
             "target": "https://cylab-tw.github.io/bluelight/bluelight/html/start.html",
             "token": {
-                "apikey":"",
-                "bearer":""
+                "apikey": "",
+                "bearer": ""
             }
         }
     ],

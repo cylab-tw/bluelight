@@ -93,7 +93,7 @@ function html_onload() {
           return path.split('.').reverse()[0];
         }
         var fileExtension = basename(file.name);
-        if (fileExtension == "mht") wadorsLoader(url);
+        if (fileExtension == "mht") wadorsLoader2(url);
         else if (fileExtension == "jpg") loadPicture(url);
         else if (fileExtension == "jpeg") loadPicture(url);
         else if (fileExtension == "png") loadPicture(url);
@@ -776,7 +776,7 @@ function html_onload() {
 
       var fileExtension = basename(this.files[k].name);
 
-      if (fileExtension == "mht") wadorsLoader(URL.createObjectURL(this.files[k]));
+      if (fileExtension == "mht") wadorsLoader2(URL.createObjectURL(this.files[k]));
       else if (fileExtension == "jpg") loadPicture(URL.createObjectURL(this.files[k]));
       else if (fileExtension == "jpeg") loadPicture(URL.createObjectURL(this.files[k]));
       else if (fileExtension == "png") loadPicture(URL.createObjectURL(this.files[k]));

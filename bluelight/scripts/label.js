@@ -79,19 +79,14 @@ function setCommonLabel(viewportNum = viewportNumber) {
 
 function setSeriesCount(viewportNum = viewportNumber) {
   var viewport = GetViewport(viewportNum), tags = viewport.tags, SeriesCount = 1;
-  for (var i = 0; i < ImageManager.Study.length; i++) {
-    for (var j = 0; j < ImageManager.Study[i].Series.length; j++) {
-      if (ImageManager.Study[i].Series[j].SeriesInstanceUID == tags.SeriesInstanceUID) {
-        SeriesCount = ImageManager.Study[i].Series[j].Sop.length;
-        if (SeriesCount == 1) SeriesCount = 2;
-        var str = "";
-        if (tags.NumberOfFrames && tags.NumberOfFrames > 1) str = "" + (viewport.framesNumber + 1) + "/" + (tags.NumberOfFrames - 0);
-        else str = "" + tags.InstanceNumber + "/" + (SeriesCount - 0);
-        viewport.setLabel("Im", str);
-        viewport.refleshLabel();
-      }
-    }
-  }
+  if (!viewport.Sop) return;
+  SeriesCount = viewport.Sop.parent.Sop.length;
+  if (SeriesCount == 1) SeriesCount = 2;
+  var str = "";
+  if (tags.NumberOfFrames && tags.NumberOfFrames > 1) str = "" + (viewport.framesNumber + 1) + "/" + (tags.NumberOfFrames - 0);
+  else str = "" + tags.InstanceNumber + "/" + (SeriesCount - 0);
+  viewport.setLabel("Im", str);
+  viewport.refleshLabel();
 }
 
 function setTransformLabel(viewportNum = viewportNumber) {

@@ -51,115 +51,112 @@ VIEWPORT.loadViewport = function (viewport, image, viewportNum) {
 //VIEWPORT.loadViewportList = ['initTransform', 'putLabel2Element', 'delPDFView', 'settype'];
 VIEWPORT.loadViewportList = ['initTransform', 'putLabel2Element'];
 
-function wadorsLoader(url, onlyload) {
-    var data = [];
+class LoadFileInBatches {
+    static queue = [];
+    static lock = false;
+    static NumOfFetchs = 0;
+    static limit = 0;
+    static timer = null;
 
-    function getData() {
-        var headers = {
-            'user-agent': 'Mozilla/4.0 MDN Example',
-            'content-type': 'multipart/related; type=application/dicom;'
-        }
-        var wadoToken = ConfigLog.WADO.token;
-        for (var to = 0; to < Object.keys(wadoToken).length; to++) {
-            if (wadoToken[Object.keys(wadoToken)[to]] != "") {
-                headers[Object.keys(wadoToken)[to]] = wadoToken[Object.keys(wadoToken)[to]];
-                // InstanceRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
-            }
-        }
-        fetch(url, {
-            headers,
-        })
-            .then(async function (res) {
-                let resBlob = await res.arrayBuffer();
-                let intArray = new Uint8Array(resBlob);
-                var string = '';
-                for (let i = 0; i < intArray.length; i++) {
-                    string += String.fromCodePoint(intArray[i]);
-                }
+    static wadoPreLoad(url, onlyload) {
+        if (LoadFileInBatches.limit == 0) LoadFileInBatches.limit = ConfigLog.QIDO.limit ? ConfigLog.QIDO.limit : 100;
 
-                var url = await stowMultipartRelated(string);
-                if (onlyload == true) loadDICOMFromUrl(url, false);
-                else loadDICOMFromUrl(url);
-            })
-            .catch(function (err) { })
+        if (LoadFileInBatches.NumOfFetchs >= LoadFileInBatches.limit) {
+            LoadFileInBatches.lock = true;
+            LoadFileInBatches.queue.push({ url: url, onlyload: onlyload });
+            LoadFileInBatches.setTimer();
+        }
+        else if (LoadFileInBatches.lock == true) {
+            LoadFileInBatches.queue.push({ url: url, onlyload: onlyload });
+            LoadFileInBatches.setTimer();
+        } else {
+            LoadFileInBatches.NumOfFetchs++;
+            if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(url, onlyload);
+            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader2(url, onlyload);
+        }
     }
-    async function stowMultipartRelated(iData) {
-        let multipartMessage = iData;
-        let startBoundary = multipartMessage.split("\r\n")[0];
-        let matches = multipartMessage.matchAll(new RegExp(startBoundary, "gi"));
-        let fileEndIndex = [];
-        let fileStartIndex = [];
-        for (let match of matches) {
-            fileEndIndex.push(match.index - 2);
-        }
-        fileEndIndex = fileEndIndex.slice(1);
-        let data = multipartMessage.split("\r\n");
-        let filename = [];
-        let files = [];
-        //let contentDispositionList = [];
-        //let contentTypeList = [];
-        for (let i in data) {
-            let text = data[i];
-            if (text.includes("Content-Disposition")) {
-                //contentDispositionList.push(text);
-                let textSplitFileName = text.split("filename=")
-                filename.push(textSplitFileName[textSplitFileName.length - 1].replace(/"/gm, ""));
-            } else if (text.includes("Content-Type")) {
-                //contentTypeList.push(text);
-            }
-        }
-        //contentDispositionList = _.uniq(contentDispositionList);
-        //contentTypeList = _.uniq(contentTypeList);
-        let teststring = ["Content-Type", "Content-Length", "MIME-Version"]
-        let matchesIndex = []
-        for (let type of teststring) {
-            let contentTypeMatches = multipartMessage.matchAll(new RegExp(`${type}.*[\r\n|\r|\n]$`, "gim"));
-            for (let match of contentTypeMatches) {
-                matchesIndex.push({
-                    index: match.index,
-                    length: match['0'].length
-                })
-            }
-        }
 
-        function maxBy(array, n) {
-            let result;
-            if (!array) return result;
-            var tempN = Number.MIN_VALUE;
-            for (const obj of array) {
-                if (obj && obj[n]) {
-                    var value = obj[n];
-                    if (!isNaN(value) && value > tempN) {
-                        tempN = value;
-                        result = obj;
+    static setTimer() {
+        if (!LoadFileInBatches.timer) {
+            LoadFileInBatches.timer = setInterval(function () {
+                if (LoadFileInBatches.lock == true && LoadFileInBatches.NumOfFetchs == 0) {
+                    //如果仍超出上限(比如超過100筆)
+                    if (LoadFileInBatches.queue.length >= LoadFileInBatches.limit) {
+                        var list = LoadFileInBatches.queue.splice(0, LoadFileInBatches.limit);
+                        LoadFileInBatches.NumOfFetchs += list.length;
+                        for (var i = 0; i < list.length; i++) {
+                            if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(list[i].url, list[i].onlyload);
+                            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader2(list[i].url, list[i].onlyload);
+                        }
+                    } else {
+                        LoadFileInBatches.lock = false;
+                        var list = LoadFileInBatches.queue.splice(0, LoadFileInBatches.queue.length);
+                        LoadFileInBatches.NumOfFetchs += list.length;
+                        for (var i = 0; i < list.length; i++) {
+                            if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(list[i].url, list[i].onlyload);
+                            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader2(list[i].url, list[i].onlyload);
+                        }
+                        clearInterval(LoadFileInBatches.timer);
+                        LoadFileInBatches.timer = null;
                     }
                 }
-            }
-            return result;
+            }, 1000);
         }
-
-        let maxIndex = maxBy(matchesIndex, "index");
-        fileStartIndex.push(maxIndex.index + maxIndex.length + 3);
-        for (let i in fileEndIndex) {
-            let fileData = multipartMessage.substring(fileStartIndex[i], fileEndIndex[i]);
-            files.push(fileData);
-        }
-
-        function str2ab(str) {
-            var buf = new ArrayBuffer(str.length); // 2 bytes for each char
-            var bufView = new Uint8Array(buf);
-            for (var i = 0, strLen = str.length; i < strLen; i++) {
-                bufView[i] = str.charCodeAt(i);
-            }
-            return buf;
-        }
-        let buf = str2ab(files[0]);
-
-        var url = URL.createObjectURL(new Blob([buf], { type: "application/dicom" }));
-        return url;
-
     }
-    return getData();
+
+    static finishOne() {
+        if (LoadFileInBatches.NumOfFetchs > 0) LoadFileInBatches.NumOfFetchs--;
+    }
+}
+
+function wadorsLoader2(url, onlyload) {
+    var headers = {
+        'user-agent': 'Mozilla/4.0 MDN Example', 'content-type': 'multipart/related; type=application/dicom;'
+    }
+    var wadoToken = ConfigLog.WADO.token;
+    for (var to = 0; to < Object.keys(wadoToken).length; to++) {
+        if (wadoToken[Object.keys(wadoToken)[to]] != "")
+            headers[Object.keys(wadoToken)[to]] = wadoToken[Object.keys(wadoToken)[to]];
+    }
+
+    fetch(url, { headers, }).then(async function (res) {
+        let resBlob = await res.arrayBuffer();
+        let intArray = new Uint8Array(resBlob);
+        let charArray = new Array(intArray.length);
+        for (let i = 0; i < intArray.length; i++)  charArray[i] = String.fromCodePoint(intArray[i]);
+        let responseText = charArray.join('');
+
+        function getEndIndex(responseText) {
+            let startBoundary = responseText.split("\r\n")[0];
+            let matches = responseText.matchAll(new RegExp(startBoundary, "gi"));
+            let fileEndIndex = [];
+            for (let match of matches)
+                fileEndIndex.push(match.index - 2);
+            return fileEndIndex.slice(1);
+        }
+
+        function getStartIndex(responseText) {
+            var fileStartIndex = [];
+            let teststring = ["Content-Type", "Content-Length", "MIME-Version"]
+            let matchesIndex;
+            for (let type of teststring) {
+                let contentTypeMatches = responseText.matchAll(new RegExp(`${type}.*[\r\n|\r|\n]$`, "gim"));
+                for (let match of contentTypeMatches) {
+                    if (isNaN(match.index)) continue;
+                    if (!matchesIndex || (match.index > matchesIndex.index))
+                        matchesIndex = { index: match.index, length: match['0'].length };
+                }
+            }
+            fileStartIndex.push(matchesIndex.index + matchesIndex.length + 3);
+            return fileStartIndex;
+        }
+
+        var fileEndIndex = getEndIndex(responseText);
+        var fileStartIndex = getStartIndex(responseText);
+        var file = responseText.substring(fileStartIndex[0], fileEndIndex[0]);
+        var buf = Uint8Array.from(Array.from(file).map(letter => letter.charCodeAt(0)));
+        loadDicomDataSet(buf, !(onlyload == true), url, false);
+    }).finally(() => LoadFileInBatches.finishOne());
 }
 
 function PdfLoader(pdf, Sop) {
@@ -305,14 +302,15 @@ function loadPicture(url) {
 }
 
 function loadDicomDataSet(fileData, loadimage = true, url, fromLocal = false) {
-    var byteArray = new Uint8Array(fileData);
+    var byteArray = fileData.constructor.name == 'Uint8Array' ? fileData : new Uint8Array(fileData);
+
     try {
         var dataSet = dicomParser.parseDicom(byteArray);
     } catch (ex) {
         if (loadimage && ImageManager.NumOfPreLoadSops >= 1) ImageManager.NumOfPreLoadSops -= 1;
+        console.log(ex);
         return;
     }
-
 
     //PDF
     if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EncapsulatedPDFStorage)
@@ -361,23 +359,19 @@ function loadDicomDataSet(fileData, loadimage = true, url, fromLocal = false) {
 }
 
 function loadDICOMFromUrl(url, loadimage = true) {
-    var oReq = new XMLHttpRequest();
-    try { oReq.open("get", url, true); }
-    catch (e) { console.log(e); }
-
-    oReq.responseType = "arraybuffer";
-    if (loadimage) {
-        oReq.onreadystatechange = function (oEvent) {
-            if (oReq.readyState == 4 && oReq.status == 200)
-                loadDicomDataSet(oReq.response, true, url, false);
-        }
-    } else {
-        oReq.onreadystatechange = function (oEvent) {
-            if (oReq.readyState == 4 && oReq.status == 200)
-                loadDicomDataSet(oReq.response, false, url, false);
-        }
+    var headers = {
+        'user-agent': 'Mozilla/4.0 MDN Example', 'content-type': 'multipart/related; type=application/dicom;'
     }
-    oReq.send();
+    var wadoToken = ConfigLog.WADO.token;
+    for (var to = 0; to < Object.keys(wadoToken).length; to++) {
+        if (wadoToken[Object.keys(wadoToken)[to]] != "")
+            headers[Object.keys(wadoToken)[to]] = wadoToken[Object.keys(wadoToken)[to]];
+    }
+
+    fetch(url, { headers, }).then(async function (res) {
+        let oReq = await res.arrayBuffer();
+        loadDicomDataSet(oReq, loadimage == true, url, false);
+    }).finally(() => LoadFileInBatches.finishOne());
 }
 
 function initNewCanvas() {

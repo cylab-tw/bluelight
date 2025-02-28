@@ -233,7 +233,7 @@ class BlueLightViewPort {
 
         this.labelLT.innerHTML = this.labelLB.innerHTML = this.labelRT.innerHTML = this.labelRB.innerHTML = "";
         this.labelMT.innerHTML = this.labelMB.innerHTML = this.labelLM.innerHTML = this.labelRM.innerHTML = "";
-
+        
         for (var labels of [DicomTags.LT, DicomTags.LB, DicomTags.RT, DicomTags.RB, DicomTags.MT, DicomTags.MB, DicomTags.LM, DicomTags.RM]) {
             for (var i = 0; i < labels.value.length; i++) {
                 var tags = extractTags(labels.value[i]), vals = extractVals(labels.value[i]);
@@ -257,6 +257,7 @@ class BlueLightViewPort {
                 if (labels == DicomTags.RM) this.labelRM.innerHTML += " " + str + "<br/>";
             }
         }
+
         this.refleshScrollBar();
         //labelLT.innerHTML += "" + DicomTags.LT.name[i] + " " + htmlEntities(image.data.string("x" + DicomTags.LT.tag[i])) + "<br/>";
     }
@@ -359,7 +360,7 @@ class BlueLightViewPort {
             element.ScrollBar.setIndex(parseInt(element.framesNumber));
             element.ScrollBar.reflesh();
         } else {
-            var sopList = sortInstance(element.sop);
+            var sopList = element.Sop.parent.Sop;//sortInstance(element.sop);
             element.ScrollBar.setTotal(sopList.length);
             element.ScrollBar.setIndex(sopList.findIndex((l) => l.InstanceNumber == element.tags.InstanceNumber));
             element.ScrollBar.reflesh();
@@ -389,7 +390,7 @@ class BlueLightViewPort {
         ctx.restore();
     }
 
-    clearRect(){
+    clearRect() {
         this.MarkCanvas.getContext('2d').clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 

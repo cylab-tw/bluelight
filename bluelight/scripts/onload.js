@@ -115,7 +115,7 @@ function readDicomTags(url, setLabelPadding) {
   //LB代表left  bottom
   //RB代表right bottom
   request.onload = function () {
-    if (request.readyState != 4)  { return; }
+    if (request.readyState != 4) { return; }
     var responseJson = JSON.parse(request.responseText);
     var DicomResponse = responseJson["default"];
     dicomtags.labelPadding = parseInt(DicomResponse["labelPadding"]) ? parseInt(DicomResponse["labelPadding"]) : 5;
@@ -236,11 +236,12 @@ function readConfigJson(url, readAllJson, readJson) {
     config.QIDO = {};
 
     tempResponse = DicomResponse["DICOMWebServersConfig"][0];
-    tempConfig = config.QIDO
+    tempConfig = config.QIDO;
     tempConfig.hostname = tempResponse["QIDO-hostname"];
     tempConfig.https = tempResponse["QIDO-enableHTTPS"] == true ? "https" : "http";
     tempConfig.PORT = tempResponse["QIDO-PORT"];
     tempConfig.service = tempResponse["QIDO"];
+    tempConfig.limit = tempResponse["limit"] ? tempResponse["limit"] : null;
     tempConfig.contentType = tempResponse["contentType"];
     tempConfig.timeout = tempResponse["timeout"];
     tempConfig.charset = tempResponse["charset"];
@@ -337,8 +338,8 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
     try {
       if (getValue(DicomResponse[i]["00200013"]) == min || DicomResponse.length == 1) {
         //預載入DICOM至Viewport
-        if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(url);
-        else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url);
+        if (ConfigLog.WADO.WADOType == "URI") LoadFileInBatches.wadoPreLoad(url);
+        else if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url);
         firstUrl = url;
       }
     } catch (ex) { console.log(ex); }
@@ -369,43 +370,54 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
     if (url == firstUrl) return;
     try {
       //預載入DICOM至Viewport
-      if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url, true);
-      else loadDICOMFromUrl(url, false);
+      if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url, true);
+      else LoadFileInBatches.wadoPreLoad(url, false);
 
     } catch (ex) { console.log(ex); }
   }
   function wait(time) { return new Promise((resolve) => setTimeout(resolve, time)); }
   for (var i = 0; i < DicomResponse.length; i++) {
     const i_ = i;
-    wait(parseInt(i_ / 50) * 2000).then(() => { loadDicom(i_); });
+    loadDicom(i_);
+    //wait(parseInt(i_ / 50) * 2000).then(() => { loadDicom(i_); });
   }
 }
 
 function getJsonBySeriesRequest(SeriesRequest) {
   let SeriesResponse = SeriesRequest.response, InstanceUrl = "";
   for (let instance = 0; instance < SeriesResponse.length; instance++) {
-    if (ConfigLog.QIDO.enableRetrieveURI == true) InstanceUrl = SeriesResponse[instance]["00081190"].Value[0] + "/instances";
-    else InstanceUrl = fitUrl(ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service) +
-      "/studies/" + SeriesResponse[instance]["0020000D"].Value[0] +
-      "/series/" + SeriesResponse[instance]["0020000E"].Value[0] + "/instances";
+    function requestInstances(offset) {
+      const offset_ = offset;
 
-    if (ConfigLog.WADO.includefield == true) InstanceUrl += "?includefield=all";
-    if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
-    let InstanceRequest = new XMLHttpRequest();
-    InstanceRequest.open('GET', InstanceUrl);
-    InstanceRequest.responseType = 'json';
-    //發送以Instance為單位的請求
-    var wadoToken = ConfigLog.WADO.token;
-    for (var to = 0; to < Object.keys(wadoToken).length; to++) {
-      if (wadoToken[Object.keys(wadoToken)[to]] != "") {
-        InstanceRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
+      if (ConfigLog.QIDO.enableRetrieveURI == true) InstanceUrl = SeriesResponse[instance]["00081190"].Value[0] + "/instances";
+      else InstanceUrl = fitUrl(ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service) +
+        "/studies/" + SeriesResponse[instance]["0020000D"].Value[0] +
+        "/series/" + SeriesResponse[instance]["0020000E"].Value[0] + "/instances";
+
+      if (ConfigLog.WADO.includefield == true) InstanceUrl += "?includefield=all";
+      if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
+      if (ConfigLog.QIDO.limit) {
+        if (ConfigLog.WADO.includefield == true) InstanceUrl += `&limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
+        else InstanceUrl += `?limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
+      }
+      let InstanceRequest = new XMLHttpRequest();
+      InstanceRequest.open('GET', InstanceUrl);
+      InstanceRequest.responseType = 'json';
+      //發送以Instance為單位的請求
+      var wadoToken = ConfigLog.WADO.token;
+      for (var to = 0; to < Object.keys(wadoToken).length; to++) {
+        if (wadoToken[Object.keys(wadoToken)[to]] != "") {
+          InstanceRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
+        }
+      }
+      const instance_ = instance;
+      InstanceRequest.send();
+      InstanceRequest.onload = function () {
+        getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance_);
+        if (ConfigLog.QIDO.limit && InstanceRequest.response.length == ConfigLog.QIDO.limit) requestInstances(offset_ + ConfigLog.QIDO.limit);
       }
     }
-    const instance_ = instance;
-    InstanceRequest.send();
-    InstanceRequest.onload = function () {
-      getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance_);
-    }
+    requestInstances(0);
   }
 }
 
