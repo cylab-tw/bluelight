@@ -1,13 +1,17 @@
 //代表SEG標記模式為開啟狀態
 var openWriteSEG = false;
+var SEGtempUndoStorage = [];
+var SEGtempRedoStorage = [];
 
 function loadWriteSEG() {
     var span = document.createElement("SPAN")
     span.innerHTML =
         `<img class="img SEG" alt="writeSEG" id="writeSEG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/seg_off.png" width="50" height="50">
         <img class="img SEG" alt="drawSEG" id="drawSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >  
-        <img class="img SEGhide" alt="eraseSEG" id="eraseSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="eraseSEG" id="eraseSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >
         <img class="img SEG" alt="fillSEG" id="fillSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Oil.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="UndoSEG" id="UndoSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Undo.png" width="50" height="50" style="display:none;" >
+        <img class="img SEG" alt="RedoSEG" id="RedoSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Redo.png" width="50" height="50" style="display:none;" >
         <img class="img SEG" alt="exitSEG" id="exitSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
         <img class="img SEG" alt="saveSEG" id="saveSEG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
 
@@ -16,18 +20,22 @@ function loadWriteSEG() {
     var span = document.createElement("SPAN")
     span.innerHTML =
         `<div id="SegStyleDiv" style="background-color:#30306044;">
-                <font color="white">ManufacturerModelName：</font><input type="text" id="SegManufacturerModelName"
-                    value="ModelName" size="8" />
-                <font color="white">SeriesDescription：</font><input type="text" id="SegSeriesDescription" value="Research"
-                    size="8" />
-                <font color="white">SegmentLabel</font><input type="text" id="SegSegmentLabel" value="SegmentLabel" size="8" />
-                <font color="white">Brush Size</font><input type="text" id="SegBrushSizeText" value="10" size="2" />
-                &nbsp;&nbsp;<button id="overlay2seg" sytle="">OverLay to Seg</button>&nbsp;&nbsp;
-                &nbsp;&nbsp;<button id="seg2stl" sytle="">Download as STL format (beta version)</button>&nbsp;&nbsp;
-                <button id="RemoveSEG" onclick="DeleteSelectedSEG();" style="font-size: 14px;display:none;">Delete Selected SEG</button>
-            </div>`
+            <font color="white">ManufacturerModelName：</font><input type="text" id="SegManufacturerModelName"
+                value="ModelName" size="8" />
+            <font color="white">SeriesDescription：</font><input type="text" id="SegSeriesDescription" value="Research"
+                size="8" />
+            <font color="white">SegmentLabel</font><input type="text" id="SegSegmentLabel" value="SegmentLabel" size="8" />
+            <font color="white">Brush Size</font><input type="text" id="SegBrushSizeText" value="10" size="2" />
+            <input type="range" min="1" max="30" value="10" class="slider" id="SegBrushSizeRange">  
+            &nbsp;&nbsp;<button id="overlay2seg" sytle="">OverLay to Seg</button>&nbsp;&nbsp;
+            &nbsp;&nbsp;<button id="seg2stl" sytle="">Download as STL format (beta version)</button>&nbsp;&nbsp;
+            <button id="RemoveSEG" onclick="DeleteSelectedSEG();" style="font-size: 14px;display:none;">Delete Selected SEG</button>  
+        </div>`
     getByid("page-header").appendChild(span);
     getByid("SegStyleDiv").style.display = "none";
+
+    getByid("SegBrushSizeText").onchange = function () { getByid("SegBrushSizeRange").value = this.value };
+    getByid("SegBrushSizeRange").onchange = function () { getByid("SegBrushSizeText").value = this.value };
 }
 loadWriteSEG();
 
@@ -341,14 +349,61 @@ getByid("fillSEG").onclick = function () {
     fillSEG();
     drawBorder(getByid("fillSEG"));
 }
+
+getByid("eraseSEG").onclick = function () {
+    set_BL_model('eraseSEG');
+    writeSeg();
+    drawBorder(getByid("eraseSEG"));
+}
+
+getByid("UndoSEG").onclick = function () {
+    if (!SEG_now_choose || !SEGtempUndoStorage.length) return;
+
+    if (SEG_now_choose) SEGtempRedoStorage.unshift({ ImageData: SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height).data, pixelData: SEG_now_choose.pixelData.slice() });
+
+    var Data = SEGtempUndoStorage.pop();
+    var ImgData = SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height);
+    var DataBuffer = new Uint32Array(ImgData.data.buffer), PixelBuffer = new Uint32Array(Data.ImageData.buffer);
+
+    for (var i = 0; i < Data.ImageData.length; i++)
+        DataBuffer[i] = PixelBuffer[i];
+
+    SEG_now_choose.canvas.getContext("2d").putImageData(ImgData, 0, 0);
+    SEG_now_choose.pixelData = Data.pixelData.slice();
+
+    refreshMarkFromSop(GetViewport().sop);
+    displayAllMark();
+}
+
+getByid("RedoSEG").onclick = function () {
+    if (!SEG_now_choose || !SEGtempRedoStorage.length) return;
+
+    if (SEG_now_choose) SEGtempUndoStorage.push({ ImageData: SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height).data, pixelData: SEG_now_choose.pixelData.slice() });
+
+    var Data = SEGtempRedoStorage.shift();
+    var ImgData = SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height);
+    var DataBuffer = new Uint32Array(ImgData.data.buffer), PixelBuffer = new Uint32Array(Data.ImageData.buffer);
+
+    for (var i = 0; i < Data.ImageData.length; i++)
+        DataBuffer[i] = PixelBuffer[i];
+
+    SEG_now_choose.canvas.getContext("2d").putImageData(ImgData, 0, 0);
+    SEG_now_choose.pixelData = Data.pixelData.slice();
+
+    refreshMarkFromSop(GetViewport().sop);
+    displayAllMark();
+}
+
 BorderList_Icon.push("drawSEG");
 BorderList_Icon.push("eraseSEG");
 BorderList_Icon.push("fillSEG");
+BorderList_Icon.push("UndoSEG");
+BorderList_Icon.push("RedoSEG");
 
 getByid("writeSEG").onclick = function () {
     if (this.enable == false) return;
     cancelTools();
-    openWriteSEG = true;
+    openWriteSEG = true, SEGtempUndoStorage = [], SEGtempRedoStorage = [];
     img2darkByClass("SEG", !openWriteSEG);
     openLeftImgClick = !openWriteSEG;
     if (openWriteSEG == true) {
@@ -357,13 +412,15 @@ getByid("writeSEG").onclick = function () {
         set_BL_model('writeSeg');
         openWheel = true;
         writeSeg();
-    }
+    };
 
     this.src = openWriteSEG == true ? '../image/icon/lite/seg_on.png' : '../image/icon/lite/seg_off.png';
     this.style.display = openWriteSEG != true ? "" : "none";
     getByid("exitSEG").style.display = openWriteSEG == true ? "" : "none";
     getByid("eraseSEG").style.display = openWriteSEG == true ? "" : "none";
     getByid("fillSEG").style.display = openWriteSEG == true ? "" : "none";
+    getByid("UndoSEG").style.display = openWriteSEG == true ? "" : "none";
+    getByid("RedoSEG").style.display = openWriteSEG == true ? "" : "none";
     getByid("saveSEG").style.display = openWriteSEG == true ? "" : "none";
     getByid("drawSEG").style.display = openWriteSEG == true ? "" : "none";
 
@@ -376,20 +433,15 @@ getByid("writeSEG").onclick = function () {
         getByid("exitSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("eraseSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("fillSEG").style.display = openWriteSEG == true ? "" : "none";
+        getByid("UndoSEG").style.display = openWriteSEG == true ? "" : "none";
+        getByid("RedoSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("saveSEG").style.display = openWriteSEG == true ? "" : "none";
         getByid("drawSEG").style.display = openWriteSEG == true ? "" : "none";
         SetTable();
         displayMark();
         getByid('MouseOperation').click();
     }
-    getByid("eraseSEG").onclick = function () {
-        return;
-        set_BL_model('eraseSEG');
-        eraseSEG();
-        drawBorder(getByid("eraseSEG"));
-        hideAllDrawer();
-        displayAllMark();
-    }
+
     getByid("saveSEG").onclick = function () {
         function download(text, name, type) {
             let a = document.createElement('a');
@@ -619,31 +671,6 @@ var SEG_format_tail_4 = `
             </item>`;
 var SEG_now_choose = null;
 var temp_SEG_format = "";
-
-
-function eraseSEG() {
-    if (BL_mode == 'eraseSEG') {
-
-        set_BL_model.onchange = function () {
-            displayMark();
-            set_BL_model.onchange = function () { return 0; };
-        }
-
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            SEG_pounch(parseInt(rotateCalculation(e, true)[0]), parseInt(rotateCalculation(e, true)[1]));
-            if (SEG_now_choose) {
-                PatientMark.splice(PatientMark.indexOf(SEG_now_choose.dcm), 1);
-                displayMark();
-                SEG_now_choose = null;
-                refreshMarkFromSop(GetViewport().sop);
-                return;
-            }
-        });
-        BlueLightMousemoveList = [];
-        BlueLightMouseupList = [];
-    }
-}
 
 function SEG_pounch(currX, currY) {
     for (var n = 0; n < PatientMark.length; n++) {
@@ -908,12 +935,22 @@ function fillSEG() {
                 let angle2point = rotateCalculation(e, true);
                 PatientMark.push(SegMark);
                 SEG_now_choose = SegMark;
+
+                if (SEG_now_choose) SEGtempUndoStorage.push({ ImageData: SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height).data, pixelData: SEG_now_choose.pixelData.slice() });
+                if (SEGtempUndoStorage.length > 15) SEGtempUndoStorage.shift();
+                SEGtempRedoStorage = [];
+
                 //setSEG2PixelData(angle2point);
                 fillSEG2PixelData(angle2point, SegMark.canvas);
                 refreshMark(SegMark);
             } else {
                 let angle2point = rotateCalculation(e, true);
                 var SegMark = SEG_now_choose;
+
+                if (SEG_now_choose) SEGtempUndoStorage.push({ ImageData: SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height).data, pixelData: SEG_now_choose.pixelData.slice() });
+                if (SEGtempUndoStorage.length > 15) SEGtempUndoStorage.shift();
+                SEGtempRedoStorage = [];
+
                 //setSEG2PixelData(angle2point);
                 fillSEG2PixelData(angle2point, SegMark.canvas);
                 refreshMark(SegMark);
@@ -924,57 +961,62 @@ function fillSEG() {
 }
 
 function writeSeg() {
-    if (BL_mode == 'writeSeg') {
+    if (BL_mode == 'writeSeg' || BL_mode == 'eraseSEG') {
 
-        drawBorder(getByid("drawSEG"));
+        if (BL_mode == 'writeSeg') drawBorder(getByid("drawSEG"));
+        if (BL_mode == 'eraseSEG') drawBorder(getByid("eraseSEG"));
 
         BlueLightMousedownList = [];
         BlueLightMousedownList.push(function (e) {
-            if (openWindow != true) {
-                var break1 = false;
-                for (var n_s = 0; n_s < PatientMark.length; n_s++) {
-                    if (PatientMark[n_s].sop == GetViewport().sop) {
-                        if (break1 == true) break;
-                        if (PatientMark[n_s].type == "SEG") {
-                            SEG_now_choose = PatientMark[n_s];
-                            break1 = true;
-                        }
+            if (openWindow == true) return;
 
+            var break1 = false;
+            for (var n_s = 0; n_s < PatientMark.length; n_s++) {
+                if (PatientMark[n_s].sop == GetViewport().sop) {
+                    if (break1 == true) break;
+                    if (PatientMark[n_s].type == "SEG") {
+                        SEG_now_choose = PatientMark[n_s];
+                        break1 = true;
                     }
                 }
-                if (break1 == false) {
-                    var SegMark = new BlueLightMark();
-                    SegMark.setQRLevels(GetViewport().QRLevels);
-                    SegMark.type = SegMark.hideName = SegMark.showName = "SEG";
-                    SegMark.ImagePositionPatient = GetViewport().tags.ImagePositionPatient;
-                    SegMark.pixelData = new Uint8ClampedArray(GetViewport().canvas.width * GetViewport().canvas.height);
-
-                    if (!SegMark.canvas) {
-                        SegMark.canvas = document.createElement("CANVAS");
-                        SegMark.canvas.width = GetViewport().canvas.width;
-                        SegMark.canvas.height = GetViewport().canvas.height;
-                        SegMark.ctx = SegMark.canvas.getContext('2d');
-
-                        var pixelData = SegMark.ctx.getImageData(0, 0, SegMark.canvas.width, SegMark.canvas.height);
-
-                        for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
-                            if (SegMark.pixelData[j] != 0) {
-                                pixelData.data[i] = 0;
-                                pixelData.data[i + 1] = 0;
-                                pixelData.data[i + 2] = 255;
-                                pixelData.data[i + 3] = 255;
-                            }
-                        }
-                        SegMark.ctx.putImageData(pixelData, 0, 0);
-                    }
-                    let angle2point = rotateCalculation(e, true);
-                    PatientMark.push(SegMark);
-                    SEG_now_choose = SegMark;
-                    setSEG2PixelData(angle2point);
-                    refreshMark(SegMark);
-                }
-                displayAllMark();
             }
+            if (break1 == false) {
+                var SegMark = new BlueLightMark();
+                SegMark.setQRLevels(GetViewport().QRLevels);
+                SegMark.type = SegMark.hideName = SegMark.showName = "SEG";
+                SegMark.ImagePositionPatient = GetViewport().tags.ImagePositionPatient;
+                SegMark.pixelData = new Uint8ClampedArray(GetViewport().canvas.width * GetViewport().canvas.height);
+
+                if (!SegMark.canvas) {
+                    SegMark.canvas = document.createElement("CANVAS");
+                    SegMark.canvas.width = GetViewport().canvas.width;
+                    SegMark.canvas.height = GetViewport().canvas.height;
+                    SegMark.ctx = SegMark.canvas.getContext('2d');
+
+                    var pixelData = SegMark.ctx.getImageData(0, 0, SegMark.canvas.width, SegMark.canvas.height);
+
+                    for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
+                        if (SegMark.pixelData[j] != 0) {
+                            pixelData.data[i] = 0;
+                            pixelData.data[i + 1] = 0;
+                            pixelData.data[i + 2] = 255;
+                            pixelData.data[i + 3] = 255;
+                        }
+                    }
+                    SegMark.ctx.putImageData(pixelData, 0, 0);
+                }
+                PatientMark.push(SegMark);
+                SEG_now_choose = SegMark;
+            }
+
+            if (SEG_now_choose) SEGtempUndoStorage.push({ ImageData: SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height).data, pixelData: SEG_now_choose.pixelData.slice() });
+            if (SEGtempUndoStorage.length > 15) SEGtempUndoStorage.shift();
+            SEGtempRedoStorage = [];
+
+            let angle2point = rotateCalculation(e, true);
+            setSEG2PixelData(angle2point);
+            refreshMark(SEG_now_choose);
+            displayAllMark();
         });
 
         var Previous_angle2point;
@@ -1126,7 +1168,7 @@ function setSEG2PixelData(angle2point) {
 
     var pixelData = SEG_now_choose.ctx.getImageData(parseInt(angle2point[0]) - rect, parseInt(angle2point[1]) - rect, rect * 2, rect * 2);
     var p = 0;
-    if (KeyCode_ctrl == true) {
+    if (KeyCode_ctrl == true || BL_mode == 'eraseSEG') {
         for (var s = -rect; s < rect; s++) {
             for (var s2 = -rect; s2 < rect; s2++) {
                 if ((s * s) + (s2 * s2) < rect * rect) {

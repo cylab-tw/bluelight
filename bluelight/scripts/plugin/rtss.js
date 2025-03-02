@@ -14,7 +14,7 @@ function loadWriteRTSS() {
     var span = document.createElement("SPAN")
     span.innerHTML =
         `<div id="RtssDiv"
-    style="background-color:#30306044;display:none;float:right;display: none;flex-direction: column;position: absolute;right:15px;top:100px;z-index: 20;"
+    style="background-color:#30306044;display:none;float:right;display: none;flex-direction: column;position: absolute;right:25px;top:10px;z-index: 20;"
     width="100">
     <div style="background-color:#889292;">
       <font color="white">Color：</font>
@@ -54,7 +54,7 @@ function loadWriteRTSS() {
       <br />
       <button id="RemoveRtss" onclick="DeleteSelectedRTSS();" style="font-size: 14px;">Delete Selected RTSS</button>
   </div>`
-    getByid("form-group").appendChild(span);
+    getByid("DicomPage").appendChild(span);
     getByid("RtssDiv").style.display = "none";
 }
 loadWriteRTSS();
