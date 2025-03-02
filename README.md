@@ -4,8 +4,8 @@
 </div>
 <p><strong>Blue Light</strong> is a browser-based medical image viewer primarily maintained by the <a href="https://cylab.dicom.tw/">Imaging Informatics Labs</a>. It is a pure single-page application (SPA), lightweight, and uses only JavaScript and HTML5 technologies to deploy it on any HTTP server easily (just put it in the HTTP server). It supports not only opening local data but also connecting to medical image archives which support <a href="https://www.dicomstandard.org/using/dicomweb/">DICOMweb</a>. It can display various image markups and annotations such as Annotation and Image Markup (AIM), DICOM-RT structure set (RTSS), DICOM Overlay, and DICOM Presentation State. It provides tools for medical image interpretation and 3D image reconstruction, e.g., Multiplanar Rreformation or Reconstruction (MPR) and Volume Rendering (VR).</p>
 
-<a href="[https://blsearch.dicom.tw](https://cylab-tw.github.io/bluelight/search/html/start.html)"><strong>Live DEMO</strong></a>&ensp;&ensp;Short URL: https://blsearch.dicom.tw &ensp;&ensp;&ensp;
-<a href="[https://bl.dicom.tw](https://cylab-tw.github.io/bluelight/bluelight/html/start.html)"><strong>Online Viewer</strong></a>&ensp;&ensp;Short URL: https://bl.dicom.tw &ensp;&ensp;&ensp; 
+<a href="https://cylab-tw.github.io/bluelight/search/html/start.html"><strong>Live DEMO</strong></a>&ensp;&ensp;Short URL: https://blsearch.dicom.tw &ensp;&ensp;&ensp;
+<a href="https://cylab-tw.github.io/bluelight/bluelight/html/start.html"><strong>Online Viewer</strong></a>&ensp;&ensp;Short URL: https://bl.dicom.tw &ensp;&ensp;&ensp; 
 
 ## Demo Videos
 * [Video - Basic operation](https://youtu.be/AbeiOjQNHjk)
