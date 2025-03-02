@@ -308,6 +308,8 @@ function initMPR2() {
     for (var l = 0; l < list.length; l++) {
         const l2 = l;
         const image = list[l2].Image;
+        if (image.imageDataLoaded == false && image.loadImageData)image.loadImageData();
+
         const pixelData = list[l2].Image.pixelData;
         o3dPixelData.push(pixelData);
         o3dImage.push(image);

@@ -1258,6 +1258,7 @@ endsolid name`
         for (var ll = 0; ll < this.sopList.length; ll++) {
             try {
                 var SOP = this.sopList[ll], NewCanvas = document.createElement("CANVAS");
+                if (SOP.Image.imageDataLoaded == false && SOP.Image.loadImageData) SOP.Image.loadImageData();
                 NewCanvas.className = "VrCanvas"; //"VrCanvas VRshadow"
 
                 //預覽模式可以讓左右兩側的圖正常

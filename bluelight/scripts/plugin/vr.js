@@ -574,6 +574,7 @@ function initVR() {
         for (var l = 0; l < list.length; l++) {
             const l2 = l;
             const image = list[l2].Image;
+            if (image.imageDataLoaded == false && image.loadImageData)image.loadImageData();
             const pixelData = list[l2].Image.pixelData;
             try {
                 var NewDiv = document.createElement("DIV");
