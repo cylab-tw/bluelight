@@ -4,17 +4,20 @@
 </div>
 <p><strong>Blue Light</strong> is a browser-based medical image viewer primarily maintained by the <a href="https://cylab.dicom.tw/">Imaging Informatics Labs</a>. It is a pure single-page application (SPA), lightweight, and uses only JavaScript and HTML5 technologies to deploy it on any HTTP server easily (just put it in the HTTP server). It supports not only opening local data but also connecting to medical image archives which support <a href="https://www.dicomstandard.org/using/dicomweb/">DICOMweb</a>. It can display various image markups and annotations such as Annotation and Image Markup (AIM), DICOM-RT structure set (RTSS), DICOM Overlay, and DICOM Presentation State. It provides tools for medical image interpretation and 3D image reconstruction, e.g., Multiplanar Rreformation or Reconstruction (MPR) and Volume Rendering (VR).</p>
 
-<a href="https://blsearch.dicom.tw"><strong>Live DEMO</strong></a>&ensp;&ensp;&ensp;
-<a href="https://bl.dicom.tw"><strong>Online Viewer</strong></a>&ensp;&ensp;&ensp;
+<a href="[https://blsearch.dicom.tw](https://cylab-tw.github.io/bluelight/search/html/start.html)"><strong>Live DEMO</strong></a>&ensp;&ensp;Short URL: https://blsearch.dicom.tw &ensp;&ensp;&ensp;
+<a href="[https://bl.dicom.tw](https://cylab-tw.github.io/bluelight/bluelight/html/start.html)"><strong>Online Viewer</strong></a>&ensp;&ensp;Short URL: https://bl.dicom.tw &ensp;&ensp;&ensp; 
 
 ## Demo Videos
 * [Video - Basic operation](https://youtu.be/AbeiOjQNHjk)
+
+### Plugin
 * [Video - Labeling tools](https://youtu.be/1WZ6VshkWpc)
+* [Video - DICOM SEG Editor](https://youtu.be/mXBJtlO8YEU)
 * [Video - 2D MPR](https://youtu.be/p-2agvZ-mSc)
+* [Video - MIP and minIP](https://youtu.be/pC70KfSqVPY)
 * Volume Rendering
   - <a href="https://youtu.be/NfoktLofJL8"><strong> Video - Volume Rendering Scenario #1 </a>
   - <a href="https://youtu.be/CrLJsGuIgtI"><strong> Video - Volume Rendering Scenario #2 </a> 
-* [Video - MIP and minIP](https://youtu.be/pC70KfSqVPY)
 * [Video - Dig](https://youtu.be/HEd9--DCp_4)
 
 ## Install
@@ -46,7 +49,7 @@
 
 ### Support IODs
 * Most general image IODs (CR, DX, CT, MR, US, etc)
-* 12 Lead ECG Waveform
+* 12 Lead ECG Waveform: [Test URL](https://cylab-tw.github.io/bluelight/bluelight/html/start.html?ecgtest=true) 
 * DICOM PDF
 
 ### Native features for 2D image interpretation 
