@@ -30,25 +30,32 @@ async function auth() {
                 try {
                     let originalUrl = removeURLParameters(window.location.href, "code", "session_state", "iss");
                     
-                    // 檢查是否為本地URL
-                    const isLocalUrl = (url) => {
+                    // 更安全的URL路徑處理
+                    const getCleanPath = (url) => {
                         try {
-                            const parsed = new URL(url, window.location.origin);
-                            return parsed.origin === window.location.origin || url.startsWith('/');
+                            // 先解碼整個URL
+                            const decodedUrl = decodeURIComponent(url);
+                            const urlObj = new URL(decodedUrl, window.location.origin);
+                            // 只取相對路徑部分
+                            let path = urlObj.pathname;
+                            // 確保路徑以 / 開頭
+                            path = path.startsWith('/') ? path : '/' + path;
+                            // 獲取查詢參數
+                            const params = new URLSearchParams(urlObj.search);
+                            // 組合最終路徑，不需要額外編碼
+                            return path + (params.toString() ? '?' + params.toString() : '');
                         } catch(e) {
-                            return false;
+                            console.error("URL parsing error:", e);
+                            return '/';
                         }
                     };
 
-                    if(isLocalUrl(originalUrl)) {
-                        window.location.href = originalUrl;
-                    } else {
-                        console.error("Detected potential malicious redirect attempt");
-                        window.location.href = "/"; // 重定向到安全的首頁
-                    }
+                    const safePath = getCleanPath(originalUrl);
+                    // 使用 location.replace 和相對路徑
+                    window.location.replace(safePath);
                 } catch(e) {
                     console.error("Error processing redirect URL:", e);
-                    window.location.href = "/";
+                    window.location.replace('/');
                 }
             }
             if(OAuthConfig.tokenInRequest == true)
