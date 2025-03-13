@@ -27,8 +27,29 @@ async function auth() {
         if (tokenVaild) {
             if(window.location.href.indexOf(`code=`) != -1)
             {
-                let originalUrl = removeURLParameter(window.location.href, "code","session_state","iss");
-                window.location.href = originalUrl;
+                try {
+                    let originalUrl = removeURLParameters(window.location.href, "code", "session_state", "iss");
+                    
+                    // 檢查是否為本地URL
+                    const isLocalUrl = (url) => {
+                        try {
+                            const parsed = new URL(url, window.location.origin);
+                            return parsed.origin === window.location.origin || url.startsWith('/');
+                        } catch(e) {
+                            return false;
+                        }
+                    };
+
+                    if(isLocalUrl(originalUrl)) {
+                        window.location.href = originalUrl;
+                    } else {
+                        console.error("Detected potential malicious redirect attempt");
+                        window.location.href = "/"; // 重定向到安全的首頁
+                    }
+                } catch(e) {
+                    console.error("Error processing redirect URL:", e);
+                    window.location.href = "/";
+                }
             }
             if(OAuthConfig.tokenInRequest == true)
             {
