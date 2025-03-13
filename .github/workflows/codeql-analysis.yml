@@ -13,10 +13,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master,  oauthdev2-fixredirecturl ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ master ]
+    branches: [ master,  oauthdev2-fixredirecturl ]
   schedule:
     - cron: '42 5 * * 2'
 
