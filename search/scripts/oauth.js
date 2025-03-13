@@ -27,9 +27,37 @@ async function auth() {
         if (tokenVaild) {
             if(window.location.href.indexOf(`code=`) != -1)
             {
-                let originalUrl = removeURLParameter(window.location.href, "code");
-                originalUrl = removeURLParameter(originalUrl, "session_state");
-                window.location.href = originalUrl;
+                try {
+                    let originalUrl = removeURLParameter(window.location.href, "code");
+                    originalUrl = removeURLParameter(originalUrl, "session_state");
+                    
+                    // 更安全的URL路徑處理
+                    const getCleanPath = (url) => {
+                        try {
+                            // 先解碼整個URL
+                            const decodedUrl = decodeURIComponent(url);
+                            const urlObj = new URL(decodedUrl, window.location.origin);
+                            // 只取相對路徑部分
+                            let path = urlObj.pathname;
+                            // 確保路徑以 / 開頭
+                            path = path.startsWith('/') ? path : '/' + path;
+                            // 獲取查詢參數
+                            const params = new URLSearchParams(urlObj.search);
+                            // 組合最終路徑，不需要額外編碼
+                            return path + (params.toString() ? '?' + params.toString() : '');
+                        } catch(e) {
+                            console.error("URL parsing error:", e);
+                            return '/';
+                        }
+                    };
+
+                    const safePath = getCleanPath(originalUrl);
+                    // 使用 location.replace 和相對路徑
+                    window.location.replace(safePath);
+                } catch(e) {
+                    console.error("Error processing redirect URL:", e);
+                    window.location.replace('/');
+                }
             }
             if(OAuthConfig.tokenInRequest == true)
             {
