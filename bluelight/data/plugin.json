@@ -15,6 +15,7 @@
         {"path":"../scripts/plugin/calibration.js", "name": "calibration", "disableCatch": "true"},
         {"path":"../scripts/plugin/mtss.js", "name": "mtss", "disableCatch": "true"},
         {"path":"../scripts/plugin/ecg.js", "name": "ecg", "disableCatch": "true"},
-        {"path":"../scripts/plugin/anatomical_plane.js", "name": "anatomical_plane", "disableCatch": "true"}
+        {"path":"../scripts/plugin/anatomical_plane.js", "name": "anatomical_plane", "disableCatch": "true"},
+        {"path": "../scripts/plugin/AutoOperation.js", "name": "AutoOperation", "disableCatch": "true"}
     ]
 }

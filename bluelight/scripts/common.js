@@ -228,12 +228,13 @@ function ScaleToTrueSize(viewportNum = viewportNumber) {
     let mmInPixels = getMmInPixels();
     var image = GetViewport(viewportNum).content.image;
     let PixelSpacing = ((image.rowPixelSpacing ? image.rowPixelSpacing : image.ImagerPixelSpacing));
-    let scaleFactor = PixelSpacing * mmInPixels / window.devicePixelRatio;;
+    let scaleFactor = PixelSpacing * mmInPixels / window.devicePixelRatio;
     if (isNaN(scaleFactor)) scaleFactor = 1 / window.devicePixelRatio;
 
     GetViewport(viewportNum).scale = scaleFactor;
     setTransform(viewportNum);
     displayAllRuler();
+    return scaleFactor;
 }
 
 class Matrix4x4 {
