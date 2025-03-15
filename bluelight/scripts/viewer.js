@@ -10,7 +10,11 @@ VIEWPORT.initTransform = function (viewport, image) {
     if (viewport.tags.PixelSpacing) {
         viewport.transform.PixelSpacingX = 1.0 / parseFloat(viewport.tags.PixelSpacing.split("\\")[0]);
         viewport.transform.PixelSpacingY = 1.0 / parseFloat(viewport.tags.PixelSpacing.split("\\")[1]);
-    } else {
+    } else if (viewport.tags.ImagerPixelSpacing) {
+        viewport.transform.PixelSpacingX = 1.0 / parseFloat(viewport.tags.ImagerPixelSpacing.split("\\")[0]);
+        viewport.transform.PixelSpacingY = 1.0 / parseFloat(viewport.tags.ImagerPixelSpacing.split("\\")[1]);
+    }
+    else {
         //viewport.transform.PixelSpacingX = viewport.transform.PixelSpacingY = 1.0;
     }
 

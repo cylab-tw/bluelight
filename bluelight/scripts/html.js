@@ -251,6 +251,12 @@ function html_onload() {
     getByid("textWW").value = GetViewport().windowWidth;
   }
 
+  getByid("TrueSizeImg").onclick = function () {
+    if (!(location.search.includes("TrueSizeTest=true"))) return;
+    ScaleToTrueSize();
+  }
+  if (!(location.search.includes("TrueSizeTest=true"))) getByid("TrueSize_span").style.display = "none";
+
   getByid("clearviewportImg").onclick = function () {
     var clearviewportWindow = document.createElement("DIV");
     clearviewportWindow.style.width = "40vw";
@@ -663,6 +669,12 @@ function html_onload() {
     }
     getByid("TableSelect").onchange = TableSelectOnChange;
     TableSelectOnChange();
+  }
+
+  getByid("ScrollBarSelect").onchange = function () {
+    if (getByid("ScrollBarSelectShow").selected == true) ScrollBar.ShowOrHide = true;
+    else if (getByid("ScrollBarSelectHide").selected == true) ScrollBar.ShowOrHide = false;
+    for (var z = 0; z < Viewport_Total; z++) GetViewport(z).ScrollBar.reflesh();
   }
 
   /*getByid("openPenfile").onclick = function () {

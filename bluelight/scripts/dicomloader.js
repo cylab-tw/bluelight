@@ -105,8 +105,15 @@ function getDefaultImageObj(dataSet, type, url, imageDataLoaded) {
     imageObj.intercept = dataSet.intString('x00281052');
     imageObj.slope = dataSet.floatString('x00281053');
     imageObj.bitsAllocated = dataSet.int16(Tag.BitsAllocated);
-    if (dataSet.string('x00280030')) imageObj.rowPixelSpacing = parseFloat(dataSet.string('x00280030').split("\\")[0]);
-    if (dataSet.string('x00280030')) imageObj.columnPixelSpacing = parseFloat(dataSet.string('x00280030').split("\\")[1]);
+    if (dataSet.string('x00280030')) {
+        imageObj.rowPixelSpacing = parseFloat(dataSet.string('x00280030').split("\\")[0]);
+        imageObj.columnPixelSpacing = parseFloat(dataSet.string('x00280030').split("\\")[1]);
+    }
+    else if (dataSet.string('x00181164')) {
+        imageObj.rowPixelSpacing = parseFloat(dataSet.string('x00181164').split("\\")[0]);
+        imageObj.columnPixelSpacing = parseFloat(dataSet.string('x00181164').split("\\")[1]);
+    }
+
     imageObj.samplesPerPixel = dataSet.string('x00280004') === 'YBR_FULL_422' ? 2 : dataSet.uint16('x00280002');
     imageObj.data = dataSet;
     imageObj.url = url;

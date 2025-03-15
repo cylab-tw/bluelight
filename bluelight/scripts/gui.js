@@ -320,6 +320,7 @@ window.onresize = function () {
         for (var i = 0; i < Viewport_Total; i++) {
             try {
                 GetViewport(i).scale = null;
+                GetViewport(i).translate.x = GetViewport(i).translate.y = 0;
                 GetViewport(i).loadImgBySop(GetViewport(i).Sop);
             } catch (ex) { console.log(ex) }
         }

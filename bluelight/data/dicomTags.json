@@ -35,6 +35,9 @@
         "value": "Pixel: {val:PixelValue}"
       },
       {
+        "value": "Zoom: {val:scale}"
+      },
+      {
         "value": "WC: {val:WindowCenter} WW: {val:WindowWidth}"
       },
       {

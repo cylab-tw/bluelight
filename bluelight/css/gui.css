@@ -10,6 +10,15 @@
   --leftImagePadding: 150px;
   --leftScrollSize: 15px;
   --ishaveLeftScroll: 0;
+
+  --globalPadding:1px;
+}
+
+html, body {
+  margin: var(--globalPadding);
+  padding: var(--globalPadding);
+  width:  calc(100% - var(--globalPadding));
+  height: calc(100% - var(--globalPadding));
 }
 
 .labelLT {

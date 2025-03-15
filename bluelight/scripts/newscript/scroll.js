@@ -71,6 +71,7 @@ class ScrollBar {
     static selectedScrollBar = -1;
     static startPointY = -1;
     static endPointY = -1;
+    static ShowOrHide = true;
 
     constructor(viewport) {
         this.viewport = viewport;
@@ -118,6 +119,15 @@ class ScrollBar {
         this.index = num;
     }
     reflesh() {
+        if (ScrollBar.ShowOrHide == false) {
+            this.outerDIV.style.display = "none";
+            this.innerDIV.style.display = "none";
+            document.documentElement.style.setProperty('--rightLabelPadding', `${rightLabelPadding}px`);
+            return;
+        } else {
+            this.outerDIV.style.display = "";
+            this.innerDIV.style.display = "";
+        }
         this.outerDIV.style.width = this.width + "px";
         this.innerDIV.style.width = this.width + "px";
 

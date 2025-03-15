@@ -18,8 +18,8 @@
   <script src="../scripts/external/cornerstone/dicomParser.js" async></script>
   <script src="../scripts/external/cornerstone/dataDictionary.js"></script>
 
-   <!--<script src="../scripts/external/cornerstone/decode/decodeImageFrame2.js"></script>-->
- <script type="module">
+  <!--<script src="../scripts/external/cornerstone/decode/decodeImageFrame2.js"></script>-->
+  <script type="module">
     import { decodeImageFrame } from "../scripts/external/cornerstone/decode/decodeImageFrame.js";
     window.decodeImage = decodeImageFrame;
   </script>
@@ -198,6 +198,11 @@
             <img altzhtw="清除視窗" alt="clear viewport" class="innerimg" loading="lazy" id="clearviewportImg"
               src="../image/icon/lite/b_trashcan.png" width="50" height="50">
           </span> <br>
+          <span id="TrueSize_span">
+            <img altzhtw="真實大小" alt="true size" class="innerimg" loading="lazy" id="TrueSizeImg"
+              src="../image/icon/lite/b_TrueSize.png" width="50" height="50">
+            <br>
+          </span>
           <span id="downloadImg_span">
             <img altzhtw="下載圖片" alt="download image" class="innerimg" loading="lazy" id="downloadImg"
               src="../image/icon/lite/download_img.png" width="50" height="50">
@@ -253,6 +258,11 @@
         <option id="TableSelectNone" selected="selected">None</option>
         <option id="DICOMTagsSelect">DICOMTags</option>
         <option id="AIMSelect">AIM</option>
+      </select>
+      <label style="color: #ffffff;" id="ScrollBarLabel">Show ScrollBar：</label>
+      <select id="ScrollBarSelect">
+        <option id="ScrollBarSelectShow" selected="selected">Show</option>
+        <option id="ScrollBarSelectHide">Hide</option>
       </select>
       <!--<button id="ExportButton" sytle="">Export Image</button>
       <button id="ExportButton2" sytle="">Export Dicom</button>-->

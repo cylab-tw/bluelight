@@ -141,7 +141,7 @@ function setTransform(viewportnum = viewportNumber) {
     //element.canvas.style.transform=" translate(-50%,-50%)"
     element.canvas.style.position = "absolute";
     GetViewportMark(viewportnum).style.position = "absolute";
-    element.setLabel("scale", "" + element.scale);
+    element.setLabel("scale", "" + (100 * element.scale).toFixed(1) + "%");
     element.refleshLabel();
     refleshGUI();
 }
@@ -199,6 +199,41 @@ function refleshViewport() {
         refleshCanvas(GetViewport());
         displayMark();
     }
+}
+
+
+
+function ScaleToTrueSize(viewportNum = viewportNumber) {
+    function calcScreenDPI() {
+        const el = document.createElement('div');
+        el.style = 'width: 1in;'
+        document.body.appendChild(el);
+        const dpi = el.offsetWidth;
+        document.body.removeChild(el);
+        return dpi;
+    }
+
+    function getMmInPixels() {
+        let div = document.createElement("div");
+        div.style.width = "100mm";
+        div.style.position = "absolute";
+        div.style.visibility = "hidden";
+        document.body.appendChild(div);
+
+        let mmInPixels = div.offsetWidth / 100;
+        document.body.removeChild(div);
+        return mmInPixels;
+    }
+
+    let mmInPixels = getMmInPixels();
+    var image = GetViewport(viewportNum).content.image;
+    let PixelSpacing = ((image.rowPixelSpacing ? image.rowPixelSpacing : image.ImagerPixelSpacing));
+    let scaleFactor = PixelSpacing * mmInPixels / window.devicePixelRatio;;
+    if (isNaN(scaleFactor)) scaleFactor = 1 / window.devicePixelRatio;
+
+    GetViewport(viewportNum).scale = scaleFactor;
+    setTransform(viewportNum);
+    displayAllRuler();
 }
 
 class Matrix4x4 {
