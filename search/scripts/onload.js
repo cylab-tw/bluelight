@@ -252,12 +252,15 @@ function createTable() {
 
       var row1 = Table2.insertRow(1);
       var cell = row1.insertCell(0); cell.innerHTML = "<b>Open This Study </b><img src='../image/icon/goto.png'></img>";
-      if (!this.Modality.includes("SM"))
-        cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
-      else if(!this.Modality.includes("MG"))
-        cell.alt = ConfigLog.QIDO.target + '?' + "TrueSizeTest=true" + '&' + "StudyInstanceUID=" + this.Study.StudyUID;
-      else
+      if (this.Modality.includes("SM"))
         cell.alt = ConfigLog.QIDO.targetSM + "?server=" + ConfigLog.QIDO.serverSM + '&' + "studyUid=" + this.Study.StudyUID;
+      else if(this.Modality.includes("MG"))
+        cell.alt = ConfigLog.QIDO.target + '?' + "TrueSizeTest=true" + '&' + "StudyInstanceUID=" + this.Study.StudyUID;
+      else if(this.Modality.includes("ECG"))
+        cell.alt = ConfigLog.QIDO.target + '?' + "ecgtest=true" + '&' + "StudyInstanceUID=" + this.Study.StudyUID;
+      else
+      cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID;
+
       cell.onclick = function () { window.open(this.alt, '_blank'); }
       var cell = row1.insertCell(1); cell.innerHTML = "StudyInstanceUID=" + this.Study.StudyUID;
       row1.className = "SecondRow2";
@@ -277,12 +280,14 @@ function createTable() {
           if (this.Study.Series.length == 1) {
             var row = Table2.insertRow(Series_c_count + 2);
             var cell = row.insertCell(0); cell.innerHTML = undefined2null("" + "loading...");;//"<b>Open This Series </b><img src='../image/icon/goto.png'></img>";
-            if (!this.Modality.includes("SM"))
-              cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
-            else if(!this.Modality.includes("MG"))
+            if (this.Modality.includes("SM"))
+              cell.alt = ConfigLog.QIDO.targetSM + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;              
+            else if(this.Modality.includes("MG"))
               cell.alt = ConfigLog.QIDO.target + '?' + "TrueSizeTest=true" + '&'+ "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+            else if(this.Modality.includes("ECG"))
+              cell.alt = ConfigLog.QIDO.target + '?' + "ecgtest=true" + '&'+ "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
             else
-              cell.alt = ConfigLog.QIDO.targetSM + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+              cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
 
             //cell.onclick = function () { window.open(this.alt, '_blank'); }
             row.insertCell(1).innerHTML = undefined2null("" + "loading...");//"SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
@@ -299,12 +304,14 @@ function createTable() {
         };
         var row = Table2.insertRow(Series_c_count + 2);
         var cell = row.insertCell(0); cell.innerHTML = "<b>Open This Series </b><img src='../image/icon/goto.png'></img>";
-        if (!this.Modality.includes("SM"))
-          cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
-        else if(!this.Modality.includes("MG"))
+        if (this.Modality.includes("SM"))
+          cell.alt = ConfigLog.QIDO.targetSM + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;          
+        else if(this.Modality.includes("MG"))
           cell.alt = ConfigLog.QIDO.target + '?' + "TrueSizeTest=true" + "&" + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+        else if(this.Modality.includes("ECG"))
+          cell.alt = ConfigLog.QIDO.target + '?' + "ecgtest=true" + "&" + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
         else
-          cell.alt = ConfigLog.QIDO.targetSM + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
+          cell.alt = ConfigLog.QIDO.target + '?' + "StudyInstanceUID=" + this.Study.StudyUID + "&" + "SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
 
         cell.onclick = function () { window.open(this.alt, '_blank'); }
         row.insertCell(1).innerHTML = undefined2null("" + this.Study.Series[c].Sop[0].ModalitiesInStudy);//"SeriesInstanceUID=" + this.Study.Series[c].SeriesUID;
