@@ -488,7 +488,7 @@ function loadDicomDataSet(fileData, loadimage = true, url, fromLocal = false) {
     //ECG
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID._12_leadECGWaveformStorage) {
         if (openECG) loadImageFromDataSet(dataSet, 'ecg', loadimage, url, fromLocal);
-        throw "not support ECG";
+        else throw "not support ECG";
     }
 
     //DiCOM Image
