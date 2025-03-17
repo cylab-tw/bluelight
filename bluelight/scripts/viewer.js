@@ -491,6 +491,9 @@ function loadDicomDataSet(fileData, loadimage = true, url, fromLocal = false) {
         else throw "not support ECG";
     }
 
+    //CAD 
+    else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.MammographyCADSR) { }
+
     //DiCOM Image
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.MRImageStorage)//MR
         loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal);

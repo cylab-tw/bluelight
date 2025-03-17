@@ -27,7 +27,7 @@ function initAutoOperation() {
             element.HorizontalFlip = true;
             refleshCanvas(element);
         }
-        if (element.Sop.Image.data.string(Tag.PatientOrientation)[0] == 'A' && element.Sop.Image.data.string(Tag.ImageLaterality) == "R"){
+        if (element.Sop.Image.data.string(Tag.PatientOrientation)[0] == 'A' && element.Sop.Image.data.string(Tag.ImageLaterality) == "R") {
             element.HorizontalFlip = true;
             refleshCanvas(element);
         }
@@ -58,11 +58,11 @@ function AutoOperation() {
 
             if (ImageManager.Study[0].Series.length == 4) {
                 for (var Series of ImageManager.Study[0].Series) {
-                    if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "CC" || ("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "CC" || (!Series.Sop[0].Image.data.string(Tag.ViewPosition) && ("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F"))) {
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "L") GetViewport(1).loadImgBySop(Series.Sop[0]);
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "R") GetViewport(0).loadImgBySop(Series.Sop[0]);
                     }
-                    else if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "MLO" || !("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    else if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "MLO" || (!Series.Sop[0].Image.data.string(Tag.ViewPosition) && !("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F"))) {
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "L") GetViewport(3).loadImgBySop(Series.Sop[0]);
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "R") GetViewport(2).loadImgBySop(Series.Sop[0]);
                     }
@@ -70,11 +70,11 @@ function AutoOperation() {
             }
             else if (ImageManager.Study[0].Series[0].Sop.length == 4) {
                 for (var Sop of ImageManager.Study[0].Series[0].Sop) {
-                    if (Sop.Image.data.string(Tag.ViewPosition) == "CC" || ("" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    if (Sop.Image.data.string(Tag.ViewPosition) == "CC" || (!Sop.Image.data.string(Tag.ViewPosition) && "" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F")) {
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "L") GetViewport(1).loadImgBySop(Sop);
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "R") GetViewport(0).loadImgBySop(Sop);
                     }
-                    else if (Sop.Image.data.string(Tag.ViewPosition) == "MLO" || !("" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    else if (Sop.Image.data.string(Tag.ViewPosition) == "MLO" || (!Sop.Image.data.string(Tag.ViewPosition) && !("" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F"))) {
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "L") GetViewport(3).loadImgBySop(Sop);
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "R") GetViewport(2).loadImgBySop(Sop);
                     }
@@ -83,11 +83,11 @@ function AutoOperation() {
 
             if (ImageManager.Study[1].Series.length == 4) {
                 for (var Series of ImageManager.Study[1].Series) {
-                    if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "CC" || ("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "CC" || (!Series.Sop[0].Image.data.string(Tag.ViewPosition) && ("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F"))) {
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "L") GetViewport(5).loadImgBySop(Series.Sop[0]);
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "R") GetViewport(4).loadImgBySop(Series.Sop[0]);
                     }
-                    else if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "MLO" || !("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    else if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "MLO" || (!Series.Sop[0].Image.data.string(Tag.ViewPosition) && !("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F"))) {
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "L") GetViewport(7).loadImgBySop(Series.Sop[0]);
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "R") GetViewport(6).loadImgBySop(Series.Sop[0]);
                     }
@@ -95,11 +95,11 @@ function AutoOperation() {
             }
             else if (ImageManager.Study[1].Series[0].Sop.length == 4) {
                 for (var Sop of ImageManager.Study[1].Series[0].Sop) {
-                    if (Sop.Image.data.string(Tag.ViewPosition) == "CC" || ("" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    if (Sop.Image.data.string(Tag.ViewPosition) == "CC" || (!Sop.Image.data.string(Tag.ViewPosition) && ("" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F"))) {
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "L") GetViewport(5).loadImgBySop(Sop);
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "R") GetViewport(4).loadImgBySop(Sop);
                     }
-                    else if (Sop.Image.data.string(Tag.ViewPosition) == "MLO" || !("" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    else if (Sop.Image.data.string(Tag.ViewPosition) == "MLO" || (!Sop.Image.data.string(Tag.ViewPosition) && !("" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F"))) {
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "L") GetViewport(7).loadImgBySop(Sop);
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "R") GetViewport(6).loadImgBySop(Sop);
                     }
@@ -117,11 +117,11 @@ function AutoOperation() {
                 GetViewport(0).AutoOperation = true; GetViewport(1).AutoOperation = true; GetViewport(2).AutoOperation = true; GetViewport(3).AutoOperation = true;
 
                 for (var Series of ImageManager.Study[0].Series) {
-                    if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "CC" || ("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "CC" || (!Series.Sop[0].Image.data.string(Tag.ViewPosition) && ("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F"))) {
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "L") GetViewport(1).loadImgBySop(Series.Sop[0]);
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "R") GetViewport(0).loadImgBySop(Series.Sop[0]);
                     }
-                    else if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "MLO" || !("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    else if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "MLO" || (!Series.Sop[0].Image.data.string(Tag.ViewPosition) && !("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F"))) {
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "L") GetViewport(3).loadImgBySop(Series.Sop[0]);
                         if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "R") GetViewport(2).loadImgBySop(Series.Sop[0]);
                     }
@@ -138,11 +138,11 @@ function AutoOperation() {
                 GetViewport(0).AutoOperation = true; GetViewport(1).AutoOperation = true; GetViewport(2).AutoOperation = true; GetViewport(3).AutoOperation = true;
 
                 for (var Sop of ImageManager.Study[0].Series[0].Sop) {
-                    if (Sop.Image.data.string(Tag.ViewPosition) == "CC" || ("" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    if (Sop.Image.data.string(Tag.ViewPosition) == "CC" || (!Sop.Image.data.string(Tag.ViewPosition) && ("" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F"))) {
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "L") GetViewport(1).loadImgBySop(Sop);
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "R") GetViewport(0).loadImgBySop(Sop);
                     }
-                    else if (Sop.Image.data.string(Tag.ViewPosition) == "MLO" || !("" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F")) {
+                    else if (Sop.Image.data.string(Tag.ViewPosition) == "MLO" || (!Sop.Image.data.string(Tag.ViewPosition) && !("" + Sop.Image.data.string(Tag.PatientOrientation)).includes("F"))) {
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "L") GetViewport(3).loadImgBySop(Sop);
                         if (Sop.Image.data.string(Tag.ImageLaterality) == "R") GetViewport(2).loadImgBySop(Sop);
                     }
