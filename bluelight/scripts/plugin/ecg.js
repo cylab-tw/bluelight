@@ -15,7 +15,7 @@ function loadECG() {
     getByid("EcgPage").appendChild(span);
     if (location.search.includes("ecgtest=true")) openECG = true;
 }
-loadECG();
+onloadFunction.push2First(loadECG);
 
 function EcgLoader(Sop) {
     Pages.displayPage("EcgPage");
