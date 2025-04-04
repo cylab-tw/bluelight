@@ -136,12 +136,28 @@ function html_onload() {
   }*/
 
   getByid("downloadDcm").onclick = function () {
+    async function downloadFile(url, filename) {
+      const response = await fetch(url);
+      const blob = await response.blob(); // 取得 Blob 物件
+
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); // 產生可下載的物件 URL
+      a.download = filename; // 強制指定下載的檔案名稱與副檔名
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href); // 釋放 URL
+    }
+
     var Export2dcm = function () {
       var link = document.createElement('a');
       link.download = GetViewport().content.image.url.replace(/^.*(\\|\/|\:)/, '');
-      //console.log(link.download);
-      if (link.download.includes(".dcm") == false) link.download = link.download + ".dcm";
+
       link.href = GetViewport().content.image.url;
+      //console.log(link.download);
+      if (GetViewport().content.image.fileExtension == 'mht' && link.download.includes(".mht") == false) return downloadFile(link.href, link.download + ".mht");
+      else if (GetViewport().content.image.fileExtension == 'image') return;
+      else if (link.download.includes(".dcm") == false) link.download = link.download + ".dcm";
       link.click();
     }
     Export2dcm();

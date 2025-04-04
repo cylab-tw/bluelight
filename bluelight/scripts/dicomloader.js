@@ -1,6 +1,6 @@
 
-function loadImageFromDataSet(dataSet, type, loadimage = true, url, fromLocal = false) {
-    var imageObj = getDefaultImageObj(dataSet, type, url, loadimage);
+function loadImageFromDataSet(dataSet, type, loadimage = true, url, fromLocal = false, fileExtension = 'dcm') {
+    var imageObj = getDefaultImageObj(dataSet, type, url, loadimage, fileExtension);
     if (type == 'pdf') setPDF(imageObj);
     if (type == 'ecg' && openECG) setECG(imageObj);
     var Sop = ImageManager.pushStudy(imageObj); //註冊此Image至Viewer
@@ -38,7 +38,7 @@ function setPDF(imageObj) {
     imageObj.pdf = pdf;
 }
 
-function getDefaultImageObj(dataSet, type, url, imageDataLoaded) {
+function getDefaultImageObj(dataSet, type, url, imageDataLoaded, fileExtension) {
     var imageObj = {};
     imageObj.windowCenter = dataSet.intString('x00281050');
     imageObj.windowWidth = dataSet.intString('x00281051');
@@ -117,7 +117,7 @@ function getDefaultImageObj(dataSet, type, url, imageDataLoaded) {
     imageObj.samplesPerPixel = dataSet.string('x00280004') === 'YBR_FULL_422' ? 2 : dataSet.uint16('x00280002');
     imageObj.data = dataSet;
     imageObj.url = url;
-
+    imageObj.fileExtension = fileExtension;
     //////////
     if (imageObj.Orientation) {
         imageObj.RCS = new Matrix4x4();
