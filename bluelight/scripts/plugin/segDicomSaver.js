@@ -117,7 +117,7 @@ function getSegDicomInstance() {
         BitsAllocated: 1,
         BitsStored: 1,
         HighBit: 0,
-        PixelRepresentation: dicomParserDataset.string("x00280103"),
+        PixelRepresentation: 0, //dicomParserDataset.string("x00280103"),
         LossyImageCompression: dicomParserDataset.string("x00282110"),
         SegmentationType: "BINARY",
         SegmentSequence: {
