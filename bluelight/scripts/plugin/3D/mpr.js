@@ -39,6 +39,7 @@ function loadMPR() {
 
     var span = document.createElement("SPAN");
     span.innerHTML = `<img class="innerimg MPR" alt="Old MPR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="ImgMPR" src="../image/icon/lite/b_AdvancedMode_off.png" width="50" height="50">`;
+    if (getByid("3DImgeDIv").childNodes.length > 0) getByid("3DImgeDIv").appendChild(document.createElement("BR"));
     getByid("3DImgeDIv").appendChild(span); //addIconSpan(span); 
 
     var span = document.createElement("SPAN");

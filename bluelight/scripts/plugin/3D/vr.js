@@ -64,6 +64,7 @@ function loadVR() {
 
     var span = document.createElement("SPAN");
     span.innerHTML = `<img class="innerimg VR" alt="VR" id="ImgVR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_3D_off.png" width="50" height="50">`;
+    if (getByid("3DImgeDIv").childNodes.length > 0) getByid("3DImgeDIv").appendChild( document.createElement("BR"));
     getByid("3DImgeDIv").appendChild(span); //addIconSpan(span); 
 
     var span = document.createElement("SPAN");

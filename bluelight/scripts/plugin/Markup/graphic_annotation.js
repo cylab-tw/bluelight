@@ -3,16 +3,44 @@ var openWriteGSPS = false;
 //代表Graphic Annotation標記模式為開啟狀態
 var openWriteGraphic = false;
 
+function loadMarkupPlugin() {
+    if (getByid("MarkupImgParent")) return;
+    var span = document.createElement("SPAN");
+    span.id = "MarkupImgParent";
+    span.innerHTML = `
+     <img class="img" loading="lazy" altzhtw="3D" alt="3D" id="MarkupDrawerImg" src="../image/icon/lite/markup.png"
+          width="50" height="50">
+    <div id="MarkupDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+    width: 500; display: none;background-color: black;">`;
+    addIconSpan(span);
+    getByid("MarkupDrawerImg").onclick = function () {
+        if (this.enable == false) return;
+        hideAllDrawer("MarkupDIv");
+        invertDisplayById('MarkupDIv');
+        if (getByid("MarkupDIv").style.display == "none") getByid("MarkupImgParent").style.position = "";
+        else {
+            getByid("MarkupImgParent").style.position = "relative";
+            //onElementLeave();
+        }
+    }
+}
+
 function loadWriteGraphic() {
+    loadMarkupPlugin();
     var span = document.createElement("SPAN")
     span.innerHTML =
-        `<img class="img GSPS" alt="writeGSPS" id="writeGSPS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/gsps_off.png" width="50" height="50">
-        <img class="img GSPS" alt="drawGSPS" id="drawGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >
+        `<img class="img GSPS" alt="drawGSPS" id="drawGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >
         <img class="img GSPS" alt="eraseGSPS" id="eraseGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >
         <img class="img GSPS" alt="exitGSPS" id="exitGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
         <img class="img GSPS" alt="saveGSPS" id="saveGSPS" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
 
-    addIconSpan(span); 
+    addIconSpan(span);
+
+    var span = document.createElement("SPAN")
+    span.innerHTML =
+        `<img class="innerimg GSPS" alt="writeGSPS" id="writeGSPS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/gsps_off.png" width="50" height="50">`;
+    if (getByid("MarkupDIv").childNodes.length > 0) getByid("MarkupDIv").appendChild(document.createElement("BR"));
+    getByid("MarkupDIv").appendChild(span);
 
     var span = document.createElement("SPAN")
     span.innerHTML =
@@ -115,6 +143,7 @@ BorderList_Icon.push("eraseGSPS");
 
 getByid("writeGSPS").onclick = function () {
     if (this.enable == false) return;
+    getByid("MarkupDIv").style.display = "none";
     cancelTools();
     openWriteGSPS = true;
     img2darkByClass("GSPS", !openWriteGSPS);
@@ -657,7 +686,7 @@ function set_GSPS_context() {
 var Gsps_previous_choose = null;
 function writegsps() {
     if (BL_mode == 'writegsps') {
-        
+
         drawBorder(getByid("drawGSPS"));
 
         GetViewport().rotate = 0;

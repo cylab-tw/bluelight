@@ -35,6 +35,7 @@ function loadVR2() {
     addIconSpan(span);
     var span = document.createElement("SPAN");
     span.innerHTML = ` <img class="innerimg VR2" alt="VR2" id="ImgVR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/vr2.png" width="50" height="50">`;
+    if (getByid("3DImgeDIv").childNodes.length > 0) getByid("3DImgeDIv").appendChild( document.createElement("BR"));
     getByid("3DImgeDIv").appendChild(span); //addIconSpan(span); 
 
     function createVR2_DIV(viewportNum = viewportNumber) {

@@ -1,23 +1,23 @@
 {
     "plugin": [
         {"path":"../scripts/plugin/oauth.js", "name": "oauth", "disableCatch": "true"},
-        {"path":"../scripts/plugin/mpr2.js", "name": "MPR", "disableCatch": "true"},
-        {"path":"../scripts/plugin/mpr.js", "name": "MPR", "disableCatch": "true"},
-        {"path":"../scripts/plugin/vr.js", "name": "VR", "disableCatch": "true"},
-        {"path":"../scripts/plugin/vr2.js", "name": "VR2", "disableCatch": "true"},
-        {"path":"../scripts/plugin/xml_format.js", "name": "xml_format", "disableCatch": "true"},
-        {"path":"../scripts/plugin/graphic_annotation.js", "name": "graphic_annotation", "disableCatch": "true"},
-        {"path":"../scripts/plugin/rtss.js", "name": "rtss", "disableCatch": "true"},
-        {"path":"../scripts/plugin/seg.js", "name": "seg", "disableCatch": "true"},
-        {"path":"../scripts/plugin/tag.js", "name": "tag", "disableCatch": "true"},
+        {"path":"../scripts/plugin/3D/mpr2.js", "name": "MPR", "disableCatch": "true"},
+        {"path":"../scripts/plugin/3D/mpr.js", "name": "MPR", "disableCatch": "true"},
+        {"path":"../scripts/plugin/3D/vr.js", "name": "VR", "disableCatch": "true"},
+        {"path":"../scripts/plugin/3D/vr2.js", "name": "VR2", "disableCatch": "true"},
+        {"path":"../scripts/plugin/Markup/xml_format.js", "name": "xml_format", "disableCatch": "true"},
+        {"path":"../scripts/plugin/Markup/graphic_annotation.js", "name": "graphic_annotation", "disableCatch": "true"},
+        {"path":"../scripts/plugin/Markup/rtss.js", "name": "rtss", "disableCatch": "true"},
+        {"path":"../scripts/plugin/Markup/seg.js", "name": "seg", "disableCatch": "true"},
+        {"path":"../scripts/plugin/Markup/tag.js", "name": "tag", "disableCatch": "true"},
         {"path":"../scripts/plugin/xnat.js", "name": "xnat", "disableCatch": "true"},
         {"path":"../scripts/plugin/hanging_protocols.js", "name": "hanging_protocols", "disableCatch": "true"},
         {"path":"../scripts/plugin/mtss.js", "name": "mtss", "disableCatch": "true"}, 
         {"path":"../scripts/plugin/anatomical_plane.js", "name": "anatomical_plane", "disableCatch": "true"},
         {"path": "../scripts/plugin/AutoOperation.js", "name": "AutoOperation", "disableCatch": "true"},
         {"path": "../scripts/external/dcmjs.js", "name": "dcmjs", "disableCatch": "false"},
-        {"path": "../scripts/plugin/gspsDicomSaver.js", "name": "gspsDicomSaver", "disableCatch": "true"},
-        {"path": "../scripts/plugin/rtssDicomSaver.js", "name": "rtssDicomSaver", "disableCatch": "true"},
-        {"path": "../scripts/plugin/segDicomSaver.js", "name": "segDicomSaver", "disableCatch": "true"}             
+        {"path": "../scripts/plugin/Markup/gspsDicomSaver.js", "name": "gspsDicomSaver", "disableCatch": "true"},
+        {"path": "../scripts/plugin/Markup/rtssDicomSaver.js", "name": "rtssDicomSaver", "disableCatch": "true"},
+        {"path": "../scripts/plugin/Markup/segDicomSaver.js", "name": "segDicomSaver", "disableCatch": "true"}             
     ]
 }

@@ -44,6 +44,7 @@ function loadMPR2() {
     var span = document.createElement("SPAN");
     span.id = "ImgMPR2_span";
     span.innerHTML = `<img class="innerimg MPR2 MPR_icon" alt="New MPR" id="ImgMPR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_LocalizerLines.png" width="50" height="50">`;
+    if (getByid("3DImgeDIv").childNodes.length > 0) getByid("3DImgeDIv").appendChild( document.createElement("BR"));
     getByid("3DImgeDIv").appendChild(span); //addIconSpan(span); 
 
     /*var span = document.createElement("SPAN");

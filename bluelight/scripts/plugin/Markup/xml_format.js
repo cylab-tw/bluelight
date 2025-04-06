@@ -1,16 +1,43 @@
 //代表XML標記模式為開啟狀態
 var openWriteXML = false;
 
+function loadMarkupPlugin() {
+  if (getByid("MarkupImgParent")) return;
+  var span = document.createElement("SPAN");
+  span.id = "MarkupImgParent";
+  span.innerHTML = `
+   <img class="img" loading="lazy" altzhtw="3D" alt="3D" id="MarkupDrawerImg" src="../image/icon/lite/markup.png"
+        width="50" height="50">
+  <div id="MarkupDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+  width: 500; display: none;background-color: black;">`;
+  addIconSpan(span);
+  getByid("MarkupDrawerImg").onclick = function () {
+    if (this.enable == false) return;
+    hideAllDrawer("MarkupDIv");
+    invertDisplayById('MarkupDIv');
+    if (getByid("MarkupDIv").style.display == "none") getByid("MarkupImgParent").style.position = "";
+    else {
+      getByid("MarkupImgParent").style.position = "relative";
+      //onElementLeave();
+    }
+  }
+}
+
 function loadxml_format() {
+  loadMarkupPlugin();
   var span = document.createElement("SPAN")
   span.innerHTML =
-    `<img class="img XML" alt="writeXML" id="writeXML" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/xml_off.png" width="50" height="50">
-    <img class="img XML" alt="drawXML" id="drawXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >  
+    `<img class="img XML" alt="drawXML" id="drawXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/GraphicDraw.png" width="50" height="50" style="display:none;" >  
     <img class="img XML" alt="eraseXML" id="eraseXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Eraser.png" width="50" height="50" style="display:none;" >  
     <img class="img XML" alt="exitXML" id="exitXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
     <img class="img XML" alt="saveXML" id="saveXML" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
+  addIconSpan(span);
 
-  addIconSpan(span); 
+  var span = document.createElement("SPAN")
+  span.innerHTML =
+    `<img class="innerimg XML" alt="writeXML" id="writeXML" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/xml_off.png" width="50" height="50">`
+  if (getByid("MarkupDIv").childNodes.length > 0) getByid("MarkupDIv").appendChild(document.createElement("BR"));
+  getByid("MarkupDIv").appendChild(span);
 
   var span = document.createElement("SPAN")
   span.innerHTML =
@@ -30,6 +57,7 @@ BorderList_Icon.push("eraseXML");
 
 getByid("writeXML").onclick = function () {
   if (this.enable == false) return;
+  getByid("MarkupDIv").style.display = "none";
   cancelTools();
   openWriteXML = true;
   img2darkByClass("XML", !openWriteXML);

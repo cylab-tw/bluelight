@@ -1,9 +1,39 @@
 var openWriteTAG = false;
+
+function loadMarkupPlugin() {
+    if (getByid("MarkupImgParent")) return;
+    var span = document.createElement("SPAN");
+    span.id = "MarkupImgParent";
+    span.innerHTML = `
+     <img class="img" loading="lazy" altzhtw="3D" alt="3D" id="MarkupDrawerImg" src="../image/icon/lite/markup.png"
+          width="50" height="50">
+    <div id="MarkupDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+    width: 500; display: none;background-color: black;">`;
+    addIconSpan(span);
+    getByid("MarkupDrawerImg").onclick = function () {
+        if (this.enable == false) return;
+        hideAllDrawer("MarkupDIv");
+        invertDisplayById('MarkupDIv');
+        if (getByid("MarkupDIv").style.display == "none") getByid("MarkupImgParent").style.position = "";
+        else {
+            getByid("MarkupImgParent").style.position = "relative";
+            //onElementLeave();
+        }
+    }
+}
+
 function loadWriteTAG() {
+    loadMarkupPlugin();
     var span = document.createElement("SPAN")
     span.innerHTML =
-        `<img class="img TAG" alt="writeTAG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="writeTAG" src="../image/icon/lite/tag_off.png" width="50" height="50">`;
-    addIconSpan(span); 
+        `<img class="innerimg TAG" alt="writeTAG" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="writeTAG" src="../image/icon/lite/tag_off.png" width="50" height="50">`;
+    if (getByid("MarkupDIv").childNodes.length > 0) getByid("MarkupDIv").appendChild(document.createElement("BR"));
+    getByid("MarkupDIv").appendChild(span);
+
+    var span = document.createElement("SPAN")
+    span.innerHTML =
+        `<img class="img TAG" alt="saveTAG" id="saveTAG" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/tag_off.png" width="50" height="50" style="display:none;" >`;
+    addIconSpan(span);
 
     var span = document.createElement("SPAN")
     span.innerHTML =
@@ -23,7 +53,7 @@ function readImageTags(url) {
     request.responseType = 'text';
     request.send();
     request.onload = function () {
-        if (request.readyState != 4)  { return; }
+        if (request.readyState != 4) { return; }
         var responseJson = JSON.parse(request.responseText);
         let response = Object.entries(responseJson['medicalSpecialty']);
 
@@ -86,12 +116,19 @@ getByid("medicalSpecialtyTag").onchange = function () {
     });
 }
 
+getByid("saveTAG").onclick = function () {
+    getByid("saveTAG").style.display = "none";
+    getByid("writeTAG").onclick();
+}
+
 getByid("writeTAG").onclick = function () {
     cancelTools();
     openWriteTAG = !openWriteTAG;
+    getByid("MarkupDIv").style.display = "none";
     img2darkByClass("TAG", !openWriteTAG);
     this.src = openWriteTAG == true ? '../image/icon/lite/tag_on.png' : '../image/icon/lite/tag_off.png';
     if (openWriteTAG == true) {
+        getByid("saveTAG").style.display = "";
         getByid('TagStyleDiv').style.display = '';
         set_BL_model('writeTAG');
     } else getByid('TagStyleDiv').style.display = 'none';
