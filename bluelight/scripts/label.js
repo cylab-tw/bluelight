@@ -81,10 +81,10 @@ function setSeriesCount(viewportNum = viewportNumber) {
   var viewport = GetViewport(viewportNum), tags = viewport.tags, SeriesCount = 1;
   if (!viewport.Sop) return;
   SeriesCount = viewport.Sop.parent.Sop.length;
-  if (SeriesCount == 1) SeriesCount = 2;
-  var str = "";
+  //if (SeriesCount == 1) SeriesCount = 2;
+  var str = "", Sop = viewport.Sop, index = Sop.parent.Sop.findIndex((e) => e == Sop);
   if (tags.NumberOfFrames && tags.NumberOfFrames > 1) str = "" + (viewport.framesNumber + 1) + "/" + (tags.NumberOfFrames - 0);
-  else str = "" + tags.InstanceNumber + "/" + (SeriesCount - 0);
+  else str = "" + /*tags.InstanceNumber*/ (index + 1) + "/" + (SeriesCount - 0);
   viewport.setLabel("Im", str);
   viewport.refleshLabel();
 }
