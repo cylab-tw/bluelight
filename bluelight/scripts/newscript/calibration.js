@@ -9,7 +9,7 @@ function loadCalibration() {
     var span = document.createElement("SPAN");
     span.id = "Calibration_span";
     span.innerHTML =
-        ` <img alt="Calibration" class="innerimg" loading="lazy" id="Calibration" src="../image/icon/lite/b_DistanceMeasurement.png" width="50" height="50">`;
+        ` <img alt="Calibration" class="innerimg" loading="lazy" id="Calibration" src="../image/icon/lite/b_Cross-hair.png" width="50" height="50">`;
     getByid("openMeasureDIv").appendChild(span);
     //addIconSpan(span);
 

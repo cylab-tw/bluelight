@@ -92,6 +92,22 @@ window.addEventListener("keydown", function (e) {
     else if (nextInstanceNumber = 1) GetViewport().nextFrame(false);
 });
 
+//for mark
+window.addEventListener("keydown", function (e) {
+    const target = e.target;
+    const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+    //如果正在輸入文字
+    if (isTyping) return;
+
+    if (e.key.toLowerCase() === 'm') getByid("openMeasureImg").onclick();
+
+    if (getByid("openMeasureDIv").style.display != "none") {
+        if (e.key.toLowerCase() === 'l') getByid("MeasureRuler").onclick();
+        else if (e.key.toLowerCase() === 'a') getByid("AngleRuler").onclick();
+        else if (e.key.toLowerCase() === 't') getByid("TextAnnotation").onclick();
+    }
+});
+
 window.addEventListener('load', function () {
     var isWindowTop = false;
     var lastTouchY = 0;
