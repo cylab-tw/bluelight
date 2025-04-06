@@ -9,10 +9,37 @@ var buffer_mpr_X = 0;
 var buffer_mpr_Y = 0;
 var origin_openAnnotation;
 
-function loadMPR() {
+function load3DPlugin() {
+    if (getByid("3DImgParent")) return;
     var span = document.createElement("SPAN");
-    span.innerHTML = `<img class="img MPR" alt="Old MPR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="ImgMPR" src="../image/icon/lite/b_AdvancedMode_off.png" width="50" height="50">`;
-    addIconSpan(span); 
+    span.id = "3DImgParent";
+    span.innerHTML = `
+     <img class="img" loading="lazy" altzhtw="3D" alt="3D" id="3dDrawerImg" src="../image/icon/lite/3D.png"
+          width="50" height="50">
+    <div id="3DImgeDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+    width: 500; display: none;background-color: black;">`;
+    addIconSpan(span);
+    getByid("3dDrawerImg").onclick = function () {
+        if (this.enable == false) return;
+        hideAllDrawer("3DImgeDIv");
+        invertDisplayById('3DImgeDIv');
+        if (getByid("3DImgeDIv").style.display == "none") getByid("3DImgParent").style.position = "";
+        else {
+            getByid("3DImgParent").style.position = "relative";
+            //onElementLeave();
+        }
+    }
+}
+
+function loadMPR() {
+    load3DPlugin();
+    var span = document.createElement("SPAN");
+    span.innerHTML = `<img class="img MPR" alt="exitMPR" id="exitMPR" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" > `;
+    addIconSpan(span);
+
+    var span = document.createElement("SPAN");
+    span.innerHTML = `<img class="innerimg MPR" alt="Old MPR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" id="ImgMPR" src="../image/icon/lite/b_AdvancedMode_off.png" width="50" height="50">`;
+    getByid("3DImgeDIv").appendChild(span); //addIconSpan(span); 
 
     var span = document.createElement("SPAN");
     span.innerHTML = `<label style="color: #ffffff;" id="mprLightLabel">position<input type="checkbox" checked="true" name="mprLight"
@@ -62,11 +89,11 @@ function loadMPR_UI() {
 }
 loadMPR_UI();
 
-HideElemByID(["MouseOperation_MPR", "WindowRevision_MPR", "b_Scroll_MPR", "MouseRotate_MPR"]);
+HideElemByID(["MouseOperation_MPR", "WindowRevision_MPR", "b_Scroll_MPR", "MouseRotate_MPR", "exitMPR"]);
 //getByid("WindowLevelDiv_MPR").style.display = "none";
 
 function enterMPR_UI() {
-    ShowElemByID(["MouseOperation_MPR", "WindowRevision_MPR", "b_Scroll_MPR", "MouseRotate_MPR"]);
+    ShowElemByID(["MouseOperation_MPR", "WindowRevision_MPR", "b_Scroll_MPR", "MouseRotate_MPR", "exitMPR"]);
     //getByid("WindowLevelDiv_MPR").style.display = "";
     HideElemByID(["MouseOperation", "WindowRevision", "WindowLevelDiv", "b_Scroll", "MouseRotate"]);
 
@@ -74,7 +101,7 @@ function enterMPR_UI() {
 }
 
 function exitMPR_UI() {
-    HideElemByID(["MouseOperation_MPR", "WindowRevision_MPR", "b_Scroll_MPR", "MouseRotate_MPR"]);
+    HideElemByID(["MouseOperation_MPR", "WindowRevision_MPR", "b_Scroll_MPR", "MouseRotate_MPR", "exitMPR"]);
     //getByid("WindowLevelDiv_MPR").style.display = "none";
     ShowElemByID(["MouseOperation", "WindowRevision", "WindowLevelDiv", "b_Scroll", "MouseRotate"]);
     openLeftImgClick = true;
@@ -284,8 +311,17 @@ getByid("MouseOperation_MPR").onclick = function () {
     drawBorderMPR(this);
 }
 
+getByid("exitMPR").onclick = function () {
+    if (this.enable == false) return;
+    getByid("3DImgeDIv").style.display = "none";
+    openMPR = false;
+    img2darkByClass("MPR", !openMPR);
+    initMPR();
+}
+
 getByid("ImgMPR").onclick = function (catchError) {
     if (this.enable == false && catchError != "error") return;
+    getByid("3DImgeDIv").style.display = "none";
     openMPR = !openMPR;
     if (catchError == "error") openMPR = false;
     img2darkByClass("MPR", !openMPR);
@@ -549,7 +585,7 @@ function initMPR() {
             GetViewport(i).div.addEventListener("touchstart", SwitchViewport, false);
             GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
         }
-        
+
         viewportNumber = 0;
         //SetTable();
         o3DListLength = 0;
@@ -564,8 +600,8 @@ function initMPR() {
         resetViewport(2);
         GetViewport(2).loadImgBySop(originSop_of_viewport2);
 
-        getByid("MouseOperation").click();   
-        initNewCanvas(); 
+        getByid("MouseOperation").click();
+        initNewCanvas();
         window.onresize();
     } else if (openMPR == true) {
         enterMPR_UI();
@@ -802,7 +838,7 @@ function initMPR() {
         for (var l = 0; l < list.length; l++) {
             const l2 = l;
             const image = list[l2].Image;
-            if (image.imageDataLoaded == false && image.loadImageData)image.loadImageData();
+            if (image.imageDataLoaded == false && image.loadImageData) image.loadImageData();
             const pixelData = list[l2].Image.pixelData;
             try {
                 var NewDiv = document.createElement("DIV");

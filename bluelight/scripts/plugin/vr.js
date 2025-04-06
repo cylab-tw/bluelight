@@ -29,15 +29,42 @@ var rotateSpeed = 12;
 var zoomRatio3D = 1;
 var origin_openAnnotation;
 
+function load3DPlugin() {
+    if (getByid("3DImgParent")) return;
+    var span = document.createElement("SPAN");
+    span.id = "3DImgParent";
+    span.innerHTML = `
+     <img class="img" loading="lazy" altzhtw="3D" alt="3D" id="3dDrawerImg" src="../image/icon/lite/3D.png"
+          width="50" height="50">
+    <div id="3DImgeDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+    width: 500; display: none;background-color: black;">`;
+    addIconSpan(span);
+    getByid("3dDrawerImg").onclick = function () {
+        if (this.enable == false) return;
+        hideAllDrawer("3DImgeDIv");
+        invertDisplayById('3DImgeDIv');
+        if (getByid("3DImgeDIv").style.display == "none") getByid("3DImgParent").style.position = "";
+        else {
+            getByid("3DImgParent").style.position = "relative";
+            //onElementLeave();
+        }
+    }
+}
+
 function loadVR() {
+    load3DPlugin();
     var span = document.createElement("SPAN");
     span.innerHTML =
-        `<img class="img VR" alt="VR" id="ImgVR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_3D_off.png" width="50" height="50">
-    <img class="img VR MPR" alt="Render" id="3dDisplay" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_DisplayReset.png"
+        ` <img class="img VR" alt="exitVR" id="exitVR" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
+        <img class="img VR MPR" alt="Render" id="3dDisplay" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_DisplayReset.png"
     style="display:none;" width="50" height="50">
     <img class="img VR" alt="Scalpel" id="3dCave" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_Cross-hair_OFF.png" style="display:none;"
     width="50" height="50">`;
     addIconSpan(span);
+
+    var span = document.createElement("SPAN");
+    span.innerHTML = `<img class="innerimg VR" alt="VR" id="ImgVR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_3D_off.png" width="50" height="50">`;
+    getByid("3DImgeDIv").appendChild(span); //addIconSpan(span); 
 
     var span = document.createElement("SPAN");
     span.innerHTML =
@@ -113,6 +140,7 @@ function loadVR() {
     getByid("WindowLevelDiv_VR").style.display = "none";
     getByid("VR_setup").style.display = "none";
     getByid("3dDisplay").style.display = "none";
+    getByid("exitVR").style.display = "none";
     getByid("3dCave").style.display = "none";
 }
 loadVR();
@@ -215,6 +243,7 @@ getByid("WindowLevelSelect_VR").onchange = function () {
 
 getByid("ImgVR").onclick = function (catchError) {
     if (this.enable == false && catchError != "error") return;
+    getByid("3DImgeDIv").style.display = "none";
     openVR = !openVR;
     if (catchError == "error") openVR = false;
     img2darkByClass("VR", !openVR);
@@ -285,6 +314,14 @@ getByid("3dPerspective").onchange = function () {
 
 getByid("3dDisplay").onclick = function () {
     o3dWindowLevel();
+}
+
+getByid("exitVR").onclick = function () {
+    if (this.enable == false) return;
+    getByid("3DImgeDIv").style.display = "none";
+    openVR = false;
+    img2darkByClass("VR", !openVR);
+    initVR();
 }
 
 getByid("3dCave").onclick = function () {
@@ -399,6 +436,7 @@ function initVR() {
         drawBorder(getByid("MouseOperation"));
         getByid("ImgVR").src = "../image/icon/lite/b_3D_off.png";
         getByid("3dDisplay").style.display = "none";
+        getByid("exitVR").style.display = "none";
         getByid("VR_setup").style.display = "none";
         getByid("WindowLevelDiv_VR").style.display = "none";
         getByid("3dCave").style.display = "none";
@@ -434,6 +472,7 @@ function initVR() {
         openAnnotation = false;
 
         getByid("3dDisplay").style.display = "";
+        getByid("exitVR").style.display = "";
         getByid("VR_setup").style.display = "";
         getByid("3dCave").style.display = "";
         cancelTools();
@@ -574,7 +613,7 @@ function initVR() {
         for (var l = 0; l < list.length; l++) {
             const l2 = l;
             const image = list[l2].Image;
-            if (image.imageDataLoaded == false && image.loadImageData)image.loadImageData();
+            if (image.imageDataLoaded == false && image.loadImageData) image.loadImageData();
             const pixelData = list[l2].Image.pixelData;
             try {
                 var NewDiv = document.createElement("DIV");

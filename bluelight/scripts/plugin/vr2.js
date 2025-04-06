@@ -2,15 +2,40 @@
 var openVR2 = false;
 var VR2_LutArray = [];
 
+function load3DPlugin() {
+    if (getByid("3DImgParent")) return;
+    var span = document.createElement("SPAN");
+    span.id = "3DImgParent";
+    span.innerHTML = `
+     <img class="img" loading="lazy" altzhtw="3D" alt="3D" id="3dDrawerImg" src="../image/icon/lite/3D.png"
+          width="50" height="50">
+    <div id="3DImgeDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+    width: 500; display: none;background-color: black;">`;
+    addIconSpan(span);
+    getByid("3dDrawerImg").onclick = function () {
+        if (this.enable == false) return;
+        hideAllDrawer("3DImgeDIv");
+        invertDisplayById('3DImgeDIv');
+        if (getByid("3DImgeDIv").style.display == "none") getByid("3DImgParent").style.position = "";
+        else {
+            getByid("3DImgParent").style.position = "relative";
+            //onElementLeave();
+        }
+    }
+}
+
 function loadVR2() {
+    load3DPlugin();
     var span = document.createElement("SPAN")
-    span.innerHTML =
-        ` <img class="img VR2" alt="VR2" id="ImgVR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/vr2.png" width="50" height="50">
+    span.innerHTML =` 
         <img class="img VR2" alt="exitVR2" id="exitVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
         <img class="img VR2" alt="moveVR2" id="moveVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Pan.png" width="50" height="50" style="display:none;" >
         <img class="img VR2" alt="windowVR2" id="windowVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Window.png" width="50" height="50" style="display:none;" >
         <img class="img VR2" alt="saveVR2" id="saveVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;;
     addIconSpan(span);
+    var span = document.createElement("SPAN");
+    span.innerHTML = ` <img class="innerimg VR2" alt="VR2" id="ImgVR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/vr2.png" width="50" height="50">`;
+    getByid("3DImgeDIv").appendChild(span); //addIconSpan(span); 
 
     function createVR2_DIV(viewportNum = viewportNumber) {
         var VRPage = document.createElement("DIV");
@@ -212,6 +237,8 @@ loadVR2();
 
 getByid("ImgVR2").onclick = function () {
     if (this.enable == false) return;
+    getByid("3DImgeDIv").style.display = "none";
+
     openVR2 = !openVR2;
     img2darkByClass("VR2", !openVR2);
 

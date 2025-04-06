@@ -6,10 +6,12 @@ var Calibration_Point1 = [0, 0];
 var Calibration_Point2 = [0, 0];
 
 function loadCalibration() {
-    var span = document.createElement("SPAN")
+    var span = document.createElement("SPAN");
+    span.id = "Calibration_span";
     span.innerHTML =
-        ` <img class="img Calibration" alt="Calibration" id="Calibration" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_DistanceMeasurement.png" width="50" height="50">`;
-    addIconSpan(span); 
+        ` <img alt="Calibration" class="innerimg" loading="lazy" id="Calibration" src="../image/icon/lite/b_DistanceMeasurement.png" width="50" height="50">`;
+    getByid("openMeasureDIv").appendChild(span);
+    //addIconSpan(span);
 
     var span = document.createElement("SPAN")
     span.innerHTML =
@@ -17,6 +19,7 @@ function loadCalibration() {
                 <font color="white">Calibration (mm):</font>
                 <input type="text" id="CalibrationValue" value="null" size="8" />
                 <button id="CalibrationButton">assign</button>
+                <button id="CalibrationExitButton">exit</button>
         </div>`
     getByid("page-header").appendChild(span);
     getByid("CalibrationDiv").style.display = "none";
@@ -42,28 +45,29 @@ getByid("CalibrationButton").onclick = function () {
     }
 }
 
+getByid("CalibrationExitButton").onclick = function () {
+    openCalibration = false;
+    openLeftImgClick = true;
+    getByid("CalibrationDiv").style.display = "none";
+    exit_calibration();
+}
 getByid("Calibration").onclick = function () {
     /*if (!GetViewport() || GetViewport().tags.PixelSpacing){
         alert("For use only in cases where pixel spacing is not available.");
         return;
     }*/
-    openCalibration = !openCalibration;
+    openCalibration = true;
     img2darkByClass("Calibration", !openCalibration);
     getByid("CalibrationValue").style.display = "none";
     getByid("CalibrationButton").style.display = "none";
     getByid("CalibrationValue").value = "null";
     removeCalibrationMark();
-    if (!openCalibration) {
-        openLeftImgClick = true;
-        getByid("CalibrationDiv").style.display = "none";
-        exit_calibration();
-    } else {
-        openLeftImgClick = false;
-        getByid("CalibrationDiv").style.display = "";
-        set_BL_model('Calibration');
-        write_calibration();
-    }
+    openLeftImgClick = false;
+    getByid("CalibrationDiv").style.display = "";
+    set_BL_model('Calibration');
+    write_calibration();
     SetTable();
+    hideAllDrawer();
 }
 
 BorderList_Icon.push("Calibration");
@@ -85,7 +89,7 @@ function removeCalibrationMark() {
 
 function write_calibration() {
     if (BL_mode == 'Calibration') {
-        
+
         cancelTools();
         openCalibration = true;
         set_BL_model.onchange = function () {

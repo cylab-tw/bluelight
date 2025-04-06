@@ -14,11 +14,37 @@ var Thickness_MPR = 0;
 var globalTemVector3 = undefined;
 var origin_openAnnotation;
 
+function load3DPlugin() {
+    if (getByid("3DImgParent")) return;
+    var span = document.createElement("SPAN");
+    span.id = "3DImgParent";
+    span.innerHTML = `
+     <img class="img" loading="lazy" altzhtw="3D" alt="3D" id="3dDrawerImg" src="../image/icon/lite/3D.png"
+          width="50" height="50">
+    <div id="3DImgeDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+    width: 500; display: none;background-color: black;">`;
+    addIconSpan(span);
+    getByid("3dDrawerImg").onclick = function () {
+        if (this.enable == false) return;
+        hideAllDrawer("3DImgeDIv");
+        invertDisplayById('3DImgeDIv');
+        if (getByid("3DImgeDIv").style.display == "none") getByid("3DImgParent").style.position = "";
+        else {
+            getByid("3DImgParent").style.position = "relative";
+            //onElementLeave();
+        }
+    }
+}
+
 function loadMPR2() {
+    load3DPlugin();
+    var span = document.createElement("SPAN");
+    span.innerHTML = `<img class="img MPR2" alt="exitMPR2" id="exitMPR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" > `;
+    addIconSpan(span);
     var span = document.createElement("SPAN");
     span.id = "ImgMPR2_span";
-    span.innerHTML = `<img class="img MPR2 MPR_icon" alt="New MPR" id="ImgMPR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_LocalizerLines.png" width="50" height="50">`;
-    addIconSpan(span); 
+    span.innerHTML = `<img class="innerimg MPR2 MPR_icon" alt="New MPR" id="ImgMPR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_LocalizerLines.png" width="50" height="50">`;
+    getByid("3DImgeDIv").appendChild(span); //addIconSpan(span); 
 
     /*var span = document.createElement("SPAN");
     span.innerHTML = `<label style="color: #ffffff;" id="mprLightLabel">position<input type="checkbox" checked="true" name="mprLight"
@@ -81,6 +107,7 @@ getByid("WindowRevision_MPR").style.display = "none";
 getByid("b_Scroll_MPR").style.display = "none";
 getByid("MouseRotate_MPR").style.display = "none";
 getByid("ImgMPR2_MPR").style.display = "none";
+getByid("ImgMPR2_MPR").style.display = "none";
 //getByid("WindowLevelDiv_MPR").style.display = "none";
 
 function enterMPR_UI2() {
@@ -89,6 +116,7 @@ function enterMPR_UI2() {
     getByid("b_Scroll_MPR").style.display = "";
     getByid("MouseRotate_MPR").style.display = "";
     getByid("ImgMPR2_MPR").style.display = "";
+    getByid("exitMPR2").style.display = "";
     //getByid("WindowLevelDiv_MPR").style.display = "";
     getByid("MouseOperation").style.display = "none";
     getByid("WindowRevision").style.display = "none";
@@ -105,6 +133,7 @@ function exitMPR2_UI() {
     getByid("b_Scroll_MPR").style.display = "none";
     getByid("MouseRotate_MPR").style.display = "none";
     getByid("ImgMPR2_MPR").style.display = "none";
+    getByid("exitMPR2").style.display = "none";
     //getByid("WindowLevelDiv_MPR").style.display = "none";
     getByid("MouseOperation").style.display = "";
     getByid("WindowRevision").style.display = "";
@@ -158,8 +187,16 @@ getByid("ImgMPR2_MPR").onclick = function (catchError) {
     }
 }
 
+getByid("exitMPR2").onclick = function () {
+    getByid("3DImgeDIv").style.display = "none";
+    openMPR2 = false;
+    img2darkByClass("MPR2", !openMPR2);
+    exitMPR2();
+}
+
 getByid("ImgMPR2").onclick = function (catchError) {
     if (this.enable == false) return;
+    getByid("3DImgeDIv").style.display = "none";
     openMPR2 = true;
     if (catchError == "error") openMPR2 = false;
     img2darkByClass("MPR2", !openMPR2);
@@ -168,6 +205,7 @@ getByid("ImgMPR2").onclick = function (catchError) {
         if (openMPR2 != false)//在initMPR2()中出錯時，openMPR2會變成false
             for (var c = 0; c < 3; c++) GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "none";
     }
+    img2darkByClass("MPR2", !openMPR2);
 }
 
 function exitMPR2() {
