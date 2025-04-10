@@ -45,6 +45,7 @@ function loadCalibration() {
     getByid("CalibrationExitButton").onclick = function () {
         openCalibration = false;
         openLeftImgClick = true;
+        removeCalibrationMark();
         getByid("CalibrationDiv").style.display = "none";
         exit_calibration();
     }
