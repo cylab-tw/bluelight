@@ -23,54 +23,53 @@ function loadCalibration() {
         </div>`
     getByid("page-header").appendChild(span);
     getByid("CalibrationDiv").style.display = "none";
+
+    getByid("CalibrationButton").onclick = function () {
+        if (Calibration_previous_choose && !isNaN(Calibration_previous_choose.value) && !isNaN(CalibrationValue.value)) {
+            GetViewport().transform.PixelSpacingX = Calibration_previous_choose.value / CalibrationValue.value;
+            GetViewport().transform.PixelSpacingY = Calibration_previous_choose.value / CalibrationValue.value;
+
+            for (var mark of PatientMark) {
+                if (mark.type == 'CalibrationRuler') {
+                    mark.Text = parseInt(Math.sqrt(
+                        Math.pow(mark.Calibration_Point2[0] / GetViewport().transform.PixelSpacingX - mark.Calibration_Point1[0] / GetViewport().transform.PixelSpacingX, 2) +
+                        Math.pow(mark.Calibration_Point2[1] / GetViewport().transform.PixelSpacingY - mark.Calibration_Point1[1] / GetViewport().transform.PixelSpacingY, 2), 2)) +
+                        "mm";
+                }
+            }
+            displayAllRuler();
+            displayAllMark();
+        }
+    }
+
+    getByid("CalibrationExitButton").onclick = function () {
+        openCalibration = false;
+        openLeftImgClick = true;
+        getByid("CalibrationDiv").style.display = "none";
+        exit_calibration();
+    }
+    getByid("Calibration").onclick = function () {
+        /*if (!GetViewport() || GetViewport().tags.PixelSpacing){
+            alert("For use only in cases where pixel spacing is not available.");
+            return;
+        }*/
+        openCalibration = true;
+        img2darkByClass("Calibration", !openCalibration);
+        getByid("CalibrationValue").style.display = "none";
+        getByid("CalibrationButton").style.display = "none";
+        getByid("CalibrationValue").value = "null";
+        removeCalibrationMark();
+        openLeftImgClick = false;
+        getByid("CalibrationDiv").style.display = "";
+        set_BL_model('Calibration');
+        write_calibration();
+        SetTable();
+        hideAllDrawer();
+    }
+    BorderList_Icon.push("Calibration");
 }
 
 loadCalibration();
-
-getByid("CalibrationButton").onclick = function () {
-    if (Calibration_previous_choose && !isNaN(Calibration_previous_choose.value) && !isNaN(CalibrationValue.value)) {
-        GetViewport().transform.PixelSpacingX = Calibration_previous_choose.value / CalibrationValue.value;
-        GetViewport().transform.PixelSpacingY = Calibration_previous_choose.value / CalibrationValue.value;
-
-        for (var mark of PatientMark) {
-            if (mark.type == 'CalibrationRuler') {
-                mark.Text = parseInt(Math.sqrt(
-                    Math.pow(mark.Calibration_Point2[0] / GetViewport().transform.PixelSpacingX - mark.Calibration_Point1[0] / GetViewport().transform.PixelSpacingX, 2) +
-                    Math.pow(mark.Calibration_Point2[1] / GetViewport().transform.PixelSpacingY - mark.Calibration_Point1[1] / GetViewport().transform.PixelSpacingY, 2), 2)) +
-                    "mm";
-            }
-        }
-        displayAllRuler();
-        displayAllMark();
-    }
-}
-
-getByid("CalibrationExitButton").onclick = function () {
-    openCalibration = false;
-    openLeftImgClick = true;
-    getByid("CalibrationDiv").style.display = "none";
-    exit_calibration();
-}
-getByid("Calibration").onclick = function () {
-    /*if (!GetViewport() || GetViewport().tags.PixelSpacing){
-        alert("For use only in cases where pixel spacing is not available.");
-        return;
-    }*/
-    openCalibration = true;
-    img2darkByClass("Calibration", !openCalibration);
-    getByid("CalibrationValue").style.display = "none";
-    getByid("CalibrationButton").style.display = "none";
-    getByid("CalibrationValue").value = "null";
-    removeCalibrationMark();
-    openLeftImgClick = false;
-    getByid("CalibrationDiv").style.display = "";
-    set_BL_model('Calibration');
-    write_calibration();
-    SetTable();
-    hideAllDrawer();
-}
-
-BorderList_Icon.push("Calibration");
 
 function exit_calibration() {
     img2darkByClass("Calibration", !openCalibration);

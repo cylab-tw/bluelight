@@ -106,6 +106,9 @@ window.addEventListener("keydown", function (e) {
         else if (e.key.toLowerCase() === 'a') getByid("AngleRuler").onclick();
         else if (e.key.toLowerCase() === 't') getByid("TextAnnotation").onclick();
     }
+
+    //esc
+    if (e.key.toLowerCase() === 'escape') getByid("MouseOperation").onclick();
 });
 
 window.addEventListener('load', function () {
