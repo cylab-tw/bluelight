@@ -134,7 +134,7 @@ getByid("autoLL").onclick = function () {
                 if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "L") GetViewport(0).loadImgBySop(Series.Sop[0]);
             }
             if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "MLO" || (!Series.Sop[0].Image.data.string(Tag.ViewPosition) && !("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F"))) {
-                if (Series.Sop[1].Image.data.string(Tag.ImageLaterality) == "L") GetViewport(1).loadImgBySop(Series.Sop[0]);
+                if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "L") GetViewport(1).loadImgBySop(Series.Sop[0]);
             }
         }
     } else if (ImageManager.Study[0].Series[0].Sop.length == 4) {
@@ -167,7 +167,7 @@ getByid("autoRR").onclick = function () {
                 if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "R") GetViewport(0).loadImgBySop(Series.Sop[0]);
             }
             if (Series.Sop[0].Image.data.string(Tag.ViewPosition) == "MLO" || (!Series.Sop[0].Image.data.string(Tag.ViewPosition) && !("" + Series.Sop[0].Image.data.string(Tag.PatientOrientation)).includes("F"))) {
-                if (Series.Sop[1].Image.data.string(Tag.ImageLaterality) == "R") GetViewport(1).loadImgBySop(Series.Sop[0]);
+                if (Series.Sop[0].Image.data.string(Tag.ImageLaterality) == "R") GetViewport(1).loadImgBySop(Series.Sop[0]);
             }
         }
     } else if (ImageManager.Study[0].Series[0].Sop.length == 4) {
