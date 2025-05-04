@@ -44,8 +44,8 @@ function getDefaultImageObj(dataSet, type, url, imageDataLoaded, fileExtension) 
     imageObj.windowWidth = dataSet.intString('x00281051');
     imageObj.accessionNumber = dataSet.string('x00080050');
     imageObj.acquisitionTime = dataSet.string('x00080032');
-    imageObj.bitsAllocation = dataSet.string('x00280100');
-    imageObj.highBit = dataSet.intString('x00280102');
+    imageObj.bitsAllocation = dataSet.int16('x00280100');
+    imageObj.highBit = dataSet.int16('x00280102');
     imageObj.InstanceNumber = dataSet.string('x00200013');
     imageObj.institutionName = dataSet.string('x00080080');
     imageObj.PatientAge = dataSet.string('x00101010');
@@ -152,9 +152,45 @@ function getDefaultImageObj(dataSet, type, url, imageDataLoaded, fileExtension) 
         return getPixelDataFromDataSet(this, this.data, isNaN(framesNumber) ? 0 : framesNumber);
     }
     else imageObj.getPixelData = function () { return; }
+    if (imageObj.PhotometricInterpretation == "PALETTE COLOR") getPixelDataFromColorLookupTable(imageObj, dataSet);
 
 
     return imageObj;
+}
+
+function getPixelDataFromColorLookupTable(imageObj, dataSet) {
+    //RedPaletteColorLookupTableDescriptor
+    var numberOfEntries = dataSet.uint16('x00281101', 0) == 0 ? 65536 : dataSet.uint16('x00281101', 0); //LUT 有幾筆資料（通常是 256、1024 等）
+    var firstMappedIndex = dataSet.uint16('x00281101', 1); //對應的第一個索引值（常為 0）
+    var bitsPerEntry = dataSet.uint16('x00281101', 2); //每筆資料的 bit 數（通常是 8 或 16）
+    if (bitsPerEntry <= 8) {
+        imageObj.RedLutArray = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x00281201.dataOffset, numberOfEntries);
+    } else {
+        imageObj.RedLutArray = new Uint16Array(new Uint16Array(dataSet.byteArray.buffer, dataSet.elements.x00281201.dataOffset, numberOfEntries));
+        for (var i in imageObj.RedLutArray) imageObj.RedLutArray[i] = imageObj.RedLutArray[i] / 256;
+    }
+
+    //GreenPaletteColorLookupTableDescriptor
+    var numberOfEntries = dataSet.uint16('x00281102', 0); //LUT 有幾筆資料（通常是 256、1024 等）
+    var firstMappedIndex = dataSet.uint16('x00281102', 1); //對應的第一個索引值（常為 0）
+    var bitsPerEntry = dataSet.uint16('x00281102', 2); //每筆資料的 bit 數（通常是 8 或 16）
+    if (bitsPerEntry <= 8) {
+        imageObj.GreenLutArray = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x00281202.dataOffset, numberOfEntries);
+    } else {
+        imageObj.GreenLutArray = new Uint16Array(new Uint16Array(dataSet.byteArray.buffer, dataSet.elements.x00281202.dataOffset, numberOfEntries));
+        for (var i in imageObj.GreenLutArray) imageObj.GreenLutArray[i] = imageObj.GreenLutArray[i] / 256;
+    }
+    //BluePaletteColorLookupTableDescriptor
+    var numberOfEntries = dataSet.uint16('x00281103', 0); //LUT 有幾筆資料（通常是 256、1024 等）
+    var firstMappedIndex = dataSet.uint16('x00281103', 1); //對應的第一個索引值（常為 0）
+    var bitsPerEntry = dataSet.uint16('x00281103', 2); //每筆資料的 bit 數（通常是 8 或 16）
+
+    if (bitsPerEntry <= 8) {
+        imageObj.BlueLutArray = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x00281203.dataOffset, numberOfEntries);
+    } else {
+        imageObj.BlueLutArray = new Uint16Array(new Uint16Array(dataSet.byteArray.buffer, dataSet.elements.x00281203.dataOffset, numberOfEntries));
+        for (var i in imageObj.BlueLutArray) imageObj.BlueLutArray[i] = imageObj.BlueLutArray[i] / 256;
+    }
 }
 
 function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {

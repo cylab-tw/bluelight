@@ -233,7 +233,7 @@ class BlueLightViewPort {
 
         this.labelLT.innerHTML = this.labelLB.innerHTML = this.labelRT.innerHTML = this.labelRB.innerHTML = "";
         this.labelMT.innerHTML = this.labelMB.innerHTML = this.labelLM.innerHTML = this.labelRM.innerHTML = "";
-        
+
         for (var labels of [DicomTags.LT, DicomTags.LB, DicomTags.RT, DicomTags.RB, DicomTags.MT, DicomTags.MB, DicomTags.LM, DicomTags.RM]) {
             for (var i = 0; i < labels.value.length; i++) {
                 var tags = extractTags(labels.value[i]), vals = extractVals(labels.value[i]);
@@ -544,25 +544,36 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     const multiplication = 255 / ((high - low)) * slope;
     const addition = (- low + intercept) / (high - low) * 255;
     const data = imgData.data;
-    if (image.color == true) {
-        if (("" + image.PhotometricInterpretation).includes("YBR") || ("" + image.PhotometricInterpretation).includes("RGB")) {
-            for (var i = 0, j = 0; i < data.length; i += 4, j += 3) {
-                data[i + 0] = pixelData[j] * multiplication + addition;
-                data[i + 1] = pixelData[j + 1] * multiplication + addition;
-                data[i + 2] = pixelData[j + 2] * multiplication + addition;
-            }
-        } else {
-            for (var i = 0; i < data.length; i += 4) {
-                data[i + 0] = pixelData[i] * multiplication + addition;
-                data[i + 1] = pixelData[i + 1] * multiplication + addition;
-                data[i + 2] = pixelData[i + 2] * multiplication + addition;
-            }
-        }
-    } else {
-        for (var i = 0, j = 0; i < data.length; i += 4, j++) {
-            data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
+    if (image.RedLutArray && image.GreenLutArray && image.BlueLutArray &&
+        image.RedLutArray.length == 256 && image.GreenLutArray.length == 256 && image.BlueLutArray.length == 256) {
+        for (var i = 0, j = 0; i < data.length; i += 4, j += 1) {
+            data[i + 0] = image.RedLutArray[pixelData[j + 0]];
+            data[i + 1] = image.GreenLutArray[pixelData[j + 1]];
+            data[i + 2] = image.BlueLutArray[pixelData[j + 2]];
         }
     }
+    else {
+        if (image.color == true) {
+            if (("" + image.PhotometricInterpretation).includes("YBR") || ("" + image.PhotometricInterpretation).includes("RGB")) {
+                for (var i = 0, j = 0; i < data.length; i += 4, j += 3) {
+                    data[i + 0] = pixelData[j] * multiplication + addition;
+                    data[i + 1] = pixelData[j + 1] * multiplication + addition;
+                    data[i + 2] = pixelData[j + 2] * multiplication + addition;
+                }
+            } else {
+                for (var i = 0; i < data.length; i += 4) {
+                    data[i + 0] = pixelData[i] * multiplication + addition;
+                    data[i + 1] = pixelData[i + 1] * multiplication + addition;
+                    data[i + 2] = pixelData[i + 2] * multiplication + addition;
+                }
+            }
+        } else {
+            for (var i = 0, j = 0; i < data.length; i += 4, j++) {
+                data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
+            }
+        }
+    }
+
     ctx.putImageData(imgData, 0, 0);
     var shouldReDraw = false;
     ctx.save();
