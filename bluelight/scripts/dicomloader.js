@@ -115,7 +115,7 @@ function getDefaultImageObj(dataSet, type, url, imageDataLoaded, fileExtension) 
         imageObj.columnPixelSpacing = parseFloat(dataSet.string('x00181164').split("\\")[1]);
     }
 
-    imageObj.samplesPerPixel = dataSet.string('x00280004') === 'YBR_FULL_422' ? 2 : dataSet.uint16('x00280002');
+    imageObj.samplesPerPixel = (dataSet.string('x00280004') === 'YBR_FULL_422' || dataSet.string('x00280004') === 'YBR_FULL') ? 2 : dataSet.uint16('x00280002');
     imageObj.data = dataSet;
     imageObj.url = url;
     imageObj.fileExtension = fileExtension;
@@ -211,7 +211,7 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
         }
     }
     function YBR(imageObj, dataSet, pixelData) {
-        if (dataSet.string('x00280004') === 'YBR_FULL_422' && imageObj.color) {
+        if ((dataSet.string('x00280004') === 'YBR_FULL_422' || dataSet.string('x00280004') === 'YBR_FULL') && imageObj.color) {
             for (var i = 0; i < pixelData.length; i += 3) {
                 var R = pixelData[i] + 1.402 * (pixelData[i + 2] - 128);
                 var G = pixelData[i] - 0.344136 * (pixelData[i + 1] - 128) - 0.714136 * (pixelData[i + 2] - 128);
@@ -261,7 +261,7 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
             }
             return PixelProcessing(imageObj, dataSet, pixelData);
         }
-        const samplesPerPixel = dataSet.string('x00280004') === 'YBR_FULL_422' ? 2 : dataSet.uint16('x00280002');
+        const samplesPerPixel = (dataSet.string('x00280004') === 'YBR_FULL_422' || dataSet.string('x00280004') === 'YBR_FULL') ? 2 : dataSet.uint16('x00280002');
         const pixelsPerFrame = dataSet.uint16('x00280010') * dataSet.uint16('x00280011') * samplesPerPixel;
 
         let frameOffset = PXL_Elem.dataOffset;
