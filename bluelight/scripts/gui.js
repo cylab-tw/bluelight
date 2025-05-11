@@ -108,6 +108,13 @@ class LeftLayout {
         return null;
     }
 
+    findSop(sop) {
+        for (var series_div of getClass("LeftImgAndMark")) {
+            if (series_div.sop == sop) return series_div;
+        }
+        return null;
+    }
+
     setAccent(series) {
         for (var series_div of getClass("LeftImgAndMark")) {
             series_div.style.border = "5px groove rgb(211, 217, 255)";
@@ -141,16 +148,20 @@ class LeftLayout {
                 if (elem.PatientId == patientID) Patient_div = elem;
         }
 
-        if (this.findSeries(QRLevel.series)) return;
+        if (!QRLevel.frames && this.findSeries(QRLevel.series)) return;
+        if (QRLevel.frames && this.findSop(QRLevel.sop)) return;
+
         var series_div = document.createElement("DIV");
         series_div.className = "LeftImgAndMark";
         //series_div.style = "width:" + 65 + "px;height:" + 65 + "px;border:" + bordersize + "px #D3D9FF groove;";
         series_div.series = QRLevel.series;
+        if (QRLevel.frames) series_div.sop = QRLevel.sop;
         series_div.style.touchAction = 'none';
 
         var ImgDiv = document.createElement("DIV");
         ImgDiv.className = "LeftImgDiv";
         ImgDiv.series = QRLevel.series;
+        if (QRLevel.frames) ImgDiv.series = QRLevel.sop;
         ImgDiv.draggable = "true";
         ImgDiv.QRLevel = QRLevel;
         ImgDiv.onclick = function () {
@@ -176,6 +187,7 @@ class LeftLayout {
 
     appendCanvasBySeries(series, image, pixelData) {
         var series_div = this.findSeries(series);
+        var series_div = this.findSeries(series);
         if (!series_div) return;
         var ImgDiv = series_div.ImgDiv;
 
@@ -195,9 +207,32 @@ class LeftLayout {
         this.refreshNumberOfFramesOrSops(image);
     }
 
+    appendCanvasBySop(sop, image, pixelData) {
+        var sop_div = this.findSop(sop);
+        if (!sop_div) return;
+        var ImgDiv = sop_div.ImgDiv;
+
+        if (ImgDiv.canvas()) {
+            //return;
+            //displayLeftCanvas(ImgDiv.canvas(), image, pixelData);
+        } else {
+            var leftCanvas = document.createElement("CANVAS");
+            leftCanvas.className = "LeftCanvas";
+            ImgDiv.appendChild(leftCanvas);
+            displayLeftCanvas(leftCanvas, image, pixelData);
+            var label = document.createElement("label");
+            label.className = "LeftImgCountLabel";
+            sop_div.series_label = label;
+            ImgDiv.appendChild(label);
+        }
+        this.refreshNumberOfFramesOrSops(image);
+    }
+
     refreshNumberOfFramesOrSops(image) {
-        var series_div = this.findSeries(image.SeriesInstanceUID);
+        if (image.NumberOfFrames > 1) var series_div = this.findSop(image.SOPInstanceUID);
+        else var series_div = this.findSeries(image.SeriesInstanceUID);
         if (!series_div) return;
+
         if (image.NumberOfFrames > 1) series_div.series_label.innerText = htmlEntities("" + image.NumberOfFrames);
         else if (image.haveSameInstanceNumber) series_div.series_label.innerText = "";
         else series_div.series_label.innerText = "" + htmlEntities(ImageManager.findSeries(image.SeriesInstanceUID).Sop.length);
@@ -293,7 +328,8 @@ function PictureOnclick(QRLevel) {
     resetViewport();
     //drawBorder(getByid("MouseOperation"));
 
-    if (QRLevel.series) GetViewport().loadImgBySop(ImageManager.findSeries(QRLevel.series).Sop[0])
+    if (QRLevel.frames) GetViewport().loadImgBySop(ImageManager.findSop(QRLevel.sop));
+    else if (QRLevel.series) GetViewport().loadImgBySop(ImageManager.findSeries(QRLevel.series).Sop[0])
     else if (QRLevel.sop) GetViewport().loadImgBySop(ImageManager.findSop(QRLevel.sop).parent.Sop[0]);
     //if (QRLevel.series) GetViewport().loadFirstImgBySeries(QRLevel.series);
     //else if (QRLevel.sop) GetViewport().loadFirstImgBySop(QRLevel.sop);

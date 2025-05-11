@@ -6,6 +6,7 @@ class QRLv {
             this.study = data.string(Tag.StudyInstanceUID);
             this.series = data.string(Tag.SeriesInstanceUID);
             this.sop = data.string(Tag.SOPInstanceUID);
+            this.frames = data.intString(Tag.NumberOfFrames) > 1 ? data.intString(Tag.NumberOfFrames) : null;
         }
     }
 }
@@ -170,10 +171,18 @@ class BlueLightImageManager {
 
             var LoadImgSop = null;
             for (var sop of preLoadSops) {
-                if (!leftLayout.findSeries(sop.dataSet.string(Tag.SeriesInstanceUID))) {
-                    leftLayout.setImg2Left(new QRLv(sop.dataSet), sop.dataSet.string(Tag.PatientID));
+                var QRLevel = new QRLv(sop.dataSet);
+
+                if (!QRLevel.frames && !leftLayout.findSeries(sop.dataSet.string(Tag.SeriesInstanceUID))) {
+                    leftLayout.setImg2Left(QRLevel, sop.dataSet.string(Tag.PatientID));
                     if (sop.image.imageDataLoaded == false && sop.image.loadImageData) sop.image.loadImageData();
                     leftLayout.appendCanvasBySeries(sop.dataSet.string(Tag.SeriesInstanceUID), sop.image, sop.image.getPixelData());
+                    LoadImgSop = sop.Sop;
+                }
+                else if (QRLevel.frames && !leftLayout.findSop(sop.dataSet.string(Tag.SOPInstanceUID))) {
+                    leftLayout.setImg2Left(QRLevel, sop.dataSet.string(Tag.PatientID));
+                    if (sop.image.imageDataLoaded == false && sop.image.loadImageData) sop.image.loadImageData();
+                    leftLayout.appendCanvasBySop(sop.dataSet.string(Tag.SOPInstanceUID), sop.image, sop.image.getPixelData());
                     LoadImgSop = sop.Sop;
                 }
                 leftLayout.refleshMarkWithSeries(sop.dataSet.string(Tag.SeriesInstanceUID));

@@ -11,7 +11,8 @@ function loadImageFromDataSet(dataSet, type, loadimage = true, url, fromLocal = 
     if (loadimage) {
         //改成無論是否曾出現在左側面板，都嘗試加到左側面板
         leftLayout.setImg2Left(new QRLv(dataSet), dataSet.string(Tag.PatientID));
-        leftLayout.appendCanvasBySeries(dataSet.string(Tag.SeriesInstanceUID), imageObj, imageObj.getPixelData());
+        if (type == "frame") leftLayout.appendCanvasBySop(dataSet.string(Tag.SOPInstanceUID), imageObj, imageObj.getPixelData());
+        else leftLayout.appendCanvasBySeries(dataSet.string(Tag.SeriesInstanceUID), imageObj, imageObj.getPixelData());
         leftLayout.refleshMarkWithSeries(dataSet.string(Tag.SeriesInstanceUID));
     } else if (fromLocal == true) {
         ImageManager.preLoadSops.push({
