@@ -3,7 +3,7 @@
 //test version ! ! !
 
 function initAutoOperation() {
-    if (!(location.search.includes("TrueSizeTest=true"))) return;
+    //if (!(location.search.includes("TrueSizeTest=true"))) return;
     var button = document.createElement('button');
     button.innerHTML = "test";
     button.onclick = AutoOperation;

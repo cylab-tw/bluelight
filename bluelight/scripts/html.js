@@ -268,10 +268,10 @@ function html_onload() {
   }
 
   getByid("TrueSizeImg").onclick = function () {
-    if (!(location.search.includes("TrueSizeTest=true"))) return;
+    //if (!(location.search.includes("TrueSizeTest=true"))) return;
     ScaleToTrueSize();
   }
-  if (!(location.search.includes("TrueSizeTest=true"))) getByid("TrueSize_span").style.display = "none";
+  //if (!(location.search.includes("TrueSizeTest=true"))) getByid("TrueSize_span").style.display = "none";
 
   getByid("clearviewportImg").onclick = function () {
     var clearviewportWindow = document.createElement("DIV");
