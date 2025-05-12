@@ -252,84 +252,170 @@ function getStudyObj(DicomStudyResponse, SeriesUrl, row) {
   }
 }
 
-function readJson(url) {
-  let onloadList = [];
-  const SerchState1 = SerchState;
-  var requestURL = url;
-  var originWADOUrl = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.QIDO.service + "/studies/";
-  originWADOUrl = originWADOUrl.replace("?", "");
-  var request = new XMLHttpRequest();
-  request.open('GET', requestURL);
-  var wadoToken = ConfigLog.WADO.token;
-  for (var to = 0; to < Object.keys(wadoToken).length; to++) {
-    if (wadoToken[Object.keys(wadoToken)[to]] != "") {
-      request.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
-    }
-  }
-  request.responseType = 'json';
-  request.send();
-  onloadList.push(0);
-  request.onload = function () {
-    onloadList.pop();
-    var DicomStudyResponse = request.response;
-    if (DicomStudyResponse && DicomStudyResponse.length == 0)
-      getByid("loadingSpan").style.display = "none";
+// Show loading spinner and backdrop  
+function showLoading() {  
+  if (document.getElementById('loadingBackdrop')) {  
+    document.getElementById('loadingBackdrop').style.display = 'block';  
+  }  
+  if (document.getElementById('loadingSpan')) {  
+    document.getElementById('loadingSpan').style.display = '';  
+  }  
+}  
+  
+// Hide loading spinner and backdrop  
+function hideLoading() {  
+  if (document.getElementById('loadingBackdrop')) {  
+    document.getElementById('loadingBackdrop').style.display = 'none';  
+  }  
+  if (document.getElementById('loadingSpan')) {  
+    document.getElementById('loadingSpan').style.display = 'none';  
+  }  
+}  
+  
+// Display error message with semi-transparent backdrop  
+function showErrorMessage(message) {  
+  // Hide loading UI if it's visible  
+  hideLoading();  
+    
+  // Update and show the error message  
+  if (document.getElementById('errorMessageText')) {  
+    document.getElementById('errorMessageText').innerText = message;  
+    document.getElementById('errorBackdrop').style.display = 'block';  
+  } else {  
+    // Fallback to alert if the error UI doesn't exist  
+    alert(message);  
+  }  
+}
 
-    for (let series = 0; series < DicomStudyResponse.length; series++) {
-      let SeriesUrl = "";
-      if (ConfigLog.WADO.enableRetrieveURI == true) {
-        SeriesUrl = originWADOUrl + DicomStudyResponse[series]["0020000D"].Value[0] + "/series/";
-      } else {
-        SeriesUrl = DicomStudyResponse[series]["00081190"].Value[0] + "/series";
-      }
-      if (ConfigLog.WADO.https == "https") SeriesUrl = SeriesUrl.replace("http:", "https:");
-      SeriesUrl = fitUrl(SeriesUrl);
-
-      function checkValue(obj) {
-        if (obj == undefined) return undefined;
-        else if (obj.Value == undefined) return undefined;
-        else if (obj.Value[0] == undefined) return undefined;
-        else {
-          if (obj.Value.length == 1) {
-            return obj.Value[0];
-          }
-          else {
-            var str = "";
-            for (l = 0; l < obj.Value.length; l++) {
-              str += obj.Value[l];
-              if (l != obj.Value.length - 1) str += ",";
-            }
-            return str;
-          };
-        }
-      }
-
-      var DICOM_obj = {
-        study: checkValue(DicomStudyResponse[series]["0020000D"]),
-        //series: checkValue(DicomSeriesResponse[instance]["0020000E"]),
-        // sop: checkValue(DicomResponse[i]["00080018"]),
-        // instance: checkValue(DicomResponse[i]["00200013"]),
-        // imageId: url,
-        patientId: checkValue(DicomStudyResponse[series]["00100020"]),
-        StudyDate: checkValue(DicomStudyResponse[series]["00080020"]),
-        Modality: checkValue(DicomStudyResponse[series]["00080061"]),
-        PatientName: checkValue(DicomStudyResponse[series]["00100010"]) == undefined ? undefined : checkValue(DicomStudyResponse[series]["00100010"])["Alphabetic"],
-        AccessionNumber: checkValue(DicomStudyResponse[series]["00080050"]),
-        Sex: checkValue(DicomStudyResponse[series]["00100040"]),
-        BirthDate: checkValue(DicomStudyResponse[series]["00100030"]),
-        StudyTime: checkValue(DicomStudyResponse[series]["00080030"]),
-        StudyDescription: checkValue(DicomStudyResponse[series]["00081030"]),
-        SeriesUrl: SeriesUrl,//.replace("https", "").replace("http", "")
-        DicomStudyResponse: DicomStudyResponse[series],
-        S: checkValue(DicomStudyResponse[series]["00201206"]),
-        I: checkValue(DicomStudyResponse[series]["00201208"])
-        // SeriesDescription: checkValue(DicomSeriesResponse[instance]["0008103E"]),
-        // SeriesNumber: checkValue(DicomSeriesResponse[instance]["00200011"])
-      };
-      loadUID(DICOM_obj);
-      if (onloadList.length == 0) createTable();
-    }
-  }
+function readJson(url) {  
+  // Show loading UI  
+  showLoading();  
+    
+  let onloadList = [];  
+  const SerchState1 = SerchState;  
+  var requestURL = url;  
+  var originWADOUrl = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.QIDO.service + "/studies/";  
+  originWADOUrl = originWADOUrl.replace("?", "");  
+  var request = new XMLHttpRequest();  
+  request.open('GET', requestURL);  
+  var wadoToken = ConfigLog.WADO.token;  
+  for (var to = 0; to < Object.keys(wadoToken).length; to++) {  
+    if (wadoToken[Object.keys(wadoToken)[to]] != "") {  
+      request.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);  
+    }  
+  }  
+  request.responseType = 'json';  
+    
+  // Add error handling for network errors  
+  request.onerror = function() {  
+    console.error('Network error occurred while fetching DICOM data');  
+    showErrorMessage('Network error occurred while connecting to PACS server. Please check your connection and try again.');  
+    hideLoading();  
+  };  
+    
+  request.send();  
+  onloadList.push(0);  
+  request.onload = function () {  
+    onloadList.pop();  
+      
+    // Check for HTTP error status codes  
+    if (request.status >= 400) {  
+      console.error(`HTTP error ${request.status} (${request.statusText}) occurred while fetching DICOM data from ${url}`);  
+        
+      let errorMessage = '';  
+      switch (request.status) {  
+        case 502:  
+          errorMessage = `Bad Gateway (502) error: The PACS server is unreachable or returned an invalid response. Please contact your system administrator.`;  
+          break;  
+        case 404:  
+          errorMessage = `Not Found (404) error: The requested DICOM resource could not be found on the PACS server.`;  
+          break;  
+        case 401:  
+        case 403:  
+          errorMessage = `Authentication error (${request.status}): You don't have permission to access this DICOM resource.`;  
+          break;  
+        default:  
+          errorMessage = `HTTP error ${request.status} (${request.statusText}) occurred while connecting to PACS server.`;  
+      }  
+        
+      showErrorMessage(errorMessage);  
+      hideLoading();  
+      return;  
+    }  
+      
+    // Check for 204 No Content response (StudyInstanceUID doesn't exist)  
+    if (request.status === 204) {  
+      // If the URL contains StudyInstanceUID parameter, handle it as a "not found" case  
+      if (url.includes("StudyInstanceUID=")) {  
+        // Extract the StudyInstanceUID from the URL  
+        const studyUidMatch = url.match(/StudyInstanceUID=([^&]+)/);  
+        const studyUid = studyUidMatch ? decodeURIComponent(studyUidMatch[1]) : "unknown";  
+          
+        showErrorMessage(`The requested StudyInstanceUID (${studyUid}) does not exist in the PACS server.`);  
+        hideLoading();  
+        return;  
+      }  
+    }  
+      
+    var DicomStudyResponse = request.response;  
+    if (DicomStudyResponse && DicomStudyResponse.length == 0) {  
+      hideLoading();  
+    }  
+  
+    // Process the response as before  
+    for (let series = 0; series < DicomStudyResponse.length; series++) {  
+      // Existing code to process the response...  
+      let SeriesUrl = "";  
+      if (ConfigLog.WADO.enableRetrieveURI == true) {  
+        SeriesUrl = originWADOUrl + DicomStudyResponse[series]["0020000D"].Value[0] + "/series/";  
+      } else {  
+        SeriesUrl = DicomStudyResponse[series]["00081190"].Value[0] + "/series";  
+      }  
+      if (ConfigLog.WADO.https == "https") SeriesUrl = SeriesUrl.replace("http:", "https:");  
+      SeriesUrl = fitUrl(SeriesUrl);  
+  
+      function checkValue(obj) {  
+        if (obj == undefined) return undefined;  
+        else if (obj.Value == undefined) return undefined;  
+        else if (obj.Value[0] == undefined) return undefined;  
+        else {  
+          if (obj.Value.length == 1) {  
+            return obj.Value[0];  
+          }  
+          else {  
+            var str = "";  
+            for (l = 0; l < obj.Value.length; l++) {  
+              str += obj.Value[l];  
+              if (l != obj.Value.length - 1) str += ",";  
+            }  
+            return str;  
+          };  
+        }  
+      }  
+  
+      var DICOM_obj = {  
+        study: checkValue(DicomStudyResponse[series]["0020000D"]),  
+        patientId: checkValue(DicomStudyResponse[series]["00100020"]),  
+        StudyDate: checkValue(DicomStudyResponse[series]["00080020"]),  
+        Modality: checkValue(DicomStudyResponse[series]["00080061"]),  
+        PatientName: checkValue(DicomStudyResponse[series]["00100010"]) == undefined ? undefined : checkValue(DicomStudyResponse[series]["00100010"])["Alphabetic"],  
+        AccessionNumber: checkValue(DicomStudyResponse[series]["00080050"]),  
+        Sex: checkValue(DicomStudyResponse[series]["00100040"]),  
+        BirthDate: checkValue(DicomStudyResponse[series]["00100030"]),  
+        StudyTime: checkValue(DicomStudyResponse[series]["00080030"]),  
+        StudyDescription: checkValue(DicomStudyResponse[series]["00081030"]),  
+        SeriesUrl: SeriesUrl,  
+        DicomStudyResponse: DicomStudyResponse[series],  
+        S: checkValue(DicomStudyResponse[series]["00201206"]),  
+        I: checkValue(DicomStudyResponse[series]["00201208"])  
+      };  
+      loadUID(DICOM_obj);  
+      if (onloadList.length == 0) {  
+        createTable();  
+        hideLoading(); // Hide loading when table is created  
+      }  
+    }  
+  }  
 }
 
 function loadUID(DICOM_obj) {

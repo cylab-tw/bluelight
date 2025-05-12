@@ -203,16 +203,32 @@ function load_WebImg() {
   }
 }
 
-function readAllJson(readJson) {
-  //整合QIDO-RS的URL並發送至伺服器
-  var queryString = ("" + location.search).replace("?", "");
-  queryString = operateQueryString(queryString);
-  if (queryString.length > 0) {
-    var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/series" + "?" + queryString + "";
-    url = fitUrl(url);
-    readJson(url);
-  }
-  load_WebImg();
+function readAllJson(readJson) {  
+  var queryString = ("" + location.search).replace("?", "");  
+  queryString = operateQueryString(queryString);  
+  if (queryString.length > 0) {  
+    var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/series" + "?" + queryString + "";  
+    url = fitUrl(url);  
+      
+    // Create a function to handle 204 responses  
+    const handleNoContentResponse = function(url) {  
+      if (url.includes("StudyInstanceUID=")) {  
+        const studyUidMatch = url.match(/StudyInstanceUID=([^&]+)/);  
+        const studyUid = studyUidMatch ? studyUidMatch[1] : "unknown";  
+          
+        // Use the error display function from our previous implementation  
+        if (typeof showErrorMessage === 'function') {  
+          showErrorMessage(`The requested StudyInstanceUID (${studyUid}) does not exist in the PACS server.`);  
+        } else {  
+          alert(`Error: The requested StudyInstanceUID (${studyUid}) does not exist in the PACS server.`);  
+        }  
+      }  
+    };  
+      
+    // Pass the handler to the readJson function  
+    readJson(url, handleNoContentResponse);  
+  }  
+  load_WebImg();  
 }
 
 function fitUrl(url) {
@@ -421,22 +437,83 @@ function getJsonBySeriesRequest(SeriesRequest) {
   }
 }
 
-function readJson(url) {
-  //向伺服器請求資料
-  if (ConfigLog.WADO.https == "https") url = url.replace("http:", "https:");
-  let SeriesRequest = new XMLHttpRequest();
-  SeriesRequest.open('GET', url);
-  SeriesRequest.responseType = 'json';
-  var wadoToken = ConfigLog.WADO.token;
-  for (var to = 0; to < Object.keys(wadoToken).length; to++) {
-    if (wadoToken[Object.keys(wadoToken)[to]] != "") {
-      SeriesRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
-    }
-  }
-
-  //發送以Series為單位的請求
-  SeriesRequest.send();
-  SeriesRequest.onload = function () {
-    getJsonBySeriesRequest(SeriesRequest);
-  }
+function readJson(url) {  
+  // Show loading UI if implemented  
+  if (typeof showLoading === 'function') {  
+    showLoading();  
+  }  
+    
+  // Ensure HTTPS is used if configured that way  
+  if (ConfigLog.WADO.https == "https") url = url.replace("http:", "https:");  
+    
+  let SeriesRequest = new XMLHttpRequest();  
+  SeriesRequest.open('GET', url);  
+  SeriesRequest.responseType = 'json';  
+    
+  // Add authentication tokens  
+  var wadoToken = ConfigLog.WADO.token;  
+  for (var to = 0; to < Object.keys(wadoToken).length; to++) {  
+    if (wadoToken[Object.keys(wadoToken)[to]] != "") {  
+      SeriesRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);  
+    }  
+  }  
+  
+  // Add error handling  
+  SeriesRequest.onerror = function() {  
+    console.error('Network error occurred while fetching DICOM data');  
+    if (typeof showErrorMessage === 'function') {  
+      showErrorMessage(`Network error occurred while connecting to PACS server. Please check your connection and try again.`);  
+    } else {  
+      alert('Network error occurred while connecting to PACS server. Please check your connection and try again.');  
+    }  
+      
+    // Hide loading UI if implemented  
+    if (typeof hideLoading === 'function') {  
+      hideLoading();  
+    }  
+  };  
+    
+  // Handle HTTP status codes  
+  SeriesRequest.onload = function() {  
+    // Check for HTTP error status codes  
+    if (SeriesRequest.status >= 400) {  
+      console.error(`HTTP error ${SeriesRequest.status} (${SeriesRequest.statusText}) occurred while fetching DICOM data from ${url}`);  
+        
+      let errorMessage = '';  
+      switch (SeriesRequest.status) {  
+        case 502:  
+          errorMessage = `Bad Gateway (502) error: The PACS server is unreachable or returned an invalid response. Please contact your system administrator.`;  
+          break;  
+        case 404:  
+          errorMessage = `Not Found (404) error: The requested DICOM resource could not be found on the PACS server.`;  
+          break;  
+        case 401:  
+        case 403:  
+          errorMessage = `Authentication error (${SeriesRequest.status}): You don't have permission to access this DICOM resource.`;  
+          break;  
+        default:  
+          errorMessage = `HTTP error ${SeriesRequest.status} (${SeriesRequest.statusText}) occurred while connecting to PACS server.`;  
+      }  
+        
+      // Display error message  
+      if (typeof showErrorMessage === 'function') {  
+        showErrorMessage(errorMessage);  
+      } else {  
+        alert(errorMessage);  
+      }  
+        
+      // Hide loading UI if implemented  
+      if (typeof hideLoading === 'function') {  
+        hideLoading();  
+      }  
+        
+      return;  
+    }  
+      
+    // Process successful response  
+    getJsonBySeriesRequest(SeriesRequest);  
+  };  
+  
+  // Send the request  
+  SeriesRequest.send();  
 }
