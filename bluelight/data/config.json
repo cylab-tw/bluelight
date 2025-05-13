@@ -4,7 +4,7 @@
             "AETitle": "YMOrthanc",
             "QIDO-enableHTTPS": true,
             "WADO-enableHTTPS": true,
-            "QIDO-hostname": "raccoon.dicom.org.tw",
+            "QIDO-hostname": "1raccoon.dicom.org.tw",
             "WADO-hostname": "raccoon.dicom.org.tw",
             "QIDO-PORT": 443,
             "WADO-PORT": 443,

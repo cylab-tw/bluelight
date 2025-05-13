@@ -204,15 +204,62 @@ function load_WebImg() {
 }
 
 function readAllJson(readJson) {
-  //整合QIDO-RS的URL並發送至伺服器
+  // Show notification that we're querying the PACS server
+  showToast("Querying DICOM server for studies...");
+
+  // Integrate with the existing loading toast system
+  const queryToastId = "queryToast_" + new Date().getTime();
+  showLoadingToast("Retrieving DICOM study list...", queryToastId);
+
+  // Original function code
   var queryString = ("" + location.search).replace("?", "");
   queryString = operateQueryString(queryString);
   if (queryString.length > 0) {
     var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/series" + "?" + queryString + "";
     url = fitUrl(url);
-    readJson(url);
+
+    // Make AJAX request
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+
+    // Add headers
+    var wadoToken = ConfigLog.WADO.token;
+    for (var to = 0; to < Object.keys(wadoToken).length; to++) {
+      if (wadoToken[Object.keys(wadoToken)[to]] != "")
+        xhr.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
+    }
+
+    xhr.onload = function () {
+      // Hide query toast when response received
+      hideLoadingToast(queryToastId);
+
+      if (xhr.status === 200) {
+        // Query successful
+        const response = xhr.response;
+        if (response && response.length > 0) {
+          showToast(`Found ${response.length} series. Retrieving DICOM files...`);
+          readJson(url); // Continue with normal processing
+        } else {
+          showToast("No DICOM series found matching your query");
+        }
+      } else {
+        // Query failed
+        showToast(`PACS Query Error: ${getErrorMessage(xhr.status)}`);
+      }
+    };
+
+    xhr.onerror = function () {
+      hideLoadingToast(queryToastId);
+      showToast("Failed to connect to DICOM server");
+    };
+
+    xhr.send();
+  } else {
+    // No query string, hide the toast
+    hideLoadingToast(queryToastId);
+    load_WebImg(); // Still try to load web images if available
   }
-  load_WebImg();
 }
 
 function fitUrl(url) {
@@ -390,70 +437,107 @@ function getJsonBySeriesRequest(SeriesRequest) {
     return;
   }
 
+  // Set up a counter to track progress
+  let processedSeries = 0;
+
+  // Process each series
   for (let instance = 0; instance < SeriesResponse.length; instance++) {
-    requestInstances(SeriesResponse, instance, 0);
+    // Create unique toast ID for each series
+    const seriesInstanceToastId = "seriesLoadToast_" + instance + "_" + new Date().getTime();
+    showLoadingToast(`Loading DICOM series ${instance + 1}/${SeriesResponse.length}...`, seriesInstanceToastId);
+
+    // Create a progress callback that closes this specific toast
+    function updateSeriesProgress() {
+      processedSeries++;
+      // Hide this series' toast when it's done
+      // hideLoadingToast(seriesInstanceToastId);
+    }
+
+    // Request instances with the progress tracking callback
+    requestInstances(SeriesResponse, instance, 0, updateSeriesProgress, true);
   }
 }
 
 // This is the enhanced requestInstances function that's called by getJsonBySeriesRequest
-function requestInstances(SeriesResponse, instance, offset) {
+function requestInstances(SeriesResponse, instance, offset = 0, progressCallback, isInitialRequest = true) {
   const offset_ = offset;
   let InstanceUrl = "";
 
-  if (ConfigLog.QIDO.enableRetrieveURI == true)
+  // Create a variable to track if this is the last page (based on response size < limit)
+  let isLastPage = false;
+
+  if (ConfigLog.QIDO.enableRetrieveURI === true) {
     InstanceUrl = SeriesResponse[instance]["00081190"].Value[0] + "/instances";
-  else
+  } else {
     InstanceUrl = fitUrl(ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service) +
       "/studies/" + SeriesResponse[instance]["0020000D"].Value[0] +
       "/series/" + SeriesResponse[instance]["0020000E"].Value[0] + "/instances";
-
-  if (ConfigLog.WADO.includefield == true) InstanceUrl += "?includefield=all";
-  if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
-  if (ConfigLog.QIDO.limit) {
-    if (ConfigLog.WADO.includefield == true) InstanceUrl += `&limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
-    else InstanceUrl += `?limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
   }
+
+  if (ConfigLog.WADO.includefield) InstanceUrl += "?includefield=all";
+  if (ConfigLog.QIDO.limit) {
+    InstanceUrl += (InstanceUrl.includes("?") ? "&" : "?") + `limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
+  }
+
+  if (ConfigLog.WADO.https === "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
 
   let InstanceRequest = new XMLHttpRequest();
   InstanceRequest.open('GET', InstanceUrl);
   InstanceRequest.responseType = 'json';
 
-  // Add error handling for instance request
-  InstanceRequest.onerror = function () {
-    console.error("Error in QIDO-RS instances request");
-    showToast(`PACS Instance Query Error: Failed to connect to PACS server`);
-  };
-
-  //發送以Instance為單位的請求
   var wadoToken = ConfigLog.WADO.token;
-  for (var to = 0; to < Object.keys(wadoToken).length; to++) {
-    if (wadoToken[Object.keys(wadoToken)[to]] != "") {
-      InstanceRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
+  for (let key of Object.keys(wadoToken)) {
+    if (wadoToken[key] !== "") {
+      InstanceRequest.setRequestHeader(key, wadoToken[key]);
     }
   }
 
-  const instance_ = instance;
+  InstanceRequest.onerror = function () {
+    console.error("Error in QIDO-RS instances request");
+    showToast("PACS Instance Query Error: Failed to connect to PACS server");
+    
+    // Only call progressCallback if this was the initial request or we know it's the final one
+    // This prevents closing the toast prematurely on error
+    if (isInitialRequest || isLastPage) {
+      if (progressCallback) progressCallback();
+    }
+  };
+
   InstanceRequest.onload = function () {
     if (InstanceRequest.status !== 200) {
       console.error("Error in QIDO-RS instances request, status: " + InstanceRequest.status);
       showToast(`PACS Instance Query Error: ${getErrorMessage(InstanceRequest.status)}`);
+      
+      // Only call progressCallback if this was the initial request or we know it's the final one
+      if (isInitialRequest || isLastPage) {
+        if (progressCallback) progressCallback();
+      }
       return;
     }
 
-    if (InstanceRequest.readyState != 4) { return; }
+    if (!InstanceRequest.response || InstanceRequest.response.length === 0) {
+      console.warn("No instances found for series");
+      
+      // This is effectively the last page if no instances were found
+      if (progressCallback) progressCallback();
+      return;
+    }
 
-    // Process the Instance results
-    getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance_);
+    getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance);
 
-    // Check if there are more instances to retrieve (pagination)
-    if (ConfigLog.QIDO.limit && InstanceRequest.response &&
-      InstanceRequest.response.length == ConfigLog.QIDO.limit) {
-      requestInstances(SeriesResponse, instance_, offset_ + ConfigLog.QIDO.limit);
+    // Check if this is the last page (fewer instances than the limit)
+    isLastPage = !ConfigLog.QIDO.limit || InstanceRequest.response.length < ConfigLog.QIDO.limit;
+
+    if (ConfigLog.QIDO.limit && InstanceRequest.response.length === ConfigLog.QIDO.limit) {
+      // Continue to next page - set isInitialRequest to false to indicate this is a follow-up request
+      requestInstances(SeriesResponse, instance, offset_ + ConfigLog.QIDO.limit, progressCallback, false);
+    } else {
+      // Last page or no pagination needed: call progress callback
+      if (progressCallback) progressCallback();
     }
   };
 
   InstanceRequest.send();
-  return InstanceRequest;
 }
 
 // This is the function that processes the instance data
@@ -464,10 +548,16 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
   }
 
   let DicomResponse = InstanceRequest.response;
+
+  // Show toast with instance count if there are many instances
+  // if (DicomResponse.length > 10) {
+  //   showToast(`Loading ${DicomResponse.length} instances for series ${instance + 1}/${SeriesResponse.length}...`);
+  // }
+
   var min = 1000000000;
   var firstUrl;
 
-  //取得最小的Instance Number
+  // Find the smallest instance number
   for (var i = 0; i < DicomResponse.length; i++) {
     try {
       if (getValue(DicomResponse[i]["00200013"]) < min)
@@ -477,13 +567,9 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
     }
   }
 
-  //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
-  //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
-
-  //載入標記以及首張影像
+  // Process the first image (or the one with the smallest instance number)
   for (var i = 0; i < DicomResponse.length; i++) {
     try {
-      //取得WADO的路徑
       var url;
       if (ConfigLog.WADO.WADOType == "URI") {
         url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
@@ -501,19 +587,18 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
       url = fitUrl(url);
 
       if (getValue(DicomResponse[i]["00200013"]) == min || DicomResponse.length == 1) {
-        //預載入DICOM至Viewport
+        // Load the first image with higher priority
         if (ConfigLog.WADO.WADOType == "URI") LoadFileInBatches.wadoPreLoad(url);
         else if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url);
         firstUrl = url;
       }
     } catch (ex) {
       console.error("Error processing instance:", ex);
-      showToast("Error processing DICOM instance");
     }
   }
 
-  //載入其餘所有影像
-  function loadDicom(i) {
+  // Queue the rest of the images for loading
+  for (var i = 0; i < DicomResponse.length; i++) {
     try {
       var url;
       if (ConfigLog.WADO.WADOType == "URI") {
@@ -530,18 +615,14 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
       }
 
       url = fitUrl(url);
-      if (url == firstUrl) return;
+      if (url == firstUrl) continue; // Skip the first one as we already loaded it
 
-      //預載入DICOM至Viewport
+      // Queue the rest of the images with lower priority
       if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url, true);
-      else LoadFileInBatches.wadoPreLoad(url, false);
+      else LoadFileInBatches.wadoPreLoad(url, true);
     } catch (ex) {
       console.error("Error loading DICOM:", ex);
     }
-  }
-
-  for (var i = 0; i < DicomResponse.length; i++) {
-    loadDicom(i);
   }
 }
 

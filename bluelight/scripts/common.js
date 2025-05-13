@@ -235,74 +235,190 @@ function ScaleToTrueSize(viewportNum = viewportNumber) {
     return scaleFactor;
 }
 
-function showToast(message) {
-    // Create toast element if it doesn't exist  
-    let toast = getByid("errorToast");
-    if (!toast) {
-      toast = document.createElement("div");
-      toast.id = "errorToast";
-      toast.style.position = "fixed";
-      toast.style.bottom = "20px";
-      toast.style.right = "20px";
-      toast.style.backgroundColor = "#f44336";
-      toast.style.color = "white";
-      toast.style.padding = "15px";
-      toast.style.borderRadius = "4px";
-      toast.style.zIndex = "1000";
-      toast.style.minWidth = "300px";
-      toast.style.maxWidth = "500px";
-      toast.style.boxShadow = "0 2px 5px rgba(0,0,0,0.3)";
-      toast.style.fontWeight = "bold";
-      toast.style.fontFamily = "Arial, sans-serif";
-      document.body.appendChild(toast);
+function createToastContainer() {
+    let container = getByid("toastContainer");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "toastContainer";
+        container.style.position = "fixed";
+        container.style.bottom = "20px";
+        container.style.right = "20px";
+        container.style.zIndex = "1000";
+        container.style.display = "flex";
+        container.style.flexDirection = "column-reverse"; // Stack from bottom up
+        container.style.gap = "10px"; // Space between toasts
+        container.style.maxHeight = "80vh"; // Maximum height
+        container.style.overflowY = "auto"; // Scrollable if too many toasts
+        document.body.appendChild(container);
     }
-  
-    // Set message and show toast  
-    toast.innerHTML = message;
-    toast.style.display = "block";
-  
-    // Add close button  
+    return container;
+}
+
+// Create a unique toast ID
+function createToastId(prefix = "toast") {
+    return `${prefix}_${new Date().getTime()}_${Math.floor(Math.random() * 1000)}`;
+}
+
+function showLoadingToast(message, id = null) {
+    const toastId = id || createToastId("loadingToast");
+    
+    // Create CSS for spinner if it doesn't exist
+    let style = document.getElementById('toastSpinnerStyle');
+    if (!style) {
+        style = document.createElement('style');
+        style.id = 'toastSpinnerStyle';
+        style.innerHTML = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Create spinner HTML
+    const spinnerHtml = `
+        <div style="display: flex; align-items: center;">
+            <div style="border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid white; width: 20px; height: 20px; margin-right: 15px; animation: spin 1s linear infinite;"></div>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    // Show toast with spinner and no auto-hide
+    return showToast(spinnerHtml, 0, toastId);
+}
+
+// Function to hide a loading toast notification
+function hideLoadingToast(id = null) {
+    if (id) {
+        hideToast(id);
+    } else {
+        const prefixies = [
+            "loadingToast",
+            "seriesLoadToast"
+        ];
+        
+        // Hide all loading toasts if no specific ID is provided
+        prefixies.forEach(prefix => {
+            const loadingToasts = document.querySelectorAll(`[id^='${prefix}']`);
+            loadingToasts.forEach(toast => {
+                if (toast.id) hideToast(toast.id);
+            });
+        });
+    }
+}
+
+function showToast(message, duration = 3000, id = null) {
+    const container = createToastContainer();
+    const toastId = id || createToastId();
+    
+    // Create toast element
+    let toast = document.createElement("div");
+    toast.id = toastId;
+    toast.className = "toast-notification";
+    toast.style.padding = "15px";
+    toast.style.borderRadius = "4px";
+    toast.style.boxShadow = "0 2px 5px rgba(0,0,0,0.3)";
+    toast.style.fontWeight = "bold";
+    toast.style.fontFamily = "Arial, sans-serif";
+    toast.style.color = "white";
+    toast.style.minWidth = "300px";
+    toast.style.maxWidth = "500px";
+    toast.style.position = "relative"; // For the close button positioning
+    
+    // Set color based on message content
+    if (message.includes("successfully")) {
+        toast.style.backgroundColor = "#4CAF50"; // Green for success
+    } else if (message.includes("Error") || message.includes("Failed") || message.includes("error")) {
+        toast.style.backgroundColor = "#f44336"; // Orange for red
+    } else {
+        toast.style.backgroundColor = "#2196F3"; // Blue for other notifications
+    }
+    
+    // Close button
     let closeBtn = document.createElement("span");
     closeBtn.innerHTML = "×";
-    closeBtn.style.float = "right";
+    closeBtn.style.position = "absolute";
+    closeBtn.style.right = "10px";
+    closeBtn.style.top = "5px";
     closeBtn.style.cursor = "pointer";
-    closeBtn.style.marginLeft = "10px";
-    closeBtn.onclick = function () {
-      toast.style.display = "none";
+    closeBtn.style.fontSize = "18px";
+    closeBtn.onclick = function() {
+        hideToast(toastId);
     };
-    toast.prepend(closeBtn);
-  
-    // Hide toast after 10 seconds  
-    setTimeout(function () {
-      toast.style.display = "none";
-    }, 3000);
-  }
+    
+    // Set message
+    let messageSpan = document.createElement("span");
+    messageSpan.innerHTML = message;
+    messageSpan.style.paddingRight = "20px"; // Space for close button
+    
+    // Add elements to toast
+    toast.appendChild(closeBtn);
+    toast.appendChild(messageSpan);
+    
+    // Add to container
+    container.appendChild(toast);
+    
+    // Auto-hide after duration
+    if (duration > 0) {
+        setTimeout(function() {
+            hideToast(toastId);
+        }, duration);
+    }
+    
+    return toastId;
+}
+
+function hideToast(id) {
+    let toast = getByid(id);
+    if (!toast) {
+        toast = document.querySelector(`[id^='${id}']`); // Fallback to query selector if ID is not found
+    }
+    if (toast) {
+        // Add fade-out animation
+        toast.style.transition = "opacity 0.5s";
+        toast.style.opacity = "0";
+        
+        // Remove after animation completes
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+            
+            // Remove container if empty
+            const container = getByid("toastContainer");
+            if (container && container.children.length === 0) {
+                container.remove();
+            }
+        }, 500);
+    }
+}
 
 // Function to get user-friendly error messages  
 function getErrorMessage(statusCode) {
     switch (statusCode) {
-      case 204:
-        return "No Content";
-      case 400:
-        return "Bad Request";
-      case 401:
-        return "Unauthorized";
-      case 403:
-        return "Forbidden";
-      case 404:
-        return "Not Found";
-      case 500:
-        return "Internal Server Error";
-      case 502:
-        return "PACS Server Not Available";
-      case 503:
-        return "Service Unavailable";
-      case 504:
-        return "Gateway Timeout";
-      default:
-        return "Unknown Error";
+        case 204:
+            return "No Content";
+        case 400:
+            return "Bad Request";
+        case 401:
+            return "Unauthorized";
+        case 403:
+            return "Forbidden";
+        case 404:
+            return "Not Found";
+        case 500:
+            return "Internal Server Error";
+        case 502:
+            return "PACS Server Not Available";
+        case 503:
+            return "Service Unavailable";
+        case 504:
+            return "Gateway Timeout";
+        default:
+            return "Unknown Error";
     }
-  }
+}
 
 class Matrix4x4 {
     constructor() {

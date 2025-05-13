@@ -61,8 +61,16 @@ class LoadFileInBatches {
     static NumOfFetchs = 0;
     static limit = 0;
     static timer = null;
+    static loadingToastId = null;
 
     static wadoPreLoad(url, onlyload) {
+        // Create a batch ID if this is a new batch
+        if (LoadFileInBatches.currentBatchId === undefined || LoadFileInBatches.NumOfFetchs === 0) {
+            LoadFileInBatches.currentBatchId = new Date().getTime();
+            LoadFileInBatches.loadingToastId = "loadingToast_" + LoadFileInBatches.currentBatchId;
+            showLoadingToast("Preparing images...", LoadFileInBatches.loadingToastId);
+        }
+
         if (LoadFileInBatches.limit == 0) LoadFileInBatches.limit = ConfigLog.QIDO.limit ? ConfigLog.QIDO.limit : 100;
 
         if (LoadFileInBatches.NumOfFetchs >= LoadFileInBatches.limit) {
@@ -84,7 +92,12 @@ class LoadFileInBatches {
         if (!LoadFileInBatches.timer) {
             LoadFileInBatches.timer = setInterval(function () {
                 if (LoadFileInBatches.lock == true && LoadFileInBatches.NumOfFetchs == 0) {
-                    //如果仍超出上限(比如超過100筆)
+                    // Update loading toast with progress information
+                    // if (LoadFileInBatches.queue.length > 0) {
+                    //     showLoadingToast(`Processing queue (${LoadFileInBatches.queue.length} remaining)...`, LoadFileInBatches.loadingToastId);
+                    // }
+
+                    // If queue exceeds limit (e.g., over 100 items)
                     if (LoadFileInBatches.queue.length >= LoadFileInBatches.limit) {
                         var list = LoadFileInBatches.queue.splice(0, LoadFileInBatches.limit);
                         LoadFileInBatches.NumOfFetchs += list.length;
@@ -93,13 +106,25 @@ class LoadFileInBatches {
                             else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader2(list[i].url, list[i].onlyload);
                         }
                     } else {
+                        // Process remaining items and clean up
                         LoadFileInBatches.lock = false;
-                        var list = LoadFileInBatches.queue.splice(0, LoadFileInBatches.queue.length);
-                        LoadFileInBatches.NumOfFetchs += list.length;
-                        for (var i = 0; i < list.length; i++) {
-                            if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(list[i].url, list[i].onlyload);
-                            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader2(list[i].url, list[i].onlyload);
+
+                        // Only process if there are items in the queue
+                        if (LoadFileInBatches.queue.length > 0) {
+                            var list = LoadFileInBatches.queue.splice(0, LoadFileInBatches.queue.length);
+                            LoadFileInBatches.NumOfFetchs += list.length;
+                            for (var i = 0; i < list.length; i++) {
+                                if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(list[i].url, list[i].onlyload);
+                                else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader2(list[i].url, list[i].onlyload);
+                            }
+                        } else {
+                            // If queue is empty, hide loading toast and show success message
+                            hideLoadingToast(LoadFileInBatches.loadingToastId);
+                            showToast("All Images loaded successfully", 3000);
+                            LoadFileInBatches.currentBatchId = undefined;
                         }
+
+                        // Clear the timer
                         clearInterval(LoadFileInBatches.timer);
                         LoadFileInBatches.timer = null;
                     }
@@ -109,10 +134,33 @@ class LoadFileInBatches {
     }
 
     static finishOne() {
-        if (LoadFileInBatches.NumOfFetchs > 0) LoadFileInBatches.NumOfFetchs--;
+        if (LoadFileInBatches.NumOfFetchs > 0) {
+            LoadFileInBatches.NumOfFetchs--;
+
+            // Hide toast when this batch is complete
+            if (LoadFileInBatches.NumOfFetchs === 0) {
+                // If queue is empty, we're done - clean up
+                if (LoadFileInBatches.queue.length === 0) {
+                    hideLoadingToast(LoadFileInBatches.loadingToastId);
+                    showToast("All Images loaded successfully", 3000);
+
+                    // Reset batch ID to ensure a new toast for next batch
+                    LoadFileInBatches.currentBatchId = undefined;
+
+                    // Make sure lock is reset
+                    LoadFileInBatches.lock = false;
+
+                    // Clear timer if it's still running
+                    if (LoadFileInBatches.timer) {
+                        clearInterval(LoadFileInBatches.timer);
+                        LoadFileInBatches.timer = null;
+                    }
+                }
+                // Otherwise let the timer process the next batch
+            }
+        }
     }
 }
-
 function wadorsLoader2(url, onlyload) {
     var headers = {
         'user-agent': 'Mozilla/4.0 MDN Example', 'content-type': 'multipart/related; type=application/dicom;'
@@ -151,6 +199,7 @@ function wadorsLoader2(url, onlyload) {
         })
         .finally(() => LoadFileInBatches.finishOne());
 }
+
 LoadFileInBatches.wadoPreLoad = function (url, onlyload) {
     if (LoadFileInBatches.limit == 0)
         LoadFileInBatches.limit = ConfigLog.QIDO.limit ? ConfigLog.QIDO.limit : 100;
@@ -601,8 +650,10 @@ function loadDICOMFromUrl(url, loadimage = true) {
 
             showToast(`DICOM Load Error: ${errorMessage}`);
         })
+
         .finally(() => LoadFileInBatches.finishOne());
 }
+
 function initNewCanvas() {
     //添加事件
     try {
