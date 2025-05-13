@@ -384,40 +384,164 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
 }
 
 function getJsonBySeriesRequest(SeriesRequest) {
-  let SeriesResponse = SeriesRequest.response, InstanceUrl = "";
+  let SeriesResponse = SeriesRequest.response;
+  if (!SeriesResponse || SeriesResponse.length === 0) {
+    showToast("No series found in PACS query response");
+    return;
+  }
+
   for (let instance = 0; instance < SeriesResponse.length; instance++) {
-    function requestInstances(offset) {
-      const offset_ = offset;
+    requestInstances(SeriesResponse, instance, 0);
+  }
+}
 
-      if (ConfigLog.QIDO.enableRetrieveURI == true) InstanceUrl = SeriesResponse[instance]["00081190"].Value[0] + "/instances";
-      else InstanceUrl = fitUrl(ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service) +
-        "/studies/" + SeriesResponse[instance]["0020000D"].Value[0] +
-        "/series/" + SeriesResponse[instance]["0020000E"].Value[0] + "/instances";
+// This is the enhanced requestInstances function that's called by getJsonBySeriesRequest
+function requestInstances(SeriesResponse, instance, offset) {
+  const offset_ = offset;
+  let InstanceUrl = "";
 
-      if (ConfigLog.WADO.includefield == true) InstanceUrl += "?includefield=all";
-      if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
-      if (ConfigLog.QIDO.limit) {
-        if (ConfigLog.WADO.includefield == true) InstanceUrl += `&limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
-        else InstanceUrl += `?limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
-      }
-      let InstanceRequest = new XMLHttpRequest();
-      InstanceRequest.open('GET', InstanceUrl);
-      InstanceRequest.responseType = 'json';
-      //發送以Instance為單位的請求
-      var wadoToken = ConfigLog.WADO.token;
-      for (var to = 0; to < Object.keys(wadoToken).length; to++) {
-        if (wadoToken[Object.keys(wadoToken)[to]] != "") {
-          InstanceRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
-        }
-      }
-      const instance_ = instance;
-      InstanceRequest.send();
-      InstanceRequest.onload = function () {
-        getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance_);
-        if (ConfigLog.QIDO.limit && InstanceRequest.response.length == ConfigLog.QIDO.limit) requestInstances(offset_ + ConfigLog.QIDO.limit);
-      }
+  if (ConfigLog.QIDO.enableRetrieveURI == true)
+    InstanceUrl = SeriesResponse[instance]["00081190"].Value[0] + "/instances";
+  else
+    InstanceUrl = fitUrl(ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service) +
+      "/studies/" + SeriesResponse[instance]["0020000D"].Value[0] +
+      "/series/" + SeriesResponse[instance]["0020000E"].Value[0] + "/instances";
+
+  if (ConfigLog.WADO.includefield == true) InstanceUrl += "?includefield=all";
+  if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
+  if (ConfigLog.QIDO.limit) {
+    if (ConfigLog.WADO.includefield == true) InstanceUrl += `&limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
+    else InstanceUrl += `?limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
+  }
+
+  let InstanceRequest = new XMLHttpRequest();
+  InstanceRequest.open('GET', InstanceUrl);
+  InstanceRequest.responseType = 'json';
+
+  // Add error handling for instance request
+  InstanceRequest.onerror = function () {
+    console.error("Error in QIDO-RS instances request");
+    showToast(`PACS Instance Query Error: Failed to connect to PACS server`);
+  };
+
+  //發送以Instance為單位的請求
+  var wadoToken = ConfigLog.WADO.token;
+  for (var to = 0; to < Object.keys(wadoToken).length; to++) {
+    if (wadoToken[Object.keys(wadoToken)[to]] != "") {
+      InstanceRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
     }
-    requestInstances(0);
+  }
+
+  const instance_ = instance;
+  InstanceRequest.onload = function () {
+    if (InstanceRequest.status !== 200) {
+      console.error("Error in QIDO-RS instances request, status: " + InstanceRequest.status);
+      showToast(`PACS Instance Query Error: ${getErrorMessage(InstanceRequest.status)}`);
+      return;
+    }
+
+    if (InstanceRequest.readyState != 4) { return; }
+
+    // Process the Instance results
+    getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance_);
+
+    // Check if there are more instances to retrieve (pagination)
+    if (ConfigLog.QIDO.limit && InstanceRequest.response &&
+      InstanceRequest.response.length == ConfigLog.QIDO.limit) {
+      requestInstances(SeriesResponse, instance_, offset_ + ConfigLog.QIDO.limit);
+    }
+  };
+
+  InstanceRequest.send();
+  return InstanceRequest;
+}
+
+// This is the function that processes the instance data
+function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
+  if (!InstanceRequest.response || InstanceRequest.response.length === 0) {
+    console.warn("No instances found for series");
+    return;
+  }
+
+  let DicomResponse = InstanceRequest.response;
+  var min = 1000000000;
+  var firstUrl;
+
+  //取得最小的Instance Number
+  for (var i = 0; i < DicomResponse.length; i++) {
+    try {
+      if (getValue(DicomResponse[i]["00200013"]) < min)
+        min = getValue(DicomResponse[i]["00200013"]);
+    } catch (ex) {
+      console.log("Error getting instance number:", ex);
+    }
+  }
+
+  //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
+  //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
+
+  //載入標記以及首張影像
+  for (var i = 0; i < DicomResponse.length; i++) {
+    try {
+      //取得WADO的路徑
+      var url;
+      if (ConfigLog.WADO.WADOType == "URI") {
+        url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
+          "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
+          "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
+          "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
+          "&contentType=" + "application/dicom";
+      } else if (ConfigLog.WADO.WADOType == "RS") {
+        url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service +
+          "/studies/" + DicomResponse[i]["0020000D"].Value[0] +
+          "/series/" + DicomResponse[i]["0020000E"].Value[0] +
+          "/instances/" + DicomResponse[i]["00080018"].Value[0];
+      }
+
+      url = fitUrl(url);
+
+      if (getValue(DicomResponse[i]["00200013"]) == min || DicomResponse.length == 1) {
+        //預載入DICOM至Viewport
+        if (ConfigLog.WADO.WADOType == "URI") LoadFileInBatches.wadoPreLoad(url);
+        else if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url);
+        firstUrl = url;
+      }
+    } catch (ex) {
+      console.error("Error processing instance:", ex);
+      showToast("Error processing DICOM instance");
+    }
+  }
+
+  //載入其餘所有影像
+  function loadDicom(i) {
+    try {
+      var url;
+      if (ConfigLog.WADO.WADOType == "URI") {
+        url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
+          "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
+          "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
+          "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
+          "&contentType=" + "application/dicom";
+      } else if (ConfigLog.WADO.WADOType == "RS") {
+        url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service +
+          "/studies/" + DicomResponse[i]["0020000D"].Value[0] +
+          "/series/" + DicomResponse[i]["0020000E"].Value[0] +
+          "/instances/" + DicomResponse[i]["00080018"].Value[0];
+      }
+
+      url = fitUrl(url);
+      if (url == firstUrl) return;
+
+      //預載入DICOM至Viewport
+      if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url, true);
+      else LoadFileInBatches.wadoPreLoad(url, false);
+    } catch (ex) {
+      console.error("Error loading DICOM:", ex);
+    }
+  }
+
+  for (var i = 0; i < DicomResponse.length; i++) {
+    loadDicom(i);
   }
 }
 
@@ -434,9 +558,23 @@ function readJson(url) {
     }
   }
 
+  // Add error handling for the QIDO-RS request
+  SeriesRequest.onerror = function () {
+    console.error("Error in QIDO-RS request");
+    showToast(`PACS Query Error: Failed to connect to PACS server`);
+  };
+
+  SeriesRequest.onload = function () {
+    if (SeriesRequest.status !== 200) {
+      console.error("Error in QIDO-RS request, status: " + SeriesRequest.status);
+      showToast(`PACS Query Error: ${getErrorMessage(SeriesRequest.status)}`);
+      return;
+    }
+
+    if (SeriesRequest.readyState != 4) { return; }
+    getJsonBySeriesRequest(SeriesRequest);
+  };
+
   //發送以Series為單位的請求
   SeriesRequest.send();
-  SeriesRequest.onload = function () {
-    getJsonBySeriesRequest(SeriesRequest);
-  }
 }

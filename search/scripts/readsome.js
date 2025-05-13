@@ -61,6 +61,7 @@ function showToast(message) {
     toast.style.maxWidth = "500px";
     toast.style.boxShadow = "0 2px 5px rgba(0,0,0,0.3)";
     toast.style.fontWeight = "bold";
+    toast.style.fontFamily = "Arial, sans-serif";
     document.body.appendChild(toast);
   }
 

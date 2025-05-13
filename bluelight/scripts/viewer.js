@@ -123,15 +123,60 @@ function wadorsLoader2(url, onlyload) {
             headers[Object.keys(wadoToken)[to]] = wadoToken[Object.keys(wadoToken)[to]];
     }
 
-    fetch(url, { headers, }).then(async function (res) {
-        let resBlob = await res.arrayBuffer();
-        let decodedBuffers = multipartDecode(resBlob);
-        for (let decodedBuf of decodedBuffers) {
-            loadDicomDataSet(decodedBuf, !(onlyload == true), url, false, 'mht');
-        }
-    }).finally(() => LoadFileInBatches.finishOne());
-}
+    fetch(url, { headers })
+        .then(async function (res) {
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
+            let resBlob = await res.arrayBuffer();
+            let decodedBuffers = multipartDecode(resBlob);
+            for (let decodedBuf of decodedBuffers) {
+                loadDicomDataSet(decodedBuf, !(onlyload == true), url, false, 'mht');
+            }
+        })
+        .catch(function (error) {
+            console.error("Error loading WADO-RS DICOM:", error);
+            let errorMessage = "Failed to load DICOM";
 
+            // Check if the error has a status code
+            if (error.message && error.message.includes("Status:")) {
+                const statusMatch = error.message.match(/Status: (\d+)/);
+                if (statusMatch && statusMatch[1]) {
+                    const statusCode = parseInt(statusMatch[1]);
+                    errorMessage = getErrorMessage(statusCode);
+                }
+            }
+
+            showToast(`WADO-RS Load Error: ${errorMessage}`);
+        })
+        .finally(() => LoadFileInBatches.finishOne());
+}
+LoadFileInBatches.wadoPreLoad = function (url, onlyload) {
+    if (LoadFileInBatches.limit == 0)
+        LoadFileInBatches.limit = ConfigLog.QIDO.limit ? ConfigLog.QIDO.limit : 100;
+
+    if (LoadFileInBatches.NumOfFetchs >= LoadFileInBatches.limit) {
+        LoadFileInBatches.lock = true;
+        LoadFileInBatches.queue.push({ url: url, onlyload: onlyload });
+        LoadFileInBatches.setTimer();
+    }
+    else if (LoadFileInBatches.lock == true) {
+        LoadFileInBatches.queue.push({ url: url, onlyload: onlyload });
+        LoadFileInBatches.setTimer();
+    } else {
+        LoadFileInBatches.NumOfFetchs++;
+        try {
+            if (ConfigLog.WADO.WADOType == "URI")
+                loadDICOMFromUrl(url, onlyload);
+            else if (ConfigLog.WADO.WADOType == "RS")
+                wadorsLoader2(url, onlyload);
+        } catch (error) {
+            console.error("Error in wadoPreLoad:", error);
+            showToast(`DICOM Load Error: Failed to initiate loading process`);
+            LoadFileInBatches.finishOne();
+        }
+    }
+};
 /**
  * Converts a Uint8Array to a String.
  * @param {Uint8Array} array that should be converted
@@ -533,12 +578,31 @@ function loadDICOMFromUrl(url, loadimage = true) {
             headers[Object.keys(wadoToken)[to]] = wadoToken[Object.keys(wadoToken)[to]];
     }
 
-    fetch(url, { headers, }).then(async function (res) {
-        let oReq = await res.arrayBuffer();
-        loadDicomDataSet(oReq, loadimage == true, url, false);
-    }).finally(() => LoadFileInBatches.finishOne());
-}
+    fetch(url, { headers })
+        .then(async function (res) {
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
+            let oReq = await res.arrayBuffer();
+            loadDicomDataSet(oReq, loadimage == true, url, false);
+        })
+        .catch(function (error) {
+            console.error("Error loading DICOM:", error);
+            let errorMessage = "Failed to load DICOM";
 
+            // Check if the error has a status code
+            if (error.message && error.message.includes("Status:")) {
+                const statusMatch = error.message.match(/Status: (\d+)/);
+                if (statusMatch && statusMatch[1]) {
+                    const statusCode = parseInt(statusMatch[1]);
+                    errorMessage = getErrorMessage(statusCode);
+                }
+            }
+
+            showToast(`DICOM Load Error: ${errorMessage}`);
+        })
+        .finally(() => LoadFileInBatches.finishOne());
+}
 function initNewCanvas() {
     //添加事件
     try {

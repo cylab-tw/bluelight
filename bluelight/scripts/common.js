@@ -201,8 +201,6 @@ function refleshViewport() {
     }
 }
 
-
-
 function ScaleToTrueSize(viewportNum = viewportNumber) {
     function calcScreenDPI() {
         const el = document.createElement('div');
@@ -236,6 +234,75 @@ function ScaleToTrueSize(viewportNum = viewportNumber) {
     displayAllRuler();
     return scaleFactor;
 }
+
+function showToast(message) {
+    // Create toast element if it doesn't exist  
+    let toast = getByid("errorToast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "errorToast";
+      toast.style.position = "fixed";
+      toast.style.bottom = "20px";
+      toast.style.right = "20px";
+      toast.style.backgroundColor = "#f44336";
+      toast.style.color = "white";
+      toast.style.padding = "15px";
+      toast.style.borderRadius = "4px";
+      toast.style.zIndex = "1000";
+      toast.style.minWidth = "300px";
+      toast.style.maxWidth = "500px";
+      toast.style.boxShadow = "0 2px 5px rgba(0,0,0,0.3)";
+      toast.style.fontWeight = "bold";
+      toast.style.fontFamily = "Arial, sans-serif";
+      document.body.appendChild(toast);
+    }
+  
+    // Set message and show toast  
+    toast.innerHTML = message;
+    toast.style.display = "block";
+  
+    // Add close button  
+    let closeBtn = document.createElement("span");
+    closeBtn.innerHTML = "×";
+    closeBtn.style.float = "right";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.style.marginLeft = "10px";
+    closeBtn.onclick = function () {
+      toast.style.display = "none";
+    };
+    toast.prepend(closeBtn);
+  
+    // Hide toast after 10 seconds  
+    setTimeout(function () {
+      toast.style.display = "none";
+    }, 3000);
+  }
+
+// Function to get user-friendly error messages  
+function getErrorMessage(statusCode) {
+    switch (statusCode) {
+      case 204:
+        return "No Content";
+      case 400:
+        return "Bad Request";
+      case 401:
+        return "Unauthorized";
+      case 403:
+        return "Forbidden";
+      case 404:
+        return "Not Found";
+      case 500:
+        return "Internal Server Error";
+      case 502:
+        return "PACS Server Not Available";
+      case 503:
+        return "Service Unavailable";
+      case 504:
+        return "Gateway Timeout";
+      default:
+        return "Unknown Error";
+    }
+  }
 
 class Matrix4x4 {
     constructor() {
