@@ -43,6 +43,74 @@ function getParameterByName2(name, str) {
   }
   return pairList;
 }
+function showToast(message) {
+  // Create toast element if it doesn't exist  
+  let toast = getByid("errorToast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "errorToast";
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.right = "20px";
+    toast.style.backgroundColor = "#f44336";
+    toast.style.color = "white";
+    toast.style.padding = "15px";
+    toast.style.borderRadius = "4px";
+    toast.style.zIndex = "1000";
+    toast.style.minWidth = "300px";
+    toast.style.maxWidth = "500px";
+    toast.style.boxShadow = "0 2px 5px rgba(0,0,0,0.3)";
+    toast.style.fontWeight = "bold";
+    document.body.appendChild(toast);
+  }
+
+  // Set message and show toast  
+  toast.innerHTML = message;
+  toast.style.display = "block";
+
+  // Add close button  
+  let closeBtn = document.createElement("span");
+  closeBtn.innerHTML = "×";
+  closeBtn.style.float = "right";
+  closeBtn.style.cursor = "pointer";
+  closeBtn.style.marginLeft = "10px";
+  closeBtn.onclick = function () {
+    toast.style.display = "none";
+  };
+  toast.prepend(closeBtn);
+
+  // Hide toast after 10 seconds  
+  setTimeout(function () {
+    toast.style.display = "none";
+  }, 3000);
+}
+
+
+// Function to get user-friendly error messages  
+function getErrorMessage(statusCode) {
+  switch (statusCode) {
+    case 204:
+      return "No Content";
+    case 400:
+      return "Bad Request";
+    case 401:
+      return "Unauthorized";
+    case 403:
+      return "Forbidden";
+    case 404:
+      return "Not Found";
+    case 500:
+      return "Internal Server Error";
+    case 502:
+      return "PACS Server Not Available";
+    case 503:
+      return "Service Unavailable";
+    case 504:
+      return "Gateway Timeout";
+    default:
+      return "Unknown Error";
+  }
+}
 
 function readAllJson() {
   /*var queryString = LoacationSercher;
@@ -269,12 +337,30 @@ function readJson(url) {
   request.responseType = 'json';
   request.send();
   onloadList.push(0);
+
+  // Add error handler for network errors  
+  request.onerror = function () {
+    showToast("Connection Error: Unable to connect to PACS server - Server may be offline or unreachable");
+    getByid("loadingSpan").style.display = "none";
+  };
+
   request.onload = function () {
     onloadList.pop();
     var DicomStudyResponse = request.response;
+
+    // Check for error status codes  
+    if (request.status === 204 || request.status === 404 || request.status === 502 ||
+      request.status >= 400) {
+      // Get user-friendly error message  
+      let errorMessage = getErrorMessage(request.status);
+      // Show toast notification  
+      showToast(`PACS Server Error: ${request.status} - ${errorMessage}`);
+      getByid("loadingSpan").style.display = "none";
+      return;
+    }
+
     if (DicomStudyResponse && DicomStudyResponse.length == 0)
       getByid("loadingSpan").style.display = "none";
-
     for (let series = 0; series < DicomStudyResponse.length; series++) {
       let SeriesUrl = "";
       if (ConfigLog.WADO.enableRetrieveURI == true) {
@@ -329,6 +415,11 @@ function readJson(url) {
       loadUID(DICOM_obj);
       if (onloadList.length == 0) createTable();
     }
+    // Add error handler for network errors  
+    request.onerror = function () {
+      showToast("PACS Server Connection Error - Server may be offline or unreachable");
+      getByid("loadingSpan").style.display = "none";
+    };
   }
 }
 
