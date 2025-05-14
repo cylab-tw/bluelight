@@ -27,7 +27,7 @@ function load3DPlugin() {
 function loadVR2() {
     load3DPlugin();
     var span = document.createElement("SPAN")
-    span.innerHTML =` 
+    span.innerHTML = ` 
         <img class="img VR2" alt="exitVR2" id="exitVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
         <img class="img VR2" alt="moveVR2" id="moveVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Pan.png" width="50" height="50" style="display:none;" >
         <img class="img VR2" alt="windowVR2" id="windowVR2" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/b_Window.png" width="50" height="50" style="display:none;" >
@@ -35,7 +35,7 @@ function loadVR2() {
     addIconSpan(span);
     var span = document.createElement("SPAN");
     span.innerHTML = ` <img class="innerimg VR2" alt="VR2" id="ImgVR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/vr2.png" width="50" height="50">`;
-    if (getByid("3DImgeDIv").childNodes.length > 0) getByid("3DImgeDIv").appendChild( document.createElement("BR"));
+    if (getByid("3DImgeDIv").childNodes.length > 0) getByid("3DImgeDIv").appendChild(document.createElement("BR"));
     getByid("3DImgeDIv").appendChild(span); //addIconSpan(span); 
 
     function createVR2_DIV(viewportNum = viewportNumber) {
@@ -319,6 +319,7 @@ class VRCube {
         this.MiddleDownCheck = false;
         this.RightMouseDownCheck = false;
         this.shadow = true;
+        this.smooth = false;
         this.reduceSlices = false;
         this.filter = null;
         if (this.sopList.length >= 50) this.reduceSlices = true;
@@ -965,6 +966,23 @@ endsolid name`
         userDIV.appendChild(WWLable);
         userDIV.appendChild(WWText);
 
+        //////////opacity //////////
+        var opacityLable = document.createElement("LABEL");
+        opacityLable.innerText = "Opacity";
+        opacityLable.className = "VR2_Label";
+
+        var opacityText = document.createElement("input");
+        opacityText.type = "number";
+        opacityText.value = "100";
+        opacityText.setAttribute("max", 100);
+        opacityText.setAttribute("min", 0);
+        opacityText.className = "VR2_Text";
+        userDIV.appendChild(opacityLable);
+        userDIV.appendChild(opacityText);
+        document.documentElement.style.setProperty('--VrOpacity', `initial`);
+        opacityText.onchange = function () {
+            document.documentElement.style.setProperty('--VrOpacity', this.value / 100);
+        };
         //////////Reduce resolution//////////
 
         var resolutionLable = document.createElement("LABEL");
@@ -1077,6 +1095,35 @@ endsolid name`
 
         span.appendChild(ShadowCheck);
         span.appendChild(ShadowLable);
+        userDIV.appendChild(span);
+
+        //////////Smooth//////////
+        var span = document.createElement("span");
+        span.style['zIndex'] = "490";
+        span.style['float'] = "right";
+        var SmoothLable = document.createElement("LABEL");
+        SmoothLable.innerText = "Smooth";
+        SmoothLable.className = "VR2_Label";
+        SmoothLable.style.float = "left";
+
+        var SmoothCheck = document.createElement("input");
+        SmoothCheck.style = "z-index: 490;float:left";
+        SmoothCheck.type = "checkbox";
+        //SmoothCheck.setAttribute("checked", "checked");
+        this.SmoothCheck = SmoothCheck;
+
+        function ChangeSmooth() {
+            if (this.SmoothCheck.checked) this.cube.smooth = true;
+            else this.cube.smooth = false;
+            this.cube.resetZXY();
+            this.cube.reflesh();
+        }
+
+        ChangeSmooth = ChangeSmooth.bind({ cube: this, SmoothCheck: SmoothCheck });
+        SmoothCheck.addEventListener("change", ChangeSmooth, false);
+
+        span.appendChild(SmoothCheck);
+        span.appendChild(SmoothLable);
         userDIV.appendChild(span);
 
         //////////Reduce Slices//////////
@@ -1274,6 +1321,11 @@ endsolid name`
                         data_[i] = arr[data[i4]];
                     }
                 }
+            }
+        }
+        if (this.smooth) {
+            for (var i = data.length - 4; i >= 0; i -= 4) {
+                data[i + 3] = parseInt((data[i] + data[i + 1] + data[i + 2]) / 3 * 2);
             }
         }
 

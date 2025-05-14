@@ -1,3 +1,7 @@
+:root {
+  --VrOpacity: initial;
+}
+
 .o3DDiv {
   position: absolute;
   transform-style: preserve-3d;
@@ -32,6 +36,7 @@
 
 .VrCanvas {
   /*transform-origin: center;*/
+  opacity: var(--VrOpacity);
 }
 
 .VRshadow {
