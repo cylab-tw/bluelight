@@ -203,32 +203,16 @@ function load_WebImg() {
   }
 }
 
-function readAllJson(readJson) {  
-  var queryString = ("" + location.search).replace("?", "");  
-  queryString = operateQueryString(queryString);  
-  if (queryString.length > 0) {  
-    var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/series" + "?" + queryString + "";  
-    url = fitUrl(url);  
-      
-    // Create a function to handle 204 responses  
-    const handleNoContentResponse = function(url) {  
-      if (url.includes("StudyInstanceUID=")) {  
-        const studyUidMatch = url.match(/StudyInstanceUID=([^&]+)/);  
-        const studyUid = studyUidMatch ? studyUidMatch[1] : "unknown";  
-          
-        // Use the error display function from our previous implementation  
-        if (typeof showErrorMessage === 'function') {  
-          showErrorMessage(`The requested StudyInstanceUID (${studyUid}) does not exist in the PACS server.`);  
-        } else {  
-          alert(`Error: The requested StudyInstanceUID (${studyUid}) does not exist in the PACS server.`);  
-        }  
-      }  
-    };  
-      
-    // Pass the handler to the readJson function  
-    readJson(url, handleNoContentResponse);  
-  }  
-  load_WebImg();  
+function readAllJson(readJson) {
+  //整合QIDO-RS的URL並發送至伺服器
+  var queryString = ("" + location.search).replace("?", "");
+  queryString = operateQueryString(queryString);
+  if (queryString.length > 0) {
+    var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/series" + "?" + queryString + "";
+    url = fitUrl(url);
+    readJson(url);
+  }
+  load_WebImg();
 }
 
 function fitUrl(url) {
@@ -400,25 +384,86 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
 }
 
 function getJsonBySeriesRequest(SeriesRequest) {
-  let SeriesResponse = SeriesRequest.response, InstanceUrl = "";
+  // Check if response exists and has data
+  if (!SeriesRequest || !SeriesRequest.response) {
+    console.error("Error: Series request response is empty or invalid");
+    showDicomStatus("Error: Invalid server response", true);
+    return;
+  }
+
+  let SeriesResponse = SeriesRequest.response;
+  
+  // Check if SeriesResponse is an array and has items
+  if (!Array.isArray(SeriesResponse) || SeriesResponse.length === 0) {
+    console.error("Error: Series response is not a valid array or is empty");
+    showDicomStatus("Error: No series data available", true);
+    return;
+  }
+
   for (let instance = 0; instance < SeriesResponse.length; instance++) {
     function requestInstances(offset) {
       const offset_ = offset;
+      let InstanceUrl = "";
 
-      if (ConfigLog.QIDO.enableRetrieveURI == true) InstanceUrl = SeriesResponse[instance]["00081190"].Value[0] + "/instances";
-      else InstanceUrl = fitUrl(ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service) +
-        "/studies/" + SeriesResponse[instance]["0020000D"].Value[0] +
-        "/series/" + SeriesResponse[instance]["0020000E"].Value[0] + "/instances";
-
-      if (ConfigLog.WADO.includefield == true) InstanceUrl += "?includefield=all";
-      if (ConfigLog.WADO.https == "https") InstanceUrl = InstanceUrl.replace("http:", "https:");
-      if (ConfigLog.QIDO.limit) {
-        if (ConfigLog.WADO.includefield == true) InstanceUrl += `&limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
-        else InstanceUrl += `?limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
+      try {
+        if (ConfigLog.QIDO.enableRetrieveURI === true && 
+            SeriesResponse[instance] && 
+            SeriesResponse[instance]["00081190"] && 
+            SeriesResponse[instance]["00081190"].Value && 
+            SeriesResponse[instance]["00081190"].Value[0]) {
+          InstanceUrl = SeriesResponse[instance]["00081190"].Value[0] + "/instances";
+        } else if (SeriesResponse[instance] && 
+                  SeriesResponse[instance]["0020000D"] && 
+                  SeriesResponse[instance]["0020000D"].Value && 
+                  SeriesResponse[instance]["0020000E"] && 
+                  SeriesResponse[instance]["0020000E"].Value) {
+          InstanceUrl = fitUrl(ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service) +
+            "/studies/" + SeriesResponse[instance]["0020000D"].Value[0] +
+            "/series/" + SeriesResponse[instance]["0020000E"].Value[0] + "/instances";
+        } else {
+          console.error("Error: Missing required DICOM data in series response");
+          showDicomStatus("Error: Missing DICOM data in response", true);
+          return;
+        }
+      } catch (error) {
+        console.error("Error building instance URL:", error);
+        showDicomStatus("Error processing DICOM data: " + error.message, true);
+        return;
       }
+
+      if (ConfigLog.WADO.includefield === true) {
+        InstanceUrl += "?includefield=all";
+      }
+      
+      if (ConfigLog.WADO.https === "https") {
+        InstanceUrl = InstanceUrl.replace("http:", "https:");
+      }
+      
+      if (ConfigLog.QIDO.limit) {
+        if (ConfigLog.WADO.includefield === true) {
+          InstanceUrl += `&limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
+        } else {
+          InstanceUrl += `?limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
+        }
+      }
+      
       let InstanceRequest = new XMLHttpRequest();
       InstanceRequest.open('GET', InstanceUrl);
       InstanceRequest.responseType = 'json';
+      
+      // Error handling for instance request
+      InstanceRequest.onerror = function() {
+        console.error("Network error occurred while fetching instance data");
+        showDicomStatus("Network error: Could not retrieve instance data", true);
+      };
+      
+      // Handle timeouts
+      InstanceRequest.timeout = 30000; // 30 seconds timeout
+      InstanceRequest.ontimeout = function() {
+        console.error("Instance request timed out");
+        showDicomStatus("Request timed out: Instance retrieval failed", true);
+      };
+      
       //發送以Instance為單位的請求
       var wadoToken = ConfigLog.WADO.token;
       for (var to = 0; to < Object.keys(wadoToken).length; to++) {
@@ -426,94 +471,88 @@ function getJsonBySeriesRequest(SeriesRequest) {
           InstanceRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
         }
       }
+      
       const instance_ = instance;
       InstanceRequest.send();
-      InstanceRequest.onload = function () {
-        getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance_);
-        if (ConfigLog.QIDO.limit && InstanceRequest.response.length == ConfigLog.QIDO.limit) requestInstances(offset_ + ConfigLog.QIDO.limit);
+      
+      InstanceRequest.onload = function() {
+        if (InstanceRequest.status !== 200) {
+          console.error("HTTP error for instance request:", InstanceRequest.status);
+          showDicomStatus("PACS error: Failed to retrieve instance (Status " + InstanceRequest.status + ")", true);
+          return;
+        }
+        
+        try {
+          // Check if response is valid
+          if (!InstanceRequest.response) {
+            console.error("Empty instance response");
+            showDicomStatus("Error: Empty instance data received", true);
+            return;
+          }
+          
+          getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance_);
+          
+          // Check if we need to request more instances due to pagination
+          if (ConfigLog.QIDO.limit && 
+              Array.isArray(InstanceRequest.response) && 
+              InstanceRequest.response.length == ConfigLog.QIDO.limit) {
+            requestInstances(offset_ + ConfigLog.QIDO.limit);
+          }
+        } catch (error) {
+          console.error("Error processing instance data:", error);
+          showDicomStatus("Error processing instance data: " + error.message, true);
+        }
       }
     }
-    requestInstances(0);
+    
+    try {
+      requestInstances(0);
+    } catch (error) {
+      console.error("Error starting instance request:", error);
+      showDicomStatus("Error loading DICOM data: " + error.message, true);
+    }
   }
 }
 
-function readJson(url) {  
-  // Show loading UI if implemented  
-  if (typeof showLoading === 'function') {  
-    showLoading();  
-  }  
-    
-  // Ensure HTTPS is used if configured that way  
-  if (ConfigLog.WADO.https == "https") url = url.replace("http:", "https:");  
-    
-  let SeriesRequest = new XMLHttpRequest();  
-  SeriesRequest.open('GET', url);  
-  SeriesRequest.responseType = 'json';  
-    
-  // Add authentication tokens  
-  var wadoToken = ConfigLog.WADO.token;  
-  for (var to = 0; to < Object.keys(wadoToken).length; to++) {  
-    if (wadoToken[Object.keys(wadoToken)[to]] != "") {  
-      SeriesRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);  
-    }  
-  }  
-  
-  // Add error handling  
-  SeriesRequest.onerror = function() {  
-    console.error('Network error occurred while fetching DICOM data');  
-    if (typeof showErrorMessage === 'function') {  
-      showErrorMessage(`Network error occurred while connecting to PACS server. Please check your connection and try again.`);  
-    } else {  
-      alert('Network error occurred while connecting to PACS server. Please check your connection and try again.');  
-    }  
-      
-    // Hide loading UI if implemented  
-    if (typeof hideLoading === 'function') {  
-      hideLoading();  
-    }  
-  };  
-    
-  // Handle HTTP status codes  
-  SeriesRequest.onload = function() {  
-    // Check for HTTP error status codes  
-    if (SeriesRequest.status >= 400) {  
-      console.error(`HTTP error ${SeriesRequest.status} (${SeriesRequest.statusText}) occurred while fetching DICOM data from ${url}`);  
-        
-      let errorMessage = '';  
-      switch (SeriesRequest.status) {  
-        case 502:  
-          errorMessage = `Bad Gateway (502) error: The PACS server is unreachable or returned an invalid response. Please contact your system administrator.`;  
-          break;  
-        case 404:  
-          errorMessage = `Not Found (404) error: The requested DICOM resource could not be found on the PACS server.`;  
-          break;  
-        case 401:  
-        case 403:  
-          errorMessage = `Authentication error (${SeriesRequest.status}): You don't have permission to access this DICOM resource.`;  
-          break;  
-        default:  
-          errorMessage = `HTTP error ${SeriesRequest.status} (${SeriesRequest.statusText}) occurred while connecting to PACS server.`;  
-      }  
-        
-      // Display error message  
-      if (typeof showErrorMessage === 'function') {  
-        showErrorMessage(errorMessage);  
-      } else {  
-        alert(errorMessage);  
-      }  
-        
-      // Hide loading UI if implemented  
-      if (typeof hideLoading === 'function') {  
-        hideLoading();  
-      }  
-        
-      return;  
-    }  
-      
-    // Process successful response  
-    getJsonBySeriesRequest(SeriesRequest);  
-  };  
-  
-  // Send the request  
-  SeriesRequest.send();  
+function readJson(url) {
+  //向伺服器請求資料
+  if (ConfigLog.WADO.https == "https") url = url.replace("http:", "https:");
+  let SeriesRequest = new XMLHttpRequest();
+  SeriesRequest.open('GET', url);
+  SeriesRequest.responseType = 'json';
+  var wadoToken = ConfigLog.WADO.token;
+  for (var to = 0; to < Object.keys(wadoToken).length; to++) {
+    if (wadoToken[Object.keys(wadoToken)[to]] != "") {
+      SeriesRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
+    }
+  }
+
+  // Add error handling
+  SeriesRequest.onerror = function() {
+    console.error("Network error occurred while fetching series data");
+    showDicomStatus("PACS server error", true);
+  };
+
+  // Handle timeouts
+  SeriesRequest.timeout = 30000; // 30 seconds timeout
+  SeriesRequest.ontimeout = function() {
+    console.error("Request timed out");
+    showDicomStatus("PACS server error", true);
+  };
+
+  //發送以Series為單位的請求
+  SeriesRequest.send();
+  SeriesRequest.onload = function() {
+    if (SeriesRequest.status !== 200) {
+      console.error("HTTP error:", SeriesRequest.status);
+      showDicomStatus("PACS server error");
+      return;
+    }
+    try {
+      getJsonBySeriesRequest(SeriesRequest);
+    } catch (error) {
+      console.error("Error processing series data:", error);
+      showDicomStatus("Error processing series data: " + error.message, true);
+    }
+  }
 }
