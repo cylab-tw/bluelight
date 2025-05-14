@@ -305,6 +305,10 @@
       <div id="LeftPicture" style="overflow-y: auto;display: flex;flex-direction: column;position: absolute;z-index: 9;"
         width="100">
       </div>
+      <div id="dicomStatusIndicator"
+        style="position: fixed; left: 0px; bottom: 10px; min-width: 143px; max-width: 143px; height: auto; min-height: 30px; background-color: rgba(0,0,0,0.85); color: white; padding: 8px; text-align: left; font-size: 14px; z-index: 1000; display: none; border-radius: 4px; box-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events: none;">
+        Loading images...
+      </div>
       <div id="pages">
         <div class="page" id="DicomPage"></div>
         <div class="page" id="PdfPage" style='display:none'></div>
@@ -313,9 +317,6 @@
     </div>
     <div id="magnifierDiv" style="z-index:40;position: absolute;pointer-events: none;"><canvas
         id="magnifierCanvas"></canvas></div>
-    <div id="loadingBackdrop" class="loading-backdrop">
-      <div id="loadingSpinner" class="loading-spinner"></div>
-    </div>
 </body>
 
 </html>
