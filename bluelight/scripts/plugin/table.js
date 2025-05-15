@@ -42,6 +42,9 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
             cells.innerHTML = ("" + GetViewport().tags[i][2]).substring(0, 99) + "...";
         else
             cells.innerHTML = "" + GetViewport().tags[i][2];
+
+        if (GetViewport().tags[i][1] == "PatientName" && GetViewport().content.image) cells.innerHTML = "" + GetViewport().content.image.PatientName;
+        
         /*var dicomtag = GetViewport().tags[i][0].replace("x", "");
         dicomtag = dicomtag.slice(0, 4) + "," + dicomtag.slice(4);
         cells.innerHTML = "" + dicomtag;

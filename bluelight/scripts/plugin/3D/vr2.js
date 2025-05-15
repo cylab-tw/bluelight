@@ -51,12 +51,6 @@ function loadVR2() {
         DIV.id = "VR2_DIV";
         DIV.setAttribute("border", 2);
         VRPage.appendChild(DIV);
-
-        var label = document.createElement("LABEL");
-        label.id = "VR2_TestLabel"
-        label.innerText = "This is a test version.";
-
-        DIV.appendChild(label);
     }
     createVR2_DIV();
 
