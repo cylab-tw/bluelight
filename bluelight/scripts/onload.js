@@ -369,9 +369,15 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
     url = fitUrl(url);
     if (url == firstUrl) return;
     try {
-      //預載入DICOM至Viewport
-      if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url, true);
-      else LoadFileInBatches.wadoPreLoad(url, false);
+      if (!firstUrl) {
+        firstUrl = url;
+        if (ConfigLog.WADO.WADOType == "URI") LoadFileInBatches.wadoPreLoad(url);
+        else if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url);
+      } else {
+        //預載入DICOM至Viewport
+        if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url, true);
+        else LoadFileInBatches.wadoPreLoad(url, false);
+      }
 
     } catch (ex) { console.log(ex); }
   }
@@ -392,7 +398,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
   }
 
   let SeriesResponse = SeriesRequest.response;
-  
+
   // Check if SeriesResponse is an array and has items
   if (!Array.isArray(SeriesResponse) || SeriesResponse.length === 0) {
     console.error("Error: Series response is not a valid array or is empty");
@@ -406,17 +412,17 @@ function getJsonBySeriesRequest(SeriesRequest) {
       let InstanceUrl = "";
 
       try {
-        if (ConfigLog.QIDO.enableRetrieveURI === true && 
-            SeriesResponse[instance] && 
-            SeriesResponse[instance]["00081190"] && 
-            SeriesResponse[instance]["00081190"].Value && 
-            SeriesResponse[instance]["00081190"].Value[0]) {
+        if (ConfigLog.QIDO.enableRetrieveURI === true &&
+          SeriesResponse[instance] &&
+          SeriesResponse[instance]["00081190"] &&
+          SeriesResponse[instance]["00081190"].Value &&
+          SeriesResponse[instance]["00081190"].Value[0]) {
           InstanceUrl = SeriesResponse[instance]["00081190"].Value[0] + "/instances";
-        } else if (SeriesResponse[instance] && 
-                  SeriesResponse[instance]["0020000D"] && 
-                  SeriesResponse[instance]["0020000D"].Value && 
-                  SeriesResponse[instance]["0020000E"] && 
-                  SeriesResponse[instance]["0020000E"].Value) {
+        } else if (SeriesResponse[instance] &&
+          SeriesResponse[instance]["0020000D"] &&
+          SeriesResponse[instance]["0020000D"].Value &&
+          SeriesResponse[instance]["0020000E"] &&
+          SeriesResponse[instance]["0020000E"].Value) {
           InstanceUrl = fitUrl(ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service) +
             "/studies/" + SeriesResponse[instance]["0020000D"].Value[0] +
             "/series/" + SeriesResponse[instance]["0020000E"].Value[0] + "/instances";
@@ -434,11 +440,11 @@ function getJsonBySeriesRequest(SeriesRequest) {
       if (ConfigLog.WADO.includefield === true) {
         InstanceUrl += "?includefield=all";
       }
-      
+
       if (ConfigLog.WADO.https === "https") {
         InstanceUrl = InstanceUrl.replace("http:", "https:");
       }
-      
+
       if (ConfigLog.QIDO.limit) {
         if (ConfigLog.WADO.includefield === true) {
           InstanceUrl += `&limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
@@ -446,24 +452,24 @@ function getJsonBySeriesRequest(SeriesRequest) {
           InstanceUrl += `?limit=${ConfigLog.QIDO.limit}&offset=${offset_}`;
         }
       }
-      
+
       let InstanceRequest = new XMLHttpRequest();
       InstanceRequest.open('GET', InstanceUrl);
       InstanceRequest.responseType = 'json';
-      
+
       // Error handling for instance request
-      InstanceRequest.onerror = function() {
+      InstanceRequest.onerror = function () {
         console.error("Network error occurred while fetching instance data");
         showDicomStatus("Network error: Could not retrieve instance data", true);
       };
-      
+
       // Handle timeouts
       InstanceRequest.timeout = 30000; // 30 seconds timeout
-      InstanceRequest.ontimeout = function() {
+      InstanceRequest.ontimeout = function () {
         console.error("Instance request timed out");
         showDicomStatus("Request timed out: Instance retrieval failed", true);
       };
-      
+
       //發送以Instance為單位的請求
       var wadoToken = ConfigLog.WADO.token;
       for (var to = 0; to < Object.keys(wadoToken).length; to++) {
@@ -471,17 +477,17 @@ function getJsonBySeriesRequest(SeriesRequest) {
           InstanceRequest.setRequestHeader("" + Object.keys(wadoToken)[to], "" + wadoToken[Object.keys(wadoToken)[to]]);
         }
       }
-      
+
       const instance_ = instance;
       InstanceRequest.send();
-      
-      InstanceRequest.onload = function() {
+
+      InstanceRequest.onload = function () {
         if (InstanceRequest.status !== 200) {
           console.error("HTTP error for instance request:", InstanceRequest.status);
           showDicomStatus("PACS error: Failed to retrieve instance (Status " + InstanceRequest.status + ")", true);
           return;
         }
-        
+
         try {
           // Check if response is valid
           if (!InstanceRequest.response) {
@@ -489,13 +495,13 @@ function getJsonBySeriesRequest(SeriesRequest) {
             showDicomStatus("Error: Empty instance data received", true);
             return;
           }
-          
+
           getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance_);
-          
+
           // Check if we need to request more instances due to pagination
-          if (ConfigLog.QIDO.limit && 
-              Array.isArray(InstanceRequest.response) && 
-              InstanceRequest.response.length == ConfigLog.QIDO.limit) {
+          if (ConfigLog.QIDO.limit &&
+            Array.isArray(InstanceRequest.response) &&
+            InstanceRequest.response.length == ConfigLog.QIDO.limit) {
             requestInstances(offset_ + ConfigLog.QIDO.limit);
           }
         } catch (error) {
@@ -504,7 +510,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
         }
       }
     }
-    
+
     try {
       requestInstances(0);
     } catch (error) {
@@ -528,21 +534,21 @@ function readJson(url) {
   }
 
   // Add error handling
-  SeriesRequest.onerror = function() {
+  SeriesRequest.onerror = function () {
     console.error("Network error occurred while fetching series data");
     showDicomStatus("PACS server error", true);
   };
 
   // Handle timeouts
   SeriesRequest.timeout = 30000; // 30 seconds timeout
-  SeriesRequest.ontimeout = function() {
+  SeriesRequest.ontimeout = function () {
     console.error("Request timed out");
     showDicomStatus("PACS server error", true);
   };
 
   //發送以Series為單位的請求
   SeriesRequest.send();
-  SeriesRequest.onload = function() {
+  SeriesRequest.onload = function () {
     if (SeriesRequest.status !== 200) {
       console.error("HTTP error:", SeriesRequest.status);
       showDicomStatus("PACS server error");
