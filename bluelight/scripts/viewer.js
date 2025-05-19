@@ -116,12 +116,12 @@ class LoadFileInBatches {
 function wadorsLoader2(url, onlyload) {
     // Show loading status
     showDicomStatus("Loading images...");
-    
+
     var headers = {
-        'user-agent': 'Mozilla/4.0 MDN Example', 
+        'user-agent': 'Mozilla/4.0 MDN Example',
         'content-type': 'multipart/related; type=application/dicom;'
     }
-    
+
     var wadoToken = ConfigLog.WADO.token;
     for (var to = 0; to < Object.keys(wadoToken).length; to++) {
         if (wadoToken[Object.keys(wadoToken)[to]] != "")
@@ -129,28 +129,28 @@ function wadorsLoader2(url, onlyload) {
     }
 
     fetch(url, { headers })
-    .then(function(res) {
-        if (!res.ok) {
-            console.error("HTTP error:", res.status, res.statusText);
-            showDicomStatus("PACS error: " + res.status + " " + res.statusText, true);
-            throw new Error('HTTP error ' + res.status + ': ' + res.statusText);
-        }
-        return res.arrayBuffer();
-    })
-    .then(function(resBlob) {
-        let decodedBuffers = multipartDecode(resBlob);
-        for (let decodedBuf of decodedBuffers) {
-            loadDicomDataSet(decodedBuf, !(onlyload == true), url, false, 'mht');
-        }
-        hideDicomStatus();
-    })
-    .catch(function(error) {
-        console.error("Fetch error:", error);
-        showDicomStatus("PACS error: " + error.message, true);
-    })
-    .finally(function() {
-        LoadFileInBatches.finishOne();
-    });
+        .then(function (res) {
+            if (!res.ok) {
+                console.error("HTTP error:", res.status, res.statusText);
+                showDicomStatus("PACS error: " + res.status + " " + res.statusText, true);
+                throw new Error('HTTP error ' + res.status + ': ' + res.statusText);
+            }
+            return res.arrayBuffer();
+        })
+        .then(function (resBlob) {
+            let decodedBuffers = multipartDecode(resBlob);
+            for (let decodedBuf of decodedBuffers) {
+                loadDicomDataSet(decodedBuf, !(onlyload == true), url, false, 'mht');
+            }
+            hideDicomStatus();
+        })
+        .catch(function (error) {
+            console.error("Fetch error:", error);
+            showDicomStatus("PACS error: " + error.message, true);
+        })
+        .finally(function () {
+            LoadFileInBatches.finishOne();
+        });
 }
 
 /**
@@ -392,7 +392,13 @@ function DcmLoader(image, viewport) {
     else if (image.haveSameInstanceNumber) viewport.QRLevel = "sop";
     else viewport.QRLevel = "series";
 
+    if (viewport.content.image) {
+        if (viewport.content.image.windowCenter != image.windowCenter) viewport.windowCenter = null;
+        if (viewport.content.image.windowWidth != image.windowWidth) viewport.windowWidth = null;
+    }
+
     viewport.content.image = image;
+
     if (image.imageDataLoaded == false && image.loadImageData) image.loadImageData();
     viewport.content.pixelData = image.pixelData;
     //需要setimage到element
@@ -547,12 +553,12 @@ function loadDicomDataSet(fileData, loadimage = true, url, fromLocal = false, fi
 function loadDICOMFromUrl(url, loadimage = true) {
     // Show loading status
     showDicomStatus("Loading images...");
-    
+
     var headers = {
-        'user-agent': 'Mozilla/4.0 MDN Example', 
+        'user-agent': 'Mozilla/4.0 MDN Example',
         'content-type': 'multipart/related; type=application/dicom;'
     }
-    
+
     var wadoToken = ConfigLog.WADO.token;
     for (var to = 0; to < Object.keys(wadoToken).length; to++) {
         if (wadoToken[Object.keys(wadoToken)[to]] != "")
@@ -560,25 +566,25 @@ function loadDICOMFromUrl(url, loadimage = true) {
     }
 
     fetch(url, { headers })
-    .then(function(res) {
-        if (!res.ok) {
-            console.error("HTTP error:", res.status, res.statusText);
-            showDicomStatus("PACS error: " + res.status + " " + res.statusText, true);
-            throw new Error('HTTP error ' + res.status + ': ' + res.statusText);
-        }
-        return res.arrayBuffer();
-    })
-    .then(function(oReq) {
-        loadDicomDataSet(oReq, loadimage == true, url, false);
-        hideDicomStatus();
-    })
-    .catch(function(error) {
-        console.error("Fetch error:", error);
-        showDicomStatus("PACS error: " + error.message, true);
-    })
-    .finally(function() {
-        LoadFileInBatches.finishOne();
-    });
+        .then(function (res) {
+            if (!res.ok) {
+                console.error("HTTP error:", res.status, res.statusText);
+                showDicomStatus("PACS error: " + res.status + " " + res.statusText, true);
+                throw new Error('HTTP error ' + res.status + ': ' + res.statusText);
+            }
+            return res.arrayBuffer();
+        })
+        .then(function (oReq) {
+            loadDicomDataSet(oReq, loadimage == true, url, false);
+            hideDicomStatus();
+        })
+        .catch(function (error) {
+            console.error("Fetch error:", error);
+            showDicomStatus("PACS error: " + error.message, true);
+        })
+        .finally(function () {
+            LoadFileInBatches.finishOne();
+        });
 }
 
 // Add this near the top of onload.js if showDicomStatus isn't available
@@ -586,22 +592,22 @@ function showDicomStatus(message, isError = false) {
     console.log("Status update:", message, "isError:", isError);
     var statusDiv = document.getElementById('dicomStatusIndicator');
     if (statusDiv) {
-      if (isError) {
-        statusDiv.innerHTML = '<span style="color:#ff3333;font-weight:bold;">⚠️ ' + message + '</span>';
-        statusDiv.style.backgroundColor = 'rgba(50,0,0,0.85)';
-      } else {
-        statusDiv.innerHTML = '<span style="display:inline-block;width:12px;height:12px;border:2px solid #fff;border-radius:50%;border-top-color:transparent;animation:spin 1s linear infinite;margin-right:5px;"></span>' + message;
-        statusDiv.style.backgroundColor = 'rgba(0,0,0,0.85)';
-      }
-      if(!document.getElementById('spinner-style')){
-        var s=document.createElement('style');
-        s.id='spinner-style';
-        s.textContent='@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}';
-        document.head.appendChild(s);
-      }
-      statusDiv.style.display = 'block';
+        if (isError) {
+            statusDiv.innerHTML = '<span style="color:#ff3333;font-weight:bold;">⚠️ ' + message + '</span>';
+            statusDiv.style.backgroundColor = 'rgba(50,0,0,0.85)';
+        } else {
+            statusDiv.innerHTML = '<span style="display:inline-block;width:12px;height:12px;border:2px solid #fff;border-radius:50%;border-top-color:transparent;animation:spin 1s linear infinite;margin-right:5px;"></span>' + message;
+            statusDiv.style.backgroundColor = 'rgba(0,0,0,0.85)';
+        }
+        if (!document.getElementById('spinner-style')) {
+            var s = document.createElement('style');
+            s.id = 'spinner-style';
+            s.textContent = '@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}';
+            document.head.appendChild(s);
+        }
+        statusDiv.style.display = 'block';
     }
-  }
+}
 
 function hideDicomStatus() {
     var statusDiv = getByid('dicomStatusIndicator');
