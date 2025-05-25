@@ -110,6 +110,11 @@ class LoadFileInBatches {
 
     static finishOne() {
         if (LoadFileInBatches.NumOfFetchs > 0) LoadFileInBatches.NumOfFetchs--;
+
+        // Only hide the status indicator when all fetches are complete and queue is empty
+        if (LoadFileInBatches.NumOfFetchs === 0 && LoadFileInBatches.queue.length === 0) {
+            hideDicomStatus();
+        }
     }
 }
 
@@ -142,7 +147,7 @@ function wadorsLoader2(url, onlyload) {
             for (let decodedBuf of decodedBuffers) {
                 loadDicomDataSet(decodedBuf, !(onlyload == true), url, false, 'mht');
             }
-            hideDicomStatus();
+            // Removed hideDicomStatus() call from here
         })
         .catch(function (error) {
             console.error("Fetch error:", error);
@@ -576,7 +581,7 @@ function loadDICOMFromUrl(url, loadimage = true) {
         })
         .then(function (oReq) {
             loadDicomDataSet(oReq, loadimage == true, url, false);
-            hideDicomStatus();
+            // Removed hideDicomStatus() call from here
         })
         .catch(function (error) {
             console.error("Fetch error:", error);
