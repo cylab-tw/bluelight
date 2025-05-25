@@ -397,7 +397,13 @@ function DcmLoader(image, viewport) {
     else if (image.haveSameInstanceNumber) viewport.QRLevel = "sop";
     else viewport.QRLevel = "series";
 
+    if (viewport.content.image) {
+        if (viewport.content.image.windowCenter != image.windowCenter) viewport.windowCenter = null;
+        if (viewport.content.image.windowWidth != image.windowWidth) viewport.windowWidth = null;
+    }
+
     viewport.content.image = image;
+
     if (image.imageDataLoaded == false && image.loadImageData) image.loadImageData();
     viewport.content.pixelData = image.pixelData;
     //需要setimage到element
@@ -605,14 +611,6 @@ function showDicomStatus(message, isError = false) {
             document.head.appendChild(s);
         }
         statusDiv.style.display = 'block';
-    }
-}
-
-function hideDicomStatus() {
-    var statusDiv = getByid('dicomStatusIndicator');
-    if (statusDiv) {
-        statusDiv.style.display = 'none';
-        statusDiv.style.backgroundColor = 'rgba(0,0,0,0.7)'; // Reset background
     }
 }
 
