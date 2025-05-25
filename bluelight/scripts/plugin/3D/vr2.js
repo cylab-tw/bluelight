@@ -176,6 +176,47 @@ function loadVR2() {
 
         VR2_LutArray.push(Combine_LutArray);
 
+        ////////////////
+
+        var colormap = [
+            { value: 0.0, r: 0, g: 0, b: 0, a: 0.00, hu: -1000 },   // -1000
+            { value: 0.12, r: 90, g: 180, b: 255, a: 0.05, hu: -700 },   // -700
+            { value: 0.28, r: 245, g: 220, b: 180, a: 0.10, hu: -300 },   // -300
+            { value: 0.40, r: 200, g: 200, b: 200, a: 0.15, hu: 0 },   // 0
+            { value: 0.44, r: 180, g: 100, b: 100, a: 0.30, hu: 100 },   // 100
+            { value: 0.52, r: 255, g: 0, b: 0, a: 0.50, hu: 300 },   // 300
+            { value: 0.68, r: 255, g: 255, b: 255, a: 0.80, hu: 700 },   // 700
+            { value: 0.80, r: 255, g: 255, b: 200, a: 1.00, hu: 1000 },   // 1000
+            { value: 1.0, r: 255, g: 255, b: 255, a: 1.00, hu: 1500 },   // 1500
+        ];
+        var ColorMap = new Array(2500);
+        for (var m = 1; m < colormap.length; m++) {
+            var distance = Math.abs(colormap[m].hu - colormap[m - 1].hu);
+            for (var i = 0; i <= distance; i++) {
+                var ratio = i / distance;
+                var r = parseInt(colormap[m - 1].r + (colormap[m].r - colormap[m - 1].r) * ratio);
+                var g = parseInt(colormap[m - 1].g + (colormap[m].g - colormap[m - 1].g) * ratio);
+                var b = parseInt(colormap[m - 1].b + (colormap[m].b - colormap[m - 1].b) * ratio);
+                var a = parseInt(colormap[m - 1].a + (colormap[m].a - colormap[m - 1].a) * ratio * 255);
+                var hu = parseInt(colormap[m - 1].hu + (colormap[m].hu - colormap[m - 1].hu) * ratio);
+                //console.log(i, r, g, b, a);
+                ColorMap[hu + 1000] = [r, g, b, a];
+            }
+        }
+        for (var c = 1; c < ColorMap.length; c++)
+            if (!ColorMap[c]) ColorMap[c] = ColorMap[c - 1];
+
+
+        var CT_LutArray = {
+            name: "CT", array: ColorMap, defaultWindow: {
+                windowWidth: "origin", windowCenter: "origin"
+            }
+        }
+
+        VR2_LutArray.push(CT_LutArray);
+
+        ///////////////////////
+
         var MIP_LutArray = {
             name: "MIP", filter: "lighten", defaultWindow: {
                 windowWidth: "origin", windowCenter: "origin",
@@ -1280,43 +1321,69 @@ endsolid name`
         const multiplication = 255 / ((high - low)) * slope;
         const addition = (- low + intercept) / (high - low) * 255;
         const data = imgData.data;
-        if (color == true) {
-            for (var i = data.length - 4; i >= 0; i -= 4) {
-                data[i + 0] = pixelData[i] * multiplication + addition;
-                data[i + 1] = pixelData[i + 1] * multiplication + addition;
-                data[i + 2] = pixelData[i + 2] * multiplication + addition;
-            }
-        } else {
-            //沒壓縮
-            if (step == 1) {
-                for (var i = 0, j = 0; i < data.length, j < pixelData.length; i += 4, j++) {
-                    data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
-                    if (data[i + 0] == 0) data[i + 3] = 0;
-                }
-            }
-            //有壓縮
-            else {
-                for (var i = 0, j = 0; i < data.length, j < pixelData.length; i += 4, j += step) {
-                    data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
-                    if (data[i + 0] == 0) data[i + 3] = 0;
-                    if (j % (canvas.width * step) == 0) j += (step - 1) * canvas.width * step;
-                }
-            }
-        }
 
-        if (this.lut != "MIP" && this.lut != "MinIP" && this.lut != "default") {
+        if (this.lut == "CT") {
             if (VR2_LutArray[0]) {
                 var lut = null;
                 for (var lutobj of VR2_LutArray) if (lutobj.name == this.lut) lut = lutobj;
                 if (lut) {
-                    var data_ = canvas.imgData;
-                    var arr = lut.array;
-                    for (var i = 0, i4 = 0; i < data_.length; i++, i4 += 4) {
-                        data_[i] = arr[data[i4]];
+                    var colorMap = lut.array;
+                    for (var i = 0, j = 0; i < data.length, j < pixelData.length; i += 4, j++) {
+                        if (pixelData[j] <= -1000) data[i + 0] = data[i + 1] = data[i + 2] = data[i + 3] = 0;
+                        else if (pixelData[j] >= 1500) data[i + 0] = data[i + 1] = data[i + 2] = data[i + 3] = 255;
+                        else {
+                            data[i + 0] = colorMap[pixelData[j] + 1000][0];
+                            data[i + 1] = colorMap[pixelData[j] + 1000][1];
+                            data[i + 2] = colorMap[pixelData[j] + 1000][2];
+                            data[i + 3] = colorMap[pixelData[j] + 1000][3];
+                        }
+                        if (pixelData[j] * multiplication + addition <= 0)
+                            data[i + 0] = data[i + 1] = data[i + 2] = data[i + 3] = 0;
+                    }
+                }
+            }
+
+        }
+        else {
+            if (color == true) {
+                for (var i = data.length - 4; i >= 0; i -= 4) {
+                    data[i + 0] = pixelData[i] * multiplication + addition;
+                    data[i + 1] = pixelData[i + 1] * multiplication + addition;
+                    data[i + 2] = pixelData[i + 2] * multiplication + addition;
+                }
+            } else {
+                //沒壓縮
+                if (step == 1) {
+                    for (var i = 0, j = 0; i < data.length, j < pixelData.length; i += 4, j++) {
+                        data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
+                        if (data[i + 0] == 0) data[i + 3] = 0;
+                    }
+                }
+                //有壓縮
+                else {
+                    for (var i = 0, j = 0; i < data.length, j < pixelData.length; i += 4, j += step) {
+                        data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
+                        if (data[i + 0] == 0) data[i + 3] = 0;
+                        if (j % (canvas.width * step) == 0) j += (step - 1) * canvas.width * step;
+                    }
+                }
+            }
+
+            if (this.lut != "MIP" && this.lut != "MinIP" && this.lut != "default") {
+                if (VR2_LutArray[0]) {
+                    var lut = null;
+                    for (var lutobj of VR2_LutArray) if (lutobj.name == this.lut) lut = lutobj;
+                    if (lut) {
+                        var data_ = canvas.imgData;
+                        var arr = lut.array;
+                        for (var i = 0, i4 = 0; i < data_.length; i++, i4 += 4) {
+                            data_[i] = arr[data[i4]];
+                        }
                     }
                 }
             }
         }
+
         if (this.smooth) {
             for (var i = data.length - 4; i >= 0; i -= 4) {
                 data[i + 3] = parseInt((data[i] + data[i + 1] + data[i + 2]) / 3 * 2);
