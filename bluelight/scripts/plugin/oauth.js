@@ -80,7 +80,7 @@ async function auth() {
         // No token or token is not vaild, redirect to keycloak login page and put current url in the Callback URL parameter.
         else {
             setCookie("access_token","",7);
-            let redirectUri = removeURLParameter(window.location.href, "code","session_state","iss");
+            let redirectUri = removeURLParameters(window.location.href, "code","session_state","iss");
             let loginPage = `${keycloakAPI}${OAuthConfig.endpoints.auth}?client_id=${OAuthConfig.client_id}&grant_type=authorization_code&response_type=code&redirect_uri=${redirectUri}`;
             window.location.href = loginPage;
             return false;
@@ -154,7 +154,7 @@ function isTokenVaild(theToken) {
 function requestToken(code, session_state) {
     return new Promise((resolve, reject) => {
         let tokenAPI = `${keycloakAPI}${OAuthConfig.endpoints.token}`;
-        let redirectUri = removeURLParameter(window.location.href, "code","session_state","iss");
+        let redirectUri = removeURLParameters(window.location.href, "code","session_state","iss");
         let responseToken = "";
         let params = `grant_type=authorization_code&client_id=${OAuthConfig.client_id}&client_secret=${OAuthConfig.client_secret}&scope=${OAuthConfig.scope}&code=${code}&session_state=${session_state}&redirect_uri=${redirectUri}`;
         let request = new XMLHttpRequest();
