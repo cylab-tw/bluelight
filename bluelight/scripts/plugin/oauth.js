@@ -65,6 +65,14 @@ async function auth() {
                     this.origOpen.apply(this, arguments);
                     this.setRequestHeader('Authorization', "Bearer " + theToken);
                 };
+                const f = fetch;
+                window.fetch = (u, o = {}) => f(u, {
+                    ...o,
+                    headers: {
+                        Authorization: `Bearer ${theToken}`,
+                        ...(o.headers || {})
+                    }
+                });
                 loadLdcmview();
             }
             return true;
@@ -74,7 +82,7 @@ async function auth() {
             setCookie("access_token","",7);
             let redirectUri = removeURLParameter(window.location.href, "code","session_state","iss");
             let loginPage = `${keycloakAPI}${OAuthConfig.endpoints.auth}?client_id=${OAuthConfig.client_id}&grant_type=authorization_code&response_type=code&redirect_uri=${redirectUri}`;
-            //window.location.href = loginPage;
+            window.location.href = loginPage;
             return false;
         }
     }
