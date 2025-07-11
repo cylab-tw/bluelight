@@ -83,7 +83,7 @@ function mouseTool() {
         BlueLightTouchmoveList.push(function (e, e2) {
             var viewport = GetViewport(), canvas = GetViewport().canvas;
 
-            if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+            if (getByid("DICOMTagsSelect").selected) return;
 
             if (rightTouchDown == true && e2) {
                 if (openLink == true) {

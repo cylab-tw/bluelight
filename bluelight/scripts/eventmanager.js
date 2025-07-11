@@ -140,7 +140,7 @@ window.addEventListener('load', function () {
 });
 
 function Wheel(e) {
-    if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+    if (getByid("DICOMTagsSelect").selected) return;
     var viewportNum = viewportNumber;
     if (!(openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true)) return;
     if (openLink == false) {
@@ -269,9 +269,8 @@ let BlueLightMousemove = function (e) {
             BlueLightMousemoveList[i](e);
     }
 
-    if (isNaN(angle2point[0]) || isNaN(angle2point[1])) GetViewport().setLabel("PixelValue", "");//getClass('labelXY')[viewportNumber].innerText = "";
-    else GetViewport().setLabel("PixelValue", GetPixel(angle2point) + `  (${parseInt(angle2point[0])},${parseInt(angle2point[1])})`);// getClass('labelXY')[viewportNumber].innerText = "Pixel: " + GetPixel(angle2point) + `  (${parseInt(angle2point[0])},${parseInt(angle2point[1])})`;
-    //getClass('labelXY')[viewportNumber].innerText = "X: " + parseInt(angle2point[0]) + " Y: " + parseInt(angle2point[1]);
+    if (isNaN(angle2point[0]) || isNaN(angle2point[1])) GetViewport().setLabel("PixelValue", "");
+    else GetViewport().setLabel("PixelValue", GetPixel(angle2point) + `  (${parseInt(angle2point[0])},${parseInt(angle2point[1])})`);
     GetViewport().refleshLabel();
 
     if (openLink == true) {

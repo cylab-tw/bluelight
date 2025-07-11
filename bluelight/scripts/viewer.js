@@ -445,7 +445,6 @@ function DcmLoader(image, viewport) {
     getByid("TableSelectNone").selected = true;
     displayMark(viewport.index);//BlueLight2//
     displayRuler(viewport.index);
-    displayAIM();
     //displayAnnotation();
     //displayAllRuler();
     viewport.refleshScrollBar();

@@ -132,7 +132,7 @@ function zoom() {
 
         BlueLightTouchmoveList = [];
         BlueLightTouchmoveList.push(function (e, e2) {
-            if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+            if (getByid("DICOMTagsSelect").selected) return;
             if (TouchDownCheck == true && rightTouchDown == false) {
                 magnifierDiv.show();
                 let angle2point = rotateCalculation(e);

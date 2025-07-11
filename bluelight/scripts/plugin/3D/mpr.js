@@ -280,7 +280,7 @@ getByid("MouseOperation_MPR").onclick = function () {
         if (BL_mode != 'mouseTool_MPR') return;
         var viewport = GetViewport();
         if (!GetViewport().drawMark) GetViewportMark().getContext("2d").clearRect(0, 0, GetViewportMark().width, GetViewportMark().height);
-        if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+        if (getByid("DICOMTagsSelect").selected) return;
 
         if (openMPR == true) {
             if (TouchDownCheck == true) {

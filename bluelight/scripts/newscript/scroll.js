@@ -51,7 +51,7 @@ function scroll() {
 
         BlueLightTouchmoveList = [];
         BlueLightTouchmoveList.push(function (e, e2) {
-            if ((getByid("DICOMTagsSelect").selected || getByid("AIMSelect").selected)) return;
+            if (getByid("DICOMTagsSelect").selected) return;
 
             if (TouchDownCheck == true && rightTouchDown == false) {
                 if (Math.abs(windowMouseDiffY) < Math.abs(windowMouseDiffX)) {

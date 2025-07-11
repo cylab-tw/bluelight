@@ -100,7 +100,6 @@ function html_onload() {
         else if (fileExtension == "jpeg") loadPicture(url);
         else if (fileExtension == "png") loadPicture(url);
         else if (fileExtension == "webp") loadPicture(url);
-        else if (fileExtension == "xml") readXML(url);
         else {
           let reader = new FileReader();
           reader.readAsArrayBuffer(file);
@@ -315,15 +314,12 @@ function html_onload() {
       GetViewport().clear();
       displayMark();
       displayRuler();
-      displayAIM();
       displayAnnotation();
       VIEWPORT.loadViewport(GetViewport(), null, viewportNumber);
       setSeriesCount();
       getClass("labelLT")[viewportNumber].innerText = "";
-      //getClass("labelWC")[viewportNumber].innerText = "";
       getClass("labelRT")[viewportNumber].innerText = "";
       getClass("labelRB")[viewportNumber].innerText = "";
-      //getClass("labelXY")[viewportNumber].innerText = "";
       PatientMark = [];
       ImageManager = new BlueLightImageManager()
       getByid("LeftPicture").innerHTML = ""; //leftLayout = new LeftLayout();
@@ -333,10 +329,8 @@ function html_onload() {
         GetViewport(i).clear();
         VIEWPORT.loadViewport(GetViewport(), null, i);
         getClass("labelLT")[i].innerText = "";
-        //getClass("labelWC")[i].innerText = "";
         getClass("labelRT")[i].innerText = "";
         getClass("labelRB")[i].innerText = "";
-        //getClass("labelXY")[i].innerText = "";
         displayRuler(i);
       }
       getByid("container").removeChild(this.window);
@@ -672,8 +666,6 @@ function html_onload() {
     var TableSelectOnChange = function () {
       if (getByid("DICOMTagsSelect").selected == true)
         displayDicomTagsList();
-      else if (getByid("AIMSelect").selected == true)
-        displayAIM();
       else {
         for (var i = 0; i < Viewport_Total; i++)
           dropTable(i);
@@ -811,7 +803,6 @@ function html_onload() {
       else if (fileExtension == "jpeg") loadPicture(URL.createObjectURL(this.files[k]));
       else if (fileExtension == "png") loadPicture(URL.createObjectURL(this.files[k]));
       else if (fileExtension == "webp") loadPicture(URL.createObjectURL(this.files[k]));
-      else if (fileExtension == "xml") readXML(URL.createObjectURL(this.files[k]));
       else {
         let reader = new FileReader();
         reader.readAsArrayBuffer(this.files[k]);

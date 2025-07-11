@@ -101,21 +101,15 @@ function setTransformLabel(viewportNum = viewportNumber) {
 function displayAnnotation() {
   for (var i = 0; i < Viewport_Total; i++) {
     if (openAnnotation == true) {
-      //getClass("labelWC")[i].style.display = "";
       getClass("labelLT")[i].style.display = "";
       getClass("labelRT")[i].style.display = "";
       getClass("labelRB")[i].style.display = "";
-      //getClass("labelXY")[i].style.display = "";
-      //getClass("labelWC")[i].style.display = "";
       getClass("leftRule")[i].style.display = "";
       getClass("downRule")[i].style.display = "";
     } else {
-      //getClass("labelWC")[i].style.display = "none";
       getClass("labelLT")[i].style.display = "none";
       getClass("labelRT")[i].style.display = "none";
       getClass("labelRB")[i].style.display = "none";
-      //getClass("labelWC")[i].style.display = "none";
-      //getClass("labelXY")[i].style.display = "none";
       getClass("leftRule")[i].style.display = "none";
       getClass("downRule")[i].style.display = "none";
     }

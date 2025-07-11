@@ -64,16 +64,6 @@ html, body {
   top: 50%;
 }
 
-.labelXY {
-  left: var(--leftLabelPadding);
-  bottom: var(--bottomLabelPadding);
-}
-
-.labelWC {
-  left: var(--leftLabelPadding);
-  bottom: calc(var(--bottomLabelPadding) + 1em);
-}
-
 body,
 html {
   /*margin: 0;
@@ -310,10 +300,6 @@ button:hover {
 }
 
 /*
-.labelWC {
-  left: 115px;
-  bottom: 30px;
-}
 
 .labelLT {
   left: 115px;
@@ -330,11 +316,6 @@ button:hover {
   right: 20px;
   bottom: 20px;
   text-align: right;
-}
-
-.labelXY {
-  left: 115px;
-  bottom: 10px;
 }
 */
 .leftRule {
