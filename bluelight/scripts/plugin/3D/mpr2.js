@@ -44,7 +44,7 @@ function loadMPR2() {
     var span = document.createElement("SPAN");
     span.id = "ImgMPR2_span";
     span.innerHTML = `<img class="innerimg MPR2 MPR_icon" alt="New MPR" id="ImgMPR2" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_LocalizerLines.png" width="50" height="50">`;
-    if (getByid("3DImgeDIv").childNodes.length > 0) getByid("3DImgeDIv").appendChild( document.createElement("BR"));
+    if (getByid("3DImgeDIv").childNodes.length > 0) getByid("3DImgeDIv").appendChild(document.createElement("BR"));
     getByid("3DImgeDIv").appendChild(span); //addIconSpan(span); 
 
     /*var span = document.createElement("SPAN");
@@ -159,7 +159,7 @@ getByid("MouseOperation_MPR2").onclick = function () {
     //BL_mode = 'mouseTool_MPR2';
     if (BL_mode == 'mouseTool_MPR2') return;
     set_BL_model('mouseTool_MPR2');
-    for (var c = 0; c < 3; c++) {
+    /*for (var c = 0; c < 3; c++) {
         GetViewport(c).div.removeEventListener("mousemove", BlueLightMousemove, false);
         GetViewport(c).div.removeEventListener("mousedown", BlueLightMousedown, false);
         GetViewport(c).div.removeEventListener("mouseup", BlueLightMouseup, false);
@@ -167,7 +167,7 @@ getByid("MouseOperation_MPR2").onclick = function () {
         GetViewport(c).div.removeEventListener("touchmove", BlueLightTouchmove, false);
         GetViewport(c).div.removeEventListener("touchend", BlueLightTouchend, false);
         GetViewport(c).div.removeEventListener("wheel", Wheel, false);
-    }
+    }*/
     //GetViewport(2).div.addEventListener("mousemove", BlueLightMousemove, false);
     //GetViewport(2).div.addEventListener("mousedown", Mousedown, false);
     //GetViewport(2).div.addEventListener("mouseup", BlueLightMouseup, false);
@@ -175,6 +175,7 @@ getByid("MouseOperation_MPR2").onclick = function () {
     ///GetViewport(2).div.addEventListener("touchmove", BlueLightTouchmove, false);
     //GetViewport(2).div.addEventListener("touchend", BlueLightTouchend, false);
     for (var c = 0; c < 3; c++)  GetViewport(c).div.addEventListener("wheel", MPRWheel, false);
+    ToolEvt.enable = false;
     drawBorderMPR(this);
 }
 
@@ -229,7 +230,7 @@ function exitMPR2() {
     //getByid("3dDisplay").style.display = "none";
     //getByid("mprLightLabel").style.display = "none";
 
-    for (var i = 0; i < Viewport_Total; i++) {
+    /*for (var i = 0; i < Viewport_Total; i++) {
         GetViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
         GetViewport(i).div.removeEventListener("mousemove", BlueLightMousemove, false);
         GetViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
@@ -241,7 +242,8 @@ function exitMPR2() {
         GetViewport(i).div.removeEventListener("touchend", BlueLightTouchend, false);
         GetViewport(i).div.addEventListener("touchstart", SwitchViewport, false);
         GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
-    }
+    }*/
+    ToolEvt.enable = true;
     viewportNumber = 0;
     SetTable();//這個目前需要
     window.onresize();
@@ -267,7 +269,7 @@ function initMPR2() {
     changeLinkImg();
     origin_openAnnotation = openAnnotation;
     openAnnotation = false;
-    
+
     //getByid("3dDisplay").style.display = "";
     //getByid("mprLightLabel").style.display = "";
     cancelTools();
@@ -282,7 +284,7 @@ function initMPR2() {
     displayAnnotation();
     ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
     window.addEventListener("resize", resizeVR, false);
-    for (var i1 = 0; i1 < Viewport_Total; i1++) {
+    /*for (var i1 = 0; i1 < Viewport_Total; i1++) {
         GetViewport(i1).div.removeEventListener("contextmenu", contextmenuF, false);
         GetViewport(i1).div.removeEventListener("mousemove", BlueLightMousemove, false);
         GetViewport(i1).div.removeEventListener("mousedown", BlueLightMousedown, false);
@@ -295,7 +297,7 @@ function initMPR2() {
         GetViewport(i1).div.removeEventListener("touchstart", SwitchViewport, false);
     }
     GetViewport().div.addEventListener("contextmenu", contextmenuF, false);
-    GetViewport().div.addEventListener("mouseout", Mouseout, false);
+    GetViewport().div.addEventListener("mouseout", Mouseout, false);*/
     GetViewport(3).div.addEventListener("mousemove", mousemove3D, false);
     GetViewport(3).div.addEventListener("mousedown", mousedown3D, false);
     GetViewport(3).div.addEventListener("mouseup", mouseup3D, false);
@@ -347,7 +349,7 @@ function initMPR2() {
     for (var l = 0; l < list.length; l++) {
         const l2 = l;
         const image = list[l2].Image;
-        if (image.imageDataLoaded == false && image.loadImageData)image.loadImageData();
+        if (image.imageDataLoaded == false && image.loadImageData) image.loadImageData();
 
         const pixelData = list[l2].Image.pixelData;
         o3dPixelData.push(pixelData);

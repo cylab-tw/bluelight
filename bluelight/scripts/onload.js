@@ -60,7 +60,7 @@ function loadLdcmview() {
   for (var i = 0; i < Viewport_Total; i++) {
     ViewPortList.push(new BlueLightViewPort(i));
   }
-  initNewCanvas();
+  initNewCanvas2();
 
   HideElemByID(["textWC", "textWW"]);
 

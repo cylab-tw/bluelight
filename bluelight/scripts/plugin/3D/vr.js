@@ -1,5 +1,5 @@
 //代表VR模式為開啟狀態
-var openVR = false;
+var openVR = false, openMPR = false;
 //代表VR影像正在渲染中
 var openRendering = false;
 //VR橫切片與縱切片數量
@@ -64,7 +64,7 @@ function loadVR() {
 
     var span = document.createElement("SPAN");
     span.innerHTML = `<img class="innerimg VR" alt="VR" id="ImgVR" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_3D_off.png" width="50" height="50">`;
-    if (getByid("3DImgeDIv").childNodes.length > 0) getByid("3DImgeDIv").appendChild( document.createElement("BR"));
+    if (getByid("3DImgeDIv").childNodes.length > 0) getByid("3DImgeDIv").appendChild(document.createElement("BR"));
     getByid("3DImgeDIv").appendChild(span); //addIconSpan(span); 
 
     var span = document.createElement("SPAN");
@@ -418,20 +418,7 @@ function initVR() {
         GetViewport(0).div.removeEventListener("touchstart", touchstart3D, false);
         GetViewport(0).div.removeEventListener("touchmove", touchmove3D, false);
         GetViewport(0).div.removeEventListener("touchend", touchend3D, false);
-        for (var i = 0; i < Viewport_Total; i++) {
-            GetViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
-            GetViewport(i).div.removeEventListener("mousemove", BlueLightMousemove, false);
-            GetViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
-            GetViewport(i).div.removeEventListener("mouseup", BlueLightMouseup, false);
-            GetViewport(i).div.removeEventListener("mouseout", Mouseout, false);
-            GetViewport(i).div.removeEventListener("wheel", Wheel, false);
-            GetViewport(i).div.removeEventListener("mousedown", SwitchViewport, false);
-            GetViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
-            GetViewport(i).div.removeEventListener("touchend", BlueLightTouchend, false);
-            GetViewport(i).div.addEventListener("touchstart", SwitchViewport, false);
-            GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
-            //GetViewport(i).div.addEventListener("wheel", wheelF, false);
-        }
+
         cancelTools();
         openMouseTool = true;
         drawBorder(getByid("MouseOperation"));
@@ -462,8 +449,10 @@ function initVR() {
         displayAnnotation();
         for (var c = 0; c < Viewport_Total; c++) GetViewport(c).canvas.style.display = GetViewportMark(c).style.display = "";
         getByid("MouseOperation").click();
-        initNewCanvas();
+        ToolEvt.enable = true;
+        //_initNewCanvas_();
     } else if (openVR == true) {
+        ToolEvt.enable = false;
         enterVR_UI();
         getByid("3dYellow").checked = true;
         VIEWPORT.fixRow = VIEWPORT.fixCol = 1;//如果VR模式正在開啟，固定1x1
@@ -482,7 +471,7 @@ function initVR() {
         var tmpviewportNumber = viewportNumber;
         SetTable(1, 1);
         viewportNumber = tmpviewportNumber;
-        GetViewport(i).scale = null;
+        GetViewport().scale = null;
 
         GetViewport().reload();
         displayAnnotation();
@@ -494,19 +483,7 @@ function initVR() {
         ViewPortList[0].lockRender = true;
 
         window.addEventListener("resize", resizeVR, false);
-        for (var i1 = 0; i1 < Viewport_Total; i1++) {
-            GetViewport(i1).div.removeEventListener("contextmenu", contextmenuF, false);
-            GetViewport(i1).div.removeEventListener("mousemove", BlueLightMousemove, false);
-            GetViewport(i1).div.removeEventListener("mousedown", BlueLightMousedown, false);
-            GetViewport(i1).div.removeEventListener("mouseup", BlueLightMouseup, false);
-            GetViewport(i1).div.removeEventListener("mouseout", Mouseout, false);
-            GetViewport(i1).div.removeEventListener("wheel", Wheel, false);
-            GetViewport(i1).div.removeEventListener("mousedown", SwitchViewport, false);
-            GetViewport(i1).div.removeEventListener("touchstart", BlueLightTouchstart, false);
-            GetViewport(i1).div.removeEventListener("touchend", BlueLightTouchend, false);
-            GetViewport(i1).div.removeEventListener("touchstart", SwitchViewport, false);
-            GetViewport(i1).div.removeEventListener("mousedown", SwitchViewport, false);
-        }
+
         GetViewport(0).div.addEventListener("mousemove", mousemove3D, false);
         GetViewport(0).div.addEventListener("mousedown", mousedown3D, false);
         GetViewport(0).div.addEventListener("mouseup", mouseup3D, false);

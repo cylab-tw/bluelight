@@ -125,6 +125,13 @@ class zoomTool extends ToolEvt {
     onTouchEnd(e, e2) {
         magnifierDiv.hide();
     }
+    onMouseOut() {
+        magnifierDiv.hide();
+    }
+    onWheel(e) {
+        var angle2point = rotateCalculation(e);
+        magnifierIng(angle2point[0], angle2point[1]);
+    }
 }
 
 function zoom() {

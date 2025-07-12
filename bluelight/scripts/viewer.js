@@ -434,7 +434,6 @@ function DcmLoader(image, viewport) {
     MarkCanvas.width = MainCanvas.width, MarkCanvas.height = MainCanvas.height;
 
     MarkCanvas.getContext("2d").save();
-    //initNewCanvas();
 
     setTransform(viewport.index);
     MarkCanvas.style.transform = MainCanvas.style.transform;
@@ -619,36 +618,6 @@ function hideDicomStatus() {
         statusDiv.style.display = 'none';
         statusDiv.style.backgroundColor = 'rgba(0,0,0,0.7)'; // Reset background
     }
-}
-function initNewCanvas() {
-    //添加事件
-    try {
-        for (var i = 0; i < Viewport_Total; i++) {
-            GetViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
-            GetViewport(i).div.removeEventListener("mousemove", BlueLightMousemove, false);
-            GetViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
-            GetViewport(i).div.removeEventListener("mouseup", BlueLightMouseup, false);
-            GetViewport(i).div.removeEventListener("mouseout", Mouseout, false);
-            GetViewport(i).div.removeEventListener("wheel", Wheel, false);
-            GetViewport(i).div.removeEventListener("mousedown", SwitchViewport, false);
-            GetViewport(i).div.removeEventListener("touchstart", BlueLightTouchstart, false);
-            GetViewport(i).div.removeEventListener("touchend", BlueLightTouchend, false);
-            GetViewport(i).div.addEventListener("touchstart", SwitchViewport, false);
-            GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
-            GetViewport(i).div.addEventListener("wheel", Wheel, false);
-        }
-        GetViewport().div.removeEventListener("touchstart", SwitchViewport, false);
-        GetViewport().div.removeEventListener("mousedown", SwitchViewport, false);
-        GetViewport().div.addEventListener("contextmenu", contextmenuF, false);
-        GetViewport().div.addEventListener("mousemove", BlueLightMousemove, false);
-        GetViewport().div.addEventListener("mousedown", BlueLightMousedown, false);
-        GetViewport().div.addEventListener("mouseup", BlueLightMouseup, false);
-        GetViewport().div.addEventListener("mouseout", Mouseout, false);
-        GetViewport().div.addEventListener("touchstart", BlueLightTouchstart, false);
-        GetViewport().div.addEventListener("touchmove", BlueLightTouchmove, false);
-        GetViewport().div.addEventListener("touchend", BlueLightTouchend, false);
-    } catch (ex) { console.log(ex); }
-    //GetViewport().div.addEventListener("wheel", wheelF, false); --*
 }
 
 function createDicomTagsList2Viewport(viewport) {

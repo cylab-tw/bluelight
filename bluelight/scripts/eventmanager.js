@@ -1,5 +1,6 @@
 
 class ToolEvt {
+    static enable = true;
     onMouseDown(event, context) { }
     onMouseMove(event, context) { }
     onMouseUp(event, context) { }
@@ -7,6 +8,7 @@ class ToolEvt {
     onTouchMove(event, context) { }
     onTouchEnd(event, context) { }
     onWheel(event, context) { }
+    onMouseOut() { }
     onSwitch() { }
 }
 let toolEvt = new ToolEvt();
@@ -53,8 +55,29 @@ var DoubleClickF = function (e) {
     window.onresize();
 };
 
+function initNewCanvas2() {
+    //添加事件
+    try {
+        for (var i = 0; i < Viewport_Total; i++) {
+            GetViewport(i).div.addEventListener("touchstart", SwitchViewport, false);
+            GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
+            GetViewport(i).div.addEventListener("wheel", SwitchViewport, false);
+            GetViewport(i).div.addEventListener("contextmenu", contextmenuF, false);
+            GetViewport(i).div.addEventListener("mousemove", BlueLightMousemove, false);
+            GetViewport(i).div.addEventListener("mousedown", BlueLightMousedown, false);
+            GetViewport(i).div.addEventListener("mouseup", BlueLightMouseup, false);
+            GetViewport(i).div.addEventListener("mouseout", BlueLightMouseout, false);
+            GetViewport(i).div.addEventListener("touchstart", BlueLightTouchstart, false);
+            GetViewport(i).div.addEventListener("touchmove", BlueLightTouchmove, false);
+            GetViewport(i).div.addEventListener("touchend", BlueLightTouchend, false);
+            GetViewport(i).div.addEventListener("wheel", BlueLightWheel, false);
+        }
+    } catch (ex) { console.log(ex); }
+}
+
 var SwitchViewport = function () {
     getByid("WindowDefault").selected = true;
+
     var viewportNum = viewportNumber;
 
     viewportNumber = isNaN(this.viewportNum) ? viewportNumber : this.viewportNum;
@@ -75,7 +98,6 @@ var SwitchViewport = function () {
         GetViewport(z).refleshLabel();
     }
     refleshGUI();
-    initNewCanvas();
 }
 
 window.addEventListener("beforeunload", () => {
@@ -143,7 +165,9 @@ window.addEventListener('load', function () {
     document.addEventListener('touchmove', touchMoveHandler, false);
 });
 
-function Wheel(e) {
+function BlueLightWheel(e) {
+    if (!ToolEvt.enable) return;
+    if (viewportNumber != this.viewportNum) return;
     if (getByid("DICOMTagsSelect").selected) return;
     var viewportNum = viewportNumber;
     if (!(openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true)) return;
@@ -157,18 +181,15 @@ function Wheel(e) {
             else GetViewport(z).nextFrame(false);
         }
     }
-    if (openZoom) {
-        var angle2point = rotateCalculation(e);
-        magnifierIng(angle2point[0], angle2point[1]);
-    }
+
+    toolEvt.onWheel(e);
 }
 
 function Mouseout(e) {
-    if (magnifierDiv) magnifierDiv.hide();
-    for (var z = 0; z < Viewport_Total; z++) {
+    /*for (var z = 0; z < Viewport_Total; z++) {
         GetViewport(z).setLabel("PixelValue", "");
         GetViewport(z).refleshLabel();
-    }
+    }*/
 }
 
 let dragged = null;
@@ -181,7 +202,6 @@ onloadFunction.push2Last(function () {
             PictureOnclick(dragged.QRLevel);
             dragged = null;
             refleshGUI();
-            initNewCanvas();
         });
     }
 });
@@ -223,7 +243,17 @@ let MouseDownPointByCanvas = new Point2D(0, 0);
 let MouseMovePointByCanvas = new Point2D(0, 0);
 let MouseUpPointByCanvas = new Point2D(0, 0);
 
+let BlueLightMouseout = function () {
+    if (!ToolEvt.enable) return;
+    for (var z = 0; z < Viewport_Total; z++) {
+        GetViewport(z).setLabel("PixelValue", "");
+        GetViewport(z).refleshLabel();
+    }
+    toolEvt.onMouseOut();
+}
+
 let BlueLightMousedown = function (e) {
+    if (!ToolEvt.enable) return;
 
     if (e.which == 1) MouseDownCheck = true;
     else if (e.which == 3) rightMouseDown = true;
@@ -239,6 +269,7 @@ let BlueLightMousedown = function (e) {
 }
 
 let BlueLightTouchstart = function (E) {
+    if (!ToolEvt.enable) return;
     var e = E.touches[0], e2 = E.touches[1] ? E.touches[1] : null;
 
     if (!e2) TouchDownCheck = true;
@@ -256,6 +287,8 @@ let BlueLightTouchstart = function (E) {
 }
 
 let BlueLightMousemove = function (e) {
+    if (!ToolEvt.enable) return;
+    if (viewportNumber != this.viewportNum) return;
     let angle2point = rotateCalculation(e);
     var [MouseX, MouseY] = GetmouseXY(e);
     windowMouseDiffX = MouseX - windowMouseX;
@@ -279,6 +312,7 @@ let BlueLightMousemove = function (e) {
 }
 
 let BlueLightTouchmove = function (E) {
+    if (!ToolEvt.enable) return;
     var e = E.touches[0], e2 = E.touches[1] ? E.touches[1] : null;
 
     var [MouseX, MouseY] = GetmouseXY(e);
@@ -301,12 +335,14 @@ let BlueLightTouchmove = function (E) {
 }
 
 let BlueLightMouseup = function (e) {
+    if (!ToolEvt.enable) return;
     toolEvt.onMouseUp(e);
     windowMouseX = windowMouseY = windowMouseDiffX = windowMouseDiffY = 0;
     MouseDownCheck = rightMouseDown = false;
 }
 
 let BlueLightTouchend = function (E) {
+    if (!ToolEvt.enable) return;
     var e = E.touches[0], e2 = E.touches[1] ? E.touches[1] : null;
     toolEvt.onTouchEnd(e);
     TouchDownCheck = rightTouchDown = false;

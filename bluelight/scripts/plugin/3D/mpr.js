@@ -48,7 +48,8 @@ function loadMPR() {
     getByid("page-header").appendChild(span);
     getByid("mprLightLabel").style.display = "none";
 }
-loadMPR();
+//暫停維護
+//loadMPR();
 
 function loadMPR_UI() {
     if (!getByid("MouseOperation_MPR")) {
@@ -554,11 +555,11 @@ function initMPR() {
         GetViewport(0).div.removeEventListener("mousemove", Anatomical_SectionMouseMove0, false);
         GetViewport(0).div.removeEventListener("mousedown", Anatomical_SectionMouseDown0, false);
         GetViewport(0).div.removeEventListener("mouseup", Anatomical_SectionMouseMouseup0, false);
-        GetViewport(0).div.removeEventListener("wheel", Wheel, false);
+       // GetViewport(0).div.removeEventListener("wheel", Wheel, false);
         GetViewport(1).div.removeEventListener("mousemove", Anatomical_SectionMouseMove, false);
         GetViewport(1).div.removeEventListener("mousedown", Anatomical_SectionMouseDown, false);
         GetViewport(1).div.removeEventListener("mouseup", Anatomical_SectionMouseMouseup, false);
-        GetViewport(1).div.removeEventListener("wheel", Wheel, false);
+        //GetViewport(1).div.removeEventListener("wheel", Wheel, false);
         cancelTools();
         openMouseTool = true;
         drawBorder(getByid("MouseOperation"));
@@ -573,7 +574,7 @@ function initMPR() {
             delete getByid("OutSide3dDiv");
             getByid("OutSide3dDiv").parentElement.removeChild(getByid("OutSide3dDiv"));
         }
-        for (var i = 0; i < Viewport_Total; i++) {
+        /*for (var i = 0; i < Viewport_Total; i++) {
             GetViewport(i).div.removeEventListener("contextmenu", contextmenuF, false);
             GetViewport(i).div.removeEventListener("mousemove", BlueLightMousemove, false);
             GetViewport(i).div.removeEventListener("mousedown", BlueLightMousedown, false);
@@ -585,7 +586,7 @@ function initMPR() {
             GetViewport(i).div.removeEventListener("touchend", BlueLightTouchend, false);
             GetViewport(i).div.addEventListener("touchstart", SwitchViewport, false);
             GetViewport(i).div.addEventListener("mousedown", SwitchViewport, false);
-        }
+        }*/
 
         viewportNumber = 0;
         //SetTable();
@@ -602,9 +603,11 @@ function initMPR() {
         GetViewport(2).loadImgBySop(originSop_of_viewport2);
 
         getByid("MouseOperation").click();
-        initNewCanvas();
+        //_initNewCanvas_();
+        ToolEvt.enable = true;
         window.onresize();
     } else if (openMPR == true) {
+        ToolEvt.enable = false;
         enterMPR_UI();
         VIEWPORT.fixRow = VIEWPORT.fixCol = 2;
         openLink = false;
@@ -628,7 +631,7 @@ function initMPR() {
         ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
 
         window.addEventListener("resize", resizeVR, false);
-        for (var i1 = 0; i1 < Viewport_Total; i1++) {
+        /*for (var i1 = 0; i1 < Viewport_Total; i1++) {
             GetViewport(i1).div.removeEventListener("contextmenu", contextmenuF, false);
             GetViewport(i1).div.removeEventListener("mousemove", BlueLightMousemove, false);
             GetViewport(i1).div.removeEventListener("mousedown", BlueLightMousedown, false);
@@ -641,15 +644,15 @@ function initMPR() {
             GetViewport(i1).div.removeEventListener("touchstart", SwitchViewport, false);
             //GetViewport(i1).div.removeEventListener("mousedown", SwitchViewport, false);
             //GetViewport(i).div.addEventListener("wheel", wheelF, false);
-        }
+        }*/
         //GetViewport().div.removeEventListener("touchstart", SwitchViewport, false);
         //GetViewport().div.removeEventListener("mousedown", SwitchViewport, false);
-        GetViewport().div.addEventListener("contextmenu", contextmenuF, false);
+        /*GetViewport().div.addEventListener("contextmenu", contextmenuF, false);
         GetViewport().div.addEventListener("mouseout", Mouseout, false);
         GetViewport().div.addEventListener("touchstart", BlueLightTouchstart, false);
         GetViewport().div.addEventListener("touchmove", BlueLightTouchmove, false);
         GetViewport().div.addEventListener("touchend", BlueLightTouchend, false);
-        GetViewport().div.addEventListener("wheel", Wheel, false);
+        GetViewport().div.addEventListener("wheel", Wheel, false);*/
         GetViewport(3).div.addEventListener("mousemove", mousemove3D, false);
         GetViewport(3).div.addEventListener("mousedown", mousedown3D, false);
         GetViewport(3).div.addEventListener("mouseup", mouseup3D, false);
@@ -661,11 +664,11 @@ function initMPR() {
         GetViewport(0).div.addEventListener("mousemove", Anatomical_SectionMouseMove0, false);
         GetViewport(0).div.addEventListener("mousedown", Anatomical_SectionMouseDown0, false);
         GetViewport(0).div.addEventListener("mouseup", Anatomical_SectionMouseMouseup0, false);
-        GetViewport(0).div.addEventListener("wheel", Wheel, false);
+        //GetViewport(0).div.addEventListener("wheel", Wheel, false);
         GetViewport(1).div.addEventListener("mousemove", Anatomical_SectionMouseMove, false);
         GetViewport(1).div.addEventListener("mousedown", Anatomical_SectionMouseDown, false);
         GetViewport(1).div.addEventListener("mouseup", Anatomical_SectionMouseMouseup, false);
-        GetViewport(1).div.addEventListener("wheel", Wheel, false);
+        //GetViewport(1).div.addEventListener("wheel", Wheel, false);
         try {
             GetViewport(0).canvas.style.display = "none";
             GetViewportMark(0).style.display = "none";
