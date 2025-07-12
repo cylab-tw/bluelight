@@ -10,346 +10,339 @@ var Angle_now_choose = null;
 //正在繪製的Angle
 var Angle_previous_choose = null;
 
+class AngleTool {
+    onMouseDown(e) {
+        if (angle.angle_ == "rotate") return; //angle.angle_ = "stop";
+        if (!MouseDownCheck) return;
+        angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        Angle_previous_choose = null;
+        if (Angle_now_choose) return;
+        if (angle.angle_ == "stop" && !Angle_previous_choose) {
+            Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
+            var AngleMark = new BlueLightMark();
+
+            AngleMark.setQRLevels(GetViewport().QRLevels);
+            AngleMark.color = "#FF0000";
+            AngleMark.hideName = AngleMark.showName = "ruler";
+            AngleMark.type = "AngleRuler";
+
+            PatientMark.push(AngleMark);
+            Angle_previous_choose = AngleMark;
+            angle.angle_ = "line";
+        }
+    }
+    onMouseMove(e) {
+        if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
+
+        let angle2point = rotateCalculation(e, true);
+        if (angle.angle_ == "rotate") {
+            Angle_Point2 = angle2point;
+
+            if (!Angle_previous_choose) return;
+            var AngleMark = Angle_previous_choose;
+
+            AngleMark.pointArray = [];
+            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+            AngleMark.Text = getAnglelValue(e);
+
+            refreshMark(AngleMark);
+            displayAllMark();
+        }
+        else if (MouseDownCheck && Angle_previous_choose) {
+            if (angle.angle_ == "line") {
+                Angle_Point1 = angle2point;
+
+                var AngleMark = Angle_previous_choose;
+                AngleMark.pointArray = [];
+                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+                AngleMark.Text = "";
+
+                refreshMark(AngleMark);
+                displayAllMark();
+            }
+        }
+        else if (Angle_now_choose) {
+            Angle_now_choose.pointArray[Angle_now_choose.order].x = angle2point[0];
+            Angle_now_choose.pointArray[Angle_now_choose.order].y = angle2point[1];
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            refreshMark(Angle_now_choose.dcm);
+        }
+    }
+
+    onMouseUp(e) {
+        if (openMouseTool && rightMouseDown) displayMark();
+        if (Angle_now_choose) {
+            Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
+            Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            refreshMark(Angle_now_choose.dcm);
+            angle.angle_ = "stop";
+        }
+        if (angle.angle_ == "rotate") {
+            let angle2point = rotateCalculation(e, true);
+            Angle_Point2 = angle2point;
+
+            if (!Angle_previous_choose) return;
+            var AngleMark = Angle_previous_choose;
+
+            AngleMark.pointArray = [];
+            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+            AngleMark.Text = getAnglelValue(e);
+            refreshMark(AngleMark);
+            displayAllMark();
+            Mark_previous_choose = Angle_previous_choose;
+        }
+        if (MouseDownCheck == true) {
+            if (angle.angle_ == "line") angle.angle_ = "rotate";
+            else if (angle.angle_ == "rotate") angle.angle_ = "stop";
+        }
+        if (Angle_now_choose) {
+            Angle_previous_choose = Angle_now_choose;
+            Mark_previous_choose = Angle_now_choose;
+        }
+        Angle_now_choose = null;
+    }
+    onSwitch() {
+        displayMark();
+        angle.angle_ = null;
+        set_BL_model.onchange = function () { return 0; };
+    }
+}
+
+class AngleTool2 {
+    onMouseDown(e) {
+        if (!MouseDownCheck) return;
+        if (angle.angle_ == "waitline2" && Angle_previous_choose) {
+            Angle_Point2 = Angle_Point3 = rotateCalculation(e, true);
+            var AngleMark = Angle_previous_choose;
+
+            AngleMark.pointArray = [];
+            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+            AngleMark.setPoint2D(Angle_Point3[0], Angle_Point3[1]);
+
+            //PatientMark.push(AngleMark);
+            Angle_previous_choose = AngleMark;
+            angle.angle_ = "line2";
+            return;
+        }
+        angle_pounch2(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+
+        if (Angle_now_choose) {
+            Angle_previous_choose = null;
+            return;
+        }
+
+        //if (angle.angle_ == "line2") angle.angle_ = "stop";
+        if (angle.angle_ == "stop"/*&& !Angle_previous_choose*/) {
+            Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
+            var AngleMark = new BlueLightMark();
+
+            AngleMark.setQRLevels(GetViewport().QRLevels);
+            AngleMark.color = "#FF0000";
+            AngleMark.hideName = AngleMark.showName = "ruler";
+            AngleMark.type = "AngleRuler2";
+
+            PatientMark.push(AngleMark);
+            Angle_previous_choose = AngleMark;
+            angle.angle_ = "line";
+        }
+    }
+    onMouseMove(e) {
+        if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
+
+        let angle2point = rotateCalculation(e, true);
+        if (angle.angle_ == "line2") {
+            Angle_Point3 = angle2point;
+
+            if (!Angle_previous_choose) return;
+            var AngleMark = Angle_previous_choose;
+
+            AngleMark.pointArray = [];
+            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+            AngleMark.setPoint2D(Angle_Point3[0], Angle_Point3[1]);
+            AngleMark.Text = getAnglelValueBy2Point(Angle_previous_choose.pointArray);
+
+            refreshMark(AngleMark);
+            displayAllMark();
+        }
+        else if (MouseDownCheck && Angle_previous_choose) {
+            if (angle.angle_ == "line") {
+                Angle_Point1 = angle2point;
+
+                var AngleMark = Angle_previous_choose;
+                AngleMark.pointArray = [];
+                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+                AngleMark.Text = "";
+
+                refreshMark(AngleMark);
+                displayAllMark();
+            }
+        }
+        else if (Angle_now_choose) {
+            Angle_now_choose.pointArray[Angle_now_choose.order].x = angle2point[0];
+            Angle_now_choose.pointArray[Angle_now_choose.order].y = angle2point[1];
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            refreshMark(Angle_now_choose.dcm);
+            displayAllMark();
+        }
+    }
+    onMouseUp(e) {
+        if (openMouseTool && rightMouseDown) displayMark();
+        if (Angle_now_choose) {
+            Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
+            Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            refreshMark(Angle_now_choose.dcm);
+            angle.angle_ = "stop";
+            Angle_previous_choose = Angle_now_choose;
+            Mark_previous_choose = Angle_previous_choose;
+            Angle_now_choose = null;
+        }
+        if (angle.angle_ == "line2") {
+            let angle2point = rotateCalculation(e, true);
+            Angle_Point3 = angle2point;
+
+            if (!Angle_previous_choose) return;
+            var AngleMark = Angle_previous_choose;
+
+            AngleMark.pointArray = [];
+            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+            AngleMark.setPoint2D(Angle_Point3[0], Angle_Point3[1]);
+            AngleMark.Text = getAnglelValueBy2Point(Angle_previous_choose.pointArray);
+            refreshMark(AngleMark);
+            displayAllMark();
+            Mark_previous_choose = Angle_previous_choose;
+        }
+        if (MouseDownCheck == true) {
+            if (angle.angle_ == "line") angle.angle_ = "waitline2";
+            else if (angle.angle_ == "line2") angle.angle_ = "stop";
+        }
+        //if (Angle_now_choose) Angle_previous_choose = Angle_now_choose;
+        //Angle_now_choose = null;
+    }
+    onSwitch() {
+        displayMark();
+        angle.angle_ = null;
+        set_BL_model.onchange = function () { return 0; };
+    }
+    onTouchStart(e, e2) {
+        angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        Angle_previous_choose = null;
+        if (Angle_now_choose) return;
+        if (angle.angle_ == "rotate") angle.angle_ = "stop";
+        if (angle.angle_ == "stop" && !Angle_previous_choose) {
+            Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
+            var AngleMark = new BlueLightMark();
+
+            AngleMark.setQRLevels(GetViewport().QRLevels);
+            AngleMark.color = "#FF0000";
+            AngleMark.hideName = AngleMark.showName = "ruler";
+            AngleMark.type = "AngleRuler";
+
+            PatientMark.push(AngleMark);
+            Angle_previous_choose = AngleMark;
+            angle.angle_ = "line";
+        }
+    }
+    onTouchMove(e, e2) {
+        if (rightTouchDown) scale_size(e, originalPoint_X, originalPoint_Y);
+
+        let angle2point = rotateCalculation(e, true);
+        if (angle.angle_ == "rotate") {
+            Angle_Point2 = angle2point;
+
+            if (!Angle_previous_choose) return;
+            var AngleMark = Angle_previous_choose;
+
+            AngleMark.pointArray = [];
+            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+            AngleMark.Text = getAnglelValue(e);
+
+            refreshMark(AngleMark);
+            displayAllMark();
+        }
+        else if (TouchDownCheck && Angle_previous_choose) {
+            if (angle.angle_ == "line") {
+                Angle_Point1 = angle2point;
+
+                var AngleMark = Angle_previous_choose;
+                AngleMark.pointArray = [];
+                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+                AngleMark.Text = "";
+
+                refreshMark(AngleMark);
+                displayAllMark();
+            }
+        }
+        else if (Angle_now_choose) {
+            Angle_now_choose.pointArray[Angle_now_choose.order].x = angle2point[0];
+            Angle_now_choose.pointArray[Angle_now_choose.order].y = angle2point[1];
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            refreshMark(Angle_now_choose.dcm);
+        }
+    }
+    onTouchEnd(e, e2) {
+        if (openMouseTool && rightTouchDown) displayMark();
+        if (Angle_now_choose) {
+            Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
+            Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            refreshMark(Angle_now_choose.dcm);
+            angle.angle_ = "stop";
+        }
+        if (angle.angle_ == "rotate") {
+            /*let angle2point = rotateCalculation(e,true);
+            Angle_Point2 = angle2point;
+
+            if (!Angle_previous_choose) return;
+            var AngleMark = Angle_previous_choose;
+
+            AngleMark.pointArray = [];
+            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
+            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+            AngleMark.Text = getAnglelValue(e);
+            refreshMark(AngleMark);
+            displayAllMark();*/
+        }
+        if (TouchDownCheck == true) {
+            if (angle.angle_ == "line") angle.angle_ = "rotate";
+            else if (angle.angle_ == "rotate") angle.angle_ = "stop";
+        }
+        if (Angle_now_choose) Angle_previous_choose = Angle_now_choose;
+        Angle_now_choose = null;
+    }
+}
 function angle() {
     if (BL_mode == 'angle') {
-
         angle.angle_ = "stop";
-        set_BL_model.onchange = function () {
-            displayMark();
-            angle.angle_ = null;
-            set_BL_model.onchange = function () { return 0; };
-        }
-
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            if (angle.angle_ == "rotate") return; //angle.angle_ = "stop";
-            if (!MouseDownCheck) return;
-            angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            Angle_previous_choose = null;
-            if (Angle_now_choose) return;
-            if (angle.angle_ == "stop" && !Angle_previous_choose) {
-                Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
-                var AngleMark = new BlueLightMark();
-
-                AngleMark.setQRLevels(GetViewport().QRLevels);
-                AngleMark.color = "#FF0000";
-                AngleMark.hideName = AngleMark.showName = "ruler";
-                AngleMark.type = "AngleRuler";
-
-                PatientMark.push(AngleMark);
-                Angle_previous_choose = AngleMark;
-                angle.angle_ = "line";
-            }
-        });
-
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-
-            let angle2point = rotateCalculation(e, true);
-            if (angle.angle_ == "rotate") {
-                Angle_Point2 = angle2point;
-
-                if (!Angle_previous_choose) return;
-                var AngleMark = Angle_previous_choose;
-
-                AngleMark.pointArray = [];
-                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-                AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
-                AngleMark.Text = getAnglelValue(e);
-
-                refreshMark(AngleMark);
-                displayAllMark();
-            }
-            else if (MouseDownCheck && Angle_previous_choose) {
-                if (angle.angle_ == "line") {
-                    Angle_Point1 = angle2point;
-
-                    var AngleMark = Angle_previous_choose;
-                    AngleMark.pointArray = [];
-                    AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                    AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-                    AngleMark.Text = "";
-
-                    refreshMark(AngleMark);
-                    displayAllMark();
-                }
-            }
-            else if (Angle_now_choose) {
-                Angle_now_choose.pointArray[Angle_now_choose.order].x = angle2point[0];
-                Angle_now_choose.pointArray[Angle_now_choose.order].y = angle2point[1];
-                Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
-                refreshMark(Angle_now_choose.dcm);
-            }
-        });
-
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            if (openMouseTool && rightMouseDown) displayMark();
-            if (Angle_now_choose) {
-                Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
-                Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
-                Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
-                refreshMark(Angle_now_choose.dcm);
-                angle.angle_ = "stop";
-            }
-            if (angle.angle_ == "rotate") {
-                let angle2point = rotateCalculation(e, true);
-                Angle_Point2 = angle2point;
-
-                if (!Angle_previous_choose) return;
-                var AngleMark = Angle_previous_choose;
-
-                AngleMark.pointArray = [];
-                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-                AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
-                AngleMark.Text = getAnglelValue(e);
-                refreshMark(AngleMark);
-                displayAllMark();
-                Mark_previous_choose = Angle_previous_choose;
-            }
-            if (MouseDownCheck == true) {
-                if (angle.angle_ == "line") angle.angle_ = "rotate";
-                else if (angle.angle_ == "rotate") angle.angle_ = "stop";
-            }
-            if (Angle_now_choose) {
-                Angle_previous_choose = Angle_now_choose;
-                Mark_previous_choose = Angle_now_choose;
-            }
-            Angle_now_choose = null;
-        });
-
-        BlueLightTouchstartList = [];
-        BlueLightTouchstartList.push(function (e, e2) {
-            angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            Angle_previous_choose = null;
-            if (Angle_now_choose) return;
-            if (angle.angle_ == "rotate") angle.angle_ = "stop";
-            if (angle.angle_ == "stop" && !Angle_previous_choose) {
-                Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
-                var AngleMark = new BlueLightMark();
-
-                AngleMark.setQRLevels(GetViewport().QRLevels);
-                AngleMark.color = "#FF0000";
-                AngleMark.hideName = AngleMark.showName = "ruler";
-                AngleMark.type = "AngleRuler";
-
-                PatientMark.push(AngleMark);
-                Angle_previous_choose = AngleMark;
-                angle.angle_ = "line";
-            }
-        });
-
-        BlueLightTouchmoveList = [];
-        BlueLightTouchmoveList.push(function (e, e2) {
-            if (rightTouchDown) scale_size(e, originalPoint_X, originalPoint_Y);
-
-            let angle2point = rotateCalculation(e, true);
-            if (angle.angle_ == "rotate") {
-                Angle_Point2 = angle2point;
-
-                if (!Angle_previous_choose) return;
-                var AngleMark = Angle_previous_choose;
-
-                AngleMark.pointArray = [];
-                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-                AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
-                AngleMark.Text = getAnglelValue(e);
-
-                refreshMark(AngleMark);
-                displayAllMark();
-            }
-            else if (TouchDownCheck && Angle_previous_choose) {
-                if (angle.angle_ == "line") {
-                    Angle_Point1 = angle2point;
-
-                    var AngleMark = Angle_previous_choose;
-                    AngleMark.pointArray = [];
-                    AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                    AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-                    AngleMark.Text = "";
-
-                    refreshMark(AngleMark);
-                    displayAllMark();
-                }
-            }
-            else if (Angle_now_choose) {
-                Angle_now_choose.pointArray[Angle_now_choose.order].x = angle2point[0];
-                Angle_now_choose.pointArray[Angle_now_choose.order].y = angle2point[1];
-                Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
-                refreshMark(Angle_now_choose.dcm);
-            }
-        });
-
-        BlueLightTouchendList = [];
-        BlueLightTouchendList.push(function (e, e2) {
-            if (openMouseTool && rightTouchDown) displayMark();
-            if (Angle_now_choose) {
-                Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
-                Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
-                Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
-                refreshMark(Angle_now_choose.dcm);
-                angle.angle_ = "stop";
-            }
-            if (angle.angle_ == "rotate") {
-                /*let angle2point = rotateCalculation(e,true);
-                Angle_Point2 = angle2point;
-
-                if (!Angle_previous_choose) return;
-                var AngleMark = Angle_previous_choose;
-
-                AngleMark.pointArray = [];
-                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-                AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
-                AngleMark.Text = getAnglelValue(e);
-                refreshMark(AngleMark);
-                displayAllMark();*/
-            }
-            if (TouchDownCheck == true) {
-                if (angle.angle_ == "line") angle.angle_ = "rotate";
-                else if (angle.angle_ == "rotate") angle.angle_ = "stop";
-            }
-            if (Angle_now_choose) Angle_previous_choose = Angle_now_choose;
-            Angle_now_choose = null;
-        });
+        toolEvt.onSwitch();
+        toolEvt = new AngleTool();
     }
-
     if (BL_mode == 'angle2') {
-
         angle.angle_ = "stop";
-        set_BL_model.onchange = function () {
-            displayMark();
-            angle.angle_ = null;
-            set_BL_model.onchange = function () { return 0; };
-        }
-
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            if (!MouseDownCheck) return;
-            if (angle.angle_ == "waitline2" && Angle_previous_choose) {
-                Angle_Point2 = Angle_Point3 = rotateCalculation(e, true);
-                var AngleMark = Angle_previous_choose;
-
-                AngleMark.pointArray = [];
-                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-                AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
-                AngleMark.setPoint2D(Angle_Point3[0], Angle_Point3[1]);
-
-                //PatientMark.push(AngleMark);
-                Angle_previous_choose = AngleMark;
-                angle.angle_ = "line2";
-                return;
-            }
-            angle_pounch2(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-
-            if (Angle_now_choose) {
-                Angle_previous_choose = null;
-                return;
-            }
-
-            //if (angle.angle_ == "line2") angle.angle_ = "stop";
-            if (angle.angle_ == "stop"/*&& !Angle_previous_choose*/) {
-                Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
-                var AngleMark = new BlueLightMark();
-
-                AngleMark.setQRLevels(GetViewport().QRLevels);
-                AngleMark.color = "#FF0000";
-                AngleMark.hideName = AngleMark.showName = "ruler";
-                AngleMark.type = "AngleRuler2";
-
-                PatientMark.push(AngleMark);
-                Angle_previous_choose = AngleMark;
-                angle.angle_ = "line";
-            }
-        });
-
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-
-            let angle2point = rotateCalculation(e, true);
-            if (angle.angle_ == "line2") {
-                Angle_Point3 = angle2point;
-
-                if (!Angle_previous_choose) return;
-                var AngleMark = Angle_previous_choose;
-
-                AngleMark.pointArray = [];
-                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-                AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
-                AngleMark.setPoint2D(Angle_Point3[0], Angle_Point3[1]);
-                AngleMark.Text = getAnglelValueBy2Point(Angle_previous_choose.pointArray);
-
-                refreshMark(AngleMark);
-                displayAllMark();
-            }
-            else if (MouseDownCheck && Angle_previous_choose) {
-                if (angle.angle_ == "line") {
-                    Angle_Point1 = angle2point;
-
-                    var AngleMark = Angle_previous_choose;
-                    AngleMark.pointArray = [];
-                    AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                    AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-                    AngleMark.Text = "";
-
-                    refreshMark(AngleMark);
-                    displayAllMark();
-                }
-            }
-            else if (Angle_now_choose) {
-                Angle_now_choose.pointArray[Angle_now_choose.order].x = angle2point[0];
-                Angle_now_choose.pointArray[Angle_now_choose.order].y = angle2point[1];
-                Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
-                refreshMark(Angle_now_choose.dcm);
-                displayAllMark();
-            }
-        });
-
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            if (openMouseTool && rightMouseDown) displayMark();
-            if (Angle_now_choose) {
-                Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
-                Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
-                Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
-                refreshMark(Angle_now_choose.dcm);
-                angle.angle_ = "stop";
-                Angle_previous_choose = Angle_now_choose;
-                Mark_previous_choose = Angle_previous_choose;
-                Angle_now_choose = null;
-            }
-            if (angle.angle_ == "line2") {
-                let angle2point = rotateCalculation(e, true);
-                Angle_Point3 = angle2point;
-
-                if (!Angle_previous_choose) return;
-                var AngleMark = Angle_previous_choose;
-
-                AngleMark.pointArray = [];
-                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-                AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
-                AngleMark.setPoint2D(Angle_Point3[0], Angle_Point3[1]);
-                AngleMark.Text = getAnglelValueBy2Point(Angle_previous_choose.pointArray);
-                refreshMark(AngleMark);
-                displayAllMark();
-                Mark_previous_choose = Angle_previous_choose;
-            }
-            if (MouseDownCheck == true) {
-                if (angle.angle_ == "line") angle.angle_ = "waitline2";
-                else if (angle.angle_ == "line2") angle.angle_ = "stop";
-            }
-            //if (Angle_now_choose) Angle_previous_choose = Angle_now_choose;
-            //Angle_now_choose = null;
-        });
+        toolEvt.onSwitch();
+        toolEvt = new AngleTool2();
     }
+    /*if (BL_mode == 'angle') {
+    }
+    if (BL_mode == 'angle2') {
+    }*/
 }
 
 function angle_pounch(currX, currY) {
@@ -377,7 +370,7 @@ function angle_pounch(currX, currY) {
                     Angle_now_choose = { dcm: PatientMark[n], pointArray: PatientMark[n].pointArray, order: 2 };
                 }
                 /*if (currY + block_size >= y1 && currX + block_size >= x1 / 2 + x2 / 2 && currY < y1 + block_size && currX < x1 / 2 + x2 / 2 + block_size) {
-
+ 
                 }*/
             }
         }
@@ -417,7 +410,7 @@ function angle_pounch2(currX, currY) {
                     Angle_now_choose = { dcm: PatientMark[n], pointArray: PatientMark[n].pointArray, order: 3 };
                 }
                 /*if (currY + block_size >= y1 && currX + block_size >= x1 / 2 + x2 / 2 && currY < y1 + block_size && currX < x1 / 2 + x2 / 2 + block_size) {
-
+ 
                 }*/
             }
         }

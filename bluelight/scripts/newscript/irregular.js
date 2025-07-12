@@ -8,229 +8,225 @@ var MeasureIrregular_previous_choose = null;
 var MeasureIrregular_now_choose = null;
 
 var openTextAnnotation = false;
-function MeasureIrregular() {
-    if (BL_mode == 'Irregular') {
-        
-        cancelTools();
-        openMeasureIrregular = true;
 
-        set_BL_model.onchange = function () {
-            displayMark();
-            openMeasureIrregular = false;
-            set_BL_model.onchange = function () { return 0; };
+class MeasureIrregularTool extends ToolEvt {
+
+    onMouseDown(e) {
+        if (!MouseDownCheck) return;
+        MeasureIrregular_now_choose = null;
+        MeasureIrregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        if (MeasureIrregular_now_choose) return;
+        var MeasureMark = new BlueLightMark();
+        let angle2point = rotateCalculation(e, true);
+        MeasureMark.setQRLevels(GetViewport().QRLevels);
+        MeasureMark.color = "#FFFFFF";
+        MeasureMark.hideName = MeasureMark.showName = "ruler";
+        MeasureMark.type = "IrregularRuler";
+        MeasureMark.pointArray = [];
+        MeasureMark.setPoint2D(angle2point[0], angle2point[1]);
+        MeasureMark.setPoint2D(angle2point[0], angle2point[1]);
+        MeasureIrregular_previous_choose = MeasureMark;
+        PatientMark.push(MeasureMark);
+        refreshMark(MeasureMark);
+        displayAllMark();
+    }
+    onMouseMove(e) {
+        if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
+        let angle2point = rotateCalculation(e, true);
+        if (MeasureIrregular_now_choose && MeasureIrregular_now_choose.dcm.type == "IrregularRuler") {
+            if (!MeasureIrregular_now_choose.origin_point)
+                MeasureIrregular_now_choose.origin_point = angle2point;
+            for (var i in MeasureIrregular_now_choose.dcm.pointArray) {
+                MeasureIrregular_now_choose.dcm.pointArray[i].x += (angle2point[0] - MeasureIrregular_now_choose.origin_point[0]);
+                MeasureIrregular_now_choose.dcm.pointArray[i].y += (angle2point[1] - MeasureIrregular_now_choose.origin_point[1]);
+            }
+            MeasureIrregular_now_choose.origin_point = angle2point;
+            refreshMark(MeasureIrregular_now_choose);
+            displayAllMark();
         }
+        else if (MouseDownCheck && MeasureIrregular_previous_choose) {
+            MeasureIrregular_previous_choose.setPoint2D(angle2point[0], angle2point[1]);
+            var vector = [];
+            for (var o = 0; o < MeasureIrregular_previous_choose.pointArray.length; o++) {
+                vector.push({ x: MeasureIrregular_previous_choose.pointArray[o].x, y: MeasureIrregular_previous_choose.pointArray[o].y });
+            }
+            MeasureIrregular_previous_choose.PixelNumber = parseInt(shoelaceFormula(vector));
 
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            if (!MouseDownCheck) return;
+            refreshMark(MeasureIrregular_previous_choose);
+            displayAllMark();
+        }
+    }
+    onMouseUp(e) {
+        if (MeasureIrregular_previous_choose) {
+            Mark_previous_choose = MeasureIrregular_previous_choose;
+            MeasureIrregular_previous_choose = null;
+        }
+        if (MeasureIrregular_now_choose) {
+            MeasureIrregular_now_choose.origin_point = null;
+            Mark_previous_choose = MeasureIrregular_now_choose;
             MeasureIrregular_now_choose = null;
-            MeasureIrregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            if (MeasureIrregular_now_choose) return;
+        }
+        displayMark();
+    }
+    onSwitch() {
+        displayMark();
+        openMeasureIrregular = false;
+        set_BL_model.onchange = function () { return 0; };
+    }
+}
+
+class TextAnnotationTool extends ToolEvt {
+
+    onMouseDown(e) {
+        MeasureIrregular_now_choose = null;
+        MeasureIrregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        if (MeasureIrregular_now_choose) return;
+    }
+    onMouseMove(e) {
+        if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
+        let angle2point = rotateCalculation(e, true);
+        if (MeasureIrregular_now_choose && MeasureIrregular_now_choose.dcm.type == "TextAnnotation") {
+            if (!MeasureIrregular_now_choose.origin_point)
+                MeasureIrregular_now_choose.origin_point = angle2point;
+            for (var i in MeasureIrregular_now_choose.dcm.pointArray) {
+                MeasureIrregular_now_choose.dcm.pointArray[i].x += (angle2point[0] - MeasureIrregular_now_choose.origin_point[0]);
+                MeasureIrregular_now_choose.dcm.pointArray[i].y += (angle2point[1] - MeasureIrregular_now_choose.origin_point[1]);
+            }
+            MeasureIrregular_now_choose.origin_point = angle2point;
+            refreshMark(MeasureIrregular_now_choose);
+            displayAllMark();
+        }
+    }
+    onMouseUp(e) {
+        if (!getByid('text_TextAnnotation').value || getByid('text_TextAnnotation').value == "") return;
+        if (MeasureIrregular_now_choose) {
+            MeasureIrregular_now_choose.origin_point = null;
+            Mark_previous_choose = MeasureIrregular_now_choose;
+            MeasureIrregular_now_choose = null;
+        }
+        else if (MouseDownCheck) {
             var MeasureMark = new BlueLightMark();
             let angle2point = rotateCalculation(e, true);
             MeasureMark.setQRLevels(GetViewport().QRLevels);
-            MeasureMark.color = "#FFFFFF";
+            MeasureMark.color = "#FF0000";
             MeasureMark.hideName = MeasureMark.showName = "ruler";
-            MeasureMark.type = "IrregularRuler";
+            MeasureMark.type = "TextAnnotation";
+            MeasureMark.Text = getByid('text_TextAnnotation').value;
             MeasureMark.pointArray = [];
             MeasureMark.setPoint2D(angle2point[0], angle2point[1]);
-            MeasureMark.setPoint2D(angle2point[0], angle2point[1]);
-            MeasureIrregular_previous_choose = MeasureMark;
             PatientMark.push(MeasureMark);
             refreshMark(MeasureMark);
-            displayAllMark();
-        });
-
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            let angle2point = rotateCalculation(e, true);
-            if (MeasureIrregular_now_choose && MeasureIrregular_now_choose.dcm.type == "IrregularRuler") {
-                if (!MeasureIrregular_now_choose.origin_point)
-                    MeasureIrregular_now_choose.origin_point = angle2point;
-                for (var i in MeasureIrregular_now_choose.dcm.pointArray) {
-                    MeasureIrregular_now_choose.dcm.pointArray[i].x += (angle2point[0] - MeasureIrregular_now_choose.origin_point[0]);
-                    MeasureIrregular_now_choose.dcm.pointArray[i].y += (angle2point[1] - MeasureIrregular_now_choose.origin_point[1]);
-                }
-                MeasureIrregular_now_choose.origin_point = angle2point;
-                refreshMark(MeasureIrregular_now_choose);
-                displayAllMark();
-            }
-            else if (MouseDownCheck && MeasureIrregular_previous_choose) {
-                MeasureIrregular_previous_choose.setPoint2D(angle2point[0], angle2point[1]);
-                var vector = [];
-                for (var o = 0; o < MeasureIrregular_previous_choose.pointArray.length; o++) {
-                    vector.push({ x: MeasureIrregular_previous_choose.pointArray[o].x, y: MeasureIrregular_previous_choose.pointArray[o].y });
-                }
-                MeasureIrregular_previous_choose.PixelNumber = parseInt(shoelaceFormula(vector));
-
-                refreshMark(MeasureIrregular_previous_choose);
-                displayAllMark();
-            }
-        });
-
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            if (MeasureIrregular_previous_choose) {
-                Mark_previous_choose = MeasureIrregular_previous_choose;
-                MeasureIrregular_previous_choose = null;
-            }
-            if (MeasureIrregular_now_choose) {
-                MeasureIrregular_now_choose.origin_point = null;
-                Mark_previous_choose = MeasureIrregular_now_choose;
-                MeasureIrregular_now_choose = null;
-            }
-            displayMark();
-        });
-    }
-
-    if (BL_mode == 'TextAnnotation') {
-        
-        cancelTools();
-        openTextAnnotation = true;
-
-        set_BL_model.onchange = function () {
-            displayMark();
-            openTextAnnotation = false;
-            getByid("span_TextAnnotation").style.display = "none";
-            SetTable();
-            set_BL_model.onchange = function () { return 0; };
+            Mark_previous_choose = MeasureMark;
         }
-
-        getByid("span_TextAnnotation").style.display = "";
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            MeasureIrregular_now_choose = null;
-            MeasureIrregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            if (MeasureIrregular_now_choose) return;
-        });
-
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            let angle2point = rotateCalculation(e, true);
-            if (MeasureIrregular_now_choose && MeasureIrregular_now_choose.dcm.type == "TextAnnotation") {
-                if (!MeasureIrregular_now_choose.origin_point)
-                    MeasureIrregular_now_choose.origin_point = angle2point;
-                for (var i in MeasureIrregular_now_choose.dcm.pointArray) {
-                    MeasureIrregular_now_choose.dcm.pointArray[i].x += (angle2point[0] - MeasureIrregular_now_choose.origin_point[0]);
-                    MeasureIrregular_now_choose.dcm.pointArray[i].y += (angle2point[1] - MeasureIrregular_now_choose.origin_point[1]);
-                }
-                MeasureIrregular_now_choose.origin_point = angle2point;
-                refreshMark(MeasureIrregular_now_choose);
-                displayAllMark();
-            }
-        });
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            if (!getByid('text_TextAnnotation').value || getByid('text_TextAnnotation').value == "") return;
-            if (MeasureIrregular_now_choose) {
-                MeasureIrregular_now_choose.origin_point = null;
-                Mark_previous_choose = MeasureIrregular_now_choose;
-                MeasureIrregular_now_choose = null;
-            }
-            else if (MouseDownCheck) {
-                var MeasureMark = new BlueLightMark();
-                let angle2point = rotateCalculation(e, true);
-                MeasureMark.setQRLevels(GetViewport().QRLevels);
-                MeasureMark.color = "#FF0000";
-                MeasureMark.hideName = MeasureMark.showName = "ruler";
-                MeasureMark.type = "TextAnnotation";
-                MeasureMark.Text = getByid('text_TextAnnotation').value;
-                MeasureMark.pointArray = [];
-                MeasureMark.setPoint2D(angle2point[0], angle2point[1]);
-                PatientMark.push(MeasureMark);
-                refreshMark(MeasureMark);
-                Mark_previous_choose = MeasureMark;
-            }
-            displayAllMark();
-            displayMark();
-        });
+        displayAllMark();
+        displayMark();
+    }
+    onSwitch() {
+        displayMark();
+        openTextAnnotation = false;
+        getByid("span_TextAnnotation").style.display = "none";
         SetTable();
+        set_BL_model.onchange = function () { return 0; };
     }
+}
+class ArrowRulerTool extends ToolEvt {
 
-    if (BL_mode == 'ArrowRuler') {
-        
-        cancelTools();
-        openArrowRuler = true;
-        set_BL_model.onchange = function () {
-            displayMark();
-            openArrowRuler = false;
-            set_BL_model.onchange = function () { return 0; };
-        }
+    onMouseDown(e) {
+        MeasureIrregular_now_choose = null;
+        MeasureIrregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        if (MeasureIrregular_now_choose) return;
 
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            MeasureIrregular_now_choose = null;
-            MeasureIrregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            if (MeasureIrregular_now_choose) return;
+        if (MouseDownCheck) {
+            Arrow_Point1 = Arrow_Point2 = rotateCalculation(e, true);
+            var MeasureMark = new BlueLightMark();
 
-            if (MouseDownCheck) {
-                Arrow_Point1 = Arrow_Point2 = rotateCalculation(e, true);
-                var MeasureMark = new BlueLightMark();
+            MeasureMark.setQRLevels(GetViewport().QRLevels);
+            MeasureMark.color = "#FF0000";
+            MeasureMark.hideName = MeasureMark.showName = "ruler";
+            MeasureMark.type = "ArrowRuler";
 
-                MeasureMark.setQRLevels(GetViewport().QRLevels);
-                MeasureMark.color = "#FF0000";
-                MeasureMark.hideName = MeasureMark.showName = "ruler";
-                MeasureMark.type = "ArrowRuler";
-
-                ArrowRule_previous_choose = MeasureMark;
-                PatientMark.push(MeasureMark);
-                displayAllMark();
-            }
-        });
-
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            let angle2point = rotateCalculation(e, true);
-            if (MeasureIrregular_now_choose && MeasureIrregular_now_choose.dcm.type == "ArrowRuler") {
-                if (!MeasureIrregular_now_choose.origin_point)
-                    MeasureIrregular_now_choose.origin_point = angle2point;
-                for (var i in MeasureIrregular_now_choose.dcm.pointArray) {
-                    MeasureIrregular_now_choose.dcm.pointArray[i].x += (angle2point[0] - MeasureIrregular_now_choose.origin_point[0]);
-                    MeasureIrregular_now_choose.dcm.pointArray[i].y += (angle2point[1] - MeasureIrregular_now_choose.origin_point[1]);
-                }
-                MeasureIrregular_now_choose.origin_point = angle2point;
-                refreshMark(MeasureIrregular_now_choose);
-                displayAllMark();
-            }
-            else if (MouseDownCheck) {
-                Arrow_Point2 = angle2point;
-                if (ArrowRule_previous_choose) {
-                    var MeasureMark = ArrowRule_previous_choose;
-                    MeasureMark.pointArray = [];
-                    MeasureMark.setPoint2D(Arrow_Point1[0], Arrow_Point1[1]);
-                    MeasureMark.setPoint2D(Arrow_Point2[0], Arrow_Point2[1]);
-                    refreshMark(MeasureMark);
-                }
-            }
+            ArrowRule_previous_choose = MeasureMark;
+            PatientMark.push(MeasureMark);
             displayAllMark();
-        });
-
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            let angle2point = rotateCalculation(e, true);
-            Arrow_Point2 = angle2point;
-            if (MeasureIrregular_now_choose) {
-                MeasureIrregular_now_choose.origin_point = null;
-                Mark_previous_choose = MeasureIrregular_now_choose;
-                MeasureIrregular_now_choose = null;
+        }
+    }
+    onMouseMove(e) {
+        if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
+        let angle2point = rotateCalculation(e, true);
+        if (MeasureIrregular_now_choose && MeasureIrregular_now_choose.dcm.type == "ArrowRuler") {
+            if (!MeasureIrregular_now_choose.origin_point)
+                MeasureIrregular_now_choose.origin_point = angle2point;
+            for (var i in MeasureIrregular_now_choose.dcm.pointArray) {
+                MeasureIrregular_now_choose.dcm.pointArray[i].x += (angle2point[0] - MeasureIrregular_now_choose.origin_point[0]);
+                MeasureIrregular_now_choose.dcm.pointArray[i].y += (angle2point[1] - MeasureIrregular_now_choose.origin_point[1]);
             }
-            else if (ArrowRule_previous_choose) {
+            MeasureIrregular_now_choose.origin_point = angle2point;
+            refreshMark(MeasureIrregular_now_choose);
+            displayAllMark();
+        }
+        else if (MouseDownCheck) {
+            Arrow_Point2 = angle2point;
+            if (ArrowRule_previous_choose) {
                 var MeasureMark = ArrowRule_previous_choose;
                 MeasureMark.pointArray = [];
                 MeasureMark.setPoint2D(Arrow_Point1[0], Arrow_Point1[1]);
                 MeasureMark.setPoint2D(Arrow_Point2[0], Arrow_Point2[1]);
                 refreshMark(MeasureMark);
-                Mark_previous_choose = ArrowRule_previous_choose;
             }
+        }
+        displayAllMark();
+    }
+    onMouseUp(e) {
+        let angle2point = rotateCalculation(e, true);
+        Arrow_Point2 = angle2point;
+        if (MeasureIrregular_now_choose) {
+            MeasureIrregular_now_choose.origin_point = null;
+            Mark_previous_choose = MeasureIrregular_now_choose;
+            MeasureIrregular_now_choose = null;
+        }
+        else if (ArrowRule_previous_choose) {
+            var MeasureMark = ArrowRule_previous_choose;
+            MeasureMark.pointArray = [];
+            MeasureMark.setPoint2D(Arrow_Point1[0], Arrow_Point1[1]);
+            MeasureMark.setPoint2D(Arrow_Point2[0], Arrow_Point2[1]);
+            refreshMark(MeasureMark);
+            Mark_previous_choose = ArrowRule_previous_choose;
+        }
 
-            ArrowRule_previous_choose = null;
-            displayAllMark();
+        ArrowRule_previous_choose = null;
+        displayAllMark();
 
-            if (openMouseTool == true && rightMouseDown == true) displayMark();
-        });
+        if (openMouseTool == true && rightMouseDown == true) displayMark();
+    }
+    onSwitch() {
+        displayMark();
+        openArrowRuler = false;
+        set_BL_model.onchange = function () { return 0; };
+    }
+}
+function MeasureIrregular() {
+    if (BL_mode == 'Irregular') {
+        cancelTools();
+        openMeasureIrregular = true;
+        toolEvt.onSwitch();
+        toolEvt = new MeasureIrregularTool();
+    }
+
+    if (BL_mode == 'TextAnnotation') {
+
+        cancelTools();
+        openTextAnnotation = true;
+        getByid("span_TextAnnotation").style.display = "";
+        SetTable();
+        toolEvt.onSwitch();
+        toolEvt = new TextAnnotationTool();
+    }
+
+    if (BL_mode == 'ArrowRuler') {
+        cancelTools();
+        openArrowRuler = true;
+        toolEvt.onSwitch();
+        toolEvt = new ArrowRulerTool();
     }
 }
 

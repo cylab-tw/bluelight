@@ -8,72 +8,36 @@ var Measure_Point2 = [0, 0];
 
 var Measure_now_choose = null;
 var Measure_previous_choose = null;
-function measure() {
-    if (BL_mode == 'measure') {
-        
-        cancelTools();
-        openMeasure = true;
-        set_BL_model.onchange = function () {
-            displayMark();
-            openMeasure = false;
-            set_BL_model.onchange = function () { return 0; };
+
+class MeasureTool extends ToolEvt {
+    onMouseDown(e) {
+        Measure_previous_choose = null;
+        if (!MouseDownCheck) return;
+        measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        if (!Measure_now_choose && MouseDownCheck) {
+            var MeasureMark = new BlueLightMark();
+
+            MeasureMark.setQRLevels(GetViewport().QRLevels);
+            MeasureMark.color = "#FF0000";
+            MeasureMark.hideName = MeasureMark.showName = "ruler";
+            MeasureMark.type = "MeasureRuler";
+
+            Measure_previous_choose = MeasureMark;
+            PatientMark.push(MeasureMark);
         }
-
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            Measure_previous_choose = null;
-            if (!MouseDownCheck) return;
-            measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            if (!Measure_now_choose && MouseDownCheck) {
-                var MeasureMark = new BlueLightMark();
-
-                MeasureMark.setQRLevels(GetViewport().QRLevels);
-                MeasureMark.color = "#FF0000";
-                MeasureMark.hideName = MeasureMark.showName = "ruler";
-                MeasureMark.type = "MeasureRuler";
-
-                Measure_previous_choose = MeasureMark;
-                PatientMark.push(MeasureMark);
-            }
-            Measure_Point1 = Measure_Point2 = rotateCalculation(e, true);
-            displayAllMark();
-        });
-
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            let angle2point = rotateCalculation(e, true);
-            if (MouseDownCheck) {
-                Measure_Point2 = angle2point;
-                if (Measure_now_choose) {
-                    Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
-                    Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
-                    refreshMark(Measure_now_choose.dcm);
-                } else if (Measure_previous_choose) {
-                    var MeasureMark = Measure_previous_choose;
-
-                    MeasureMark.pointArray = [];
-                    MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
-                    MeasureMark.setPoint2D(Measure_Point2[0], Measure_Point2[1]);
-
-                    refreshMark(MeasureMark);
-                    displayAllMark();
-                }
-            }
-        });
-
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            let angle2point = rotateCalculation(e, true);
+        Measure_Point1 = Measure_Point2 = rotateCalculation(e, true);
+        displayAllMark();
+    }
+    onMouseMove(e) {
+        if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
+        let angle2point = rotateCalculation(e, true);
+        if (MouseDownCheck) {
             Measure_Point2 = angle2point;
-
             if (Measure_now_choose) {
                 Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
                 Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
                 refreshMark(Measure_now_choose.dcm);
-                Mark_previous_choose = Measure_now_choose;
-            }
-            else if (Measure_previous_choose) {
+            } else if (Measure_previous_choose) {
                 var MeasureMark = Measure_previous_choose;
 
                 MeasureMark.pointArray = [];
@@ -81,92 +45,122 @@ function measure() {
                 MeasureMark.setPoint2D(Measure_Point2[0], Measure_Point2[1]);
 
                 refreshMark(MeasureMark);
-                //Graphic_now_choose = { reference: dcm };
-                //Measure_previous_choose = dcm;
-                Mark_previous_choose = Measure_previous_choose;
+                displayAllMark();
             }
-            if (Measure_now_choose) Measure_previous_choose = Measure_now_choose;
-            Measure_now_choose = null;
-            displayAllMark();
+        }
+    }
+    onMouseUp(e) {
+        let angle2point = rotateCalculation(e, true);
+        Measure_Point2 = angle2point;
 
-            if (openMouseTool == true && rightMouseDown == true) displayMark();
+        if (Measure_now_choose) {
+            Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
+            Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
+            refreshMark(Measure_now_choose.dcm);
+            Mark_previous_choose = Measure_now_choose;
+        }
+        else if (Measure_previous_choose) {
+            var MeasureMark = Measure_previous_choose;
 
-            if (openLink) displayAllRuler();
-        });
+            MeasureMark.pointArray = [];
+            MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
+            MeasureMark.setPoint2D(Measure_Point2[0], Measure_Point2[1]);
 
-        BlueLightTouchstartList = [];
-        BlueLightTouchstartList.push(function (e, e2) {
-            measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            Measure_previous_choose = null;
-            if (!Measure_now_choose) {
-                var MeasureMark = new BlueLightMark();
+            refreshMark(MeasureMark);
+            //Graphic_now_choose = { reference: dcm };
+            //Measure_previous_choose = dcm;
+            Mark_previous_choose = Measure_previous_choose;
+        }
+        if (Measure_now_choose) Measure_previous_choose = Measure_now_choose;
+        Measure_now_choose = null;
+        displayAllMark();
 
-                MeasureMark.setQRLevels(GetViewport().QRLevels);
-                MeasureMark.color = "#FF0000";
-                MeasureMark.hideName = MeasureMark.showName = "ruler";
-                MeasureMark.type = "MeasureRuler";
+        if (openMouseTool == true && rightMouseDown == true) displayMark();
 
-                Measure_previous_choose = MeasureMark;
-                PatientMark.push(MeasureMark);
-            }
-            Measure_Point1 = Measure_Point2 = rotateCalculation(e, true);
-            displayAllMark();
-        });
+        if (openLink) displayAllRuler();
+    }
+    onSwitch() {
+        displayMark();
+        openMeasure = false;
+        set_BL_model.onchange = function () { return 0; };
+    }
+    onTouchStart(e, e2) {
+        measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        Measure_previous_choose = null;
+        if (!Measure_now_choose) {
+            var MeasureMark = new BlueLightMark();
 
-        BlueLightTouchmoveList = [];
-        BlueLightTouchmoveList.push(function (e, e2) {
-            if (rightTouchDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            let angle2point = rotateCalculation(e, true);
-            if (TouchDownCheck) {
-                Measure_Point2 = angle2point;
-                if (Measure_now_choose) {
-                    Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
-                    Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
-                    refreshMark(Measure_now_choose.dcm);
-                } else if (Measure_previous_choose) {
-                    var MeasureMark = Measure_previous_choose;
+            MeasureMark.setQRLevels(GetViewport().QRLevels);
+            MeasureMark.color = "#FF0000";
+            MeasureMark.hideName = MeasureMark.showName = "ruler";
+            MeasureMark.type = "MeasureRuler";
 
-                    MeasureMark.pointArray = [];
-                    MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
-                    MeasureMark.setPoint2D(Measure_Point2[0], Measure_Point2[1]);
-
-                    refreshMark(MeasureMark);
-                    displayAllMark();
-                }
-            }
-        });
-
-        BlueLightTouchendList = [];
-        BlueLightTouchendList.push(function (e, e2) {
-            //let angle2point = rotateCalculation(e,true);
-            //Measure_Point2 = angle2point;
-
+            Measure_previous_choose = MeasureMark;
+            PatientMark.push(MeasureMark);
+        }
+        Measure_Point1 = Measure_Point2 = rotateCalculation(e, true);
+        displayAllMark();
+    }
+    onTouchMove(e, e2) {
+        if (rightTouchDown) scale_size(e, originalPoint_X, originalPoint_Y);
+        let angle2point = rotateCalculation(e, true);
+        if (TouchDownCheck) {
+            Measure_Point2 = angle2point;
             if (Measure_now_choose) {
                 Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
                 Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
                 refreshMark(Measure_now_choose.dcm);
-            }
-            else if (Measure_previous_choose) {
-                /*var MeasureMark = Measure_previous_choose;
+            } else if (Measure_previous_choose) {
+                var MeasureMark = Measure_previous_choose;
 
                 MeasureMark.pointArray = [];
                 MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
                 MeasureMark.setPoint2D(Measure_Point2[0], Measure_Point2[1]);
 
-                MeasureMark.Text = getMeasurelValue(e);
-                refreshMark(MeasureMark);*/
-                //Graphic_now_choose = { reference: dcm };
-                //Measure_previous_choose = dcm;
+                refreshMark(MeasureMark);
+                displayAllMark();
             }
-            if (Measure_now_choose) Measure_previous_choose = Measure_now_choose;
-            Measure_now_choose = null;
-            displayAllMark();
-
-            if (openMouseTool == true && rightMouseDown == true) displayMark();
-
-            if (openLink) displayAllRuler();
-        });
+        }
     }
+    onTouchEnd(e, e2) {
+        //let angle2point = rotateCalculation(e,true);
+        //Measure_Point2 = angle2point;
+
+        if (Measure_now_choose) {
+            Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
+            Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
+            refreshMark(Measure_now_choose.dcm);
+        }
+        else if (Measure_previous_choose) {
+            /*var MeasureMark = Measure_previous_choose;
+
+            MeasureMark.pointArray = [];
+            MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
+            MeasureMark.setPoint2D(Measure_Point2[0], Measure_Point2[1]);
+
+            MeasureMark.Text = getMeasurelValue(e);
+            refreshMark(MeasureMark);*/
+            //Graphic_now_choose = { reference: dcm };
+            //Measure_previous_choose = dcm;
+        }
+        if (Measure_now_choose) Measure_previous_choose = Measure_now_choose;
+        Measure_now_choose = null;
+        displayAllMark();
+
+        if (openMouseTool == true && rightMouseDown == true) displayMark();
+
+        if (openLink) displayAllRuler();
+    }
+}
+
+function measure() {
+
+    cancelTools();
+    openMeasure = true;
+    toolEvt.onSwitch();
+    toolEvt = new MeasureTool();
+    /*if (BL_mode == 'measure') {
+    }*/
 }
 
 function measure_pounch(currX, currY) {

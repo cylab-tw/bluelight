@@ -87,65 +87,34 @@ function removeCalibrationMark() {
     refreshMarkFromSop(GetViewport().sop);
 }
 
-function write_calibration() {
-    if (BL_mode == 'Calibration') {
+class CalibrationTool extends ToolEvt {
 
-        cancelTools();
-        openCalibration = true;
-        set_BL_model.onchange = function () {
-            displayMark();
-            openCalibration = false;
-            set_BL_model.onchange = function () { return 0; };
-        }
+    onMouseDown(e) {
+        Calibration_previous_choose = null;
+        if (!MouseDownCheck) return;
+        removeCalibrationMark();
 
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            Calibration_previous_choose = null;
-            if (!MouseDownCheck) return;
-            removeCalibrationMark();
+        var MeasureMark = new BlueLightMark();
 
-            var MeasureMark = new BlueLightMark();
+        MeasureMark.setQRLevels(GetViewport().QRLevels);
+        MeasureMark.color = "#FF0000";
+        MeasureMark.hideName = MeasureMark.showName = "ruler";
+        MeasureMark.type = "CalibrationRuler";
 
-            MeasureMark.setQRLevels(GetViewport().QRLevels);
-            MeasureMark.color = "#FF0000";
-            MeasureMark.hideName = MeasureMark.showName = "ruler";
-            MeasureMark.type = "CalibrationRuler";
+        Calibration_previous_choose = MeasureMark;
+        PatientMark.push(MeasureMark);
+        getByid("CalibrationValue").style.display = "none";
+        getByid("CalibrationButton").style.display = "none";
+        getByid("CalibrationValue").value = "null";
 
-            Calibration_previous_choose = MeasureMark;
-            PatientMark.push(MeasureMark);
-            getByid("CalibrationValue").style.display = "none";
-            getByid("CalibrationButton").style.display = "none";
-            getByid("CalibrationValue").value = "null";
-
-            Calibration_Point1 = Calibration_Point2 = rotateCalculation(e, true);
-            displayAllMark();
-        });
-
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            let angle2point = rotateCalculation(e, true);
-            if (MouseDownCheck) {
-                Calibration_Point2 = angle2point;
-                if (Calibration_previous_choose) {
-                    var MeasureMark = Calibration_previous_choose;
-
-                    MeasureMark.pointArray = [];
-                    MeasureMark.setPoint2D(Calibration_Point1[0], Calibration_Point1[1]);
-                    MeasureMark.setPoint2D(Calibration_Point2[0], Calibration_Point2[1]);
-
-                    MeasureMark.Text = getCalibrationValue(e);
-                    refreshMark(MeasureMark);
-                    displayAllMark();
-                }
-            }
-        });
-
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            let angle2point = rotateCalculation(e, true);
+        Calibration_Point1 = Calibration_Point2 = rotateCalculation(e, true);
+        displayAllMark();
+    }
+    onMouseMove(e) {
+        if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
+        let angle2point = rotateCalculation(e, true);
+        if (MouseDownCheck) {
             Calibration_Point2 = angle2point;
-
             if (Calibration_previous_choose) {
                 var MeasureMark = Calibration_previous_choose;
 
@@ -154,24 +123,57 @@ function write_calibration() {
                 MeasureMark.setPoint2D(Calibration_Point2[0], Calibration_Point2[1]);
 
                 MeasureMark.Text = getCalibrationValue(e);
-                MeasureMark.Calibration_Point2 = Calibration_Point2;
-                MeasureMark.Calibration_Point1 = Calibration_Point1;
-                MeasureMark.value = parseInt(Math.sqrt(
-                    Math.pow(Calibration_Point2[0] - Calibration_Point1[0], 2) +
-                    Math.pow(Calibration_Point2[1] - Calibration_Point1[1], 2), 2));
-
                 refreshMark(MeasureMark);
-                getByid("CalibrationValue").style.display = "";
-                getByid("CalibrationButton").style.display = "";
+                displayAllMark();
             }
-
-            displayAllMark();
-
-            if (openMouseTool == true && rightMouseDown == true) displayMark();
-
-            if (openLink) displayAllRuler();
-        });
+        }
     }
+    onMouseUp(e) {
+        let angle2point = rotateCalculation(e, true);
+        Calibration_Point2 = angle2point;
+
+        if (Calibration_previous_choose) {
+            var MeasureMark = Calibration_previous_choose;
+
+            MeasureMark.pointArray = [];
+            MeasureMark.setPoint2D(Calibration_Point1[0], Calibration_Point1[1]);
+            MeasureMark.setPoint2D(Calibration_Point2[0], Calibration_Point2[1]);
+
+            MeasureMark.Text = getCalibrationValue(e);
+            MeasureMark.Calibration_Point2 = Calibration_Point2;
+            MeasureMark.Calibration_Point1 = Calibration_Point1;
+            MeasureMark.value = parseInt(Math.sqrt(
+                Math.pow(Calibration_Point2[0] - Calibration_Point1[0], 2) +
+                Math.pow(Calibration_Point2[1] - Calibration_Point1[1], 2), 2));
+
+            refreshMark(MeasureMark);
+            getByid("CalibrationValue").style.display = "";
+            getByid("CalibrationButton").style.display = "";
+        }
+
+        displayAllMark();
+
+        if (openMouseTool == true && rightMouseDown == true) displayMark();
+
+        if (openLink) displayAllRuler();
+    }
+    onSwitch() {
+        displayMark();
+        openCalibration = false;
+        set_BL_model.onchange = function () { return 0; };
+    }
+}
+
+
+
+function write_calibration() {
+    cancelTools();
+    openCalibration = true;
+    toolEvt.onSwitch();
+    toolEvt = new CalibrationTool();
+
+    /*if (BL_mode == 'Calibration') {
+    }*/
 }
 
 function getCalibrationValue(e) {

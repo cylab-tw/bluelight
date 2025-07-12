@@ -112,23 +112,6 @@ function GetGSPSColor() {
     else return "#0000FF";
 }
 
-/*function GetGraphicName() {
-    //if (getByid("Graphicselected").selected) return "T8";
-    if (getByid("GraphicBlackSelect").selected) return "T7";
-    else if (getByid("GraphicBlueSelect").selected) return "T8";
-    else if (getByid("GraphicBrownSelect").selected) return "T9";
-    else if (getByid("GraphicCyanSelect").selected) return "T10";
-    else if (getByid("GraphicGreenSelect").selected) return "T11";
-    else if (getByid("GraphicMagentaSelect").selected) return "T12";
-    else if (getByid("GraphicOrangeSelect").selected) return "L1";
-    else if (getByid("GraphicPurpleSelect").selected) return "L2";
-    else if (getByid("GraphicRedSelect").selected) return "L3";
-    else if (getByid("GraphicYellowSelect").selected) return "L4";
-    else if (getByid("GraphicWhiteSelect").selected) return "L5";
-    else return "T8";
-}*/
-
-
 getByid("GspsTypeSelect").onchange = function () {
     displayMark();
 }
@@ -320,28 +303,30 @@ var Graphic_format_rotation = `
 var Graphic_now_choose = null;
 var temp_xml_format = "";
 
-function eraseGSPS() {
-    if (BL_mode == 'eraseGSPS') {
+class eraseGSPSTool extends ToolEvt {
 
-        set_BL_model.onchange = function () {
+    onMouseDown(e) {
+        Graphic_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        if (Graphic_now_choose) {
+            PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
             displayMark();
-            set_BL_model.onchange = function () { return 0; };
+            Graphic_now_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+            return;
         }
-
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            Graphic_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            if (Graphic_now_choose) {
-                PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
-                displayMark();
-                Graphic_now_choose = null;
-                refreshMarkFromSop(GetViewport().sop);
-                return;
-            }
-        });
-        BlueLightMousemoveList = [];
-        BlueLightMouseupList = [];
     }
+
+    onSwitch() {
+        displayMark();
+        set_BL_model.onchange = function () { return 0; };
+    }
+}
+
+function eraseGSPS() {
+    toolEvt.onSwitch();
+    toolEvt = new eraseGSPSTool();
+    /*if (BL_mode == 'eraseGSPS') {
+    }*/
 }
 
 function Graphic_pounch(currX, currY) {
@@ -683,198 +668,201 @@ function set_GSPS_context() {
     Graphic_format_object_list.push(temp);
 }
 
+class writeGSPSTool extends ToolEvt {
+    onMouseDown(e) {
+        if (Gsps_previous_choose) Gsps_previous_choose = null;
+        if (!rightMouseDown && (getByid("GspsPOLYLINE").selected == true || getByid("GspsLINE").selected == true) || getByid("GspsCIRCLE").selected == true) {
+            let angle2point = rotateCalculation(e);
+            if (Graphic_pounch(angle2point[0], angle2point[1]) == true) {
+                displayMark();
+            };
+        }
+    }
+    onMouseMove(e) {
+        var [currX, currY] = getCurrPoint(e);
+        // if (rightMouseDown == true) {scale_size(e, currX, currY);  }
+
+        if (MouseDownCheck == true && getByid("GspsCIRCLE").selected == true) {
+            if (!Graphic_now_choose) {
+                var GspsMark = Gsps_previous_choose ? Gsps_previous_choose : new BlueLightMark();
+                if (!Gsps_previous_choose) PatientMark.push(GspsMark);
+                GspsMark.setQRLevels(GetViewport().QRLevels);
+                GspsMark.color = GetGSPSColor();
+
+                GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+                GspsMark.hideName = GspsMark.showName + "_CIRCLE";
+
+                GspsMark.type = "CIRCLE";
+                GspsMark.pointArray = [];
+                GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
+                GspsMark.setPoint2D(
+                    originalPoint_X + Math.sqrt(Math.pow(Math.abs(originalPoint_X - currX), 2) + Math.pow(Math.abs(originalPoint_Y - currY), 2) / 2),
+                    originalPoint_Y + Math.sqrt(Math.pow(Math.abs(originalPoint_X - currX), 2) + Math.pow(Math.abs(originalPoint_Y - currY), 2) / 2)
+                );
+                Gsps_previous_choose = GspsMark;
+                refreshMark(GspsMark);
+                displayAllMark();
+            } else {
+                var Graphic_point = Graphic_now_choose.point;
+                if (Graphic_now_choose.value == "begin") {
+                    var origin_point = [Graphic_now_choose.pointArray[0].x, Graphic_now_choose.pointArray[0].y];
+                    Graphic_now_choose.pointArray[0].x = currX;
+                    Graphic_now_choose.pointArray[0].y = currY;
+                    Graphic_now_choose.pointArray[1].x += (currX - origin_point[0]);
+                    Graphic_now_choose.pointArray[1].y += (currY - origin_point[1]);
+                } else if (Graphic_now_choose.value == "end") {
+                    Graphic_now_choose.pointArray[1].x = currX;
+                    Graphic_now_choose.pointArray[1].y = currY;
+                }
+                displayMark();
+            }
+        }
+        if (MouseDownCheck == true && getByid("GspsLINE").selected == true) {
+            if (!Graphic_now_choose) {
+                var GspsMark = Gsps_previous_choose ? Gsps_previous_choose : new BlueLightMark();
+                if (!Gsps_previous_choose) PatientMark.push(GspsMark);
+                GspsMark.setQRLevels(GetViewport().QRLevels);
+                GspsMark.color = GetGSPSColor();
+
+                GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
+                GspsMark.hideName = GspsMark.showName + "_POLYLINE";
+
+                GspsMark.type = "POLYLINE";
+                GspsMark.pointArray = [];
+                GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
+                GspsMark.setPoint2D(currX, currY);//注意要釐清這個為什麼是顛倒的
+                /*原先的Code：
+                    dcm.mark[DcmMarkLength].markX.push(originalPoint_X);
+                    dcm.mark[DcmMarkLength].markY.push(originalPoint_Y);
+                    dcm.mark[DcmMarkLength].markY.push(currY);
+                    dcm.mark[DcmMarkLength].markX.push(currX);
+                */
+                Gsps_previous_choose = GspsMark;
+                refreshMark(GspsMark);
+                displayAllMark();
+            } else {
+                var Graphic_point = Graphic_now_choose.point;
+                if (Graphic_now_choose.value == "begin") {
+                    Graphic_now_choose.pointArray[0].x = currX;
+                    Graphic_now_choose.pointArray[0].y = currY;
+                } else if (Graphic_now_choose.value == "end") {
+                    Graphic_now_choose.pointArray[1].x = currX;
+                    Graphic_now_choose.pointArray[1].y = currY;
+                }
+                displayMark();
+            }
+        }
+        if ((openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true)) && (MouseDownCheck == true || rightMouseDown == true)) {
+            if (currX <= 0) currX = 0;
+            if (currY <= 0) currY = 0;
+            if (currX > GetViewport().width) currX = GetViewport().width;
+            if (currY > GetViewport().height) currY = GetViewport().height;
+            if (originalPoint_X <= 0) originalPoint_X = 0;
+            if (originalPoint_Y <= 0) originalPoint_Y = 0;
+            if (originalPoint_X > GetViewport().width) originalPoint_X = GetViewport().width;
+            if (originalPoint_Y > GetViewport().height) originalPoint_Y = GetViewport().height;
+            if (!Graphic_now_choose && MouseDownCheck == true) {
+
+                var GspsMark = Gsps_previous_choose ? Gsps_previous_choose : new BlueLightMark();
+                if (!Gsps_previous_choose) PatientMark.push(GspsMark);
+                GspsMark.setQRLevels(GetViewport().QRLevels);
+                //GspsMark.color = GetGraphicColor();//舊時的
+                if (getByid("GspsPOLYLINE").selected == true) GspsMark.color = GetGSPSColor();
+                else GspsMark.color = GetGSPSColor();//改成無條件
+
+                //舊時的
+                //GspsMark.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
+                //GspsMark.hideName = GspsMark.showName + "_Rectangle";
+                if (getByid("GspsPOLYLINE").selected == true) {
+                    GspsMark.showName = getByid("GspsName").value;
+                    GspsMark.hideName = GspsMark.showName + "_Rectangle";
+                } else {
+                    //改成無條件
+                    GspsMark.showName = getByid("GspsName").value;
+                    GspsMark.hideName = GspsMark.showName + "_Rectangle";
+                }
+
+                GspsMark.type = "POLYLINE";
+                GspsMark.pointArray = [];
+                GspsMark.RotationAngle = 0;
+                GspsMark.RotationPoint = 0;
+                GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
+                GspsMark.setPoint2D(originalPoint_X, currY);
+                GspsMark.setPoint2D(currX, currY);
+                GspsMark.setPoint2D(currX, originalPoint_Y);
+                GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
+
+                Gsps_previous_choose = GspsMark;
+                refreshMark(GspsMark);
+                displayAllMark();
+            } else {
+                if (rightMouseDown == true) {
+                    if (Math.abs(currY - originalPoint_Y) > Math.abs(currX - originalPoint_X)) {
+                        if (!Graphic_now_choose.Mark || !Graphic_now_choose.Mark.RotationAngle) Graphic_now_choose.Mark.RotationAngle = 0;
+                        if (currY < originalPoint_Y - 1)
+                            Graphic_now_choose.Mark.RotationAngle += parseInt((originalPoint_Y - currY) / 3);
+                        else if (currY > originalPoint_Y + 1)
+                            Graphic_now_choose.Mark.RotationAngle -= parseInt((currY - originalPoint_Y) / 3);
+
+                    } else if (Math.abs(currX - originalPoint_X) > Math.abs(currY - originalPoint_Y)) {
+                        if (!Graphic_now_choose.Mark || !Graphic_now_choose.Mark.RotationAngle) Graphic_now_choose.Mark.RotationAngle = 0;
+                        if (currX < originalPoint_X - 1)
+                            Graphic_now_choose.Mark.RotationAngle += parseInt((originalPoint_X - currX) / 3);
+                        else if (currX > originalPoint_X + 1)
+                            Graphic_now_choose.Mark.RotationAngle -= parseInt((currX - originalPoint_X) / 3);
+                    }
+                    if (Graphic_now_choose.Mark.RotationAngle > 360) Graphic_now_choose.Mark.RotationAngle -= 360;
+                    if (Graphic_now_choose.Mark.RotationAngle < 0) Graphic_now_choose.Mark.RotationAngle += 360;
+
+                    originalPoint_X = currX;
+                    originalPoint_Y = currY;
+                } else if (MouseDownCheck == true) {
+                    var Graphic_point = Graphic_now_choose.point;
+                    if (Graphic_now_choose.value == "up") {
+                        for (var p = 0; p < Graphic_point.length; p++) {
+                            Graphic_now_choose.pointArray[Graphic_point[p]].y = currY;
+                        }
+                    } else if (Graphic_now_choose.value == "down") {
+                        for (var p = 0; p < Graphic_point.length; p++) {
+                            Graphic_now_choose.pointArray[Graphic_point[p]].y = currY;
+                        }
+                    } else if (Graphic_now_choose.value == "left") {
+                        for (var p = 0; p < Graphic_point.length; p++) {
+                            Graphic_now_choose.pointArray[Graphic_point[p]].x = currX;
+                        }
+                    } else if (Graphic_now_choose.value == "right") {
+                        for (var p = 0; p < Graphic_point.length; p++) {
+                            Graphic_now_choose.pointArray[Graphic_point[p]].x = currX;
+                        }
+                    }
+                }
+                if (Graphic_now_choose.Mark.RotationAngle >= 0)
+                    Graphic_now_choose.Mark.RotationPoint = getRotationPoint(Graphic_now_choose.Mark, true);
+                //Graphic_now_choose.Mark.RotationPoint = [Graphic_now_choose.middle[0], Graphic_now_choose.middle[1]];
+                displayMark();
+            }
+        }
+    }
+    onMouseUp(e) {
+        if (Gsps_previous_choose) Graphic_now_choose = { reference: Gsps_previous_choose };
+    }
+    onSwitch() {
+
+    }
+}
+
 var Gsps_previous_choose = null;
 function writegsps() {
-    if (BL_mode == 'writegsps') {
 
-        drawBorder(getByid("drawGSPS"));
+    drawBorder(getByid("drawGSPS"));
+    GetViewport().rotate = 0;
+    setTransform();
 
-        GetViewport().rotate = 0;
-        setTransform();
-
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            if (Gsps_previous_choose) Gsps_previous_choose = null;
-            if (!rightMouseDown && (getByid("GspsPOLYLINE").selected == true || getByid("GspsLINE").selected == true) || getByid("GspsCIRCLE").selected == true) {
-                let angle2point = rotateCalculation(e);
-                if (Graphic_pounch(angle2point[0], angle2point[1]) == true) {
-                    displayMark();
-                };
-            }
-        });
-
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            var [currX, currY] = getCurrPoint(e);
-            // if (rightMouseDown == true) {scale_size(e, currX, currY);  }
-
-            if (MouseDownCheck == true && getByid("GspsCIRCLE").selected == true) {
-                if (!Graphic_now_choose) {
-                    var GspsMark = Gsps_previous_choose ? Gsps_previous_choose : new BlueLightMark();
-                    if (!Gsps_previous_choose) PatientMark.push(GspsMark);
-                    GspsMark.setQRLevels(GetViewport().QRLevels);
-                    GspsMark.color = GetGSPSColor();
-
-                    GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
-                    GspsMark.hideName = GspsMark.showName + "_CIRCLE";
-
-                    GspsMark.type = "CIRCLE";
-                    GspsMark.pointArray = [];
-                    GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
-                    GspsMark.setPoint2D(
-                        originalPoint_X + Math.sqrt(Math.pow(Math.abs(originalPoint_X - currX), 2) + Math.pow(Math.abs(originalPoint_Y - currY), 2) / 2),
-                        originalPoint_Y + Math.sqrt(Math.pow(Math.abs(originalPoint_X - currX), 2) + Math.pow(Math.abs(originalPoint_Y - currY), 2) / 2)
-                    );
-                    Gsps_previous_choose = GspsMark;
-                    refreshMark(GspsMark);
-                    displayAllMark();
-                } else {
-                    var Graphic_point = Graphic_now_choose.point;
-                    if (Graphic_now_choose.value == "begin") {
-                        var origin_point = [Graphic_now_choose.pointArray[0].x, Graphic_now_choose.pointArray[0].y];
-                        Graphic_now_choose.pointArray[0].x = currX;
-                        Graphic_now_choose.pointArray[0].y = currY;
-                        Graphic_now_choose.pointArray[1].x += (currX - origin_point[0]);
-                        Graphic_now_choose.pointArray[1].y += (currY - origin_point[1]);
-                    } else if (Graphic_now_choose.value == "end") {
-                        Graphic_now_choose.pointArray[1].x = currX;
-                        Graphic_now_choose.pointArray[1].y = currY;
-                    }
-                    displayMark();
-                }
-            }
-            if (MouseDownCheck == true && getByid("GspsLINE").selected == true) {
-                if (!Graphic_now_choose) {
-                    var GspsMark = Gsps_previous_choose ? Gsps_previous_choose : new BlueLightMark();
-                    if (!Gsps_previous_choose) PatientMark.push(GspsMark);
-                    GspsMark.setQRLevels(GetViewport().QRLevels);
-                    GspsMark.color = GetGSPSColor();
-
-                    GspsMark.showName = getByid("GspsName").value; //"" + getByid("xmlMarkNameText").value;
-                    GspsMark.hideName = GspsMark.showName + "_POLYLINE";
-
-                    GspsMark.type = "POLYLINE";
-                    GspsMark.pointArray = [];
-                    GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
-                    GspsMark.setPoint2D(currX, currY);//注意要釐清這個為什麼是顛倒的
-                    /*原先的Code：
-                        dcm.mark[DcmMarkLength].markX.push(originalPoint_X);
-                        dcm.mark[DcmMarkLength].markY.push(originalPoint_Y);
-                        dcm.mark[DcmMarkLength].markY.push(currY);
-                        dcm.mark[DcmMarkLength].markX.push(currX);
-                    */
-                    Gsps_previous_choose = GspsMark;
-                    refreshMark(GspsMark);
-                    displayAllMark();
-                } else {
-                    var Graphic_point = Graphic_now_choose.point;
-                    if (Graphic_now_choose.value == "begin") {
-                        Graphic_now_choose.pointArray[0].x = currX;
-                        Graphic_now_choose.pointArray[0].y = currY;
-                    } else if (Graphic_now_choose.value == "end") {
-                        Graphic_now_choose.pointArray[1].x = currX;
-                        Graphic_now_choose.pointArray[1].y = currY;
-                    }
-                    displayMark();
-                }
-            }
-            if ((openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true)) && (MouseDownCheck == true || rightMouseDown == true)) {
-                if (currX <= 0) currX = 0;
-                if (currY <= 0) currY = 0;
-                if (currX > GetViewport().width) currX = GetViewport().width;
-                if (currY > GetViewport().height) currY = GetViewport().height;
-                if (originalPoint_X <= 0) originalPoint_X = 0;
-                if (originalPoint_Y <= 0) originalPoint_Y = 0;
-                if (originalPoint_X > GetViewport().width) originalPoint_X = GetViewport().width;
-                if (originalPoint_Y > GetViewport().height) originalPoint_Y = GetViewport().height;
-                if (!Graphic_now_choose && MouseDownCheck == true) {
-
-                    var GspsMark = Gsps_previous_choose ? Gsps_previous_choose : new BlueLightMark();
-                    if (!Gsps_previous_choose) PatientMark.push(GspsMark);
-                    GspsMark.setQRLevels(GetViewport().QRLevels);
-                    //GspsMark.color = GetGraphicColor();//舊時的
-                    if (getByid("GspsPOLYLINE").selected == true) GspsMark.color = GetGSPSColor();
-                    else GspsMark.color = GetGSPSColor();//改成無條件
-
-                    //舊時的
-                    //GspsMark.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;
-                    //GspsMark.hideName = GspsMark.showName + "_Rectangle";
-                    if (getByid("GspsPOLYLINE").selected == true) {
-                        GspsMark.showName = getByid("GspsName").value;
-                        GspsMark.hideName = GspsMark.showName + "_Rectangle";
-                    } else {
-                        //改成無條件
-                        GspsMark.showName = getByid("GspsName").value;
-                        GspsMark.hideName = GspsMark.showName + "_Rectangle";
-                    }
-
-                    GspsMark.type = "POLYLINE";
-                    GspsMark.pointArray = [];
-                    GspsMark.RotationAngle = 0;
-                    GspsMark.RotationPoint = 0;
-                    GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
-                    GspsMark.setPoint2D(originalPoint_X, currY);
-                    GspsMark.setPoint2D(currX, currY);
-                    GspsMark.setPoint2D(currX, originalPoint_Y);
-                    GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
-
-                    Gsps_previous_choose = GspsMark;
-                    refreshMark(GspsMark);
-                    displayAllMark();
-                } else {
-                    if (rightMouseDown == true) {
-                        if (Math.abs(currY - originalPoint_Y) > Math.abs(currX - originalPoint_X)) {
-                            if (!Graphic_now_choose.Mark || !Graphic_now_choose.Mark.RotationAngle) Graphic_now_choose.Mark.RotationAngle = 0;
-                            if (currY < originalPoint_Y - 1)
-                                Graphic_now_choose.Mark.RotationAngle += parseInt((originalPoint_Y - currY) / 3);
-                            else if (currY > originalPoint_Y + 1)
-                                Graphic_now_choose.Mark.RotationAngle -= parseInt((currY - originalPoint_Y) / 3);
-
-                        } else if (Math.abs(currX - originalPoint_X) > Math.abs(currY - originalPoint_Y)) {
-                            if (!Graphic_now_choose.Mark || !Graphic_now_choose.Mark.RotationAngle) Graphic_now_choose.Mark.RotationAngle = 0;
-                            if (currX < originalPoint_X - 1)
-                                Graphic_now_choose.Mark.RotationAngle += parseInt((originalPoint_X - currX) / 3);
-                            else if (currX > originalPoint_X + 1)
-                                Graphic_now_choose.Mark.RotationAngle -= parseInt((currX - originalPoint_X) / 3);
-                        }
-                        if (Graphic_now_choose.Mark.RotationAngle > 360) Graphic_now_choose.Mark.RotationAngle -= 360;
-                        if (Graphic_now_choose.Mark.RotationAngle < 0) Graphic_now_choose.Mark.RotationAngle += 360;
-
-                        originalPoint_X = currX;
-                        originalPoint_Y = currY;
-                    } else if (MouseDownCheck == true) {
-                        var Graphic_point = Graphic_now_choose.point;
-                        if (Graphic_now_choose.value == "up") {
-                            for (var p = 0; p < Graphic_point.length; p++) {
-                                Graphic_now_choose.pointArray[Graphic_point[p]].y = currY;
-                            }
-                        } else if (Graphic_now_choose.value == "down") {
-                            for (var p = 0; p < Graphic_point.length; p++) {
-                                Graphic_now_choose.pointArray[Graphic_point[p]].y = currY;
-                            }
-                        } else if (Graphic_now_choose.value == "left") {
-                            for (var p = 0; p < Graphic_point.length; p++) {
-                                Graphic_now_choose.pointArray[Graphic_point[p]].x = currX;
-                            }
-                        } else if (Graphic_now_choose.value == "right") {
-                            for (var p = 0; p < Graphic_point.length; p++) {
-                                Graphic_now_choose.pointArray[Graphic_point[p]].x = currX;
-                            }
-                        }
-                    }
-                    if (Graphic_now_choose.Mark.RotationAngle >= 0)
-                        Graphic_now_choose.Mark.RotationPoint = getRotationPoint(Graphic_now_choose.Mark, true);
-                    //Graphic_now_choose.Mark.RotationPoint = [Graphic_now_choose.middle[0], Graphic_now_choose.middle[1]];
-                    displayMark();
-                }
-            }
-        });
-
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            if (Gsps_previous_choose) Graphic_now_choose = { reference: Gsps_previous_choose };
-        });
-    }
+    toolEvt.onSwitch();
+    toolEvt = new writeGSPSTool();
+    
+    /*if (BL_mode == 'writegsps') {
+    }*/
 }
 
 function drawPOLYLINE_Write(obj) {

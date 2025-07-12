@@ -28,107 +28,98 @@ function scale_size(e, currX, currY) {
         }
     }
 }
+class MoveTool extends ToolEvt {
+    onMouseMove(e) {
+        var currX = getCurrPoint(e)[0];
+        var currY = getCurrPoint(e)[1];
 
-function mouseTool() {
-    if (BL_mode == 'MouseTool') {
-        
-        openMouseTool = true;
-        set_BL_model.onchange = function () {
-            openMouseTool = false;
-            set_BL_model.onchange = function () { return 0; };
+        if (rightMouseDown == true) {
+            scale_size(e, currX, currY);
+            setTransform();
         }
 
-        BlueLightMousedownList = [];
+        var viewport = GetViewport();
 
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            var currX = getCurrPoint(e)[0];
-            var currY = getCurrPoint(e)[1];
+        if (MouseDownCheck) {
+            viewport.translate.x += windowMouseDiffX
+            viewport.translate.y += windowMouseDiffY;
+            setTransform();
 
-            if (rightMouseDown == true) {
-                scale_size(e, currX, currY);
-                setTransform();
-            }
-
-            var viewport = GetViewport();
-
-            if (MouseDownCheck) {
-                viewport.translate.x += windowMouseDiffX
-                viewport.translate.y += windowMouseDiffY;
-                setTransform();
-
-                if (openLink == true) {
-                    for (var i = 0; i < Viewport_Total; i++) {
-                        try {
-                            GetViewport(i).scale = viewport.scale;
-                            GetViewport(i).translate.x = viewport.translate.x;
-                            GetViewport(i).translate.y = viewport.translate.y;
-                            setTransform(i);
-                        } catch (ex) { }
-                    }
-                }
-            }
-        });
-
-
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            if (openMouseTool && rightMouseDown) displayMark();
-            if (openLink) displayAllRuler();
-        });
-
-        BlueLightTouchstartList = [];
-
-        BlueLightTouchmoveList = [];
-        BlueLightTouchmoveList.push(function (e, e2) {
-            var viewport = GetViewport(), canvas = GetViewport().canvas;
-
-            if (getByid("DICOMTagsSelect").selected) return;
-
-            if (rightTouchDown == true && e2) {
-                if (openLink == true) {
-                    for (var i = 0; i < Viewport_Total; i++) {
-                        if (i == viewportNumber) continue;
-                        try {
-                            setTransform(i);
-                        } catch (ex) { }
-                    }
-                }
-                if (windowTouchDistDiffY > + 2 || windowTouchDistDiffX > 2) {
-                    if (viewport.scale < 10) viewport.scale += viewport.scale * 0.05;
-                    setTransform();
-
-                } else if (windowTouchDistDiffY < - 2 || windowTouchDistDiffX < - 2) {
-                    if (viewport.scale > 0.1) viewport.scale -= viewport.scale * 0.05;
-                    setTransform();
-                }
-
-                if (openLink == true) {
-                    for (var i = 0; i < Viewport_Total; i++) {
-                        if (i == viewportNumber) continue;
-                        GetViewport(i).scale = viewport.scale;
-                        setTransform(i);
-                    }
-                }
-            }
-
-            if (TouchDownCheck == true && rightTouchDown == false) {
-
-                viewport.translate.x += windowMouseDiffX;
-                viewport.translate.y += windowMouseDiffY;
-                setTransform();
-
-                if (openLink == true) {
-                    for (var i = 0; i < Viewport_Total; i++) {
+            if (openLink == true) {
+                for (var i = 0; i < Viewport_Total; i++) {
+                    try {
                         GetViewport(i).scale = viewport.scale;
                         GetViewport(i).translate.x = viewport.translate.x;
                         GetViewport(i).translate.y = viewport.translate.y;
                         setTransform(i);
-                    }
+                    } catch (ex) { }
                 }
             }
-        });
-
-        //initNewCanvas();
+        }
     }
+    onMouseUp(e) {
+        if (openMouseTool && rightMouseDown) displayMark();
+        if (openLink) displayAllRuler();
+    }
+    onSwitch() {
+        openMouseTool = false;
+        set_BL_model.onchange = function () { return 0; };
+    }
+    onTouchMove(e, e2) {
+        var viewport = GetViewport(), canvas = GetViewport().canvas;
+
+        if (getByid("DICOMTagsSelect").selected) return;
+
+        if (rightTouchDown == true && e2) {
+            if (openLink == true) {
+                for (var i = 0; i < Viewport_Total; i++) {
+                    if (i == viewportNumber) continue;
+                    try {
+                        setTransform(i);
+                    } catch (ex) { }
+                }
+            }
+            if (windowTouchDistDiffY > + 2 || windowTouchDistDiffX > 2) {
+                if (viewport.scale < 10) viewport.scale += viewport.scale * 0.05;
+                setTransform();
+
+            } else if (windowTouchDistDiffY < - 2 || windowTouchDistDiffX < - 2) {
+                if (viewport.scale > 0.1) viewport.scale -= viewport.scale * 0.05;
+                setTransform();
+            }
+
+            if (openLink == true) {
+                for (var i = 0; i < Viewport_Total; i++) {
+                    if (i == viewportNumber) continue;
+                    GetViewport(i).scale = viewport.scale;
+                    setTransform(i);
+                }
+            }
+        }
+
+        if (TouchDownCheck == true && rightTouchDown == false) {
+
+            viewport.translate.x += windowMouseDiffX;
+            viewport.translate.y += windowMouseDiffY;
+            setTransform();
+
+            if (openLink == true) {
+                for (var i = 0; i < Viewport_Total; i++) {
+                    GetViewport(i).scale = viewport.scale;
+                    GetViewport(i).translate.x = viewport.translate.x;
+                    GetViewport(i).translate.y = viewport.translate.y;
+                    setTransform(i);
+                }
+            }
+        }
+    }
+}
+
+function mouseTool() {
+    openMouseTool = true;
+    toolEvt.onSwitch();
+    toolEvt = new MoveTool();
+    /*if (BL_mode == 'MouseTool') {
+        //initNewCanvas();
+    }*/
 }

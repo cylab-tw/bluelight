@@ -1,4 +1,16 @@
 
+class ToolEvt {
+    onMouseDown(event, context) { }
+    onMouseMove(event, context) { }
+    onMouseUp(event, context) { }
+    onTouchStart(event, context) { }
+    onTouchMove(event, context) { }
+    onTouchEnd(event, context) { }
+    onWheel(event, context) { }
+    onSwitch() { }
+}
+let toolEvt = new ToolEvt();
+
 //代表目前開放使用滾輪切換影像，無論處於什麼操作模式
 var openWheel = false;
 
@@ -25,14 +37,6 @@ var windowTouchDistX = 0, windowTouchDistY = 0;
 
 //代表按下ctrl
 let KeyCode_ctrl = false;
-
-
-let BlueLightMousedownList = [];
-let BlueLightTouchstartList = [];
-let BlueLightMousemoveList = [];
-let BlueLightTouchmoveList = [];
-let BlueLightMouseupList = [];
-let BlueLightTouchendList = [];
 
 var contextmenuF = function (e) {
     e.preventDefault();
@@ -231,10 +235,7 @@ let BlueLightMousedown = function (e) {
     [windowMouseX, windowMouseY] = GetmouseXY(e);
     [originalPoint_X, originalPoint_Y] = getCurrPoint(e);
 
-    for (var i = 0; i < BlueLightMousedownList.length; i++) {
-        if (BlueLightMousedownList[i].constructor.name == "Function")
-            BlueLightMousedownList[i](e);
-    }
+    toolEvt.onMouseDown(e);
 }
 
 let BlueLightTouchstart = function (E) {
@@ -251,10 +252,7 @@ let BlueLightTouchstart = function (E) {
         [originalPoint_X2, originalPoint_Y2] = getCurrPoint(e2);
     }
 
-    for (var i = 0; i < BlueLightTouchstartList.length; i++) {
-        if (BlueLightTouchstartList[i].constructor.name == "Function")
-            BlueLightTouchstartList[i](e, e2);
-    }
+    toolEvt.onTouchStart(e);
 }
 
 let BlueLightMousemove = function (e) {
@@ -264,10 +262,7 @@ let BlueLightMousemove = function (e) {
     windowMouseDiffY = MouseY - windowMouseY;
     [windowMouseX, windowMouseY] = GetmouseXY(e);
 
-    for (var i = 0; i < BlueLightMousemoveList.length; i++) {
-        if (BlueLightMousemoveList[i].constructor.name == "Function")
-            BlueLightMousemoveList[i](e);
-    }
+    toolEvt.onMouseMove(e);
 
     if (isNaN(angle2point[0]) || isNaN(angle2point[1])) GetViewport().setLabel("PixelValue", "");
     else GetViewport().setLabel("PixelValue", GetPixel(angle2point) + `  (${parseInt(angle2point[0])},${parseInt(angle2point[1])})`);
@@ -302,27 +297,18 @@ let BlueLightTouchmove = function (E) {
         [originalPoint_X2, originalPoint_Y2] = getCurrPoint(e2);
     }
 
-    for (var i = 0; i < BlueLightTouchmoveList.length; i++) {
-        if (BlueLightTouchmoveList[i].constructor.name == "Function")
-            BlueLightTouchmoveList[i](e, e2);
-    }
+    toolEvt.onTouchMove(e);
 }
 
 let BlueLightMouseup = function (e) {
-    for (var i = 0; i < BlueLightMouseupList.length; i++) {
-        if (BlueLightMouseupList[i].constructor.name == "Function")
-            BlueLightMouseupList[i](e);
-    }
+    toolEvt.onMouseUp(e);
     windowMouseX = windowMouseY = windowMouseDiffX = windowMouseDiffY = 0;
     MouseDownCheck = rightMouseDown = false;
 }
 
 let BlueLightTouchend = function (E) {
     var e = E.touches[0], e2 = E.touches[1] ? E.touches[1] : null;
-    for (var i = 0; i < BlueLightTouchendList.length; i++) {
-        if (BlueLightTouchendList[i].constructor.name == "Function")
-            BlueLightTouchendList[i](e, e2);
-    }
+    toolEvt.onTouchEnd(e);
     TouchDownCheck = rightTouchDown = false;
 }
 

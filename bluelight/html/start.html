@@ -31,11 +31,10 @@
 
   <script src="../scripts/toolfunction.js"></script>
   <script src="../scripts/gui.js"></script>
+  <script src="../scripts/eventmanager.js"></script>
   <script src="../scripts/mark.js"></script>
 
   <script src="../scripts/newscript/zoom.js" async></script>
-  <script src="../scripts/eventmanager.js"></script>
-
   <script src="../scripts/plugin/table.js" async></script>
 
   <script src="../scripts/viewer.js"></script>
@@ -220,23 +219,7 @@
     <span id="rwdImgTag_span"> <img class="img VR MPR XML PEN" alt="RWD" loading="lazy" id="rwdImgTag"
         src="../image/icon/lite/b_CineTools.png" style="display:none;" width="50" height="50"></span>
     <br>
-    <!--<div id="GraphicStyleDiv" style="background-color:#30306044;display: none;" class="drawer">
-      <label style="color: #ffffff;" id="GraphicColorLabel">Color：</label>
-      <select id="GraphiccolorSelect" style="background-color:#929292;font-weight:bold;font-size:16px;">
-        <! --<option id="Graphicselected" selected="selected">Auto</option> -- >
-        <option id="GraphicBlackSelect" style="color: #000000;font-weight:bold;">Black(T7)</option>
-        <option id="GraphicBlueSelect" style="color: #0000FF;font-weight:bold;" selected="selected">Blue(T8)</option>
-        <option id="GraphicBrownSelect" style="color: #844200;font-weight:bold;">Brown(T9)</option>
-        <option id="GraphicCyanSelect" style="color: #00FFFF;font-weight:bold;">Cyan(T10)</option>
-        <option id="GraphicGreenSelect" style="color: #00FF00;font-weight:bold;">Green(T11)</option>
-        <option id="GraphicMagentaSelect" style="color: #FF00FF;font-weight:bold;">Magenta(T12)</option>
-        <option id="GraphicOrangeSelect" style="color: #FFA500;font-weight:bold;">Orange(L1)</option>
-        <option id="GraphicPurpleSelect" style="color: #663399;font-weight:bold;">Purple(L2)</option>
-        <option id="GraphicRedSelect" style="color: #FF0000;font-weight:bold;">Red(L3)</option>
-        <option id="GraphicYellowSelect" style="color: #FFFF00;font-weight:bold;"> Yellow(L4)</option>
-        <option id="GraphicWhiteSelect" style="color: #FFFFFF;font-weight:bold;">White(L5)</option>
-      </select>
-    </div>-->
+
     <div id="MarkStyleDiv" style="background-color:#00306044;" class="drawer">
       <label style="color: #ffffff;" id="markColorLabel">Color：</label>
       <select id="MarkcolorSelect">
@@ -274,16 +257,6 @@
       <div id="WindowLevelDiv" style="background-color:#33666644;" class="drawer">
         <font color="white" id="myWC">WC：</font><input type="text" id="textWC" value="520" />
         <font color="white" id="myWW">WW：</font><input type="text" id="textWW" value="50" />
-        <!--<select id="WindowLevelSelect">
-          <option id="WindowDefault" selected="selected">Default</option>
-          <option id="WindowCustom">Custom</option>
-          <option class="WindowSelect" id="WindowAbdomen" wc="60" ww="400">Abdomen(60,400)</option>
-          <option class="WindowSelect" id="WindowAngio" wc="300" ww="600">Angio(300,600)</option>
-          <option class="WindowSelect" id="WindowBone" wc="300" ww="1500">Bone(300,1500)</option>
-          <option class="WindowSelect" id="WindowBrain" wc="40" ww="80">Brain(40,80)</option>
-          <option class="WindowSelect" id="WindowChest" wc="40" ww="400">Chest(40,400)</option>
-          <option class="WindowSelect" id="WindowLungs" wc="-400" ww="1500">Lungs(-400,1500)</option>
-        </select>-->
       </div>
     </span>
     <font color="white" class="drawer" id="labelZoom">Zoom：</font><input type="text" class="drawer" id="textZoom"

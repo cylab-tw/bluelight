@@ -118,29 +118,31 @@ getByid("writeXML").onclick = function () {
   }
 }
 
-function eraseXML() {
-  if (BL_mode == 'eraseXML') {
 
-    set_BL_model.onchange = function () {
+class eraseXMLTool extends ToolEvt {
+  onMouseDown(e) {
+    xml_now_choose = null;
+    xml_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+    if (xml_now_choose) {
+      PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
       displayMark();
-      set_BL_model.onchange = function () { return 0; };
-    }
-
-    BlueLightMousedownList = [];
-    BlueLightMousedownList.push(function (e) {
       xml_now_choose = null;
-      xml_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-      if (xml_now_choose) {
-        PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
-        displayMark();
-        xml_now_choose = null;
-        refreshMarkFromSop(GetViewport().sop);
-        return;
-      }
-    });
-    BlueLightMousemoveList = [];
-    BlueLightMouseupList = [];
+      refreshMarkFromSop(GetViewport().sop);
+      return;
+    }
   }
+  onSwitch() {
+    displayMark();
+    set_BL_model.onchange = function () { return 0; };
+  }
+}
+
+function eraseXML() {
+  toolEvt.onSwitch();
+  toolEvt = new eraseXMLTool();
+
+  /*if (BL_mode == 'eraseXML') {
+  }*/
 }
 
 window.addEventListener('keydown', (KeyboardKeys) => {
@@ -509,60 +511,60 @@ function importXml(url) {
   oReq.send();
 }
 
+class writeXMLTool extends ToolEvt {
+
+  onMouseDown(e) {
+    if (xml_previous_choose) xml_previous_choose = null;
+    if (xml_pounch(getCurrPoint(e)[0], getCurrPoint(e)[1]) == true) displayMark();
+  }
+  onMouseMove(e) {
+    var [currX, currY] = getCurrPoint(e);
+
+    if (rightMouseDown == true) scale_size(e, currX, currY);
+
+    if (MouseDownCheck) {
+      if (!xml_now_choose) {
+        var RtssMark = xml_previous_choose ? xml_previous_choose : new BlueLightMark();
+        if (!xml_previous_choose) PatientMark.push(RtssMark);
+
+        RtssMark.setQRLevels(GetViewport().QRLevels);
+        RtssMark.color = "#0000FF";
+        RtssMark.hideName = RtssMark.showName = "" + getByid("xmlMarkNameText").value;
+        RtssMark.type = "XML_mark";
+        RtssMark.pointArray = [];
+        RtssMark.setPoint2D(originalPoint_X, originalPoint_Y);
+        RtssMark.setPoint2D(currX, currY);
+
+        xml_previous_choose = RtssMark;
+        refreshMark(RtssMark);
+      } else {
+        var direction = xml_now_choose.value;
+        if (direction == "up") xml_now_choose.reference.pointArray[0].y = currY;
+        else if (direction == "down") xml_now_choose.reference.pointArray[1].y = currY;
+        else if (direction == "left") xml_now_choose.reference.pointArray[0].x = currX;
+        else if (direction == "right") xml_now_choose.reference.pointArray[1].x = currX;
+      }
+      displayAllMark();
+    }
+  }
+  onMouseUp(e) {
+    if (xml_previous_choose) {
+      //xml_previous_choose.pointArray[1] = [currX, currY];
+      //refreshMark(xml_previous_choose);
+      xml_previous_choose = null;
+    }
+  }
+}
 
 function writexml() {
+  drawBorder(getByid("drawXML"));
 
-  if (BL_mode == 'writexml') {
-    drawBorder(getByid("drawXML"));
+  GetViewport().rotate = 0;
+  setTransform();
 
-    GetViewport().rotate = 0;
-    setTransform();
+  toolEvt.onSwitch();
+  toolEvt = new writeXMLTool();
 
-    BlueLightMousedownList = [];
-    BlueLightMousedownList.push(function (e) {
-      if (xml_previous_choose) xml_previous_choose = null;
-      if (xml_pounch(getCurrPoint(e)[0], getCurrPoint(e)[1]) == true) displayMark();
-    });
-
-    BlueLightMousemoveList = [];
-    BlueLightMousemoveList.push(function (e) {
-      var [currX, currY] = getCurrPoint(e);
-
-      if (rightMouseDown == true) scale_size(e, currX, currY);
-
-      if (MouseDownCheck) {
-        if (!xml_now_choose) {
-          var RtssMark = xml_previous_choose ? xml_previous_choose : new BlueLightMark();
-          if (!xml_previous_choose) PatientMark.push(RtssMark);
-
-          RtssMark.setQRLevels(GetViewport().QRLevels);
-          RtssMark.color = "#0000FF";
-          RtssMark.hideName = RtssMark.showName = "" + getByid("xmlMarkNameText").value;
-          RtssMark.type = "XML_mark";
-          RtssMark.pointArray = [];
-          RtssMark.setPoint2D(originalPoint_X, originalPoint_Y);
-          RtssMark.setPoint2D(currX, currY);
-
-          xml_previous_choose = RtssMark;
-          refreshMark(RtssMark);
-        } else {
-          var direction = xml_now_choose.value;
-          if (direction == "up") xml_now_choose.reference.pointArray[0].y = currY;
-          else if (direction == "down") xml_now_choose.reference.pointArray[1].y = currY;
-          else if (direction == "left") xml_now_choose.reference.pointArray[0].x = currX;
-          else if (direction == "right") xml_now_choose.reference.pointArray[1].x = currX;
-        }
-        displayAllMark();
-      }
-    });
-
-    BlueLightMouseupList = [];
-    BlueLightMouseupList.push(function (e) {
-      if (xml_previous_choose) {
-        //xml_previous_choose.pointArray[1] = [currX, currY];
-        //refreshMark(xml_previous_choose);
-        xml_previous_choose = null;
-      }
-    });
-  }
+  /*if (BL_mode == 'writexml') {
+  }*/
 }

@@ -334,45 +334,46 @@ var RTSS_format_tail_6 = `
 var RTSS_now_choose = null;
 var temp_xml_format = "";
 
-function eraseRTSS() {
-    if (BL_mode == 'eraseRTSS') {
+class eraseRTSSTool extends ToolEvt {
 
-        set_BL_model.onchange = function () {
-            displayMark();
-            set_BL_model.onchange = function () { return 0; };
+    onMouseDown(e) {
+        var angle2point = rotateCalculation(e, true);
+        var viewport = GetViewport();
+        var [currX11, currY11] = [Math.floor(angle2point[0]), Math.floor(angle2point[1])];
+        var currX02 = currX11, currY02 = currY11;
+
+        if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
+            currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
+            currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
+            if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
+                currX02 = currX02 - (currX02 - currX11) * 2;
+                currY02 = currY02 - (currY02 - currY11) * 2;
+            }
         }
-
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            var angle2point = rotateCalculation(e, true);
-            var viewport = GetViewport();
-            var [currX11, currY11] = [Math.floor(angle2point[0]), Math.floor(angle2point[1])];
-            var currX02 = currX11, currY02 = currY11;
-
-            if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
-                currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
-                currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
-                if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
-                    currX02 = currX02 - (currX02 - currX11) * 2;
-                    currY02 = currY02 - (currY02 - currY11) * 2;
-                }
-            }
-            currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
-            currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
+        currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
+        currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
 
 
-            RTSS_pounch(currX02, currY02);
-            if (RTSS_now_choose) {
-                PatientMark.splice(PatientMark.indexOf(RTSS_now_choose.dcm), 1);
-                displayMark();
-                RTSS_now_choose = null;
-                refreshMarkFromSop(GetViewport().sop);
-                return;
-            }
-        });
-        BlueLightMousemoveList = [];
-        BlueLightMouseupList = [];
+        RTSS_pounch(currX02, currY02);
+        if (RTSS_now_choose) {
+            PatientMark.splice(PatientMark.indexOf(RTSS_now_choose.dcm), 1);
+            displayMark();
+            RTSS_now_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+            return;
+        }
     }
+    onSwitch() {
+        displayMark();
+        set_BL_model.onchange = function () { return 0; };
+    }
+}
+
+function eraseRTSS() {
+    toolEvt.onSwitch();
+    toolEvt = new eraseRTSSTool();
+    /*if (BL_mode == 'eraseRTSS') {
+    }*/
 }
 function RTSS_pounch(currX, currY) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
@@ -515,92 +516,93 @@ function get_RTSS_context() {
     return temp_str;
 }
 
-function writertss() {
-    if (BL_mode == 'writertss') {
+class writeRTSSTool extends ToolEvt {
 
-        drawBorder(getByid("drawRTSS"));
+    onMouseDown(e) {
+        var viewport = GetViewport();
 
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            var viewport = GetViewport();
+        if (!rightMouseDown) {
+            var angle2point = rotateCalculation(e, true)
+            var [currX11, currY11] = [Math.floor(angle2point[0]), Math.floor(angle2point[1])];
+            var currX02 = currX11, currY02 = currY11;
 
-            if (!rightMouseDown) {
-                var angle2point = rotateCalculation(e, true)
-                var [currX11, currY11] = [Math.floor(angle2point[0]), Math.floor(angle2point[1])];
-                var currX02 = currX11, currY02 = currY11;
-
-                if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
-                    currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
-                    currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
-                    if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
-                        currX02 = currX02 - (currX02 - currX11) * 2;
-                        currY02 = currY02 - (currY02 - currY11) * 2;
-                    }
+            if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
+                currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
+                currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
+                if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
+                    currX02 = currX02 - (currX02 - currX11) * 2;
+                    currY02 = currY02 - (currY02 - currY11) * 2;
                 }
-                currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
-                currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
-
-
-                var RtssMark = new BlueLightMark();
-                RtssMark.setQRLevels(GetViewport().QRLevels);
-                RtssMark.color = "rgb(0,0,128)";
-                RtssMark.hideName = RtssMark.showName = getByid('textROIName').value;
-                RtssMark.type = "RTSS";
-                RtssMark.imagePositionZ = viewport.transform.imagePositionZ;
-
-                for (var co = 0; co < getClass("RTSSColorSelectOption").length; co++) {
-                    if (getClass("RTSSColorSelectOption")[co].selected == true) {
-                        RtssMark.color = getClass("RTSSColorSelectOption")[co].style.color;
-                    }
-                }
-
-                RtssMark.pointArray = [];
-                RtssMark.setPoint2D(angle2point[0] - Math.abs(currX02 - angle2point[0]), angle2point[1] - Math.abs(currY02 - angle2point[1]));
-
-                PatientMark.push(RtssMark);
-                RTSS_now_choose = RtssMark;
-                refreshMark(RtssMark);
-                displayAllMark();
             }
-        });
+            currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
+            currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
 
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            var viewport = GetViewport();
 
-            if (rightMouseDown == true) scale_size(e, getCurrPoint(e)[0], getCurrPoint(e)[1]);
+            var RtssMark = new BlueLightMark();
+            RtssMark.setQRLevels(GetViewport().QRLevels);
+            RtssMark.color = "rgb(0,0,128)";
+            RtssMark.hideName = RtssMark.showName = getByid('textROIName').value;
+            RtssMark.type = "RTSS";
+            RtssMark.imagePositionZ = viewport.transform.imagePositionZ;
 
-            if (!rightMouseDown && RTSS_now_choose) {
-                var angle2point = rotateCalculation(e, true)
-                var currX11 = Math.floor(angle2point[0]);
-                var currY11 = Math.floor(angle2point[1]);
-                var currX02 = currX11;
-                var currY02 = currY11;
-
-                if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
-                    currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
-                    currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
-                    if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
-                        currX02 = currX02 - (currX02 - currX11) * 2;
-                        currY02 = currY02 - (currY02 - currY11) * 2;
-                    }
+            for (var co = 0; co < getClass("RTSSColorSelectOption").length; co++) {
+                if (getClass("RTSSColorSelectOption")[co].selected == true) {
+                    RtssMark.color = getClass("RTSSColorSelectOption")[co].style.color;
                 }
-                currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
-                currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
-
-                var RtssMark = RTSS_now_choose;
-                RtssMark.setPoint2D(angle2point[0] - Math.abs(currX02 - angle2point[0]), angle2point[1] - Math.abs(currY02 - angle2point[1]));
-
-                refreshMarkFromSop(GetViewport().sop);
-                displayAllMark();
             }
-        });
 
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            if (RTSS_now_choose) RTSS_now_choose = null;
-        });
+            RtssMark.pointArray = [];
+            RtssMark.setPoint2D(angle2point[0] - Math.abs(currX02 - angle2point[0]), angle2point[1] - Math.abs(currY02 - angle2point[1]));
+
+            PatientMark.push(RtssMark);
+            RTSS_now_choose = RtssMark;
+            refreshMark(RtssMark);
+            displayAllMark();
+        }
     }
+    onMouseMove(e) {
+        var viewport = GetViewport();
+
+        if (rightMouseDown == true) scale_size(e, getCurrPoint(e)[0], getCurrPoint(e)[1]);
+
+        if (!rightMouseDown && RTSS_now_choose) {
+            var angle2point = rotateCalculation(e, true)
+            var currX11 = Math.floor(angle2point[0]);
+            var currY11 = Math.floor(angle2point[1]);
+            var currX02 = currX11;
+            var currY02 = currY11;
+
+            if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
+                currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
+                currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
+                if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
+                    currX02 = currX02 - (currX02 - currX11) * 2;
+                    currY02 = currY02 - (currY02 - currY11) * 2;
+                }
+            }
+            currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
+            currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
+
+            var RtssMark = RTSS_now_choose;
+            RtssMark.setPoint2D(angle2point[0] - Math.abs(currX02 - angle2point[0]), angle2point[1] - Math.abs(currY02 - angle2point[1]));
+
+            refreshMarkFromSop(GetViewport().sop);
+            displayAllMark();
+        }
+    }
+    onMouseUp(e) {
+        if (RTSS_now_choose) RTSS_now_choose = null;
+    }
+}
+
+function writertss() {
+    drawBorder(getByid("drawRTSS"));
+
+    toolEvt.onSwitch();
+    toolEvt = new writeRTSSTool();
+
+    /*if (BL_mode == 'writertss') {
+    }*/
 }
 
 function drawRTSSEdit(obj) {

@@ -67,82 +67,77 @@ function magnifierIng(currX, currY) {
     magnifierCtx.drawImage(GetViewportMark(), currX02, currY02, magnifierWidth, magnifierHeight, 0, 0, magnifierWidth, magnifierHeight);
 }
 
-function zoom() {
-    if (BL_mode == 'zoom') {
-        
-        openZoom = true;
-        refleshViewport();
-        getByid('labelZoom').style.display = '';
-        getByid('textZoom').style.display = '';
-        SetTable();
+class zoomTool extends ToolEvt {
 
-        set_BL_model.onchange = function () {
-            getByid('labelZoom').style.display = 'none';
-            getByid('textZoom').style.display = 'none';
-            openZoom = false;
-            magnifierDiv.hide();
-            set_BL_model.onchange = function () { return 0; };
-        }
-
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            let angle2point = rotateCalculation(e);
-            magnifierIng(angle2point[0], angle2point[1]);
-            if (MouseDownCheck) magnifierDiv.show();
-        });
-
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-            if (MouseDownCheck) {
-                magnifierDiv.show();
-                let angle2point = rotateCalculation(e);
-                magnifierIng(angle2point[0], angle2point[1]);
-
-                dgs = document.getElementById("magnifierDiv").style;
-                if (document.body.scrollTop && document.body.scrollTop != 0) {
-                    dbst = document.body.scrollTop;
-                    dbsl = document.body.scrollLeft;
-                }
-                else {
-                    dbst = getByTag("html")[0].scrollTop;
-                    dbsl = getByTag("html")[0].scrollLeft;
-                }
-                y = e.clientY; x = e.clientX;
-                if (!y || !x) { y = e.touches[0].clientY; x = e.touches[0].clientX; }
-                dgs.top = y + dbst + (-parseInt(magnifierCanvas.style.height) / 2) + "px";
-                dgs.left = x + dbsl + (-parseInt(magnifierCanvas.style.width) / 2) + "px";
-            }
-        });
-
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            if (openMouseTool && rightMouseDown) displayMark();
-            magnifierDiv.hide();
-            if (openLink) displayAllRuler();
-        });
-
-        BlueLightTouchstartList = [];
-        BlueLightTouchstartList.push(function (e, e2) {
+    onMouseDown(e) {
+        let angle2point = rotateCalculation(e);
+        magnifierIng(angle2point[0], angle2point[1]);
+        if (MouseDownCheck) magnifierDiv.show();
+    }
+    onMouseMove(e) {
+        if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
+        if (MouseDownCheck) {
             magnifierDiv.show();
             let angle2point = rotateCalculation(e);
-            [currX11, currY11] = angle2point[0];
-            magnifierIng(currX11, currY11);
-        });
+            magnifierIng(angle2point[0], angle2point[1]);
 
-        BlueLightTouchmoveList = [];
-        BlueLightTouchmoveList.push(function (e, e2) {
-            if (getByid("DICOMTagsSelect").selected) return;
-            if (TouchDownCheck == true && rightTouchDown == false) {
-                magnifierDiv.show();
-                let angle2point = rotateCalculation(e);
-                magnifierIng(angle2point[0], angle2point[1]);
+            var dgs = document.getElementById("magnifierDiv").style;
+            if (document.body.scrollTop && document.body.scrollTop != 0) {
+                var dbst = document.body.scrollTop;
+                var dbsl = document.body.scrollLeft;
             }
-        });
+            else {
+                var dbst = getByTag("html")[0].scrollTop;
+                var dbsl = getByTag("html")[0].scrollLeft;
+            }
+            var y = e.clientY, x = e.clientX;
+            if (!y || !x) { y = e.touches[0].clientY; x = e.touches[0].clientX; }
+            dgs.top = y + dbst + (-parseInt(magnifierCanvas.style.height) / 2) + "px";
+            dgs.left = x + dbsl + (-parseInt(magnifierCanvas.style.width) / 2) + "px";
+        }
+    }
+    onMouseUp(e) {
+        if (openMouseTool && rightMouseDown) displayMark();
+        magnifierDiv.hide();
+        if (openLink) displayAllRuler();
+    }
+    onSwitch() {
+        getByid('labelZoom').style.display = 'none';
+        getByid('textZoom').style.display = 'none';
+        openZoom = false;
+        magnifierDiv.hide();
+        set_BL_model.onchange = function () { return 0; };
+    }
+    onTouchStart(e, e2) {
+        magnifierDiv.show();
+        let angle2point = rotateCalculation(e);
+        [currX11, currY11] = angle2point[0];
+        magnifierIng(currX11, currY11);
+    }
+    onTouchMove(e, e2) {
+        if (getByid("DICOMTagsSelect").selected) return;
+        if (TouchDownCheck == true && rightTouchDown == false) {
+            magnifierDiv.show();
+            let angle2point = rotateCalculation(e);
+            magnifierIng(angle2point[0], angle2point[1]);
+        }
+    }
+    onTouchEnd(e, e2) {
+        magnifierDiv.hide();
+    }
+}
 
-        BlueLightTouchendList = [];
-        BlueLightTouchendList.push(function (e, e2) {
-            magnifierDiv.hide();
-        });
+function zoom() {
+
+    openZoom = true;
+    refleshViewport();
+    getByid('labelZoom').style.display = '';
+    getByid('textZoom').style.display = '';
+    SetTable();
+
+    toolEvt.onSwitch();
+    toolEvt = new zoomTool();
+
+    if (BL_mode == 'zoom') {
     }
 }

@@ -685,72 +685,68 @@ class BlueLightMark {
     }
     get lastMark() { if (this.pointArray.length) return this.pointArray[this.pointArray.length - 1] };
 }
-
-
-function erase() {
-    if (BL_mode == 'erase') {
-        getByid("openMeasureImg").src = "../image/icon/lite/b_Eraser.png";
-
-        set_BL_model.onchange = function () {
-            getByid("openMeasureImg").src = "../image/icon/lite/M.png";
+class EraseTool extends ToolEvt {
+    onMouseDown(e) {
+        angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        if (Angle_now_choose) {
+            PatientMark.splice(PatientMark.indexOf(Angle_now_choose.dcm), 1);
             displayMark();
-            set_BL_model.onchange = function () { return 0; };
+            Angle_now_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+            return;
+        }
+        angle_pounch2(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        if (Angle_now_choose) {
+            PatientMark.splice(PatientMark.indexOf(Angle_now_choose.dcm), 1);
+            displayMark();
+            Angle_now_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+            return;
+        }
+        measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        if (Measure_now_choose) {
+            PatientMark.splice(PatientMark.indexOf(Measure_now_choose.dcm), 1);
+            displayMark();
+            Measure_now_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+            return;
+        }
+        MeasureRect_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        if (MeasureRect_now_choose) {
+            PatientMark.splice(PatientMark.indexOf(MeasureRect_now_choose.dcm), 1);
+            displayMark();
+            MeasureRect_now_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+            return;
+        }
+        MeasureCircle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        if (MeasureCircle_now_choose) {
+            PatientMark.splice(PatientMark.indexOf(MeasureCircle_now_choose.dcm), 1);
+            displayMark();
+            MeasureCircle_now_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+            return;
         }
 
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            if (Angle_now_choose) {
-                PatientMark.splice(PatientMark.indexOf(Angle_now_choose.dcm), 1);
-                displayMark();
-                Angle_now_choose = null;
-                refreshMarkFromSop(GetViewport().sop);
-                return;
-            }
-            angle_pounch2(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            if (Angle_now_choose) {
-                PatientMark.splice(PatientMark.indexOf(Angle_now_choose.dcm), 1);
-                displayMark();
-                Angle_now_choose = null;
-                refreshMarkFromSop(GetViewport().sop);
-                return;
-            }
-            measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            if (Measure_now_choose) {
-                PatientMark.splice(PatientMark.indexOf(Measure_now_choose.dcm), 1);
-                displayMark();
-                Measure_now_choose = null;
-                refreshMarkFromSop(GetViewport().sop);
-                return;
-            }
-            MeasureRect_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            if (MeasureRect_now_choose) {
-                PatientMark.splice(PatientMark.indexOf(MeasureRect_now_choose.dcm), 1);
-                displayMark();
-                MeasureRect_now_choose = null;
-                refreshMarkFromSop(GetViewport().sop);
-                return;
-            }
-            MeasureCircle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            if (MeasureCircle_now_choose) {
-                PatientMark.splice(PatientMark.indexOf(MeasureCircle_now_choose.dcm), 1);
-                displayMark();
-                MeasureCircle_now_choose = null;
-                refreshMarkFromSop(GetViewport().sop);
-                return;
-            }
-
-            var other_irregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-            if (other_irregular_now_choose) {
-                PatientMark.splice(PatientMark.indexOf(other_irregular_now_choose.dcm), 1);
-                displayMark();
-                other_irregular_now_choose = null;
-                refreshMarkFromSop(GetViewport().sop);
-                return;
-            }
-
-        });
-        BlueLightMousemoveList = [];
-        BlueLightMouseupList = [];
+        var other_irregular_now_choose = other_irregular_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        if (other_irregular_now_choose) {
+            PatientMark.splice(PatientMark.indexOf(other_irregular_now_choose.dcm), 1);
+            displayMark();
+            other_irregular_now_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+            return;
+        }
     }
+
+    onSwitch() {
+        getByid("openMeasureImg").src = "../image/icon/lite/M.png";
+        displayMark();
+        set_BL_model.onchange = function () { return 0; };
+    }
+}
+
+function erase() {
+    getByid("openMeasureImg").src = "../image/icon/lite/b_Eraser.png";
+    toolEvt.onSwitch();
+    toolEvt = new EraseTool();
 }

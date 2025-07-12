@@ -1653,9 +1653,8 @@ function initVR2() {
         }
 
         openLeftImgClick = false;
-        BlueLightMousedownList = [];
-        BlueLightMousemoveList = [];
-        BlueLightMouseupList = [];
+        toolEvt.onSwitch();
+        toolEvt = new ToolEvt();
         //displayVR2();
         VRCube.operate_mode = "move";
         drawBorder(getByid("moveVR2"));

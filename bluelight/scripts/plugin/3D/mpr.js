@@ -121,7 +121,7 @@ getByid("b_Scroll_MPR").onclick = function () {
     set_BL_model('scroll');
     scroll();
 
-    BlueLightTouchmoveList = [];
+    /*BlueLightTouchmoveList = [];
     BlueLightTouchmoveList.push(function (e, e2) {
         var currX = getCurrPoint(e)[0];
         var currY = getCurrPoint(e)[1];
@@ -155,7 +155,7 @@ getByid("b_Scroll_MPR").onclick = function () {
                 Anatomical_Section2(nextInstanceNumber);
             }
         }
-    });
+    });*/
 
     drawBorderMPR(this);
 }
@@ -175,6 +175,32 @@ getByid("MouseRotate_MPR").onclick = function () {
     rotate();
     drawBorderMPR(this);
 }
+
+class MPRTool extends ToolEvt {
+
+    onMouseMove(e) {
+        if (BL_mode != 'mouseTool_MPR') return;
+        var viewport = GetViewport();
+        if (!GetViewport().drawMark) GetViewportMark().getContext("2d").clearRect(0, 0, GetViewportMark().width, GetViewportMark().height);
+        if (openMPR == true && openWindow != true && openChangeFile != true) {
+            if (MouseDownCheck == true) {
+                viewportNumber = 2;
+                let angle2point = rotateCalculation(e);
+                var currX11M = angle2point[0];
+                var currY11M = angle2point[1];
+                o3DPointX = currX11M;
+                o3DPointY = currY11M;
+                if (openMPR == true) {
+                    Anatomical_Section();
+                    Anatomical_Section2();
+                }
+                display3DLine(currX11M, 0, currX11M, viewport.height, "rgb(38,140,191)");
+                display3DLine(0, currY11M, viewport.width, currY11M, "rgb(221,53,119)");
+            }
+        }
+    }
+}
+
 
 getByid("MouseOperation_MPR").onclick = function () {
     if (this.enable == false) return;
@@ -246,36 +272,10 @@ getByid("MouseOperation_MPR").onclick = function () {
         Anatomical_Section2(nextInstanceNumber);
     };
 
-    BlueLightMousedownList = [];
+    toolEvt.onSwitch();
+    toolEvt = new MPRTool();
 
-    BlueLightMousemoveList = [];
-    BlueLightMousemoveList.push(function (e) {
-        if (BL_mode != 'mouseTool_MPR') return;
-        var viewport = GetViewport();
-        if (!GetViewport().drawMark) GetViewportMark().getContext("2d").clearRect(0, 0, GetViewportMark().width, GetViewportMark().height);
-        if (openMPR == true && openWindow != true && openChangeFile != true) {
-            if (MouseDownCheck == true) {
-                viewportNumber = 2;
-                let angle2point = rotateCalculation(e);
-                currX11M = angle2point[0];
-                currY11M = angle2point[1];
-                o3DPointX = currX11M;
-                o3DPointY = currY11M;
-                AngleXY0 = [currX11M, 0];
-                AngleXY1 = [currX11M, viewport.height];
-                if (openMPR == true) {
-                    Anatomical_Section();
-                    Anatomical_Section2();
-                }
-                display3DLine(currX11M, 0, currX11M, viewport.height, "rgb(38,140,191)");
-                display3DLine(0, currY11M, viewport.width, currY11M, "rgb(221,53,119)");
-            }
-        }
-    });
-
-    BlueLightMouseupList = [];
-
-    BlueLightTouchmoveList = [];
+    /*BlueLightTouchmoveList = [];
     BlueLightTouchmoveList.push(function (e, e2) {
         if (BL_mode != 'mouseTool_MPR') return;
         var viewport = GetViewport();
@@ -300,7 +300,7 @@ getByid("MouseOperation_MPR").onclick = function () {
                 display3DLine(0, currY11M, viewport.width, currY11M, "rgb(221,53,119)");
             }
         }
-    });
+    });*/
 
     GetViewport(2).div.addEventListener("mousemove", BlueLightMousemove, false);
     GetViewport(2).div.addEventListener("mousedown", BlueLightMousedown, false);
@@ -1090,8 +1090,7 @@ Anatomical_SectionMouseMove = function (e) {
             currY11M = angle2point[1];
             o3DPointX = currX11M;
             o3DPointY = currY11M;
-            AngleXY0 = [currX11M, 0];
-            AngleXY1 = [currX11M, GetViewport(1).height];
+
             if (openMPR == true) {
                 var sop = GetViewport().sop;
                 var index = SearchUid2Index(sop);
@@ -1132,8 +1131,7 @@ Anatomical_SectionMouseMove0 = function (e) {
             currY11M = angle2point[0];
             o3DPointX = currX11M;
             o3DPointY = currY11M;
-            AngleXY1 = [currX11M, 0];
-            AngleXY0 = [currX11M, GetViewport(0).height];
+
             if (openMPR == true) {
                 var sop = GetViewport().sop;
                 var index = SearchUid2Index(sop);

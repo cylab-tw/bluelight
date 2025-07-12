@@ -918,75 +918,172 @@ function Line_setSEG2PixelData(point1, point2) {
     }
 };
 
+class fillSEGTool extends ToolEvt {
+
+    onMouseDown(e) {
+
+        if (openWindow == true) return;
+        var break1 = false;
+        for (var n_s = 0; n_s < PatientMark.length; n_s++) {
+            if (PatientMark[n_s].sop == GetViewport().sop) {
+                if (break1 == true) break;
+                if (PatientMark[n_s].type == "SEG") {
+                    SEG_now_choose = PatientMark[n_s];
+                    break1 = true;
+                }
+            }
+        }
+        if (break1 == false) {
+            var SegMark = new BlueLightMark();
+            SegMark.setQRLevels(GetViewport().QRLevels);
+            SegMark.type = SegMark.hideName = SegMark.showName = "SEG";
+            SegMark.ImagePositionPatient = GetViewport().tags.ImagePositionPatient;
+            SegMark.pixelData = new Uint8ClampedArray(GetViewport().canvas.width * GetViewport().canvas.height);
+
+            if (!SegMark.canvas) {
+                SegMark.canvas = document.createElement("CANVAS");
+                SegMark.canvas.width = GetViewport().canvas.width;
+                SegMark.canvas.height = GetViewport().canvas.height;
+                SegMark.ctx = SegMark.canvas.getContext('2d');
+
+                var pixelData = SegMark.ctx.getImageData(0, 0, SegMark.canvas.width, SegMark.canvas.height);
+
+                for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
+                    if (SegMark.pixelData[j] != 0) {
+                        pixelData.data[i] = 0;
+                        pixelData.data[i + 1] = 0;
+                        pixelData.data[i + 2] = 255;
+                        pixelData.data[i + 3] = 255;
+                    }
+                }
+                SegMark.ctx.putImageData(pixelData, 0, 0);
+            }
+            let angle2point = rotateCalculation(e, true);
+            PatientMark.push(SegMark);
+            SEG_now_choose = SegMark;
+
+            if (SEG_now_choose) SEGtempUndoStorage.push({ ImageData: SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height).data, pixelData: SEG_now_choose.pixelData.slice() });
+            if (SEGtempUndoStorage.length > 15) SEGtempUndoStorage.shift();
+            SEGtempRedoStorage = [];
+
+            //setSEG2PixelData(angle2point);
+            fillSEG2PixelData(angle2point, SegMark.canvas);
+            refreshMark(SegMark);
+        } else {
+            let angle2point = rotateCalculation(e, true);
+            var SegMark = SEG_now_choose;
+
+            if (SEG_now_choose) SEGtempUndoStorage.push({ ImageData: SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height).data, pixelData: SEG_now_choose.pixelData.slice() });
+            if (SEGtempUndoStorage.length > 15) SEGtempUndoStorage.shift();
+            SEGtempRedoStorage = [];
+
+            //setSEG2PixelData(angle2point);
+            fillSEG2PixelData(angle2point, SegMark.canvas);
+            refreshMark(SegMark);
+        }
+        displayAllMark();
+    }
+}
 
 function fillSEG() {
-    if (BL_mode == 'fillSEG') {
-        drawBorder(getByid("fillSEG"));
-        BlueLightMousedownList = [];
-        BlueLightMousemoveList = [];
-        BlueLightMouseupList = [];
-        BlueLightMousedownList.push(function (e) {
-            if (openWindow == true) return;
-            var break1 = false;
-            for (var n_s = 0; n_s < PatientMark.length; n_s++) {
-                if (PatientMark[n_s].sop == GetViewport().sop) {
-                    if (break1 == true) break;
-                    if (PatientMark[n_s].type == "SEG") {
-                        SEG_now_choose = PatientMark[n_s];
-                        break1 = true;
-                    }
+    drawBorder(getByid("fillSEG"));
+
+    toolEvt.onSwitch();
+    toolEvt = new fillSEGTool();
+
+    /*if (BL_mode == 'fillSEG') {
+    }*/
+}
+
+var Previous_angle2point;
+class writeSegTool extends ToolEvt {
+
+    onMouseDown(e) {
+        if (openWindow == true) return;
+
+        var break1 = false;
+        for (var n_s = 0; n_s < PatientMark.length; n_s++) {
+            if (PatientMark[n_s].sop == GetViewport().sop) {
+                if (break1 == true) break;
+                if (PatientMark[n_s].type == "SEG") {
+                    SEG_now_choose = PatientMark[n_s];
+                    break1 = true;
                 }
             }
-            if (break1 == false) {
-                var SegMark = new BlueLightMark();
-                SegMark.setQRLevels(GetViewport().QRLevels);
-                SegMark.type = SegMark.hideName = SegMark.showName = "SEG";
-                SegMark.ImagePositionPatient = GetViewport().tags.ImagePositionPatient;
-                SegMark.pixelData = new Uint8ClampedArray(GetViewport().canvas.width * GetViewport().canvas.height);
+        }
+        if (break1 == false) {
+            var SegMark = new BlueLightMark();
+            SegMark.setQRLevels(GetViewport().QRLevels);
+            SegMark.type = SegMark.hideName = SegMark.showName = "SEG";
+            SegMark.ImagePositionPatient = GetViewport().tags.ImagePositionPatient;
+            SegMark.pixelData = new Uint8ClampedArray(GetViewport().canvas.width * GetViewport().canvas.height);
 
-                if (!SegMark.canvas) {
-                    SegMark.canvas = document.createElement("CANVAS");
-                    SegMark.canvas.width = GetViewport().canvas.width;
-                    SegMark.canvas.height = GetViewport().canvas.height;
-                    SegMark.ctx = SegMark.canvas.getContext('2d');
+            if (!SegMark.canvas) {
+                SegMark.canvas = document.createElement("CANVAS");
+                SegMark.canvas.width = GetViewport().canvas.width;
+                SegMark.canvas.height = GetViewport().canvas.height;
+                SegMark.ctx = SegMark.canvas.getContext('2d');
 
-                    var pixelData = SegMark.ctx.getImageData(0, 0, SegMark.canvas.width, SegMark.canvas.height);
+                var pixelData = SegMark.ctx.getImageData(0, 0, SegMark.canvas.width, SegMark.canvas.height);
 
-                    for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
-                        if (SegMark.pixelData[j] != 0) {
-                            pixelData.data[i] = 0;
-                            pixelData.data[i + 1] = 0;
-                            pixelData.data[i + 2] = 255;
-                            pixelData.data[i + 3] = 255;
-                        }
+                for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
+                    if (SegMark.pixelData[j] != 0) {
+                        pixelData.data[i] = 0;
+                        pixelData.data[i + 1] = 0;
+                        pixelData.data[i + 2] = 255;
+                        pixelData.data[i + 3] = 255;
                     }
-                    SegMark.ctx.putImageData(pixelData, 0, 0);
                 }
-                let angle2point = rotateCalculation(e, true);
-                PatientMark.push(SegMark);
-                SEG_now_choose = SegMark;
-
-                if (SEG_now_choose) SEGtempUndoStorage.push({ ImageData: SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height).data, pixelData: SEG_now_choose.pixelData.slice() });
-                if (SEGtempUndoStorage.length > 15) SEGtempUndoStorage.shift();
-                SEGtempRedoStorage = [];
-
-                //setSEG2PixelData(angle2point);
-                fillSEG2PixelData(angle2point, SegMark.canvas);
-                refreshMark(SegMark);
-            } else {
-                let angle2point = rotateCalculation(e, true);
-                var SegMark = SEG_now_choose;
-
-                if (SEG_now_choose) SEGtempUndoStorage.push({ ImageData: SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height).data, pixelData: SEG_now_choose.pixelData.slice() });
-                if (SEGtempUndoStorage.length > 15) SEGtempUndoStorage.shift();
-                SEGtempRedoStorage = [];
-
-                //setSEG2PixelData(angle2point);
-                fillSEG2PixelData(angle2point, SegMark.canvas);
-                refreshMark(SegMark);
+                SegMark.ctx.putImageData(pixelData, 0, 0);
             }
-            displayAllMark();
-        })
+            PatientMark.push(SegMark);
+            SEG_now_choose = SegMark;
+        }
+
+        if (SEG_now_choose) SEGtempUndoStorage.push({ ImageData: SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height).data, pixelData: SEG_now_choose.pixelData.slice() });
+        if (SEGtempUndoStorage.length > 15) SEGtempUndoStorage.shift();
+        SEGtempRedoStorage = [];
+
+        let angle2point = rotateCalculation(e, true);
+        setSEG2PixelData(angle2point);
+        refreshMark(SEG_now_choose);
+        displayAllMark();
+    }
+    onMouseMove(e) {
+        if (MouseDownCheck && !rightMouseDown && SEG_now_choose && openWindow != true) {
+            let angle2point = rotateCalculation(e, true);
+            if (Previous_angle2point && (Previous_angle2point[0] != angle2point[0] || Previous_angle2point[1] != angle2point[1])) {
+                setSEG2PixelData(angle2point);
+                Line_setSEG2PixelData(Previous_angle2point, angle2point);
+
+                refreshMarkFromSop(GetViewport().sop);
+                displayAllMark();
+            }
+            Previous_angle2point = angle2point;
+        }
+        if (!rightMouseDown && openWindow != true) {
+            var rect = getByid("SegBrushSizeText").value;
+            rect = parseInt(rect);
+            if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
+            refreshMarkFromSop(GetViewport().sop);
+            let angle2point = rotateCalculation(e, false);
+            var MarkCanvas = GetViewportMark();
+            var segCtx = MarkCanvas.getContext("2d");
+            segCtx.beginPath();
+            segCtx.strokeStyle = "#FFFF00";
+            segCtx.lineWidth = "3";
+            segCtx.arc(angle2point[0], angle2point[1], rect, 0, 2 * Math.PI);
+            segCtx.stroke();
+            segCtx.closePath();
+        }
+    }
+    onMouseUp(e) {
+        Previous_angle2point = undefined;
+        if (openMouseTool && rightMouseDown) displayMark();
+
+        if (openLink) displayAllRuler();
+    }
+    onSwitch() {
     }
 }
 
@@ -996,99 +1093,8 @@ function writeSeg() {
         if (BL_mode == 'writeSeg') drawBorder(getByid("drawSEG"));
         if (BL_mode == 'eraseSEG') drawBorder(getByid("eraseSEG"));
 
-        BlueLightMousedownList = [];
-        BlueLightMousedownList.push(function (e) {
-            if (openWindow == true) return;
-
-            var break1 = false;
-            for (var n_s = 0; n_s < PatientMark.length; n_s++) {
-                if (PatientMark[n_s].sop == GetViewport().sop) {
-                    if (break1 == true) break;
-                    if (PatientMark[n_s].type == "SEG") {
-                        SEG_now_choose = PatientMark[n_s];
-                        break1 = true;
-                    }
-                }
-            }
-            if (break1 == false) {
-                var SegMark = new BlueLightMark();
-                SegMark.setQRLevels(GetViewport().QRLevels);
-                SegMark.type = SegMark.hideName = SegMark.showName = "SEG";
-                SegMark.ImagePositionPatient = GetViewport().tags.ImagePositionPatient;
-                SegMark.pixelData = new Uint8ClampedArray(GetViewport().canvas.width * GetViewport().canvas.height);
-
-                if (!SegMark.canvas) {
-                    SegMark.canvas = document.createElement("CANVAS");
-                    SegMark.canvas.width = GetViewport().canvas.width;
-                    SegMark.canvas.height = GetViewport().canvas.height;
-                    SegMark.ctx = SegMark.canvas.getContext('2d');
-
-                    var pixelData = SegMark.ctx.getImageData(0, 0, SegMark.canvas.width, SegMark.canvas.height);
-
-                    for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
-                        if (SegMark.pixelData[j] != 0) {
-                            pixelData.data[i] = 0;
-                            pixelData.data[i + 1] = 0;
-                            pixelData.data[i + 2] = 255;
-                            pixelData.data[i + 3] = 255;
-                        }
-                    }
-                    SegMark.ctx.putImageData(pixelData, 0, 0);
-                }
-                PatientMark.push(SegMark);
-                SEG_now_choose = SegMark;
-            }
-
-            if (SEG_now_choose) SEGtempUndoStorage.push({ ImageData: SEG_now_choose.canvas.getContext("2d").getImageData(0, 0, SEG_now_choose.canvas.width, SEG_now_choose.canvas.height).data, pixelData: SEG_now_choose.pixelData.slice() });
-            if (SEGtempUndoStorage.length > 15) SEGtempUndoStorage.shift();
-            SEGtempRedoStorage = [];
-
-            let angle2point = rotateCalculation(e, true);
-            setSEG2PixelData(angle2point);
-            refreshMark(SEG_now_choose);
-            displayAllMark();
-        });
-
-        var Previous_angle2point;
-
-        BlueLightMousemoveList = [];
-        BlueLightMousemoveList.push(function (e) {
-            if (MouseDownCheck && !rightMouseDown && SEG_now_choose && openWindow != true) {
-                let angle2point = rotateCalculation(e, true);
-                if (Previous_angle2point && (Previous_angle2point[0] != angle2point[0] || Previous_angle2point[1] != angle2point[1])) {
-                    setSEG2PixelData(angle2point);
-                    Line_setSEG2PixelData(Previous_angle2point, angle2point);
-
-                    refreshMarkFromSop(GetViewport().sop);
-                    displayAllMark();
-                }
-                Previous_angle2point = angle2point;
-            }
-            if (!rightMouseDown && openWindow != true) {
-                var rect = getByid("SegBrushSizeText").value;
-                rect = parseInt(rect);
-                if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
-                refreshMarkFromSop(GetViewport().sop);
-                let angle2point = rotateCalculation(e, false);
-                var MarkCanvas = GetViewportMark();
-                var segCtx = MarkCanvas.getContext("2d");
-                segCtx.beginPath();
-                segCtx.strokeStyle = "#FFFF00";
-                segCtx.lineWidth = "3";
-                segCtx.arc(angle2point[0], angle2point[1], rect, 0, 2 * Math.PI);
-                segCtx.stroke();
-                segCtx.closePath();
-            }
-        });
-
-        BlueLightMouseupList = [];
-        BlueLightMouseupList.push(function (e) {
-            Previous_angle2point = undefined;
-            if (openMouseTool && rightMouseDown) displayMark();
-
-            if (openLink) displayAllRuler();
-        });
-        return;
+        toolEvt.onSwitch();
+        toolEvt = new writeSegTool();
     }
 }
 
