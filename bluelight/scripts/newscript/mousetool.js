@@ -1,5 +1,3 @@
-//代表目前處於基本操作狀態
-var openMouseTool = false;
 
 function scale_size(e, currX, currY) {
     var viewport = GetViewport(), canvas = GetViewport().canvas;
@@ -58,11 +56,10 @@ class MoveTool extends ToolEvt {
         }
     }
     onMouseUp(e) {
-        if (openMouseTool && rightMouseDown) displayMark();
+        if (rightMouseDown) displayMark();
         if (openLink) displayAllRuler();
     }
     onSwitch() {
-        openMouseTool = false;
         set_BL_model.onchange = function () { return 0; };
     }
     onTouchMove(e, e2) {
@@ -116,7 +113,6 @@ class MoveTool extends ToolEvt {
 }
 
 function mouseTool() {
-    openMouseTool = true;
     toolEvt.onSwitch();
     toolEvt = new MoveTool();
     /*if (BL_mode == 'MouseTool') {

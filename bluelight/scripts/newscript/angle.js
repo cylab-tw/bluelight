@@ -73,7 +73,7 @@ class AngleTool {
     }
 
     onMouseUp(e) {
-        if (openMouseTool && rightMouseDown) displayMark();
+        if ( rightMouseDown) displayMark();
         if (Angle_now_choose) {
             Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
             Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
@@ -197,7 +197,7 @@ class AngleTool2 {
         }
     }
     onMouseUp(e) {
-        if (openMouseTool && rightMouseDown) displayMark();
+        if (rightMouseDown) displayMark();
         if (Angle_now_choose) {
             Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
             Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
@@ -297,7 +297,7 @@ class AngleTool2 {
         }
     }
     onTouchEnd(e, e2) {
-        if (openMouseTool && rightTouchDown) displayMark();
+        if (rightTouchDown) displayMark();
         if (Angle_now_choose) {
             Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
             Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];

@@ -438,8 +438,6 @@ function DcmLoader(image, viewport) {
     setTransform(viewport.index);
     MarkCanvas.style.transform = MainCanvas.style.transform;
 
-    if (openWindow == false && openZoom == false) openMouseTool = true;
-
     //隱藏Table
     getByid("TableSelectNone").selected = true;
     displayMark(viewport.index);//BlueLight2//

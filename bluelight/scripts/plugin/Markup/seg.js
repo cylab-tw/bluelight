@@ -439,7 +439,6 @@ getByid("writeSEG").onclick = function () {
         getByid("overlay2seg").style.display = "";
         getByid('SegStyleDiv').style.display = 'flex';
         set_BL_model('writeSeg');
-        openWheel = true;
         writeSeg();
     };
 
@@ -920,7 +919,6 @@ class fillSEGTool extends ToolEvt {
 
     onMouseDown(e) {
 
-        if (openWindow == true) return;
         var break1 = false;
         for (var n_s = 0; n_s < PatientMark.length; n_s++) {
             if (PatientMark[n_s].sop == GetViewport().sop) {
@@ -997,7 +995,6 @@ var Previous_angle2point;
 class writeSegTool extends ToolEvt {
 
     onMouseDown(e) {
-        if (openWindow == true) return;
 
         var break1 = false;
         for (var n_s = 0; n_s < PatientMark.length; n_s++) {
@@ -1048,7 +1045,7 @@ class writeSegTool extends ToolEvt {
         displayAllMark();
     }
     onMouseMove(e) {
-        if (MouseDownCheck && !rightMouseDown && SEG_now_choose && openWindow != true) {
+        if (MouseDownCheck && !rightMouseDown && SEG_now_choose) {
             let angle2point = rotateCalculation(e, true);
             if (Previous_angle2point && (Previous_angle2point[0] != angle2point[0] || Previous_angle2point[1] != angle2point[1])) {
                 setSEG2PixelData(angle2point);
@@ -1059,7 +1056,7 @@ class writeSegTool extends ToolEvt {
             }
             Previous_angle2point = angle2point;
         }
-        if (!rightMouseDown && openWindow != true) {
+        if (!rightMouseDown) {
             var rect = getByid("SegBrushSizeText").value;
             rect = parseInt(rect);
             if (isNaN(rect) || rect < 1 || rect > 1024) rect = getByid("SegBrushSizeText").value = 10;
@@ -1077,7 +1074,7 @@ class writeSegTool extends ToolEvt {
     }
     onMouseUp(e) {
         Previous_angle2point = undefined;
-        if (openMouseTool && rightMouseDown) displayMark();
+        if (rightMouseDown) displayMark();
 
         if (openLink) displayAllRuler();
     }

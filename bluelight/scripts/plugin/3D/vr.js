@@ -215,7 +215,6 @@ getByid("MouseOperation_VR").onclick = function () {
     set_BL_model('mouseTool_VR');
     //mouseTool_VR();
     //cancelTools();
-    //openMouseTool = true;
     drawBorderVR(this);
 }
 
@@ -420,7 +419,6 @@ function initVR() {
         GetViewport(0).div.removeEventListener("touchend", touchend3D, false);
 
         cancelTools();
-        openMouseTool = true;
         drawBorder(getByid("MouseOperation"));
         getByid("ImgVR").src = "../image/icon/lite/b_3D_off.png";
         getByid("3dDisplay").style.display = "none";

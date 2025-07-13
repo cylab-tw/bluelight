@@ -14,9 +14,6 @@ class ToolEvt {
 }
 let toolEvt = new ToolEvt();
 
-//代表目前開放使用滾輪切換影像，無論處於什麼操作模式
-var openWheel = false;
-
 //表示按住了滑鼠左鍵
 var MouseDownCheck = false;
 //表示按住了滑鼠右鍵
@@ -171,11 +168,10 @@ function BlueLightWheel(e) {
     if (!ToolEvt.enable) return;
     if (viewportNumber != this.viewportNum) return;
     if (getByid("DICOMTagsSelect").selected) return;
-    var viewportNum = viewportNumber;
-    if (!(openWheel == true || openMouseTool == true || openWindow == true || openZoom == true || openMeasure == true)) return;
+    
     if (openLink == false) {
-        if (e.deltaY < 0) GetViewport(viewportNum).nextFrame(true);
-        else GetViewport(viewportNum).nextFrame(false);
+        if (e.deltaY < 0) GetViewport().nextFrame(true);
+        else GetViewport().nextFrame(false);
     }
     else {
         for (var z = 0; z < Viewport_Total; z++) {
@@ -183,15 +179,7 @@ function BlueLightWheel(e) {
             else GetViewport(z).nextFrame(false);
         }
     }
-
     toolEvt.onWheel(e);
-}
-
-function Mouseout(e) {
-    /*for (var z = 0; z < Viewport_Total; z++) {
-        GetViewport(z).setLabel("PixelValue", "");
-        GetViewport(z).refleshLabel();
-    }*/
 }
 
 let dragged = null;

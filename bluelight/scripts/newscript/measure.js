@@ -72,7 +72,7 @@ class MeasureTool extends ToolEvt {
         Measure_now_choose = null;
         displayAllMark();
 
-        if (openMouseTool == true && rightMouseDown == true) displayMark();
+        if (rightMouseDown == true) displayMark();
 
         if (openLink) displayAllRuler();
     }
@@ -143,7 +143,7 @@ class MeasureTool extends ToolEvt {
         Measure_now_choose = null;
         displayAllMark();
 
-        if (openMouseTool == true && rightMouseDown == true) displayMark();
+        if (rightMouseDown == true) displayMark();
 
         if (openLink) displayAllRuler();
     }

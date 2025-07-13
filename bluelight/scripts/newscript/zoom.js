@@ -1,6 +1,4 @@
 
-//表示現在開啟放大鏡功能
-var openZoom = false;
 //放大鏡元素
 let magnifierDiv;
 
@@ -97,14 +95,13 @@ class zoomTool extends ToolEvt {
         }
     }
     onMouseUp(e) {
-        if (openMouseTool && rightMouseDown) displayMark();
+        if (rightMouseDown) displayMark();
         magnifierDiv.hide();
         if (openLink) displayAllRuler();
     }
     onSwitch() {
         getByid('labelZoom').style.display = 'none';
         getByid('textZoom').style.display = 'none';
-        openZoom = false;
         magnifierDiv.hide();
         set_BL_model.onchange = function () { return 0; };
     }
@@ -136,7 +133,6 @@ class zoomTool extends ToolEvt {
 
 function zoom() {
 
-    openZoom = true;
     refleshViewport();
     getByid('labelZoom').style.display = '';
     getByid('textZoom').style.display = '';

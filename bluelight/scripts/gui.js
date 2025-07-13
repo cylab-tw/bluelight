@@ -1,6 +1,4 @@
 
-//表示目前icon圖示的RWD收合功能為開啟狀態
-var openRWD = true;
 //邊框寬度
 var bordersize = 5;
 
@@ -323,7 +321,6 @@ class LeftLayout {
 //此段原有Bug，若沒有載入滿Series，便載入最後一個，現在已修復
 function PictureOnclick(QRLevel) {
     if (!openLeftImgClick || !QRLevel) return;
-    WindowOpen = false;
     cancelTools();
     resetViewport();
     //drawBorder(getByid("MouseOperation"));

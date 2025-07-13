@@ -692,7 +692,6 @@ function html_onload() {
   }*/
 
   getByid("rwdImgTag").onclick = function () {
-    openRWD = !openRWD;
     EnterRWD();
   }
 
@@ -723,40 +722,15 @@ function html_onload() {
         if (openLink) SetAllViewport("windowWidth", GetViewport().windowWidth);
       }
       refleshViewport();
-      WindowOpen = true;
       hideAllDrawer();
     }
   }
-
-  /*getByid("WindowLevelSelect").onchange = function () {
-    if (getByid("WindowDefault").selected == true) {
-      getByid("textWC").value = GetViewport().windowCenter = GetViewport().content.image.windowCenter;
-      getByid("textWW").value = GetViewport().windowWidth = GetViewport().content.image.windowWidth;
-      if (openLink) SetAllViewport("windowCenter", GetViewport().windowCenter);
-      if (openLink) SetAllViewport("windowWidth", GetViewport().windowWidth);
-      refleshViewport();
-      WindowOpen = true;
-      return;
-    }
-    for (var i = 0; i < getClass("WindowSelect").length; i++) {
-      if (getClass("WindowSelect")[i].selected == true) {
-        GetViewport().windowCenter = getByid("textWC").value = parseInt(getClass("WindowSelect")[i].getAttribute('wc'));
-        GetViewport().windowWidth = getByid("textWW").value = parseInt(getClass("WindowSelect")[i].getAttribute('ww'));
-        if (openLink) SetAllViewport("windowCenter", GetViewport().windowCenter);
-        if (openLink) SetAllViewport("windowWidth", GetViewport().windowWidth);
-        refleshViewport();
-        WindowOpen = true;
-        break;
-      }
-    }
-  }*/
 
   getByid("textWC").onchange = function () {
     GetViewport().windowCenter = parseInt(getByid("textWC").value);
     getByid("WindowCustom").selected = true;
     if (openLink) SetAllViewport("windowCenter", GetViewport().windowCenter);
     refleshViewport();
-    WindowOpen = true;
   }
 
   getByid("textWW").onchange = function () {
@@ -764,7 +738,6 @@ function html_onload() {
     getByid("WindowCustom").selected = true;
     if (openLink) SetAllViewport("windowWidth", GetViewport().windowWidth);
     refleshViewport();
-    WindowOpen = true;
   }
 
   getByid("labelZoom").onchange = function () {

@@ -153,7 +153,7 @@ class CalibrationTool extends ToolEvt {
 
         displayAllMark();
 
-        if (openMouseTool == true && rightMouseDown == true) displayMark();
+        if (rightMouseDown == true) displayMark();
 
         if (openLink) displayAllRuler();
     }

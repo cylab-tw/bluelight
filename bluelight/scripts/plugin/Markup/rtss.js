@@ -122,7 +122,6 @@ getByid("writeRTSS").onclick = function () {
     if (true) {
         getByid('RtssDiv').style.display = 'flex';
         set_BL_model('writertss');
-        openWheel = true;
         writertss();
     }
 

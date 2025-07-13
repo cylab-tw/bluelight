@@ -21,7 +21,7 @@ class ScrollTool extends ToolEvt {
         }
     }
     onMouseUp(e) {
-        if (openMouseTool && rightMouseDown) displayMark();
+        if (rightMouseDown) displayMark();
         if (openLink) displayAllRuler();
     }
     onSwitch() {

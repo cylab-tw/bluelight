@@ -1,12 +1,9 @@
 
-var openArrowRuler = false;
 var Arrow_Point1 = [0, 0];
 var Arrow_Point2 = [0, 0];
 var ArrowRule_previous_choose = null;
 var MeasureIrregular_previous_choose = null;
 var MeasureIrregular_now_choose = null;
-
-var openTextAnnotation = false;
 
 class MeasureIrregularTool extends ToolEvt {
 
@@ -121,7 +118,6 @@ class TextAnnotationTool extends ToolEvt {
     }
     onSwitch() {
         displayMark();
-        openTextAnnotation = false;
         getByid("span_TextAnnotation").style.display = "none";
         SetTable();
         set_BL_model.onchange = function () { return 0; };
@@ -194,11 +190,10 @@ class ArrowRulerTool extends ToolEvt {
         ArrowRule_previous_choose = null;
         displayAllMark();
 
-        if (openMouseTool == true && rightMouseDown == true) displayMark();
+        if (rightMouseDown == true) displayMark();
     }
     onSwitch() {
         displayMark();
-        openArrowRuler = false;
         set_BL_model.onchange = function () { return 0; };
     }
 }
@@ -212,7 +207,6 @@ function MeasureIrregular() {
     if (BL_mode == 'TextAnnotation') {
 
         cancelTools();
-        openTextAnnotation = true;
         getByid("span_TextAnnotation").style.display = "";
         SetTable();
         toolEvt.onSwitch();
@@ -221,7 +215,6 @@ function MeasureIrregular() {
 
     if (BL_mode == 'ArrowRuler') {
         cancelTools();
-        openArrowRuler = true;
         toolEvt.onSwitch();
         toolEvt = new ArrowRulerTool();
     }

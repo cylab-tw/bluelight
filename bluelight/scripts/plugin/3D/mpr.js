@@ -561,7 +561,7 @@ function initMPR() {
         GetViewport(1).div.removeEventListener("mouseup", Anatomical_SectionMouseMouseup, false);
         //GetViewport(1).div.removeEventListener("wheel", Wheel, false);
         cancelTools();
-        openMouseTool = true;
+        
         drawBorder(getByid("MouseOperation"));
         getByid("ImgMPR").src = "../image/icon/lite/b_AdvancedMode_off.png";
         getByid("3dDisplay").style.display = "none";

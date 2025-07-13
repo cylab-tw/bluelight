@@ -224,7 +224,7 @@ function exitMPR2() {
     if (getByid("canvas1_MPR")) GetViewport(1).div.removeChild(getByid("canvas1_MPR"));
     if (getByid("canvas2_MPR")) GetViewport(0).div.removeChild(getByid("canvas2_MPR"));
     cancelTools();
-    openMouseTool = true;
+    
     drawBorder(getByid("MouseOperation"));
     getByid("ImgMPR2").src = "../image/icon/lite/b_LocalizerLines.png";
     //getByid("3dDisplay").style.display = "none";
