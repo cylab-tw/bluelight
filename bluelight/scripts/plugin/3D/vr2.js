@@ -1,5 +1,4 @@
 
-var openVR2 = false;
 var VR2_LutArray = [];
 
 function load3DPlugin() {
@@ -275,26 +274,25 @@ getByid("ImgVR2").onclick = function () {
     if (this.enable == false) return;
     getByid("3DImgeDIv").style.display = "none";
 
-    openVR2 = !openVR2;
-    img2darkByClass("VR2", !openVR2);
+    img2darkByClass("VR2", false);
 
-    getByid("exitVR2").style.display = openVR2 == true ? "" : "none";
-    getByid("windowVR2").style.display = openVR2 == true ? "" : "none";
-    getByid("saveVR2").style.display = openVR2 == true ? "" : "none";
-    getByid("moveVR2").style.display = openVR2 == true ? "" : "none";
+    getByid("exitVR2").style.display = "";
+    getByid("windowVR2").style.display = "";
+    getByid("saveVR2").style.display = "";
+    getByid("moveVR2").style.display = "";
     set_BL_model('VR2');
     initVR2();
 
-    this.style.display = openVR2 != true ? "" : "none";
+    this.style.display = "none";
     getByid("exitVR2").onclick = function () {
         openLeftImgClick = true;
-        openVR2 = false;
-        img2darkByClass("VR2", !openVR2);
-        getByid("ImgVR2").style.display = openWriteGSPS != true ? "" : "none";
-        getByid("exitVR2").style.display = openWriteGSPS == true ? "" : "none";
-        getByid("windowVR2").style.display = openWriteRTSS == true ? "" : "none";
-        getByid("saveVR2").style.display = openWriteRTSS == true ? "" : "none";
-        getByid("moveVR2").style.display = openWriteRTSS == true ? "" : "none";
+
+        img2darkByClass("VR2", true);
+        getByid("ImgVR2").style.display = "";
+        getByid("exitVR2").style.display = "none";
+        getByid("windowVR2").style.display = "none";
+        getByid("saveVR2").style.display = "none";
+        getByid("moveVR2").style.display = "none";
         for (cube of VRCube.VRCubeList) {
             cube.clear();
         }

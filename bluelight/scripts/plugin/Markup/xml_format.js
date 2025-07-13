@@ -1,5 +1,3 @@
-//代表XML標記模式為開啟狀態
-var openWriteXML = false;
 
 function loadMarkupPlugin() {
   if (getByid("MarkupImgParent")) return;
@@ -59,39 +57,38 @@ getByid("writeXML").onclick = function () {
   if (this.enable == false) return;
   getByid("MarkupDIv").style.display = "none";
   cancelTools();
-  openWriteXML = true;
-  img2darkByClass("XML", !openWriteXML);
-  openLeftImgClick = !openWriteXML;
-  if (openWriteXML == true) {
+
+  img2darkByClass("XML", false);
+  openLeftImgClick = false;
+  if (true) {
     ShowElemByID("xmlMarkName");
     set_BL_model('writexml');
     writexml();
   }
-  //this.src = openWriteXML == true ? '../image/icon/lite/xml_on.png' : '../image/icon/lite/xml_off.png';
-  this.style.display = openWriteXML != true ? "" : "none";
-  getByid("eraseXML").style.display = openWriteXML == true ? "" : "none";
-  getByid("exitXML").style.display = openWriteXML == true ? "" : "none";
-  getByid("saveXML").style.display = openWriteXML == true ? "" : "none";
-  getByid("drawXML").style.display = openWriteXML == true ? "" : "none";
+
+  this.style.display = "none";
+  getByid("eraseXML").style.display = "";
+  getByid("exitXML").style.display = "";
+  getByid("saveXML").style.display = "";
+  getByid("drawXML").style.display = "";
 
   ShowElemByID("xmlMarkName");
   SetTable();
   displayMark();
 
   getByid("exitXML").onclick = function () {
-    openWriteXML = false;
     openLeftImgClick = true;
-    img2darkByClass("XML", !openWriteXML);
+    img2darkByClass("XML", true);
     HideElemByID("xmlMarkName");
-    getByid("writeXML").style.display = openWriteXML != true ? "" : "none";
-    getByid("eraseXML").style.display = openWriteXML == true ? "" : "none";
-    getByid("exitXML").style.display = openWriteXML == true ? "" : "none";
-    getByid("saveXML").style.display = openWriteXML == true ? "" : "none";
-    getByid("drawXML").style.display = openWriteXML == true ? "" : "none";
+    getByid("writeXML").style.display = "";
+    getByid("eraseXML").style.display = "none";
+    getByid("exitXML").style.display = "none";
+    getByid("saveXML").style.display = "none";
+    getByid("drawXML").style.display = "none";
     SetTable();
-    displayMark();
     xml_now_choose = null;
     getByid('MouseOperation').click();
+    displayMark();
   }
 
 
@@ -135,26 +132,24 @@ class eraseXMLTool extends ToolEvt {
     displayMark();
     set_BL_model.onchange = function () { return 0; };
   }
+  onKeyDown(KeyboardKeys) {
+    var key = KeyboardKeys.which
+    if (xml_now_choose && (key === 46 || key === 110)) {
+      PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
+      displayMark();
+      xml_now_choose = null;
+      refreshMarkFromSop(GetViewport().sop);
+    }
+    xml_now_choose = null;
+  }
 }
 
 function eraseXML() {
   toolEvt.onSwitch();
   toolEvt = new eraseXMLTool();
-
   /*if (BL_mode == 'eraseXML') {
   }*/
 }
-
-window.addEventListener('keydown', (KeyboardKeys) => {
-  var key = KeyboardKeys.which
-  if ((openWriteXML) && xml_now_choose && (key === 46 || key === 110)) {
-    PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
-    displayMark();
-    xml_now_choose = null;
-    refreshMarkFromSop(GetViewport().sop);
-  }
-  xml_now_choose = null;
-});
 
 getByid("xmlMarkNameText").onchange = function () {
   if (xml_now_choose) {
@@ -176,7 +171,9 @@ function drawXML_mark_Write(obj) {
   ctx.globalAlpha = 1.0;
   ctx.font = "" + (parseInt(ctx.lineWidth) * 12) + "px Arial";
   ctx.fillStyle = "red";
-  if (openWriteXML == true) {
+
+  var modeXML = (toolEvt.constructor.name == "writeXMLTool" || toolEvt.constructor.name == "eraseXMLTool")
+  if (modeXML) {
     for (var o = 0; o < Mark.pointArray.length; o += 2) {
       ctx.strokeStyle = "" + Mark.color;
       ctx.beginPath();
@@ -191,7 +188,7 @@ function drawXML_mark_Write(obj) {
       ctx.stroke();
 
       ctx.closePath();
-      if (openWriteXML == true) {
+      if (true) {
         ctx.lineWidth = "" + parseInt(ctx.lineWidth) * 2;
         ctx.beginPath();
         if (xml_now_choose && xml_now_choose.Mark == Mark) {
@@ -258,7 +255,7 @@ function drawXML_mark_Write(obj) {
       ctx.rect(x1, y1, x2 - x1, y2 - y1);
       ctx.stroke();
       ctx.closePath();
-      if (openWriteXML == true) {
+      if (modeXML) {
         ctx.lineWidth = "" + parseInt(ctx.lineWidth) * 2;
         ctx.beginPath();
         ctx.fillStyle = "#FF0000";
@@ -553,6 +550,16 @@ class writeXMLTool extends ToolEvt {
       //refreshMark(xml_previous_choose);
       xml_previous_choose = null;
     }
+  }
+  onKeyDown(KeyboardKeys) {
+    var key = KeyboardKeys.which
+    if (xml_now_choose && (key === 46 || key === 110)) {
+      PatientMark.splice(PatientMark.indexOf(xml_now_choose.reference), 1);
+      displayMark();
+      xml_now_choose = null;
+      refreshMarkFromSop(GetViewport().sop);
+    }
+    xml_now_choose = null;
   }
 }
 

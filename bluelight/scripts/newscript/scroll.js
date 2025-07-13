@@ -1,17 +1,6 @@
-//表示現在為開放用拖曳切換影像
-var openChangeFile = false;
-
 
 class ScrollTool extends ToolEvt {
 
-    /*onMouseDown(e){
-        switch (e.which) {
-                case 1: MouseDownCheck = true; break;
-                case 2: break;
-                case 3: rightMouseDown = true; break;
-                default: break;
-            }
-    }*/
     onMouseMove(e) {
         if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
         if (MouseDownCheck) {
@@ -36,7 +25,6 @@ class ScrollTool extends ToolEvt {
         if (openLink) displayAllRuler();
     }
     onSwitch() {
-        openChangeFile = false;
         set_BL_model.onchange = function () { return 0; };
     }
     onTouchMove(e, e2) {
@@ -55,13 +43,11 @@ class ScrollTool extends ToolEvt {
 }
 
 function scroll() {
-    openChangeFile = true;
     toolEvt.onSwitch();
     toolEvt = new ScrollTool();
     /*if (BL_mode == 'scroll') {
     }*/
 };
-
 
 class ScrollBar {
     static selectedScrollBar = -1;

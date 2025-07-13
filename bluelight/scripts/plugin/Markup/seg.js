@@ -1,5 +1,4 @@
-//代表SEG標記模式為開啟狀態
-var openWriteSEG = false;
+
 var SEGtempUndoStorage = [];
 var SEGtempRedoStorage = [];
 
@@ -433,10 +432,10 @@ getByid("writeSEG").onclick = function () {
     if (this.enable == false) return;
     getByid("MarkupDIv").style.display = "none";
     cancelTools();
-    openWriteSEG = true, SEGtempUndoStorage = [], SEGtempRedoStorage = [];
-    img2darkByClass("SEG", !openWriteSEG);
-    openLeftImgClick = !openWriteSEG;
-    if (openWriteSEG == true) {
+    SEGtempUndoStorage = [], SEGtempRedoStorage = [];
+    img2darkByClass("SEG", false);
+    openLeftImgClick = false;
+    if (true) {
         getByid("overlay2seg").style.display = "";
         getByid('SegStyleDiv').style.display = 'flex';
         set_BL_model('writeSeg');
@@ -444,29 +443,28 @@ getByid("writeSEG").onclick = function () {
         writeSeg();
     };
 
-    this.src = openWriteSEG == true ? '../image/icon/lite/seg_on.png' : '../image/icon/lite/seg_off.png';
-    this.style.display = openWriteSEG != true ? "" : "none";
-    getByid("exitSEG").style.display = openWriteSEG == true ? "" : "none";
-    getByid("eraseSEG").style.display = openWriteSEG == true ? "" : "none";
-    getByid("fillSEG").style.display = openWriteSEG == true ? "" : "none";
-    getByid("UndoSEG").style.display = openWriteSEG == true ? "" : "none";
-    getByid("RedoSEG").style.display = openWriteSEG == true ? "" : "none";
-    getByid("saveSEG").style.display = openWriteSEG == true ? "" : "none";
-    getByid("drawSEG").style.display = openWriteSEG == true ? "" : "none";
+    this.src = '../image/icon/lite/seg_on.png'/*: '../image/icon/lite/seg_off.png'*/;
+    this.style.display = "none";
+    getByid("exitSEG").style.display = "";
+    getByid("eraseSEG").style.display = "";
+    getByid("fillSEG").style.display = "";
+    getByid("UndoSEG").style.display = "";
+    getByid("RedoSEG").style.display = "";
+    getByid("saveSEG").style.display = "";
+    getByid("drawSEG").style.display = "";
 
     getByid("exitSEG").onclick = function () {
-        openWriteSEG = false;
         openLeftImgClick = true;
-        img2darkByClass("SEG", !openWriteSEG);
+        img2darkByClass("SEG", true);
         getByid('SegStyleDiv').style.display = 'none';
-        getByid("writeSEG").style.display = openWriteSEG != true ? "" : "none";
-        getByid("exitSEG").style.display = openWriteSEG == true ? "" : "none";
-        getByid("eraseSEG").style.display = openWriteSEG == true ? "" : "none";
-        getByid("fillSEG").style.display = openWriteSEG == true ? "" : "none";
-        getByid("UndoSEG").style.display = openWriteSEG == true ? "" : "none";
-        getByid("RedoSEG").style.display = openWriteSEG == true ? "" : "none";
-        getByid("saveSEG").style.display = openWriteSEG == true ? "" : "none";
-        getByid("drawSEG").style.display = openWriteSEG == true ? "" : "none";
+        getByid("writeSEG").style.display = "";
+        getByid("exitSEG").style.display = "none";
+        getByid("eraseSEG").style.display = "none";
+        getByid("fillSEG").style.display = "none";
+        getByid("UndoSEG").style.display = "none";
+        getByid("RedoSEG").style.display = "none";
+        getByid("saveSEG").style.display = "none";
+        getByid("drawSEG").style.display = "none";
         SetTable();
         displayMark();
         getByid('MouseOperation').click();

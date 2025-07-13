@@ -1,5 +1,3 @@
-//代表RTSS標記模式為開啟狀態
-var openWriteRTSS = false;
 
 function loadMarkupPlugin() {
     if (getByid("MarkupImgParent")) return;
@@ -105,13 +103,6 @@ function DeleteSelectedRTSS() {
     refreshMarkFromSop(GetViewport().sop);
 }
 
-window.addEventListener('keydown', (KeyboardKeys) => {
-    var key = KeyboardKeys.which
-    if (openWriteRTSS == true && (key === 46 || key === 110)) {
-        DeleteSelectedRTSS();
-    }
-});
-
 getByid("drawRTSS").onclick = function () {
     set_BL_model('writertss');
     writertss();
@@ -124,33 +115,31 @@ getByid("writeRTSS").onclick = function () {
     if (this.enable == false) return;
     getByid("MarkupDIv").style.display = "none";
     cancelTools();
-    openWriteRTSS = true;
-    img2darkByClass("RTSS", !openWriteRTSS);
-    openLeftImgClick = !openWriteRTSS;
 
-    if (openWriteRTSS == true) {
+    img2darkByClass("RTSS", false);
+    openLeftImgClick = false;
+
+    if (true) {
         getByid('RtssDiv').style.display = 'flex';
         set_BL_model('writertss');
         openWheel = true;
         writertss();
     }
 
-    //this.src = openWriteRTSS == true ? '../image/icon/lite/rtssdraw_ON.png' : '../image/icon/lite/rtssdraw_OFF.png';
-    this.style.display = openWriteRTSS != true ? "" : "none";
-    getByid("exitRTSS").style.display = openWriteRTSS == true ? "" : "none";
-    getByid("eraseRTSS").style.display = openWriteRTSS == true ? "" : "none";
-    getByid("saveRTSS").style.display = openWriteRTSS == true ? "" : "none";
-    getByid("drawRTSS").style.display = openWriteRTSS == true ? "" : "none";
+    this.style.display = "none";
+    getByid("exitRTSS").style.display = "";
+    getByid("eraseRTSS").style.display = "";
+    getByid("saveRTSS").style.display = "";
+    getByid("drawRTSS").style.display = "";
     getByid("exitRTSS").onclick = function () {
-        openWriteRTSS = false;
         openLeftImgClick = true;
-        img2darkByClass("RTSS", !openWriteRTSS);
-        getByid('RtssDiv').style.display = 'none';
-        getByid("writeRTSS").style.display = openWriteRTSS != true ? "" : "none";
-        getByid("exitRTSS").style.display = openWriteRTSS == true ? "" : "none";
-        getByid("eraseRTSS").style.display = openWriteRTSS == true ? "" : "none";
-        getByid("saveRTSS").style.display = openWriteRTSS == true ? "" : "none";
-        getByid("drawRTSS").style.display = openWriteRTSS == true ? "" : "none";
+        img2darkByClass("RTSS", true);
+        getByid("writeRTSS").style.display = "";
+        getByid('RtssDiv').style.display = "none";
+        getByid("exitRTSS").style.display = "none";
+        getByid("eraseRTSS").style.display = "none";
+        getByid("saveRTSS").style.display = "none";
+        getByid("drawRTSS").style.display = "none";
         displayMark();
         SetTable();
         getByid('MouseOperation').click();
@@ -366,6 +355,10 @@ class eraseRTSSTool extends ToolEvt {
     onSwitch() {
         displayMark();
         set_BL_model.onchange = function () { return 0; };
+    }
+    onKeyDown(KeyboardKeys) {
+        var key = KeyboardKeys.which
+        if (key === 46 || key === 110) DeleteSelectedRTSS();
     }
 }
 
@@ -592,6 +585,10 @@ class writeRTSSTool extends ToolEvt {
     }
     onMouseUp(e) {
         if (RTSS_now_choose) RTSS_now_choose = null;
+    }
+    onKeyDown(KeyboardKeys) {
+        var key = KeyboardKeys.which
+        if (key === 46 || key === 110) DeleteSelectedRTSS();
     }
 }
 

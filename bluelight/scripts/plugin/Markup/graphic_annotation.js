@@ -1,5 +1,4 @@
-//代表GSPS標記模式為開啟狀態
-var openWriteGSPS = false;
+
 //代表Graphic Annotation標記模式為開啟狀態
 var openWriteGraphic = false;
 
@@ -70,16 +69,6 @@ function loadWriteGraphic() {
 }
 loadWriteGraphic();
 
-window.addEventListener('keydown', (KeyboardKeys) => {
-    var key = KeyboardKeys.which
-    if ((openWriteGSPS || openWriteGraphic) && Graphic_now_choose && (key === 46 || key === 110)) {
-        PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
-        displayMark();
-        Graphic_now_choose = null;
-        refreshMarkFromSop(GetViewport().sop);
-    }
-});
-
 /*function GetGraphicColor() {//舊時的
     //if (getByid("Graphicselected").selected) return "#0000FF";
     if (getByid("GraphicBlackSelect").selected) return "#000000";
@@ -128,34 +117,33 @@ getByid("writeGSPS").onclick = function () {
     if (this.enable == false) return;
     getByid("MarkupDIv").style.display = "none";
     cancelTools();
-    openWriteGSPS = true;
-    img2darkByClass("GSPS", !openWriteGSPS);
-    openLeftImgClick = !openWriteGSPS;
-    if (openWriteGSPS == true) {
+
+    img2darkByClass("GSPS", false);
+    openLeftImgClick = false;
+    if (true) {
         getByid('GspsStyleDiv').style.display = '';
         set_BL_model('writegsps');
         writegsps();
     }
-    //this.src = openWriteGSPS == true ? '../image/icon/lite/gsps_on.png' : '../image/icon/lite/gsps_off.png';
-    this.style.display = openWriteGSPS != true ? "" : "none";
-    getByid("eraseGSPS").style.display = openWriteGSPS == true ? "" : "none";
-    getByid("exitGSPS").style.display = openWriteGSPS == true ? "" : "none";
-    getByid("saveGSPS").style.display = openWriteGSPS == true ? "" : "none";
-    getByid("drawGSPS").style.display = openWriteGSPS == true ? "" : "none";
+
+    this.style.display = "";
+    getByid("eraseGSPS").style.display = "";
+    getByid("exitGSPS").style.display = "";
+    getByid("saveGSPS").style.display = "";
+    getByid("drawGSPS").style.display = "";
 
     getByid("exitGSPS").onclick = function () {
-        openWriteGSPS = false;
         openLeftImgClick = true;
-        img2darkByClass("GSPS", !openWriteGSPS);
-        getByid('GspsStyleDiv').style.display = 'none';
-        getByid("writeGSPS").style.display = openWriteGSPS != true ? "" : "none";
-        getByid("eraseGSPS").style.display = openWriteGSPS == true ? "" : "none";
-        getByid("exitGSPS").style.display = openWriteGSPS == true ? "" : "none";
-        getByid("saveGSPS").style.display = openWriteGSPS == true ? "" : "none";
-        getByid("drawGSPS").style.display = openWriteGSPS == true ? "" : "none";
+        img2darkByClass("GSPS", true);
+        getByid("writeGSPS").style.display = "";
+        getByid('GspsStyleDiv').style.display = "none";
+        getByid("eraseGSPS").style.display = "none";
+        getByid("exitGSPS").style.display = "none";
+        getByid("saveGSPS").style.display = "none";
+        getByid("drawGSPS").style.display = "none";
         SetTable();
-        displayMark();
         getByid('MouseOperation').click();
+        displayMark();
     }
 
     getByid("eraseGSPS").onclick = function () {
@@ -319,6 +307,15 @@ class eraseGSPSTool extends ToolEvt {
     onSwitch() {
         displayMark();
         set_BL_model.onchange = function () { return 0; };
+    }
+    onKeyDown(KeyboardKeys) {
+        var key = KeyboardKeys.which
+        if (Graphic_now_choose && (key === 46 || key === 110)) {
+            PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
+            displayMark();
+            Graphic_now_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+        }
     }
 }
 
@@ -752,7 +749,7 @@ class writeGSPSTool extends ToolEvt {
                 displayMark();
             }
         }
-        if ((openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true)) && (MouseDownCheck == true || rightMouseDown == true)) {
+        if (((getByid("GspsPOLYLINE").selected == true)) && (MouseDownCheck == true || rightMouseDown == true)) {
             if (currX <= 0) currX = 0;
             if (currY <= 0) currY = 0;
             if (currX > GetViewport().width) currX = GetViewport().width;
@@ -847,7 +844,17 @@ class writeGSPSTool extends ToolEvt {
         if (Gsps_previous_choose) Graphic_now_choose = { reference: Gsps_previous_choose };
     }
     onSwitch() {
-
+        displayMark();
+        set_BL_model.onchange = function () { return 0; };
+    }
+    onKeyDown(KeyboardKeys) {
+        var key = KeyboardKeys.which
+        if (Graphic_now_choose && (key === 46 || key === 110)) {
+            PatientMark.splice(PatientMark.indexOf(Graphic_now_choose.reference), 1);
+            displayMark();
+            Graphic_now_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+        }
     }
 }
 
@@ -860,7 +867,7 @@ function writegsps() {
 
     toolEvt.onSwitch();
     toolEvt = new writeGSPSTool();
-    
+
     /*if (BL_mode == 'writegsps') {
     }*/
 }
@@ -909,7 +916,7 @@ function drawPOLYLINE_Write(obj) {
         };
         ctx.closePath();
 
-        if (BL_mode == 'eraseGSPS' || openWriteGraphic == true || (getByid("GspsPOLYLINE").selected == true && openWriteGSPS == true)) {
+        if ((toolEvt.constructor.name == "writeGSPSTool" || toolEvt.constructor.name == "eraseGSPSTool") && (getByid("GspsPOLYLINE").selected == true)) {
             if (Mark.pointArray.length >= 4) {
                 if (Mark.RotationAngle && Mark.RotationPoint) {
                     [x1, y1] = rotatePoint([x1, y1], -Mark.RotationAngle, Mark.RotationPoint);
@@ -930,7 +937,7 @@ function drawPOLYLINE_Write(obj) {
                 ctx.fillstyle = fillStyle; ctx.strokeStyle = strokeStyle;
             }
         }
-        if (BL_mode == 'eraseGSPS' || openWriteGraphic == true || (getByid("GspsLINE").selected == true && openWriteGSPS == true)) {
+        if ((toolEvt.constructor.name == "writeGSPSTool" || toolEvt.constructor.name == "eraseGSPSTool") && (getByid("GspsLINE").selected == true)) {
             if (Mark.pointArray.length < 4) {
                 if (Mark.RotationAngle && Mark.RotationPoint) {
                     [x1, y1] = rotatePoint([x1, y1], -Mark.RotationAngle, Mark.RotationPoint);
@@ -971,7 +978,7 @@ function drawCircle_Write(obj) {
     setMarkColor(ctx);
     if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
 
-    if (BL_mode == 'eraseGSPS' || openWriteGraphic == true || (getByid("GspsCIRCLE").selected == true && openWriteGSPS == true)) {
+    if ((toolEvt.constructor.name == "writeGSPSTool" || toolEvt.constructor.name == "eraseGSPSTool") && (getByid("GspsCIRCLE").selected == true)) {
         if (Mark.pointArray.length >= 2) {
             var x1 = Mark.pointArray[0].x * 1;
             var y1 = Mark.pointArray[0].y * 1;

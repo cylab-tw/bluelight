@@ -1,5 +1,4 @@
 
-var openMeasureIrregular = false;
 var openArrowRuler = false;
 var Arrow_Point1 = [0, 0];
 var Arrow_Point2 = [0, 0];
@@ -70,7 +69,6 @@ class MeasureIrregularTool extends ToolEvt {
     }
     onSwitch() {
         displayMark();
-        openMeasureIrregular = false;
         set_BL_model.onchange = function () { return 0; };
     }
 }
@@ -207,7 +205,6 @@ class ArrowRulerTool extends ToolEvt {
 function MeasureIrregular() {
     if (BL_mode == 'Irregular') {
         cancelTools();
-        openMeasureIrregular = true;
         toolEvt.onSwitch();
         toolEvt = new MeasureIrregularTool();
     }

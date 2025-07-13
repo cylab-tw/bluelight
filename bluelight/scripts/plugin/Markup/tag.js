@@ -1,4 +1,3 @@
-var openWriteTAG = false;
 
 function loadMarkupPlugin() {
     if (getByid("MarkupImgParent")) return;
@@ -118,24 +117,11 @@ getByid("medicalSpecialtyTag").onchange = function () {
 
 getByid("saveTAG").onclick = function () {
     getByid("saveTAG").style.display = "none";
-    getByid("writeTAG").onclick();
-}
-
-getByid("writeTAG").onclick = function () {
-    cancelTools();
-    openWriteTAG = !openWriteTAG;
-    getByid("MarkupDIv").style.display = "none";
-    img2darkByClass("TAG", !openWriteTAG);
-    this.src = openWriteTAG == true ? '../image/icon/lite/tag_on.png' : '../image/icon/lite/tag_off.png';
-    if (openWriteTAG == true) {
-        getByid("saveTAG").style.display = "";
-        getByid('TagStyleDiv').style.display = '';
-        set_BL_model('writeTAG');
-    } else getByid('TagStyleDiv').style.display = 'none';
+    //getByid("writeTAG").src = '../image/icon/lite/tag_off.png';
+    img2darkByClass("TAG", true);
+    getByid('TagStyleDiv').style.display = 'none';
     SetTable();
     displayMark();
-    if (openWriteTAG == true) return;
-
     function download(text, name, type) {
         let a = document.createElement('a');
         let file = new Blob([text], {
@@ -168,20 +154,32 @@ getByid("writeTAG").onclick = function () {
         }
     }
     let index = SearchUid2Index(GetViewport().sop);
-    let i = index[0],
-        j = index[1],
-        k = index[2];
+    let i = index[0], j = index[1], k = index[2];
     let sopUID = ImageManager.Study[i].Series[j].Sop[k].SOPInstanceUID;
 
     set_TAG_context(index);
 
-    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true) {
+    if (ConfigLog.Xml2Dcm.enableXml2Dcm == true)
         download2(String(get_TAG_context()), "" + CreateRandom(), 'text/plain');
-    } else {
+    else
         download(String(get_TAG_context()), sopUID + ".xml", 'text/plain');
-    }
 
     getByid('MouseOperation').click();
+}
+
+getByid("writeTAG").onclick = function () {
+    cancelTools();
+
+    getByid("MarkupDIv").style.display = "none";
+    img2darkByClass("TAG", false);
+    //this.src = '../image/icon/lite/tag_on.png';
+    if (true) {
+        getByid("saveTAG").style.display = "";
+        getByid('TagStyleDiv').style.display = '';
+        set_BL_model('writeTAG');
+    }
+    SetTable();
+    displayMark();
 }
 
 

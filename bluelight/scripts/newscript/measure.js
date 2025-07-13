@@ -1,7 +1,4 @@
 
-//代表正在使用測量工具
-var openMeasure = false;
-
 //紀錄測量工具座標
 var Measure_Point1 = [0, 0];
 var Measure_Point2 = [0, 0];
@@ -81,7 +78,6 @@ class MeasureTool extends ToolEvt {
     }
     onSwitch() {
         displayMark();
-        openMeasure = false;
         set_BL_model.onchange = function () { return 0; };
     }
     onTouchStart(e, e2) {
@@ -156,7 +152,6 @@ class MeasureTool extends ToolEvt {
 function measure() {
 
     cancelTools();
-    openMeasure = true;
     toolEvt.onSwitch();
     toolEvt = new MeasureTool();
     /*if (BL_mode == 'measure') {

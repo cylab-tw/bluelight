@@ -9,6 +9,7 @@ class ToolEvt {
     onTouchEnd(event, context) { }
     onWheel(event, context) { }
     onMouseOut() { }
+    onKeyDown(KeyboardKeys) { }
     onSwitch() { }
 }
 let toolEvt = new ToolEvt();
@@ -72,6 +73,7 @@ function initNewCanvas2() {
             GetViewport(i).div.addEventListener("touchend", BlueLightTouchend, false);
             GetViewport(i).div.addEventListener("wheel", BlueLightWheel, false);
         }
+        window.addEventListener("keydown", BlueLightKeyDown, false);
     } catch (ex) { console.log(ex); }
 }
 
@@ -170,7 +172,7 @@ function BlueLightWheel(e) {
     if (viewportNumber != this.viewportNum) return;
     if (getByid("DICOMTagsSelect").selected) return;
     var viewportNum = viewportNumber;
-    if (!(openWheel == true || openMouseTool == true || openChangeFile == true || openWindow == true || openZoom == true || openMeasure == true)) return;
+    if (!(openWheel == true || openMouseTool == true || openWindow == true || openZoom == true || openMeasure == true)) return;
     if (openLink == false) {
         if (e.deltaY < 0) GetViewport(viewportNum).nextFrame(true);
         else GetViewport(viewportNum).nextFrame(false);
@@ -242,6 +244,11 @@ let MouseUpPointByWindow = new Point2D(0, 0);
 let MouseDownPointByCanvas = new Point2D(0, 0);
 let MouseMovePointByCanvas = new Point2D(0, 0);
 let MouseUpPointByCanvas = new Point2D(0, 0);
+
+let BlueLightKeyDown = function (KeyboardKeys) {
+    if (!ToolEvt.enable) return;
+    toolEvt.onKeyDown(KeyboardKeys);
+}
 
 let BlueLightMouseout = function () {
     if (!ToolEvt.enable) return;

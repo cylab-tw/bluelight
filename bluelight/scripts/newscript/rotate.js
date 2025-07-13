@@ -1,7 +1,4 @@
 
-//代表正在使用旋轉工具
-var openRotate = false;
-
 class RotatelTool extends ToolEvt {
     onMouseMove(e) {
         if (rightMouseDown == true) {
@@ -23,14 +20,6 @@ class RotatelTool extends ToolEvt {
             GetViewport().translate.x += windowMouseDiffX;
             GetViewport().translate.y += windowMouseDiffY;
             setTransform();
-
-            if (openLink == true) {
-                for (var i = 0; i < Viewport_Total; i++) {
-                    try {
-                        // setTransform(i);
-                    } catch (ex) { }
-                }
-            }
         }
     }
     onMouseUp(e) {
@@ -38,8 +27,6 @@ class RotatelTool extends ToolEvt {
         if (openLink) displayAllRuler();
     }
     onSwitch() {
-        openRotate = false;
-        openChangeFile = false;
         set_BL_model.onchange = function () { return 0; };
     }
     onTouchMove(e, e2) {
@@ -61,20 +48,10 @@ class RotatelTool extends ToolEvt {
             GetViewport().translate.x += windowMouseDiffX;
             GetViewport().translate.y += windowMouseDiffY;
             setTransform();
-
-            if (openLink) {
-                for (var i = 0; i < Viewport_Total; i++) {
-                    try {
-                        //setTransform(i);
-                    } catch (ex) { }
-                }
-            }
         }
     }
 }
 function rotate() {
-    openRotate = true;
-    openChangeFile = true;
     toolEvt.onSwitch();
     toolEvt = new RotatelTool();
     /*if (BL_mode == 'rotate') {

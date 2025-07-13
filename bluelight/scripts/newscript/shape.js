@@ -1,6 +1,4 @@
 
-var openMeasureShape = false;
-
 var MeasureShape_previous_choose = null;
 var MeasureRect_now_choose = null;
 var MeasureCircle_now_choose = null;
@@ -57,14 +55,12 @@ class MeasureRectTool extends ToolEvt {
     }
     onSwitch() {
         displayMark();
-        openMeasureShape = false;
         set_BL_model.onchange = function () { return 0; };
     }
 }
 
 function MeasureRect() {
     cancelTools();
-    openMeasureShape = true;
     toolEvt.onSwitch();
     toolEvt = new MeasureRectTool();
     /*if (BL_mode == 'MeasureRect') {
@@ -146,14 +142,12 @@ class MeasureCircleTool extends ToolEvt {
     }
     onSwitch() {
         displayMark();
-        openMeasureShape = false;
         set_BL_model.onchange = function () { return 0; };
     }
 }
 
 function MeasureCircle() {
     cancelTools();
-    openMeasureShape = true;
     toolEvt.onSwitch();
     toolEvt = new MeasureCircleTool();
 

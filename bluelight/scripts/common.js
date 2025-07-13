@@ -2,9 +2,7 @@ function cancelTools() {
     openMouseTool = false;
     openWindow = false;
     openZoom = false;
-    openMeasure = false;
     openWheel = false;
-    openRotate = false;
 
     HideElemByID(["magnifierDiv", "textWC", "textWW", "WindowLevelDiv",
         "labelZoom", "labelPlay", "textZoom", "textPlay"]);

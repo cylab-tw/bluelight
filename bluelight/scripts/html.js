@@ -833,7 +833,6 @@ function changeLinkImg() {
 }
 
 function drawBorder(element) {
-  if (element != getByid("b_Scroll")) openChangeFile = false;
 
   var list = BorderList_Icon;
   for (elemID of list) getByid(elemID).style['border'] = "";
