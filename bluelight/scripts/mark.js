@@ -741,7 +741,6 @@ class EraseTool extends ToolEvt {
     onSwitch() {
         getByid("openMeasureImg").src = "../image/icon/lite/M.png";
         displayMark();
-        set_BL_model.onchange = function () { return 0; };
     }
 }
 

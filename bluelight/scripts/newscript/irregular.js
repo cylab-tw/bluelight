@@ -65,8 +65,8 @@ class MeasureIrregularTool extends ToolEvt {
         displayMark();
     }
     onSwitch() {
+        Mark_previous_choose = null;
         displayMark();
-        set_BL_model.onchange = function () { return 0; };
     }
 }
 
@@ -117,10 +117,10 @@ class TextAnnotationTool extends ToolEvt {
         displayMark();
     }
     onSwitch() {
+        Mark_previous_choose = null;
         displayMark();
         getByid("span_TextAnnotation").style.display = "none";
         SetTable();
-        set_BL_model.onchange = function () { return 0; };
     }
 }
 class ArrowRulerTool extends ToolEvt {
@@ -193,31 +193,27 @@ class ArrowRulerTool extends ToolEvt {
         if (rightMouseDown == true) displayMark();
     }
     onSwitch() {
+        Mark_previous_choose = null;
         displayMark();
-        set_BL_model.onchange = function () { return 0; };
     }
 }
+
+function MeasureArrowRuler() {
+    cancelTools();
+    toolEvt.onSwitch();
+    toolEvt = new ArrowRulerTool();
+}
+function MeasureTextAnnotation() {
+    cancelTools();
+    getByid("span_TextAnnotation").style.display = "";
+    SetTable();
+    toolEvt.onSwitch();
+    toolEvt = new TextAnnotationTool();
+}
 function MeasureIrregular() {
-    if (BL_mode == 'Irregular') {
-        cancelTools();
-        toolEvt.onSwitch();
-        toolEvt = new MeasureIrregularTool();
-    }
-
-    if (BL_mode == 'TextAnnotation') {
-
-        cancelTools();
-        getByid("span_TextAnnotation").style.display = "";
-        SetTable();
-        toolEvt.onSwitch();
-        toolEvt = new TextAnnotationTool();
-    }
-
-    if (BL_mode == 'ArrowRuler') {
-        cancelTools();
-        toolEvt.onSwitch();
-        toolEvt = new ArrowRulerTool();
-    }
+    cancelTools();
+    toolEvt.onSwitch();
+    toolEvt = new MeasureIrregularTool();
 }
 
 function other_irregular_pounch(currX, currY) {
@@ -235,15 +231,6 @@ function other_irregular_pounch(currX, currY) {
     }
     return null;
 }
-
-/*getByid("IrregularRuler").onclick = function () {
-    if (this.enable == false) return;
-    set_BL_model('Irregular');
-    MeasureIrregular();
-
-    drawBorder(this);
-}*/
-//HTMLICON.cancelBorderList.push(getByid("IrregularRuler"));
 
 const shoelaceFormula = (vertices) => {
     const length = vertices.length;
@@ -264,7 +251,7 @@ function drawIrregularRuler(obj) {
     try {
         if (Mark.color && getByid("AutoColorSelect") && getByid("AutoColorSelect").selected) color = Mark.color;
         viewport.drawClosedInterval(ctx, viewport, Mark.pointArray, [color, color], [1.0, 0.3]);
-        if (BL_mode == 'erase' || BL_mode == 'Irregular') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#FF0000", 1.0);
+        if (toolEvt.constructor.name == "EraseTool" || toolEvt.constructor.name == "MeasureIrregularTool") viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#FF0000", 1.0);
     } catch (ex) { }
 
     try {
@@ -290,7 +277,7 @@ function drawTextAnnotatoin(obj) {
     var ctx = canvas.getContext("2d"), color = null;
     try {
         if (Mark.Text) viewport.drawText(ctx, viewport, Mark.pointArray[0], Mark.Text, 22, "#FF0000", alpha = 1.0);
-        if (BL_mode == 'erase' || BL_mode == 'TextAnnotation') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
+        if (toolEvt.constructor.name == "EraseTool" || toolEvt.constructor.name == "TextAnnotationTool") viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
     } catch (ex) { }
 }
 PLUGIN.PushMarkList(drawTextAnnotatoin);
@@ -315,7 +302,7 @@ function drawArrowRuler(obj) {
         var y4 = y2 - L * Math.sin(a - 30 * Math.PI / 180);
         viewport.drawLine(ctx, viewport, new Point2D(x3, y3), new Point2D(x2, y2), Mark.color, 1.0);
         viewport.drawLine(ctx, viewport, new Point2D(x4, y4), new Point2D(x2, y2), Mark.color, 1.0);
-        if (BL_mode == 'erase' || BL_mode == 'ArrowRuler') viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
+        if (toolEvt.constructor.name == "EraseTool" || toolEvt.constructor.name == "ArrowRulerTool") viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#00FF00", 1.0);
     } catch (ex) { console.log(ex) }
 }
 PLUGIN.PushMarkList(drawArrowRuler);
@@ -323,7 +310,6 @@ PLUGIN.PushMarkList(drawArrowRuler);
 onloadFunction.push2Last(function () {
     getByid("IrregularRuler").onclick = function () {
         if (this.enable == false) return;
-        set_BL_model('Irregular');
         MeasureIrregular();
         drawBorder(getByid("openMeasureImg"));
         hideAllDrawer();
@@ -331,16 +317,14 @@ onloadFunction.push2Last(function () {
 
     getByid("TextAnnotation").onclick = function () {
         if (this.enable == false) return;
-        set_BL_model('TextAnnotation');
-        MeasureIrregular();
+        MeasureTextAnnotation();
         drawBorder(getByid("openMeasureImg"));
         hideAllDrawer();
     }
 
     getByid("ArrowRuler").onclick = function () {
         if (this.enable == false) return;
-        set_BL_model('ArrowRuler');
-        MeasureIrregular();
+        MeasureArrowRuler();
         drawBorder(getByid("openMeasureImg"));
         hideAllDrawer();
     }

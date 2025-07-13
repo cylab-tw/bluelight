@@ -1,6 +1,7 @@
 
 var SEGtempUndoStorage = [];
 var SEGtempRedoStorage = [];
+var Erase_SEG = false;
 
 function loadMarkupPlugin() {
     if (getByid("MarkupImgParent")) return;
@@ -367,20 +368,17 @@ endsolid name`
 }
 
 getByid("drawSEG").onclick = function () {
-    set_BL_model('writeSeg');
     writeSeg();
     drawBorder(getByid("drawSEG"));
 }
 
 getByid("fillSEG").onclick = function () {
-    set_BL_model('fillSEG');
     fillSEG();
     drawBorder(getByid("fillSEG"));
 }
 
 getByid("eraseSEG").onclick = function () {
-    set_BL_model('eraseSEG');
-    writeSeg();
+    eraseSeg();
     drawBorder(getByid("eraseSEG"));
 }
 
@@ -438,7 +436,6 @@ getByid("writeSEG").onclick = function () {
     if (true) {
         getByid("overlay2seg").style.display = "";
         getByid('SegStyleDiv').style.display = 'flex';
-        set_BL_model('writeSeg');
         writeSeg();
     };
 
@@ -986,9 +983,6 @@ function fillSEG() {
 
     toolEvt.onSwitch();
     toolEvt = new fillSEGTool();
-
-    /*if (BL_mode == 'fillSEG') {
-    }*/
 }
 
 var Previous_angle2point;
@@ -1083,14 +1077,18 @@ class writeSegTool extends ToolEvt {
 }
 
 function writeSeg() {
-    if (BL_mode == 'writeSeg' || BL_mode == 'eraseSEG') {
+    drawBorder(getByid("drawSEG"));
+    Erase_SEG = false;
+    toolEvt.onSwitch();
+    toolEvt = new writeSegTool();
+}
 
-        if (BL_mode == 'writeSeg') drawBorder(getByid("drawSEG"));
-        if (BL_mode == 'eraseSEG') drawBorder(getByid("eraseSEG"));
+function eraseSeg() {
+    drawBorder(getByid("eraseSEG"));
+    Erase_SEG = true;
 
-        toolEvt.onSwitch();
-        toolEvt = new writeSegTool();
-    }
+    toolEvt.onSwitch();
+    toolEvt = new writeSegTool();
 }
 
 function fillSEG2PixelData(angle2point, canvas) {
@@ -1199,7 +1197,7 @@ function setSEG2PixelData(angle2point) {
 
     var pixelData = SEG_now_choose.ctx.getImageData(parseInt(angle2point[0]) - rect, parseInt(angle2point[1]) - rect, rect * 2, rect * 2);
     var p = 0;
-    if (KeyCode_ctrl == true || BL_mode == 'eraseSEG') {
+    if (KeyCode_ctrl == true || Erase_SEG == true) {
         for (var s = -rect; s < rect; s++) {
             for (var s2 = -rect; s2 < rect; s2++) {
                 if ((s * s) + (s2 * s2) < rect * rect) {

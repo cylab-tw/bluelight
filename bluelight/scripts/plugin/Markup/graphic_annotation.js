@@ -106,7 +106,6 @@ getByid("GspsTypeSelect").onchange = function () {
 }
 
 getByid("drawGSPS").onclick = function () {
-    set_BL_model('writegsps');
     writegsps();
     drawBorder(getByid("drawGSPS"));
 }
@@ -122,7 +121,6 @@ getByid("writeGSPS").onclick = function () {
     openLeftImgClick = false;
     if (true) {
         getByid('GspsStyleDiv').style.display = '';
-        set_BL_model('writegsps');
         writegsps();
     }
 
@@ -147,7 +145,6 @@ getByid("writeGSPS").onclick = function () {
     }
 
     getByid("eraseGSPS").onclick = function () {
-        set_BL_model('eraseGSPS');
         eraseGSPS();
         drawBorder(getByid("eraseGSPS"));
         hideAllDrawer();
@@ -306,7 +303,6 @@ class eraseGSPSTool extends ToolEvt {
 
     onSwitch() {
         displayMark();
-        set_BL_model.onchange = function () { return 0; };
     }
     onKeyDown(KeyboardKeys) {
         var key = KeyboardKeys.which
@@ -322,8 +318,6 @@ class eraseGSPSTool extends ToolEvt {
 function eraseGSPS() {
     toolEvt.onSwitch();
     toolEvt = new eraseGSPSTool();
-    /*if (BL_mode == 'eraseGSPS') {
-    }*/
 }
 
 function Graphic_pounch(currX, currY) {
@@ -845,7 +839,6 @@ class writeGSPSTool extends ToolEvt {
     }
     onSwitch() {
         displayMark();
-        set_BL_model.onchange = function () { return 0; };
     }
     onKeyDown(KeyboardKeys) {
         var key = KeyboardKeys.which
@@ -867,9 +860,6 @@ function writegsps() {
 
     toolEvt.onSwitch();
     toolEvt = new writeGSPSTool();
-
-    /*if (BL_mode == 'writegsps') {
-    }*/
 }
 
 function drawPOLYLINE_Write(obj) {

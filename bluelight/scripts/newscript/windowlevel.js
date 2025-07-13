@@ -34,7 +34,6 @@ class WLevelTool extends ToolEvt {
     }
     onSwitch(e) {
         HideElemByID("WindowLevelDiv");
-        set_BL_model.onchange = function () { return 0; };
     }
     onTouchMove(e, e2) {
         if (getByid("DICOMTagsSelect").selected) return;
@@ -73,8 +72,4 @@ function windowlevel() {
     SetTable();
     toolEvt.onSwitch();
     toolEvt = new WLevelTool();
-
-
-    /*if (BL_mode == 'windowlevel') {
-    }*/
 }

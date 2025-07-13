@@ -46,7 +46,6 @@ function loadxml_format() {
 loadxml_format();
 
 getByid("drawXML").onclick = function () {
-  set_BL_model('writexml');
   writexml();
   drawBorder(getByid("drawXML"));
 }
@@ -62,7 +61,6 @@ getByid("writeXML").onclick = function () {
   openLeftImgClick = false;
   if (true) {
     ShowElemByID("xmlMarkName");
-    set_BL_model('writexml');
     writexml();
   }
 
@@ -93,7 +91,6 @@ getByid("writeXML").onclick = function () {
 
 
   getByid("eraseXML").onclick = function () {
-    set_BL_model('eraseXML');
     eraseXML();
     drawBorder(getByid("eraseXML"));
     hideAllDrawer();
@@ -130,7 +127,6 @@ class eraseXMLTool extends ToolEvt {
   }
   onSwitch() {
     displayMark();
-    set_BL_model.onchange = function () { return 0; };
   }
   onKeyDown(KeyboardKeys) {
     var key = KeyboardKeys.which
@@ -147,8 +143,6 @@ class eraseXMLTool extends ToolEvt {
 function eraseXML() {
   toolEvt.onSwitch();
   toolEvt = new eraseXMLTool();
-  /*if (BL_mode == 'eraseXML') {
-  }*/
 }
 
 getByid("xmlMarkNameText").onchange = function () {
@@ -571,7 +565,4 @@ function writexml() {
 
   toolEvt.onSwitch();
   toolEvt = new writeXMLTool();
-
-  /*if (BL_mode == 'writexml') {
-  }*/
 }

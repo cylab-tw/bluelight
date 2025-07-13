@@ -59,9 +59,7 @@ class MoveTool extends ToolEvt {
         if (rightMouseDown) displayMark();
         if (openLink) displayAllRuler();
     }
-    onSwitch() {
-        set_BL_model.onchange = function () { return 0; };
-    }
+
     onTouchMove(e, e2) {
         var viewport = GetViewport(), canvas = GetViewport().canvas;
 
@@ -115,7 +113,4 @@ class MoveTool extends ToolEvt {
 function mouseTool() {
     toolEvt.onSwitch();
     toolEvt = new MoveTool();
-    /*if (BL_mode == 'MouseTool') {
-        //initNewCanvas();
-    }*/
 }

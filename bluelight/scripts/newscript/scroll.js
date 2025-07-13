@@ -24,9 +24,7 @@ class ScrollTool extends ToolEvt {
         if (rightMouseDown) displayMark();
         if (openLink) displayAllRuler();
     }
-    onSwitch() {
-        set_BL_model.onchange = function () { return 0; };
-    }
+
     onTouchMove(e, e2) {
         if (getByid("DICOMTagsSelect").selected) return;
 
@@ -45,8 +43,6 @@ class ScrollTool extends ToolEvt {
 function scroll() {
     toolEvt.onSwitch();
     toolEvt = new ScrollTool();
-    /*if (BL_mode == 'scroll') {
-    }*/
 };
 
 class ScrollBar {
@@ -128,9 +124,7 @@ onloadFunction.push(
     function () {
         getByid("b_Scroll").onclick = function () {
             if (this.enable == false) return;
-            //BL_mode = 'scroll';
             hideAllDrawer();
-            set_BL_model('scroll');
             scroll();
             drawBorder(this);
         }

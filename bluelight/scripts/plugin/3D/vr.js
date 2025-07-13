@@ -200,7 +200,6 @@ function drawBorderVR(element) {
 }
 
 getByid("WindowRevision_VR").onclick = function () {
-    set_BL_model('windowlevel_VR');
     var VR_div = getClass("VR_div");
     for (var i = 0; i < VR_div.length; i++) VR_div[i].style['border'] = "";
     getByid('WindowLevelDiv_VR').style.display = '';
@@ -209,10 +208,8 @@ getByid("WindowRevision_VR").onclick = function () {
 
 getByid("MouseOperation_VR").onclick = function () {
     if (this.enable == false) return;
-    //BL_mode = 'MouseTool';
     var VR_div = getClass("VR_div");
     for (var i = 0; i < VR_div.length; i++) VR_div[i].style.display = "none";
-    set_BL_model('mouseTool_VR');
     //mouseTool_VR();
     //cancelTools();
     drawBorderVR(this);

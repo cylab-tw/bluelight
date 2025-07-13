@@ -118,8 +118,6 @@ function drawBorderMPR(element) {
 
 getByid("b_Scroll_MPR").onclick = function () {
     if (this.enable == false) return;
-    //BL_mode = 'scroll';
-    set_BL_model('scroll');
     scroll();
 
     /*BlueLightTouchmoveList = [];
@@ -163,16 +161,12 @@ getByid("b_Scroll_MPR").onclick = function () {
 
 getByid("WindowRevision_MPR").onclick = function () {
     if (this.enable == false) return;
-    //BL_mode = 'scroll';
-    set_BL_model('windowlevel');
     windowlevel();
     drawBorderMPR(this);
 }
 
 getByid("MouseRotate_MPR").onclick = function () {
     if (this.enable == false) return;
-    //BL_mode = 'scroll';
-    set_BL_model('rotate');
     rotate();
     drawBorderMPR(this);
 }
@@ -180,7 +174,6 @@ getByid("MouseRotate_MPR").onclick = function () {
 class MPRTool extends ToolEvt {
 
     onMouseMove(e) {
-        if (BL_mode != 'mouseTool_MPR') return;
         var viewport = GetViewport();
         if (!GetViewport().drawMark) GetViewportMark().getContext("2d").clearRect(0, 0, GetViewportMark().width, GetViewportMark().height);
         if (openMPR == true && openWindow != true && openChangeFile != true) {
@@ -205,10 +198,8 @@ class MPRTool extends ToolEvt {
 
 getByid("MouseOperation_MPR").onclick = function () {
     if (this.enable == false) return;
-    //BL_mode = 'mouseTool_MPR';
     var MPR_div = getClass("MPR_div");
     for (var i = 0; i < MPR_div.length; i++) MPR_div[i].style.display = "none";
-    set_BL_model('mouseTool_MPR');
     GetViewport(2).div.removeEventListener("mousemove", BlueLightMousemove, false);
     GetViewport(2).div.removeEventListener("mousedown", BlueLightMousedown, false);
     GetViewport(2).div.removeEventListener("mouseup", BlueLightMouseup, false);

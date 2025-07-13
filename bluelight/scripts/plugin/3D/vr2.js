@@ -280,7 +280,6 @@ getByid("ImgVR2").onclick = function () {
     getByid("windowVR2").style.display = "";
     getByid("saveVR2").style.display = "";
     getByid("moveVR2").style.display = "";
-    set_BL_model('VR2');
     initVR2();
 
     this.style.display = "none";
@@ -1644,23 +1643,16 @@ endsolid name`
 
 
 function initVR2() {
-    if (BL_mode == 'VR2') {
-        set_BL_model.onchange = function () {
-            displayMark();
-            set_BL_model.onchange = function () { return 0; };
-        }
+    openLeftImgClick = false;
+    toolEvt.onSwitch();
+    toolEvt = new ToolEvt();
+    //displayVR2();
+    VRCube.operate_mode = "move";
+    drawBorder(getByid("moveVR2"));
 
-        openLeftImgClick = false;
-        toolEvt.onSwitch();
-        toolEvt = new ToolEvt();
-        //displayVR2();
-        VRCube.operate_mode = "move";
-        drawBorder(getByid("moveVR2"));
-
-        var cube = new VRCube(GetViewport().sop);
-        Pages.displayPage("VRPage");
-        cube.build();
-    }
+    var cube = new VRCube(GetViewport().sop);
+    Pages.displayPage("VRPage");
+    cube.build();
 }
 
 function multiplyMatrices(a, b) {

@@ -17,8 +17,6 @@ onloadFunction.push(
         getByid("zoom").onclick = function () {
             if (this.enable == false) return;
             hideAllDrawer();
-            //BL_mode = 'zoom';
-            set_BL_model('zoom')
             zoom();
             drawBorder(this);
         }
@@ -103,7 +101,6 @@ class zoomTool extends ToolEvt {
         getByid('labelZoom').style.display = 'none';
         getByid('textZoom').style.display = 'none';
         magnifierDiv.hide();
-        set_BL_model.onchange = function () { return 0; };
     }
     onTouchStart(e, e2) {
         magnifierDiv.show();
@@ -140,7 +137,4 @@ function zoom() {
 
     toolEvt.onSwitch();
     toolEvt = new zoomTool();
-
-    if (BL_mode == 'zoom') {
-    }
 }

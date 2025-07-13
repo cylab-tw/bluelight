@@ -61,8 +61,7 @@ function loadCalibration() {
         getByid("CalibrationValue").value = "null";
         removeCalibrationMark();
         openLeftImgClick = false;
-        getByid("CalibrationDiv").style.display = "";
-        set_BL_model('Calibration');
+        getByid("CalibrationDiv").style.display = ""
         write_calibration();
         SetTable();
         hideAllDrawer();
@@ -160,7 +159,6 @@ class CalibrationTool extends ToolEvt {
     onSwitch() {
         displayMark();
         openCalibration = false;
-        set_BL_model.onchange = function () { return 0; };
     }
 }
 
@@ -171,9 +169,6 @@ function write_calibration() {
     openCalibration = true;
     toolEvt.onSwitch();
     toolEvt = new CalibrationTool();
-
-    /*if (BL_mode == 'Calibration') {
-    }*/
 }
 
 function getCalibrationValue(e) {

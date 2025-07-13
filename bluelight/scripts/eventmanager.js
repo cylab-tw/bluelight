@@ -342,16 +342,3 @@ let BlueLightTouchend = function (E) {
     toolEvt.onTouchEnd(e);
     TouchDownCheck = rightTouchDown = false;
 }
-
-let BL_mode = 'MouseTool';
-let set_BL_model = function (string) {
-    BL_mode = string;
-
-    if (!this.init) {
-        set_BL_model.onchange = function () {
-            return 0;
-        }
-        this.init = true;
-    }
-    set_BL_model.onchange();
-}

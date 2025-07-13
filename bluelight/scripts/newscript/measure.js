@@ -78,7 +78,7 @@ class MeasureTool extends ToolEvt {
     }
     onSwitch() {
         displayMark();
-        set_BL_model.onchange = function () { return 0; };
+        Mark_previous_choose = null;
     }
     onTouchStart(e, e2) {
         measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
@@ -128,16 +128,7 @@ class MeasureTool extends ToolEvt {
             refreshMark(Measure_now_choose.dcm);
         }
         else if (Measure_previous_choose) {
-            /*var MeasureMark = Measure_previous_choose;
 
-            MeasureMark.pointArray = [];
-            MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
-            MeasureMark.setPoint2D(Measure_Point2[0], Measure_Point2[1]);
-
-            MeasureMark.Text = getMeasurelValue(e);
-            refreshMark(MeasureMark);*/
-            //Graphic_now_choose = { reference: dcm };
-            //Measure_previous_choose = dcm;
         }
         if (Measure_now_choose) Measure_previous_choose = Measure_now_choose;
         Measure_now_choose = null;
@@ -147,6 +138,17 @@ class MeasureTool extends ToolEvt {
 
         if (openLink) displayAllRuler();
     }
+    onKeyDown(KeyboardKeys) {
+        var key = KeyboardKeys.which;
+
+        if (Measure_previous_choose && (key === 46 || key === 110)) {
+            PatientMark.splice(PatientMark.indexOf(Measure_previous_choose.dcm), 1);
+            displayMark();
+            Measure_previous_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+        }
+        Measure_previous_choose = null;
+    }
 }
 
 function measure() {
@@ -154,8 +156,6 @@ function measure() {
     cancelTools();
     toolEvt.onSwitch();
     toolEvt = new MeasureTool();
-    /*if (BL_mode == 'measure') {
-    }*/
 }
 
 function measure_pounch(currX, currY) {
@@ -181,18 +181,6 @@ function measure_pounch(currX, currY) {
         }
     }
 }
-
-window.addEventListener('keydown', (KeyboardKeys) => {
-    var key = KeyboardKeys.which
-
-    if ((BL_mode == 'measure') && Measure_previous_choose && (key === 46 || key === 110)) {
-        PatientMark.splice(PatientMark.indexOf(Measure_previous_choose.dcm), 1);
-        displayMark();
-        Measure_previous_choose = null;
-        refreshMarkFromSop(GetViewport().sop);
-    }
-    Measure_previous_choose = null;
-});
 
 function drawMeasureRuler(obj) {
     try {
@@ -235,7 +223,6 @@ PLUGIN.PushMarkList(drawMeasureRuler);
 onloadFunction.push2Last(function () {
     getByid("MeasureRuler").onclick = function () {
         if (this.enable == false) return;
-        set_BL_model('measure');
         measure();
         drawBorder(getByid("openMeasureImg"));
         hideAllDrawer();

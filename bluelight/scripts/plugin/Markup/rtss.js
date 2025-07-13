@@ -104,7 +104,6 @@ function DeleteSelectedRTSS() {
 }
 
 getByid("drawRTSS").onclick = function () {
-    set_BL_model('writertss');
     writertss();
     drawBorder(getByid("drawRTSS"));
 }
@@ -121,7 +120,6 @@ getByid("writeRTSS").onclick = function () {
 
     if (true) {
         getByid('RtssDiv').style.display = 'flex';
-        set_BL_model('writertss');
         writertss();
     }
 
@@ -144,7 +142,6 @@ getByid("writeRTSS").onclick = function () {
         getByid('MouseOperation').click();
     }
     getByid("eraseRTSS").onclick = function () {
-        set_BL_model('eraseRTSS');
         eraseRTSS();
         drawBorder(getByid("eraseRTSS"));
         hideAllDrawer();
@@ -353,7 +350,6 @@ class eraseRTSSTool extends ToolEvt {
     }
     onSwitch() {
         displayMark();
-        set_BL_model.onchange = function () { return 0; };
     }
     onKeyDown(KeyboardKeys) {
         var key = KeyboardKeys.which
@@ -364,8 +360,6 @@ class eraseRTSSTool extends ToolEvt {
 function eraseRTSS() {
     toolEvt.onSwitch();
     toolEvt = new eraseRTSSTool();
-    /*if (BL_mode == 'eraseRTSS') {
-    }*/
 }
 function RTSS_pounch(currX, currY) {
     let block_size = getMarkSize(GetViewportMark(), false) * 4;
@@ -596,14 +590,11 @@ function writertss() {
 
     toolEvt.onSwitch();
     toolEvt = new writeRTSSTool();
-
-    /*if (BL_mode == 'writertss') {
-    }*/
 }
 
 function drawRTSSEdit(obj) {
     var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
-    if (!Mark || BL_mode != 'eraseRTSS') return;
+    if (!Mark || toolEvt.constructor.name != "eraseRTSSTool") return;
     if (!Mark || Mark.type != "RTSS" || Mark.pointArray.length < 2) return;
 
     var ctx = canvas.getContext("2d"), color = null;

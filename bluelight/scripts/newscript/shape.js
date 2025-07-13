@@ -55,7 +55,7 @@ class MeasureRectTool extends ToolEvt {
     }
     onSwitch() {
         displayMark();
-        set_BL_model.onchange = function () { return 0; };
+        Mark_previous_choose = null;
     }
 }
 
@@ -63,8 +63,6 @@ function MeasureRect() {
     cancelTools();
     toolEvt.onSwitch();
     toolEvt = new MeasureRectTool();
-    /*if (BL_mode == 'MeasureRect') {
-    }*/
 }
 
 class MeasureCircleTool extends ToolEvt {
@@ -142,7 +140,7 @@ class MeasureCircleTool extends ToolEvt {
     }
     onSwitch() {
         displayMark();
-        set_BL_model.onchange = function () { return 0; };
+        Mark_previous_choose = null;
     }
 }
 
@@ -150,9 +148,6 @@ function MeasureCircle() {
     cancelTools();
     toolEvt.onSwitch();
     toolEvt = new MeasureCircleTool();
-
-    /*if (BL_mode == 'MeasureCircle') {
-    }*/
 }
 
 function MeasureRect_pounch(currX, currY) {
@@ -274,7 +269,6 @@ PLUGIN.PushMarkList(drawMeasureCIRCLE);
 onloadFunction.push2Last(function () {
     getByid("RectRuler").onclick = function () {
         if (this.enable == false) return;
-        set_BL_model('MeasureRect');
         MeasureRect();
         drawBorder(getByid("openMeasureImg"));
         hideAllDrawer();
@@ -282,7 +276,6 @@ onloadFunction.push2Last(function () {
 
     getByid("CircleRuler").onclick = function () {
         if (this.enable == false) return;
-        set_BL_model('MeasureCircle');
         MeasureCircle();
         drawBorder(getByid("openMeasureImg"));
         hideAllDrawer();

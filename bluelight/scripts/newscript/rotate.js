@@ -26,9 +26,7 @@ class RotatelTool extends ToolEvt {
         if (rightMouseDown) displayMark();
         if (openLink) displayAllRuler();
     }
-    onSwitch() {
-        set_BL_model.onchange = function () { return 0; };
-    }
+
     onTouchMove(e, e2) {
         if (rightTouchDown) {
             if (Math.abs(windowMouseDiffY) > Math.abs(windowMouseDiffX)) {
@@ -54,6 +52,4 @@ class RotatelTool extends ToolEvt {
 function rotate() {
     toolEvt.onSwitch();
     toolEvt = new RotatelTool();
-    /*if (BL_mode == 'rotate') {
-    }*/
 }

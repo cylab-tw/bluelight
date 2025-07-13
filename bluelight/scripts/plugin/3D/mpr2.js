@@ -156,9 +156,6 @@ var MPRWheel = function (e) { }
 
 getByid("MouseOperation_MPR2").onclick = function () {
     if (this.enable == false) return;
-    //BL_mode = 'mouseTool_MPR2';
-    if (BL_mode == 'mouseTool_MPR2') return;
-    set_BL_model('mouseTool_MPR2');
     /*for (var c = 0; c < 3; c++) {
         GetViewport(c).div.removeEventListener("mousemove", BlueLightMousemove, false);
         GetViewport(c).div.removeEventListener("mousedown", BlueLightMousedown, false);

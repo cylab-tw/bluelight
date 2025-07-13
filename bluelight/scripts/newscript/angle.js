@@ -9,15 +9,16 @@ var Angle_Point3 = [];
 var Angle_now_choose = null;
 //正在繪製的Angle
 var Angle_previous_choose = null;
+var angleState;
 
-class AngleTool {
+class AngleTool extends ToolEvt {
     onMouseDown(e) {
-        if (angle.angle_ == "rotate") return; //angle.angle_ = "stop";
+        if (angleState == "rotate") return; //angleState = "stop";
         if (!MouseDownCheck) return;
         angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
         Angle_previous_choose = null;
         if (Angle_now_choose) return;
-        if (angle.angle_ == "stop" && !Angle_previous_choose) {
+        if (angleState == "stop" && !Angle_previous_choose) {
             Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
             var AngleMark = new BlueLightMark();
 
@@ -28,14 +29,14 @@ class AngleTool {
 
             PatientMark.push(AngleMark);
             Angle_previous_choose = AngleMark;
-            angle.angle_ = "line";
+            angleState = "line";
         }
     }
     onMouseMove(e) {
         if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
 
         let angle2point = rotateCalculation(e, true);
-        if (angle.angle_ == "rotate") {
+        if (angleState == "rotate") {
             Angle_Point2 = angle2point;
 
             if (!Angle_previous_choose) return;
@@ -51,7 +52,7 @@ class AngleTool {
             displayAllMark();
         }
         else if (MouseDownCheck && Angle_previous_choose) {
-            if (angle.angle_ == "line") {
+            if (angleState == "line") {
                 Angle_Point1 = angle2point;
 
                 var AngleMark = Angle_previous_choose;
@@ -67,21 +68,21 @@ class AngleTool {
         else if (Angle_now_choose) {
             Angle_now_choose.pointArray[Angle_now_choose.order].x = angle2point[0];
             Angle_now_choose.pointArray[Angle_now_choose.order].y = angle2point[1];
-            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point1(Angle_now_choose.pointArray);
             refreshMark(Angle_now_choose.dcm);
         }
     }
 
     onMouseUp(e) {
-        if ( rightMouseDown) displayMark();
+        if (rightMouseDown) displayMark();
         if (Angle_now_choose) {
             Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
             Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
-            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point1(Angle_now_choose.pointArray);
             refreshMark(Angle_now_choose.dcm);
-            angle.angle_ = "stop";
+            angleState = "stop";
         }
-        if (angle.angle_ == "rotate") {
+        if (angleState == "rotate") {
             let angle2point = rotateCalculation(e, true);
             Angle_Point2 = angle2point;
 
@@ -98,8 +99,8 @@ class AngleTool {
             Mark_previous_choose = Angle_previous_choose;
         }
         if (MouseDownCheck == true) {
-            if (angle.angle_ == "line") angle.angle_ = "rotate";
-            else if (angle.angle_ == "rotate") angle.angle_ = "stop";
+            if (angleState == "line") angleState = "rotate";
+            else if (angleState == "rotate") angleState = "stop";
         }
         if (Angle_now_choose) {
             Angle_previous_choose = Angle_now_choose;
@@ -109,15 +110,25 @@ class AngleTool {
     }
     onSwitch() {
         displayMark();
-        angle.angle_ = null;
-        set_BL_model.onchange = function () { return 0; };
+        angleState = null;
+        Mark_previous_choose = null;
+    }
+    onKeyDown(KeyboardKeys) {
+        var key = KeyboardKeys.which
+        if (Angle_previous_choose && (key === 46 || key === 110)) {
+            PatientMark.splice(PatientMark.indexOf(Angle_previous_choose.dcm), 1);
+            displayMark();
+            Angle_previous_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+        }
+        Angle_previous_choose = null;
     }
 }
 
-class AngleTool2 {
+class AngleTool2 extends ToolEvt {
     onMouseDown(e) {
         if (!MouseDownCheck) return;
-        if (angle.angle_ == "waitline2" && Angle_previous_choose) {
+        if (angleState == "waitline2" && Angle_previous_choose) {
             Angle_Point2 = Angle_Point3 = rotateCalculation(e, true);
             var AngleMark = Angle_previous_choose;
 
@@ -129,7 +140,7 @@ class AngleTool2 {
 
             //PatientMark.push(AngleMark);
             Angle_previous_choose = AngleMark;
-            angle.angle_ = "line2";
+            angleState = "line2";
             return;
         }
         angle_pounch2(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
@@ -139,8 +150,8 @@ class AngleTool2 {
             return;
         }
 
-        //if (angle.angle_ == "line2") angle.angle_ = "stop";
-        if (angle.angle_ == "stop"/*&& !Angle_previous_choose*/) {
+        //if (angleState == "line2") angleState = "stop";
+        if (angleState == "stop"/*&& !Angle_previous_choose*/) {
             Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
             var AngleMark = new BlueLightMark();
 
@@ -151,14 +162,14 @@ class AngleTool2 {
 
             PatientMark.push(AngleMark);
             Angle_previous_choose = AngleMark;
-            angle.angle_ = "line";
+            angleState = "line";
         }
     }
     onMouseMove(e) {
         if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
 
         let angle2point = rotateCalculation(e, true);
-        if (angle.angle_ == "line2") {
+        if (angleState == "line2") {
             Angle_Point3 = angle2point;
 
             if (!Angle_previous_choose) return;
@@ -169,13 +180,13 @@ class AngleTool2 {
             AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
             AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
             AngleMark.setPoint2D(Angle_Point3[0], Angle_Point3[1]);
-            AngleMark.Text = getAnglelValueBy2Point(Angle_previous_choose.pointArray);
+            AngleMark.Text = getAnglelValueBy2Point2(Angle_previous_choose.pointArray);
 
             refreshMark(AngleMark);
             displayAllMark();
         }
         else if (MouseDownCheck && Angle_previous_choose) {
-            if (angle.angle_ == "line") {
+            if (angleState == "line") {
                 Angle_Point1 = angle2point;
 
                 var AngleMark = Angle_previous_choose;
@@ -191,7 +202,7 @@ class AngleTool2 {
         else if (Angle_now_choose) {
             Angle_now_choose.pointArray[Angle_now_choose.order].x = angle2point[0];
             Angle_now_choose.pointArray[Angle_now_choose.order].y = angle2point[1];
-            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point2(Angle_now_choose.pointArray);
             refreshMark(Angle_now_choose.dcm);
             displayAllMark();
         }
@@ -201,14 +212,14 @@ class AngleTool2 {
         if (Angle_now_choose) {
             Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
             Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
-            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point2(Angle_now_choose.pointArray);
             refreshMark(Angle_now_choose.dcm);
-            angle.angle_ = "stop";
+            angleState = "stop";
             Angle_previous_choose = Angle_now_choose;
             Mark_previous_choose = Angle_previous_choose;
             Angle_now_choose = null;
         }
-        if (angle.angle_ == "line2") {
+        if (angleState == "line2") {
             let angle2point = rotateCalculation(e, true);
             Angle_Point3 = angle2point;
 
@@ -220,29 +231,29 @@ class AngleTool2 {
             AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
             AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
             AngleMark.setPoint2D(Angle_Point3[0], Angle_Point3[1]);
-            AngleMark.Text = getAnglelValueBy2Point(Angle_previous_choose.pointArray);
+            AngleMark.Text = getAnglelValueBy2Point2(Angle_previous_choose.pointArray);
             refreshMark(AngleMark);
             displayAllMark();
             Mark_previous_choose = Angle_previous_choose;
         }
         if (MouseDownCheck == true) {
-            if (angle.angle_ == "line") angle.angle_ = "waitline2";
-            else if (angle.angle_ == "line2") angle.angle_ = "stop";
+            if (angleState == "line") angleState = "waitline2";
+            else if (angleState == "line2") angleState = "stop";
         }
         //if (Angle_now_choose) Angle_previous_choose = Angle_now_choose;
         //Angle_now_choose = null;
     }
     onSwitch() {
         displayMark();
-        angle.angle_ = null;
-        set_BL_model.onchange = function () { return 0; };
+        angleState = null;
+        Mark_previous_choose = null;
     }
     onTouchStart(e, e2) {
         angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
         Angle_previous_choose = null;
         if (Angle_now_choose) return;
-        if (angle.angle_ == "rotate") angle.angle_ = "stop";
-        if (angle.angle_ == "stop" && !Angle_previous_choose) {
+        if (angleState == "rotate") angleState = "stop";
+        if (angleState == "stop" && !Angle_previous_choose) {
             Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
             var AngleMark = new BlueLightMark();
 
@@ -253,14 +264,14 @@ class AngleTool2 {
 
             PatientMark.push(AngleMark);
             Angle_previous_choose = AngleMark;
-            angle.angle_ = "line";
+            angleState = "line";
         }
     }
     onTouchMove(e, e2) {
         if (rightTouchDown) scale_size(e, originalPoint_X, originalPoint_Y);
 
         let angle2point = rotateCalculation(e, true);
-        if (angle.angle_ == "rotate") {
+        if (angleState == "rotate") {
             Angle_Point2 = angle2point;
 
             if (!Angle_previous_choose) return;
@@ -276,7 +287,7 @@ class AngleTool2 {
             displayAllMark();
         }
         else if (TouchDownCheck && Angle_previous_choose) {
-            if (angle.angle_ == "line") {
+            if (angleState == "line") {
                 Angle_Point1 = angle2point;
 
                 var AngleMark = Angle_previous_choose;
@@ -292,7 +303,7 @@ class AngleTool2 {
         else if (Angle_now_choose) {
             Angle_now_choose.pointArray[Angle_now_choose.order].x = angle2point[0];
             Angle_now_choose.pointArray[Angle_now_choose.order].y = angle2point[1];
-            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point2(Angle_now_choose.pointArray);
             refreshMark(Angle_now_choose.dcm);
         }
     }
@@ -301,48 +312,39 @@ class AngleTool2 {
         if (Angle_now_choose) {
             Angle_now_choose.pointArray[Angle_now_choose.order].x = rotateCalculation(e, true)[0];
             Angle_now_choose.pointArray[Angle_now_choose.order].y = rotateCalculation(e, true)[1];
-            Angle_now_choose.dcm.Text = getAnglelValueBy2Point(Angle_now_choose.pointArray);
+            Angle_now_choose.dcm.Text = getAnglelValueBy2Point2(Angle_now_choose.pointArray);
             refreshMark(Angle_now_choose.dcm);
-            angle.angle_ = "stop";
+            angleState = "stop";
         }
-        if (angle.angle_ == "rotate") {
-            /*let angle2point = rotateCalculation(e,true);
-            Angle_Point2 = angle2point;
-
-            if (!Angle_previous_choose) return;
-            var AngleMark = Angle_previous_choose;
-
-            AngleMark.pointArray = [];
-            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
-            AngleMark.Text = getAnglelValue(e);
-            refreshMark(AngleMark);
-            displayAllMark();*/
+        if (angleState == "rotate") {
         }
         if (TouchDownCheck == true) {
-            if (angle.angle_ == "line") angle.angle_ = "rotate";
-            else if (angle.angle_ == "rotate") angle.angle_ = "stop";
+            if (angleState == "line") angleState = "rotate";
+            else if (angleState == "rotate") angleState = "stop";
         }
         if (Angle_now_choose) Angle_previous_choose = Angle_now_choose;
         Angle_now_choose = null;
     }
+    onKeyDown(KeyboardKeys) {
+        var key = KeyboardKeys.which
+        if (Angle_previous_choose && (key === 46 || key === 110)) {
+            PatientMark.splice(PatientMark.indexOf(Angle_previous_choose.dcm), 1);
+            displayMark();
+            Angle_previous_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+        }
+        Angle_previous_choose = null;
+    }
 }
-function angle() {
-    if (BL_mode == 'angle') {
-        angle.angle_ = "stop";
-        toolEvt.onSwitch();
-        toolEvt = new AngleTool();
-    }
-    if (BL_mode == 'angle2') {
-        angle.angle_ = "stop";
-        toolEvt.onSwitch();
-        toolEvt = new AngleTool2();
-    }
-    /*if (BL_mode == 'angle') {
-    }
-    if (BL_mode == 'angle2') {
-    }*/
+function angle1() {
+    toolEvt.onSwitch();
+    toolEvt = new AngleTool();
+    angleState = "stop";
+}
+function angle2() {
+    toolEvt.onSwitch();
+    toolEvt = new AngleTool2();
+    angleState = "stop";
 }
 
 function angle_pounch(currX, currY) {
@@ -522,8 +524,7 @@ function drawAngleRuler2(obj) {
 }
 PLUGIN.PushMarkList(drawAngleRuler2);
 
-function getAnglelValueBy2Point(pointArray) {
-    //if (!angle.angle_) return;
+function getAnglelValueBy2Point1(pointArray) {
     var getAngle = ({
         x: x1, y: y1
     }, {
@@ -534,71 +535,60 @@ function getAnglelValueBy2Point(pointArray) {
         const angle = Math.atan2(det, dot) / Math.PI * 180
         return (angle + 360) % 360
     }
-    if (BL_mode == 'angle') {
-        var angle1 = getAngle({
-            x: pointArray[1].x - pointArray[2].x,
-            y: pointArray[1].y - pointArray[2].y,
-        }, {
-            x: pointArray[1].x - pointArray[0].x,
-            y: pointArray[1].y - pointArray[0].y,
-        });
-    } else if (BL_mode == 'angle2') {
-        const intersectionPoint = getIntersectionPoint(pointArray[0].x, pointArray[0].y, pointArray[1].x, pointArray[1].y,
-            pointArray[2].x, pointArray[2].y, pointArray[3].x, pointArray[3].y);
-        var x = intersectionPoint[0], y = intersectionPoint[1];
-        var x1 = pointArray[0].x, y1 = pointArray[0].y;
-        var x2 = pointArray[1].x, y2 = pointArray[1].y;
-        var dist1 = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y));
-        var dist2 = Math.sqrt((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
-        var p1, p2;
-        if (dist1 < dist2) {
-            p1 = [pointArray[0].x, pointArray[0].y];
-        } else {
-            p1 = [pointArray[1].x, pointArray[1].y];
-        }
+    var angle1 = getAngle({
+        x: pointArray[1].x - pointArray[2].x,
+        y: pointArray[1].y - pointArray[2].y,
+    }, {
+        x: pointArray[1].x - pointArray[0].x,
+        y: pointArray[1].y - pointArray[0].y,
+    });
+    if (angle1 > 180) angle1 = 360 - angle1;
+    return parseInt(angle1) + "°";
+}
 
-        var x = intersectionPoint[0], y = intersectionPoint[1];
-        var x1 = pointArray[2].x, y1 = pointArray[2].y;
-        var x2 = pointArray[3].x, y2 = pointArray[3].y;
-        var dist1 = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y));
-        var dist2 = Math.sqrt((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
-        if (dist1 < dist2) {
-            p2 = [pointArray[2].x, pointArray[2].y];
-        } else {
-            p2 = [pointArray[3].x, pointArray[3].y];
-        }
-        var angle1 = getAngle({
-            x: intersectionPoint[0] - p2[0],
-            y: intersectionPoint[1] - p2[1],
-        }, {
-            x: intersectionPoint[0] - p1[0],
-            y: intersectionPoint[1] - p1[1],
-        });
+function getAnglelValueBy2Point2(pointArray) {
+    if (!angleState) return;
+    var getAngle = ({ x: x1, y: y1 }, { x: x2, y: y2 }) => {
+        const dot = x1 * x2 + y1 * y2
+        const det = x1 * y2 - y1 * x2
+        const angle = Math.atan2(det, dot) / Math.PI * 180
+        return (angle + 360) % 360
     }
+    const intersectionPoint = getIntersectionPoint(pointArray[0].x, pointArray[0].y, pointArray[1].x, pointArray[1].y,
+        pointArray[2].x, pointArray[2].y, pointArray[3].x, pointArray[3].y);
+    var x = intersectionPoint[0], y = intersectionPoint[1];
+    var x1 = pointArray[0].x, y1 = pointArray[0].y;
+    var x2 = pointArray[1].x, y2 = pointArray[1].y;
+    var dist1 = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y));
+    var dist2 = Math.sqrt((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
+    var p1, p2;
+    if (dist1 < dist2) p1 = [pointArray[0].x, pointArray[0].y];
+    else p1 = [pointArray[1].x, pointArray[1].y];
+
+
+    var x = intersectionPoint[0], y = intersectionPoint[1];
+    var x1 = pointArray[2].x, y1 = pointArray[2].y;
+    var x2 = pointArray[3].x, y2 = pointArray[3].y;
+    var dist1 = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y));
+    var dist2 = Math.sqrt((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
+    if (dist1 < dist2) p2 = [pointArray[2].x, pointArray[2].y];
+    else p2 = [pointArray[3].x, pointArray[3].y];
+
+    var angle1 = getAngle({
+        x: intersectionPoint[0] - p2[0],
+        y: intersectionPoint[1] - p2[1],
+    }, {
+        x: intersectionPoint[0] - p1[0],
+        y: intersectionPoint[1] - p1[1],
+    });
 
     if (angle1 > 180) angle1 = 360 - angle1;
     return parseInt(angle1) + "°";
 }
 
-window.addEventListener('keydown', (KeyboardKeys) => {
-    var key = KeyboardKeys.which
-
-    if ((BL_mode == 'angle' || BL_mode == 'angle2') && Angle_previous_choose && (key === 46 || key === 110)) {
-        PatientMark.splice(PatientMark.indexOf(Angle_previous_choose.dcm), 1);
-        displayMark();
-        Angle_previous_choose = null;
-        refreshMarkFromSop(GetViewport().sop);
-    }
-    Angle_previous_choose = null;
-});
-
 function getAnglelValue(e) {
-    if (!angle.angle_) return;
-    var getAngle = ({
-        x: x1, y: y1
-    }, {
-        x: x2, y: y2
-    }) => {
+    if (!angleState) return;
+    var getAngle = ({ x: x1, y: y1 }, { x: x2, y: y2 }) => {
         const dot = x1 * x2 + y1 * y2
         const det = x1 * y2 - y1 * x2
         const angle = Math.atan2(det, dot) / Math.PI * 180
@@ -619,8 +609,7 @@ onloadFunction.push2Last(function () {
     getByid("AngleRuler").onclick = function () {
         if (this.enable == false) return;
         //cancelTools();
-        set_BL_model('angle');
-        angle();
+        angle1();
         drawBorder(getByid("openMeasureImg"));
         hideAllDrawer();
     }
@@ -628,8 +617,7 @@ onloadFunction.push2Last(function () {
     getByid("AngleRuler2").onclick = function () {
         if (this.enable == false) return;
         //cancelTools();
-        set_BL_model('angle2');
-        angle();
+        angle2();
         drawBorder(getByid("openMeasureImg"));
         hideAllDrawer();
     }

@@ -176,7 +176,6 @@ getByid("writeTAG").onclick = function () {
     if (true) {
         getByid("saveTAG").style.display = "";
         getByid('TagStyleDiv').style.display = '';
-        set_BL_model('writeTAG');
     }
     SetTable();
     displayMark();

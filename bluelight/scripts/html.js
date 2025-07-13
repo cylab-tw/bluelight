@@ -190,14 +190,12 @@ function html_onload() {
   getByid("MouseOperation").onclick = function () {
     if (this.enable == false) return;
     hideAllDrawer();
-    set_BL_model('MouseTool');
     mouseTool();
     drawBorder(this);
   }
 
   getByid("MouseRotate").onclick = function () {
     if (this.enable == false) return;
-    set_BL_model('rotate');
     rotate();
     drawBorder(this);
   }
@@ -261,7 +259,6 @@ function html_onload() {
   getByid("WindowRevision").onclick = function () {
     if (this.enable == false) return;
     hideAllDrawer("windowlevel");
-    set_BL_model('windowlevel');
     windowlevel();
     drawBorder(this);
     getByid("textWC").value = GetViewport().windowCenter;
@@ -465,73 +462,15 @@ function html_onload() {
 
   getByid("removeRuler").onclick = function () {
     if (!Mark_previous_choose) return;
-    var remove = false;
     var type = Mark_previous_choose.type || Mark_previous_choose.dcm.type;
-    if ((BL_mode == 'measure') && type == "MeasureRuler") remove = true;
-    else if ((BL_mode == 'angle') && type == "AngleRuler") remove = true;
-    else if ((BL_mode == 'angle2') && type == "AngleRuler2") remove = true;
-    else if ((BL_mode == 'Irregular') && type == "IrregularRuler") remove = true;
-    else if ((BL_mode == 'TextAnnotation') && type == "TextAnnotation") remove = true;
-    else if ((BL_mode == 'ArrowRuler') && type == "ArrowRuler") remove = true;
-    else if ((BL_mode == 'MeasureRect') && type == "MeasureRect") remove = true;
-    else if ((BL_mode == 'MeasureCircle') && type == "MeasureCircle") remove = true;
-    if (remove) {
+    
+    if (type) {
       PatientMark.splice(PatientMark.indexOf(Mark_previous_choose.dcm), 1);
       displayMark();
       Mark_previous_choose = null;
       refreshMarkFromSop(GetViewport().sop);
     }
     Mark_previous_choose = null;
-    return;
-    if ((BL_mode == 'measure') && Measure_previous_choose) {
-      PatientMark.splice(PatientMark.indexOf(Measure_previous_choose.dcm), 1);
-      displayMark();
-      Measure_previous_choose = null;
-      refreshMarkFromSop(GetViewport().sop);
-    }
-    Measure_previous_choose = null;
-
-    if ((BL_mode == 'angle' || BL_mode == 'angle2') && Angle_previous_choose) {
-      PatientMark.splice(PatientMark.indexOf(Angle_previous_choose.dcm), 1);
-      displayMark();
-      Angle_previous_choose = null;
-      refreshMarkFromSop(GetViewport().sop);
-    }
-    Angle_previous_choose = null;
-
-    if ((BL_mode == 'MeasureRect') && MeasureRect_now_choose) {
-      PatientMark.splice(PatientMark.indexOf(MeasureRect_now_choose.dcm), 1);
-      displayMark();
-      MeasureRect_now_choose = null;
-      refreshMarkFromSop(GetViewport().sop);
-    }
-
-    if ((BL_mode == 'MeasureCircle') && MeasureCircle_now_choose) {
-      PatientMark.splice(PatientMark.indexOf(MeasureCircle_now_choose.dcm), 1);
-      displayMark();
-      MeasureCircle_now_choose = null;
-      refreshMarkFromSop(GetViewport().sop);
-    }
-
-
-    /*if ((BL_mode == 'MeasureRect' || BL_mode == 'MeasureCircle') && MeasureShape_previous_choose) {
-      PatientMark.splice(PatientMark.indexOf(MeasureShape_previous_choose.dcm), 1);
-      displayMark();
-      MeasureShape_previous_choose = null;
-      refreshMarkFromSop(GetViewport().sop);
-    }
-    MeasureShape_previous_choose = null;
-  
-  
-    if ((BL_mode == 'Irregular' || BL_mode == 'TextAnnotation' || BL_mode == 'ArrowRuler') && MeasureIrregular_previous_choose) {
-      PatientMark.splice(PatientMark.indexOf(MeasureIrregular_previous_choose.dcm), 1);
-      displayMark();
-      MeasureIrregular_previous_choose = null;
-      ArrowRule_previous_choose = null;
-      refreshMarkFromSop(GetViewport().sop);
-    }
-    MeasureIrregular_previous_choose = null;
-    ArrowRule_previous_choose = null;*/
   }
 
   getByid("removeAllRuler").onclick = function () {
@@ -593,7 +532,7 @@ function html_onload() {
 
       Angle_now_choose = null;
       Angle_previous_choose = null;
-      angle.angle_ = "stop";
+      angleState = "stop";
       getByid("container").removeChild(this.window);
     };
   }
@@ -640,7 +579,6 @@ function html_onload() {
   getByid("eraseRuler").onclick = function () {
     if (this.enable == false) return;
     //cancelTools();
-    set_BL_model('erase');
     erase();
     drawBorder(getByid("openMeasureImg"));
     hideAllDrawer();
