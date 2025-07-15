@@ -1,9 +1,5 @@
 
-var openTable = true;
-
 function displayDicomTagsList(viewportNum = viewportNumber) {
-    if (openTable == false) return;
-
     dropTable(viewportNum);
     if (getByid("DICOMTagsSelect").selected == false) return;
 
@@ -44,16 +40,7 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
             cells.innerHTML = "" + GetViewport().tags[i][2];
 
         if (GetViewport().tags[i][1] == "PatientName" && GetViewport().content.image) cells.innerHTML = "" + GetViewport().content.image.PatientName;
-        
-        /*var dicomtag = GetViewport().tags[i][0].replace("x", "");
-        dicomtag = dicomtag.slice(0, 4) + "," + dicomtag.slice(4);
-        cells.innerHTML = "" + dicomtag;
 
-        cells = row.insertCell(1);
-        if (GetViewport().tags[i][1] && GetViewport().tags[i][1].length > 100)
-            cells.innerHTML = "";
-        else
-            cells.innerHTML = "" + GetViewport().tags[i][1];*/
         rowCount++;
     }
     GetViewport(viewportNum).div.appendChild(TableDIV);

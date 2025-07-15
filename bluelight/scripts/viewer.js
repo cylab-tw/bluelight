@@ -145,7 +145,10 @@ function wadorsLoader2(url, onlyload) {
         .then(function (resBlob) {
             let decodedBuffers = multipartDecode(resBlob);
             for (let decodedBuf of decodedBuffers) {
-                loadDicomDataSet(decodedBuf, !(onlyload == true), url, false, 'mht');
+                var byteArray = new Uint8Array(decodedBuf);
+                var blob = new Blob([byteArray], { type: 'application/dicom' });
+                var dcm_url = URL.createObjectURL(blob)
+                loadDicomDataSet(decodedBuf, !(onlyload == true), dcm_url, false);
             }
             // Removed hideDicomStatus() call from here
         })
@@ -468,7 +471,6 @@ function loadPicture(url) {
         imageObj.instance = 0;
         imageObj.patientId = "patientID:" + securePassword(0, 99999, 1);
         imageObj.url = img.src;
-        imageObj.fileExtension = 'image';
 
         var Sop = ImageManager.pushStudy(imageObj);
         Sop.type = 'img';
@@ -491,7 +493,7 @@ function loadPicture(url) {
     img.src = url;
 }
 
-function loadDicomDataSet(fileData, loadimage = true, url, fromLocal = false, fileExtension) {
+function loadDicomDataSet(fileData, loadimage = true, url, fromLocal = false) {
     var byteArray = fileData.constructor.name == 'Uint8Array' ? fileData : new Uint8Array(fileData);
 
     try {
@@ -504,7 +506,7 @@ function loadDicomDataSet(fileData, loadimage = true, url, fromLocal = false, fi
 
     //PDF
     if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EncapsulatedPDFStorage)
-        loadImageFromDataSet(dataSet, 'pdf', loadimage, url, fromLocal, fileExtension);
+        loadImageFromDataSet(dataSet, 'pdf', loadimage, url, fromLocal);
 
     //Mark
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.RTStructureSetStorage)//RTSS
@@ -516,7 +518,7 @@ function loadDicomDataSet(fileData, loadimage = true, url, fromLocal = false, fi
 
     //ECG
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID._12_leadECGWaveformStorage) {
-        if (openECG) loadImageFromDataSet(dataSet, 'ecg', loadimage, url, fromLocal, fileExtension);
+        if (openECG) loadImageFromDataSet(dataSet, 'ecg', loadimage, url, fromLocal);
         else throw "not support ECG";
     }
 
@@ -525,24 +527,24 @@ function loadDicomDataSet(fileData, loadimage = true, url, fromLocal = false, fi
 
     //DiCOM Image
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.MRImageStorage)//MR
-        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal, fileExtension);
+        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal);
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.CTImageStorage)//CT
-        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal, fileExtension);
+        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal);
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.ComputedRadiographyImageStorage)//X-Ray
-        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal, fileExtension);
+        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal);
 
     //DiCOM Image(Multi-Frame)
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.Multi_frameSingleBitSecondaryCaptureImageStorage)
-        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal, fileExtension);
+        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal);
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.Multi_frameGrayscaleByteSecondaryCaptureImageStorage)
-        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal, fileExtension);
+        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal);
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.Multi_frameGrayscaleWordSecondaryCaptureImageStorage)
-        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal, fileExtension);
+        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal);
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.Multi_frameTrueColorSecondaryCaptureImageStorage)
-        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal, fileExtension);
+        loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal);
 
     //try parse
-    else loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal, fileExtension);
+    else loadImageFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop', loadimage, url, fromLocal);
     //else if (dataSet.intString(Tag.NumberOfFrames) > 1) loadImageFromDataSet(dataSet, 'frame', loadimage, url);
     //else loadImageFromDataSet(dataSet, 'sop', loadimage, url);
 

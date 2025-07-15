@@ -104,38 +104,6 @@ window.addEventListener("beforeunload", () => {
     sessionStorage.clear(); // 清除 sessionStorage
 });
 
-window.addEventListener("keydown", function (e) {
-    e = e || window.event;
-    var nextInstanceNumber = 0;
-    if (e.keyCode == '38') nextInstanceNumber = -1;
-    else if (e.keyCode == '40') nextInstanceNumber = 1;
-    else if (e.keyCode == '37') nextInstanceNumber = -1;
-    else if (e.keyCode == '39') nextInstanceNumber = 1;
-    if (!GetViewport() || nextInstanceNumber == 0) return;
-
-    if (nextInstanceNumber == -1) GetViewport().nextFrame(true);
-    else if (nextInstanceNumber = 1) GetViewport().nextFrame(false);
-});
-
-//for mark
-window.addEventListener("keydown", function (e) {
-    const target = e.target;
-    const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
-    //如果正在輸入文字
-    if (isTyping) return;
-
-    if (e.key.toLowerCase() === 'm') getByid("openMeasureImg").onclick();
-
-    if (getByid("openMeasureDIv").style.display != "none") {
-        if (e.key.toLowerCase() === 'l') getByid("MeasureRuler").onclick();
-        else if (e.key.toLowerCase() === 'a') getByid("AngleRuler").onclick();
-        else if (e.key.toLowerCase() === 't') getByid("TextAnnotation").onclick();
-    }
-
-    //esc
-    if (e.key.toLowerCase() === 'escape') getByid("MouseOperation").onclick();
-});
-
 window.addEventListener('load', function () {
     var isWindowTop = false;
     var lastTouchY = 0;
@@ -163,24 +131,6 @@ window.addEventListener('load', function () {
     document.addEventListener('touchstart', touchStartHandler, false);
     document.addEventListener('touchmove', touchMoveHandler, false);
 });
-
-function BlueLightWheel(e) {
-    if (!ToolEvt.enable) return;
-    if (viewportNumber != this.viewportNum) return;
-    if (getByid("DICOMTagsSelect").selected) return;
-    
-    if (openLink == false) {
-        if (e.deltaY < 0) GetViewport().nextFrame(true);
-        else GetViewport().nextFrame(false);
-    }
-    else {
-        for (var z = 0; z < Viewport_Total; z++) {
-            if (e.deltaY < 0) GetViewport(z).nextFrame(true);
-            else GetViewport(z).nextFrame(false);
-        }
-    }
-    toolEvt.onWheel(e);
-}
 
 let dragged = null;
 onloadFunction.push2Last(function () {
@@ -233,9 +183,36 @@ let MouseDownPointByCanvas = new Point2D(0, 0);
 let MouseMovePointByCanvas = new Point2D(0, 0);
 let MouseUpPointByCanvas = new Point2D(0, 0);
 
-let BlueLightKeyDown = function (KeyboardKeys) {
+let BlueLightKeyDown = function (e) {
     if (!ToolEvt.enable) return;
-    toolEvt.onKeyDown(KeyboardKeys);
+    const target = e.target;
+    const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+
+    //如果正在輸入文字
+    if (isTyping) return;
+
+    //////////////////////////////////
+    if (e.key.toLowerCase() === 'm') getByid("openMeasureImg").onclick();
+    if (getByid("openMeasureDIv").style.display != "none") {
+        if (e.key.toLowerCase() === 'l') getByid("MeasureRuler").onclick();
+        else if (e.key.toLowerCase() === 'a') getByid("AngleRuler").onclick();
+        else if (e.key.toLowerCase() === 't') getByid("TextAnnotation").onclick();
+    }
+    //////////////////////////////////
+    var nextInstanceNumber = 0;
+    if (e.keyCode == '38') nextInstanceNumber = -1;
+    else if (e.keyCode == '40') nextInstanceNumber = 1;
+    else if (e.keyCode == '37') nextInstanceNumber = -1;
+    else if (e.keyCode == '39') nextInstanceNumber = 1;
+
+    if (GetViewport() && nextInstanceNumber == -1) GetViewport().nextFrame(true);
+    else if (GetViewport() && nextInstanceNumber == 1) GetViewport().nextFrame(false);
+    /////////////////////////////////
+
+    //esc
+    if (e.key.toLowerCase() === 'escape') getByid("MouseOperation").onclick();
+
+    toolEvt.onKeyDown(e);
 }
 
 let BlueLightMouseout = function () {
@@ -245,6 +222,24 @@ let BlueLightMouseout = function () {
         GetViewport(z).refleshLabel();
     }
     toolEvt.onMouseOut();
+}
+
+function BlueLightWheel(e) {
+    if (!ToolEvt.enable) return;
+    if (viewportNumber != this.viewportNum) return;
+    if (getByid("DICOMTagsSelect").selected) return;
+
+    if (openLink == false) {
+        if (e.deltaY < 0) GetViewport().nextFrame(true);
+        else GetViewport().nextFrame(false);
+    }
+    else {
+        for (var z = 0; z < Viewport_Total; z++) {
+            if (e.deltaY < 0) GetViewport(z).nextFrame(true);
+            else GetViewport(z).nextFrame(false);
+        }
+    }
+    toolEvt.onWheel(e);
 }
 
 let BlueLightMousedown = function (e) {

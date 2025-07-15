@@ -94,7 +94,7 @@ function displayRuler2(viewportNum = viewportNumber) {
         var x1 = 0, y1 = 0;
 
         if (GetViewport(viewportNum).transform.PixelSpacingX && GetViewport(viewportNum).transform.PixelSpacingY) {
-            tempctx.font = "" + (12) + "px Arial";
+            tempctx.font = "12px Arial";
             tempctx.fillText("100 mm", 0, -5 + (offsetHeight / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale))
 
             tempctx.moveTo(0, 0 + (offsetHeight / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale));
@@ -110,7 +110,7 @@ function displayRuler2(viewportNum = viewportNumber) {
         } else {
             tempctx.strokeStyle = "#4855FF";
             var PX = 1, PY = 1;
-            tempctx.font = "" + (12) + "px Arial";
+            tempctx.font = "12px Arial";
             tempctx.fillText("100 pix", 0, -5 + (offsetHeight / 2) - (50 * PY) * (GetViewport(viewportNum).scale))
 
             tempctx.moveTo(0, 0 + (offsetHeight / 2) - (50 * PY) * (GetViewport(viewportNum).scale));
@@ -178,13 +178,6 @@ function resetAndLoadImg(viewportNum = viewportNumber, dontLoad = false) {
 
 function refleshViewport() {
     if (openLink == true) {
-        /*for (var z = 0; z < Viewport_Total; z++) {
-            GetViewport(z).VerticalFlip = GetViewport().VerticalFlip;
-            GetViewport(z).HorizontalFlip = GetViewport().HorizontalFlip;
-            GetViewport(z).windowCenter = GetViewport().windowCenter;
-            GetViewport(z).windowWidth = GetViewport().windowWidth;
-            GetViewport(z).invert = GetViewport().invert;
-        }*/
         for (var z = 0; z < Viewport_Total; z++) {
             refleshCanvas(GetViewport(z));
             displayMark(z);

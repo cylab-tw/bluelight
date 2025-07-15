@@ -485,7 +485,7 @@ function initVR() {
         GetViewport(0).div.addEventListener("touchstart", touchstart3D, false);
         GetViewport(0).div.addEventListener("touchmove", touchmove3D, false);
         GetViewport(0).div.addEventListener("touchend", touchend3D, false);
-        GetViewport(0).div.addEventListener("contextmenu", contextmenuF, false);
+        //GetViewport(0).div.addEventListener("contextmenu", contextmenuF, false);
         for (var ll = 0; ll < o3DListLength; ll++) {
             var elem = getByid("3DDiv" + ll);
             GetViewport(0).div.appendChild(elem);
@@ -590,7 +590,7 @@ function initVR() {
             const pixelData = list[l2].Image.pixelData;
             try {
                 var NewDiv = document.createElement("DIV");
-                NewDiv.addEventListener("contextmenu", contextmenuF, false);
+                //NewDiv.addEventListener("contextmenu", contextmenuF, false);
                 //NewDiv.addEventListener('cornerstoneimagerendered', onImageRendered);
                 NewDiv.id = "3DDiv" + l2;
                 NewDiv.className = "o3DDiv";
@@ -948,7 +948,7 @@ function Alpha3D() {
             for (var ll = 0; ll < o3DListLength; ll++) {
                 if (ll % 2 != 0) {
                     var NewDiv = document.createElement("DIV");
-                    NewDiv.addEventListener("contextmenu", contextmenuF, false);
+                    //NewDiv.addEventListener("contextmenu", contextmenuF, false);
                     NewDiv.id = "3DDiv" + ll;
                     NewDiv.className = "o3DDiv";
                     NewDiv.sop = getByid("3DDiv" + (ll - 1)).sop;
@@ -1028,7 +1028,7 @@ function Alpha3D() {
 
         var NewDiv = document.createElement("DIV");
         var o3Dcanvas = getByid("3DDiv" + 0).canvas();
-        NewDiv.addEventListener("contextmenu", contextmenuF, false);
+        //NewDiv.addEventListener("contextmenu", contextmenuF, false);
         NewDiv.id = "3DDiv2_" + ll;
         NewDiv.className = "o3DDiv";
         NewDiv.width = o3Dcanvas.width;
@@ -1098,7 +1098,7 @@ function Alpha3D() {
 
         var NewDiv = document.createElement("DIV");
         var o3Dcanvas = getByid("3DDiv" + 0).canvas();
-        NewDiv.addEventListener("contextmenu", contextmenuF, false);
+        //NewDiv.addEventListener("contextmenu", contextmenuF, false);
         NewDiv.id = "3DDiv3_" + ll;
         NewDiv.className = "o3DDiv";
         NewDiv.width = o3DListLength;
