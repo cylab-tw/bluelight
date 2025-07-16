@@ -1,34 +1,22 @@
 
-function loadImageFromDataSet(dataSet, type, loadimage = true, url, fromLocal = false, fileExtension = 'dcm') {
-    var imageObj = getDefaultImageObj(dataSet, type, url, loadimage, fileExtension);
+function loadSopFromDataSet2(dataSet, type) {
+    var imageObj = getDefaultImageObj(dataSet, type);
     if (type == 'pdf') setPDF(imageObj);
     if (type == 'ecg' && openECG) setECG(imageObj);
+
     var Sop = ImageManager.pushStudy(imageObj); //註冊此Image至Viewer
-    if (!Sop) return; //發生重覆，等情況
+    if (!Sop) return;
     Sop.type = type;
-    readDicomOverlay(imageObj.data, PatientMark);
+    readDicomOverlay(dataSet, PatientMark);
+    return Sop;
+}
 
-    if (loadimage) {
-        //改成無論是否曾出現在左側面板，都嘗試加到左側面板
-        leftLayout.setImg2Left(new QRLv(dataSet), dataSet.string(Tag.PatientID));
-        if (type == "frame") leftLayout.appendCanvasBySop(dataSet.string(Tag.SOPInstanceUID), imageObj, imageObj.getPixelData());
-        else leftLayout.appendCanvasBySeries(dataSet.string(Tag.SeriesInstanceUID), imageObj, imageObj.getPixelData());
-        leftLayout.refleshMarkWithSeries(dataSet.string(Tag.SeriesInstanceUID));
-    } else if (fromLocal == true) {
-        ImageManager.preLoadSops.push({
-            dataSet: dataSet, image: imageObj, Sop: Sop, SeriesInstanceUID: imageObj.SeriesInstanceUID,
-            Index: imageObj.NumberOfFrames | imageObj.InstanceNumber
-        });
-    } else if (fromLocal == false) {
-        leftLayout.refreshNumberOfFramesOrSops(imageObj);
-    }
-
-    if (loadimage) {
-        resetViewport();
-        GetViewport().loadImgBySop(Sop);
-    } else {
-        for (var z = 0; z < Viewport_Total; z++) setSeriesCount();
-    }
+function setImageObjToLeft(Sop) {
+    var imageObj = Sop.Image, dataSet = Sop.Image.data;
+    leftLayout.setImg2Left(new QRLv(dataSet), dataSet.string(Tag.PatientID));
+    if (Sop.type == "frame") leftLayout.appendCanvasBySop(dataSet.string(Tag.SOPInstanceUID), imageObj, imageObj.getPixelData());
+    else leftLayout.appendCanvasBySeries(dataSet.string(Tag.SeriesInstanceUID), imageObj, imageObj.getPixelData());
+    leftLayout.refleshMarkWithSeries(dataSet.string(Tag.SeriesInstanceUID));
 }
 
 function setPDF(imageObj) {
@@ -39,7 +27,7 @@ function setPDF(imageObj) {
     imageObj.pdf = pdf;
 }
 
-function getDefaultImageObj(dataSet, type, url, imageDataLoaded, fileExtension) {
+function getDefaultImageObj(dataSet, type) {
     var imageObj = {};
     imageObj.windowCenter = dataSet.intString('x00281050');
     imageObj.windowWidth = dataSet.intString('x00281051');
@@ -117,8 +105,24 @@ function getDefaultImageObj(dataSet, type, url, imageDataLoaded, fileExtension) 
 
     imageObj.samplesPerPixel = (dataSet.string('x00280004') === 'YBR_FULL_422' || dataSet.string('x00280004') === 'YBR_FULL') ? 2 : dataSet.uint16('x00280002');
     imageObj.data = dataSet;
-    imageObj.url = url;
-    imageObj.fileExtension = fileExtension;
+
+    //////////
+
+    imageObj.imageDataLoaded = false;
+    if (type == "sop") {
+        imageObj.pixelData = null;
+        imageObj.loadImageData = function () {
+            this.imageDataLoaded = true;
+            this.pixelData = getPixelDataFromDataSet(this, this.data);
+        }
+    }
+    if (type == "sop") imageObj.getPixelData = function () { return this.pixelData; }
+    else if (type == "frame") imageObj.getPixelData = function (framesNumber = 0) {
+        return getPixelDataFromDataSet(this, this.data, isNaN(framesNumber) ? 0 : framesNumber);
+    }
+    else imageObj.getPixelData = function () { return; }
+    if (imageObj.PhotometricInterpretation == "PALETTE COLOR") getPixelDataFromColorLookupTable(imageObj, imageObj.data);
+
     //////////
     if (imageObj.Orientation) {
         imageObj.RCS = new Matrix4x4();
@@ -136,27 +140,12 @@ function getDefaultImageObj(dataSet, type, url, imageDataLoaded, fileExtension) 
         ]
     }
 
-    ////////////////
-    imageObj.imageDataLoaded = imageDataLoaded;
-    if (type == "sop" && imageDataLoaded == false) {
-        imageObj.pixelData = null;
-        imageObj.loadImageData = function () {
-            this.imageDataLoaded = true;
-            this.pixelData = getPixelDataFromDataSet(this, this.data);
-        }
-    }
-    else if (type == "sop")
-        imageObj.pixelData = getPixelDataFromDataSet(imageObj, dataSet);
-
-    if (type == "sop") imageObj.getPixelData = function () { return this.pixelData; }
-    else if (type == "frame") imageObj.getPixelData = function (framesNumber = 0) {
-        return getPixelDataFromDataSet(this, this.data, isNaN(framesNumber) ? 0 : framesNumber);
-    }
-    else imageObj.getPixelData = function () { return; }
-    if (imageObj.PhotometricInterpretation == "PALETTE COLOR") getPixelDataFromColorLookupTable(imageObj, dataSet);
-
-
     return imageObj;
+}
+
+function setPixelDataToImageObj(Sop) {
+    Sop.Image.imageDataLoaded = true;
+    if (Sop.type == "sop") Sop.Image.pixelData = getPixelDataFromDataSet(Sop.Image, Sop.Image.data);
 }
 
 function getPixelDataFromColorLookupTable(imageObj, dataSet) {

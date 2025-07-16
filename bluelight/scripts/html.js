@@ -108,7 +108,15 @@ function html_onload() {
           ImageManager.NumOfPreLoadSops += 1;
           reader.onloadend = function () {
             //resetViewport();
-            loadDicomDataSet(reader.result, false, url, true);
+            var Sop = loadDicomDataSet(reader.result, false, url, true);
+            if (Sop) {
+              Sop.Image.url = url;
+              for (var z = 0; z < Viewport_Total; z++) setSeriesCount(z);
+              ImageManager.preLoadSops.push({
+                dataSet: Sop.dataSet, image: Sop.Image, Sop: Sop, SeriesInstanceUID: Sop.Image.SeriesInstanceUID,
+                Index: Sop.Image.NumberOfFrames | Sop.Image.InstanceNumber
+              });
+            }
             ImageManager.NumOfPreLoadSops -= 1;
             if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
           }
@@ -463,7 +471,7 @@ function html_onload() {
   getByid("removeRuler").onclick = function () {
     if (!Mark_previous_choose) return;
     var type = Mark_previous_choose.type || Mark_previous_choose.dcm.type;
-    
+
     if (type) {
       PatientMark.splice(PatientMark.indexOf(Mark_previous_choose.dcm), 1);
       displayMark();
@@ -722,7 +730,15 @@ function html_onload() {
         ImageManager.NumOfPreLoadSops += 1;
         reader.onloadend = function () {
           //resetViewport();
-          loadDicomDataSet(reader.result, false, this.url, true);
+          var Sop = loadDicomDataSet(reader.result, false, this.url, true);
+          if (Sop) {
+            Sop.Image.url = this.url;
+            for (var z = 0; z < Viewport_Total; z++) setSeriesCount(z);
+            ImageManager.preLoadSops.push({
+              dataSet: Sop.dataSet, image: Sop.Image, Sop: Sop, SeriesInstanceUID: Sop.Image.SeriesInstanceUID,
+              Index: Sop.Image.NumberOfFrames | Sop.Image.InstanceNumber
+            });
+          }
           ImageManager.NumOfPreLoadSops -= 1;
           if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
         }
