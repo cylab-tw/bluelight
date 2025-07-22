@@ -68,33 +68,32 @@ class zoomTool extends ToolEvt {
     onMouseDown(e) {
         let angle2point = rotateCalculation(e);
         magnifierIng(angle2point[0], angle2point[1]);
-        if (MouseDownCheck) magnifierDiv.show();
+        // if (MouseDownCheck) magnifierDiv.show();
     }
     onMouseMove(e) {
         if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-        if (MouseDownCheck) {
-            magnifierDiv.show();
-            let angle2point = rotateCalculation(e);
-            magnifierIng(angle2point[0], angle2point[1]);
+        // if (!MouseDownCheck) return;
+        magnifierDiv.show();
+        let angle2point = rotateCalculation(e);
+        magnifierIng(angle2point[0], angle2point[1]);
 
-            var dgs = document.getElementById("magnifierDiv").style;
-            if (document.body.scrollTop && document.body.scrollTop != 0) {
-                var dbst = document.body.scrollTop;
-                var dbsl = document.body.scrollLeft;
-            }
-            else {
-                var dbst = getByTag("html")[0].scrollTop;
-                var dbsl = getByTag("html")[0].scrollLeft;
-            }
-            var y = e.clientY, x = e.clientX;
-            if (!y || !x) { y = e.touches[0].clientY; x = e.touches[0].clientX; }
-            dgs.top = y + dbst + (-parseInt(magnifierCanvas.style.height) / 2) + "px";
-            dgs.left = x + dbsl + (-parseInt(magnifierCanvas.style.width) / 2) + "px";
+        var dgs = document.getElementById("magnifierDiv").style;
+        if (document.body.scrollTop && document.body.scrollTop != 0) {
+            var dbst = document.body.scrollTop;
+            var dbsl = document.body.scrollLeft;
         }
+        else {
+            var dbst = getByTag("html")[0].scrollTop;
+            var dbsl = getByTag("html")[0].scrollLeft;
+        }
+        var y = e.clientY, x = e.clientX;
+        if (!y || !x) { y = e.touches[0].clientY; x = e.touches[0].clientX; }
+        dgs.top = y + dbst + (-parseInt(magnifierCanvas.style.height) / 2) + "px";
+        dgs.left = x + dbsl + (-parseInt(magnifierCanvas.style.width) / 2) + "px";
     }
     onMouseUp(e) {
         if (rightMouseDown) displayMark();
-        magnifierDiv.hide();
+        //magnifierDiv.hide();
         if (openLink) displayAllRuler();
     }
     onSwitch() {
@@ -118,6 +117,13 @@ class zoomTool extends ToolEvt {
     }
     onTouchEnd(e, e2) {
         magnifierDiv.hide();
+    }
+    onMouseEnter(viewportNum) {
+        if (isNaN(viewportNum)) return;
+        viewportNumber = viewportNum;
+        if (GetViewport().Sop) GetViewport().reload();
+        magnifierDiv.show();
+
     }
     onMouseOut() {
         magnifierDiv.hide();

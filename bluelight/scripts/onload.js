@@ -78,11 +78,9 @@ function getParameterByName(name) {
   name = name.replace(/\[\[]/g, "\\[").replace(/\[\]]/g, "\\]");
   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
     results = regex.exec(location.search);
-  if (results == null) {
-    results = "";
-  } else {
-    results = decodeURIComponent(results[1].replace(/\+/g, " "));
-  }
+  if (results == null) results = "";
+  else results = decodeURIComponent(results[1].replace(/\+/g, " "));
+
   var pair1 = ("" + results).split(",");
   var pairList = [];
   for (var j = 0; j < pair1.length; j++) {
@@ -304,88 +302,49 @@ function getValue(obj) {
   }
 }
 
+function getWadoUriURL(studyUID, seriesUID, objectUID) {
+  return `${ConfigLog.WADO.https}://${ConfigLog.WADO.hostname}:${ConfigLog.WADO.PORT}/${ConfigLog.WADO.service}?requestType=WADO&` +
+    `studyUID=${studyUID}&seriesUID=${seriesUID}&objectUID=${objectUID}&contentType=application/dicom`;
+}
+
+function getWadoUriRS(studyUID, seriesUID, objectUID) {
+  return `${ConfigLog.WADO.https}://${ConfigLog.WADO.hostname}:${ConfigLog.WADO.PORT}/${ConfigLog.WADO.service}` +
+    `/studies/${studyUID}/series/${seriesUID}/instances/${objectUID}`;
+}
+
 function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
   let DicomResponse = InstanceRequest.response;
-  var min = 1000000000;
-  var firstUrl;
+  var min = Number.MAX_VALUE, minI = -1;
+
   //取得最小的Instance Number
   for (var i = 0; i < DicomResponse.length; i++) {
-    try {
-      if (getValue(DicomResponse[i]["00200013"]) < min) min = getValue(DicomResponse[i]["00200013"]);
-    } catch (ex) { console.log(ex); };
+    try { if (getValue(DicomResponse[i]["00200013"]) < min) min = getValue(DicomResponse[i]["00200013"]), minI = i; } catch (ex) { console.log(ex); };
   }
-  //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
-  //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
 
-  //載入標記以及首張影像
-  for (var i = 0; i < DicomResponse.length; i++) {
-    //取得WADO的路徑
-    if (ConfigLog.WADO.WADOType == "URI") {
-      var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
-        "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
-        "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
-        "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
-        "&contentType=" + "application/dicom";
-    } else if (ConfigLog.WADO.WADOType == "RS") {
-      var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service +
-        "/studies/" + DicomResponse[i]["0020000D"].Value[0] +
-        "/series/" + DicomResponse[i]["0020000E"].Value[0] +
-        "/instances/" + DicomResponse[i]["00080018"].Value[0];
-    }
+  //載入首張影像
+  var firestImage = DicomResponse[minI];
+  if (ConfigLog.WADO.WADOType == "URI")
+    var url = getWadoUriURL(firestImage["0020000D"].Value[0], firestImage["0020000E"].Value[0], firestImage["00080018"].Value[0]);
+  else if (ConfigLog.WADO.WADOType == "RS")
+    var url = getWadoUriRS(firestImage["0020000D"].Value[0], firestImage["0020000E"].Value[0], firestImage["00080018"].Value[0]);
+  
+  url = fitUrl(url);
+  LoadFileInBatches.wadoPreLoad(url);
 
-    url = fitUrl(url);
-
-    try {
-      if (getValue(DicomResponse[i]["00200013"]) == min || DicomResponse.length == 1) {
-        //預載入DICOM至Viewport
-        if (ConfigLog.WADO.WADOType == "URI") LoadFileInBatches.wadoPreLoad(url);
-        else if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url);
-        firstUrl = url;
-      }
-    } catch (ex) { console.log(ex); }
-  }
-  //StudyUID:0020000d,Series UID:0020000e,SOP UID:00080018,
-  //Instance Number:00200013,影像檔編碼資料:imageId,PatientId:00100020
-
+  
   //載入其餘所有影像
-  function loadDicom(i) {
-    if (ConfigLog.WADO.WADOType == "URI") {
-      var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service + "?requestType=WADO&" +
-        "studyUID=" + DicomResponse[i]["0020000D"].Value[0] +
-        "&seriesUID=" + DicomResponse[i]["0020000E"].Value[0] +
-        "&objectUID=" + DicomResponse[i]["00080018"].Value[0] +
-        "&contentType=" + "application/dicom";
-      /*
-      var url = `${ConfigLog.WADO.https}://${ConfigLog.WADO.hostname}:${ConfigLog.WADO.PORT}/${ConfigLog.WADO.service}?requestType=WADO&` +
-      `studyUID=${DicomResponse[i]["0020000D"].Value[0]}&seriesUID=${DicomResponse[i]["0020000E"].Value[0]}` +
-      `&objectUID=${DicomResponse[i]["00080018"].Value[0]}&contentType=application/dicom`;
-      */
-    } else if (ConfigLog.WADO.WADOType == "RS") {
-      var url = ConfigLog.WADO.https + "://" + ConfigLog.WADO.hostname + ":" + ConfigLog.WADO.PORT + "/" + ConfigLog.WADO.service +
-        "/studies/" + DicomResponse[i]["0020000D"].Value[0] +
-        "/series/" + DicomResponse[i]["0020000E"].Value[0] +
-        "/instances/" + DicomResponse[i]["00080018"].Value[0];
-    }
+  function loadDicom(dicomImg) {
+    if (ConfigLog.WADO.WADOType == "URI")
+      var url = getWadoUriURL(dicomImg["0020000D"].Value[0], dicomImg["0020000E"].Value[0], dicomImg["00080018"].Value[0]);
+    else if (ConfigLog.WADO.WADOType == "RS")
+      var url = getWadoUriRS(dicomImg["0020000D"].Value[0], dicomImg["0020000E"].Value[0], dicomImg["00080018"].Value[0]);
     url = fitUrl(url);
-    if (url == firstUrl) return;
-    try {
-      if (!firstUrl) {
-        firstUrl = url;
-        if (ConfigLog.WADO.WADOType == "URI") LoadFileInBatches.wadoPreLoad(url);
-        else if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url);
-      } else {
-        //預載入DICOM至Viewport
-        if (ConfigLog.WADO.WADOType == "RS") LoadFileInBatches.wadoPreLoad(url, true);
-        else LoadFileInBatches.wadoPreLoad(url, false);
-      }
-
-    } catch (ex) { console.log(ex); }
+    LoadFileInBatches.wadoPreLoad(url, true);
   }
-  function wait(time) { return new Promise((resolve) => setTimeout(resolve, time)); }
+
   for (var i = 0; i < DicomResponse.length; i++) {
     const i_ = i;
-    loadDicom(i_);
-    //wait(parseInt(i_ / 50) * 2000).then(() => { loadDicom(i_); });
+    if (i_ != minI) loadDicom(DicomResponse[i_]);
   }
 }
 

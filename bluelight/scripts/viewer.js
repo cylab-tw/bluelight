@@ -149,7 +149,7 @@ function wadorsLoader2(url, onlyload) {
                 var blob = new Blob([byteArray], { type: 'application/dicom' });
                 var dcm_url = URL.createObjectURL(blob)
 
-                var Sop = loadDicomDataSet(decodedBuf, !(onlyload == true), dcm_url, false);
+                var Sop = loadDicomDataSet(decodedBuf);
                 setPixelDataToImageObj(Sop);
                 Sop.Image.url = dcm_url;
                 if (!(onlyload == true)) {
@@ -502,7 +502,7 @@ function loadPicture(url) {
     img.src = url;
 }
 
-function loadDicomDataSet(fileData, loadimage = true, url, fromLocal = false) {
+function loadDicomDataSet(fileData) {
     var byteArray = fileData.constructor.name == 'Uint8Array' ? fileData : new Uint8Array(fileData), Sop;
 
     try {
@@ -588,7 +588,7 @@ function loadDICOMFromUrl(url, loadimage = true) {
             return res.arrayBuffer();
         })
         .then(function (oReq) {
-            var Sop = loadDicomDataSet(oReq, loadimage == true, url, false);
+            var Sop = loadDicomDataSet(oReq);
             setPixelDataToImageObj(Sop);
             Sop.Image.url = url;
             if (loadimage == true) {

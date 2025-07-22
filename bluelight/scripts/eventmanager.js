@@ -9,6 +9,7 @@ class ToolEvt {
     onTouchEnd(event, context) { }
     onWheel(event, context) { }
     onMouseOut() { }
+    onMouseEnter() { }
     onKeyDown(KeyboardKeys) { }
     onSwitch() { }
 }
@@ -65,6 +66,7 @@ function initNewCanvas2() {
             GetViewport(i).div.addEventListener("mousedown", BlueLightMousedown, false);
             GetViewport(i).div.addEventListener("mouseup", BlueLightMouseup, false);
             GetViewport(i).div.addEventListener("mouseout", BlueLightMouseout, false);
+            GetViewport(i).div.addEventListener("mouseenter", BlueLightMouseenter, false);
             GetViewport(i).div.addEventListener("touchstart", BlueLightTouchstart, false);
             GetViewport(i).div.addEventListener("touchmove", BlueLightTouchmove, false);
             GetViewport(i).div.addEventListener("touchend", BlueLightTouchend, false);
@@ -222,6 +224,11 @@ let BlueLightMouseout = function () {
         GetViewport(z).refleshLabel();
     }
     toolEvt.onMouseOut();
+}
+
+let BlueLightMouseenter = function () {
+    if (!ToolEvt.enable) return;
+    toolEvt.onMouseEnter(this.viewportNum);
 }
 
 function BlueLightWheel(e) {

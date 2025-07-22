@@ -730,7 +730,7 @@ function html_onload() {
         ImageManager.NumOfPreLoadSops += 1;
         reader.onloadend = function () {
           //resetViewport();
-          var Sop = loadDicomDataSet(reader.result, false, this.url, true);
+          var Sop = loadDicomDataSet(reader.result);
           if (Sop) {
             Sop.Image.url = this.url;
             for (var z = 0; z < Viewport_Total; z++) setSeriesCount(z);
