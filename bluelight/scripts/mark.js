@@ -685,6 +685,33 @@ class BlueLightMark {
     }
     get lastMark() { if (this.pointArray.length) return this.pointArray[this.pointArray.length - 1] };
 }
+
+class MarkCollider {
+    static selected = null;
+    constructor(targetMark, currX, currY, parm) {
+        this.x = parseInt(currX);
+        this.y = parseInt(currY);
+        this.targetMark = targetMark;
+        this.parm = parm;
+    }
+    static detect(currX, currY, targetType = null) {
+        MarkCollider.selected = null;
+        let block_size = getMarkSize(GetViewportMark(), false) * 4;
+        for (var n = 0; n < PatientMark.length; n++) {
+            if (PatientMark[n].sop == GetViewport().sop && PatientMark[n].colliders) {
+                if (targetType == null || PatientMark[n].type == targetType) {
+                    for (var collider of PatientMark[n].colliders) {
+                        if (currY + block_size >= collider.y && currY - block_size <= collider.y && currX + block_size >= collider.x && currX - block_size <= collider.x) {
+                            MarkCollider.selected = collider;
+                            return collider;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 class EraseTool extends ToolEvt {
     onMouseDown(e) {
         angle_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
@@ -704,10 +731,10 @@ class EraseTool extends ToolEvt {
             return;
         }
         measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-        if (Measure_now_choose) {
-            PatientMark.splice(PatientMark.indexOf(Measure_now_choose.dcm), 1);
+        if (MarkCollider.selected) {
+            PatientMark.splice(PatientMark.indexOf(MarkCollider.selected.targetMark), 1);
             displayMark();
-            Measure_now_choose = null;
+            MarkCollider.selected = null;
             refreshMarkFromSop(GetViewport().sop);
             return;
         }

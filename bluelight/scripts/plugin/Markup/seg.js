@@ -1226,16 +1226,3 @@ function setSEG2PixelData(angle2point) {
     }
     SEG_now_choose.ctx.putImageData(pixelData, parseInt(angle2point[0]) - rect, parseInt(angle2point[1]) - rect);
 }
-/*
-function drawSEGEdit(obj) {
-    var canvas = obj.canvas, Mark = obj.Mark, viewport = obj.viewport;
-    if (!Mark || BL_mode != 'eraseSEG') return;
-    if (Mark.type != "SEG") return;
-
-    var ctx = canvas.getContext("2d"), color = null;
-    try {
-        viewport.fillCircle(ctx, viewport, Mark.pointArray[0], 3, "#FF0000", 1.0);
-        console.log(Mark.pointArray[0])
-    } catch (ex) { console.log(ex) }
-}
-PLUGIN.PushMarkList(drawSEGEdit);*/

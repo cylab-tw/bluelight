@@ -3,15 +3,16 @@
 var Measure_Point1 = [0, 0];
 var Measure_Point2 = [0, 0];
 
-var Measure_now_choose = null;
-var Measure_previous_choose = null;
-
 class MeasureTool extends ToolEvt {
+    static previous_choose = null;
     onMouseDown(e) {
-        Measure_previous_choose = null;
+        MeasureTool.previous_choose = null;
+        MarkCollider.selected = null;
         if (!MouseDownCheck) return;
-        measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-        if (!Measure_now_choose && MouseDownCheck) {
+
+        MarkCollider.detect(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1], "MeasureRuler");
+
+        if (!MarkCollider.selected && MouseDownCheck) {
             var MeasureMark = new BlueLightMark();
 
             MeasureMark.setQRLevels(GetViewport().QRLevels);
@@ -19,7 +20,7 @@ class MeasureTool extends ToolEvt {
             MeasureMark.hideName = MeasureMark.showName = "ruler";
             MeasureMark.type = "MeasureRuler";
 
-            Measure_previous_choose = MeasureMark;
+            MeasureTool.previous_choose = MeasureMark;
             PatientMark.push(MeasureMark);
         }
         Measure_Point1 = Measure_Point2 = rotateCalculation(e, true);
@@ -30,12 +31,13 @@ class MeasureTool extends ToolEvt {
         let angle2point = rotateCalculation(e, true);
         if (MouseDownCheck) {
             Measure_Point2 = angle2point;
-            if (Measure_now_choose) {
-                Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
-                Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
-                refreshMark(Measure_now_choose.dcm);
-            } else if (Measure_previous_choose) {
-                var MeasureMark = Measure_previous_choose;
+            if (MarkCollider.selected) {
+                MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].x = angle2point[0];
+                MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].y = angle2point[1];
+                MarkCollider.selected.targetMark.colliders[MarkCollider.selected.parm] = new MarkCollider(MarkCollider.selected.targetMark, angle2point[0], angle2point[1], MarkCollider.selected.parm);
+                refreshMark(MarkCollider.selected.targetMark);
+            } else if (MeasureTool.previous_choose) {
+                var MeasureMark = MeasureTool.previous_choose;
 
                 MeasureMark.pointArray = [];
                 MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
@@ -50,26 +52,19 @@ class MeasureTool extends ToolEvt {
         let angle2point = rotateCalculation(e, true);
         Measure_Point2 = angle2point;
 
-        if (Measure_now_choose) {
-            Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
-            Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
-            refreshMark(Measure_now_choose.dcm);
-            Mark_previous_choose = Measure_now_choose;
+        if (MarkCollider.selected) {
+            MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].x = angle2point[0];
+            MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].y = angle2point[1];
+            refreshMark(MarkCollider.selected.targetMark);
+            //Mark_previous_choose = Measure_now_choose;
         }
-        else if (Measure_previous_choose) {
-            var MeasureMark = Measure_previous_choose;
-
-            MeasureMark.pointArray = [];
-            MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
-            MeasureMark.setPoint2D(Measure_Point2[0], Measure_Point2[1]);
-
-            refreshMark(MeasureMark);
-            //Graphic_now_choose = { reference: dcm };
-            //Measure_previous_choose = dcm;
-            Mark_previous_choose = Measure_previous_choose;
+        else if (MeasureTool.previous_choose) {
+            var MeasureMark = MeasureTool.previous_choose;
+            MeasureMark.colliders = [new MarkCollider(MeasureMark, Measure_Point1[0], Measure_Point1[1], 0), new MarkCollider(MeasureMark, Measure_Point2[0], Measure_Point2[1], 1)];
+            Mark_previous_choose = MeasureTool.previous_choose;
         }
-        if (Measure_now_choose) Measure_previous_choose = Measure_now_choose;
-        Measure_now_choose = null;
+        //if (Measure_now_choose) MeasureTool.previous_choose = Measure_now_choose;
+        //MarkCollider.selected = null;
         displayAllMark();
 
         if (rightMouseDown == true) displayMark();
@@ -77,13 +72,14 @@ class MeasureTool extends ToolEvt {
         if (openLink) displayAllRuler();
     }
     onSwitch() {
+        MarkCollider.selected = null;
         displayMark();
         Mark_previous_choose = null;
     }
     onTouchStart(e, e2) {
-        measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
-        Measure_previous_choose = null;
-        if (!Measure_now_choose) {
+        MarkCollider.detect(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1], "MeasureRuler");
+        MeasureTool.previous_choose = null;
+        if (!MarkCollider.selected) {
             var MeasureMark = new BlueLightMark();
 
             MeasureMark.setQRLevels(GetViewport().QRLevels);
@@ -91,7 +87,7 @@ class MeasureTool extends ToolEvt {
             MeasureMark.hideName = MeasureMark.showName = "ruler";
             MeasureMark.type = "MeasureRuler";
 
-            Measure_previous_choose = MeasureMark;
+            MeasureTool.previous_choose = MeasureMark;
             PatientMark.push(MeasureMark);
         }
         Measure_Point1 = Measure_Point2 = rotateCalculation(e, true);
@@ -102,12 +98,12 @@ class MeasureTool extends ToolEvt {
         let angle2point = rotateCalculation(e, true);
         if (TouchDownCheck) {
             Measure_Point2 = angle2point;
-            if (Measure_now_choose) {
-                Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
-                Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
-                refreshMark(Measure_now_choose.dcm);
-            } else if (Measure_previous_choose) {
-                var MeasureMark = Measure_previous_choose;
+            if (MarkCollider.selected) {
+                MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].x = angle2point[0];
+                MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].y = angle2point[1];
+                refreshMark(MarkCollider.selected.targetMark);
+            } else if (MeasureTool.previous_choose) {
+                var MeasureMark = MeasureTool.previous_choose;
 
                 MeasureMark.pointArray = [];
                 MeasureMark.setPoint2D(Measure_Point1[0], Measure_Point1[1]);
@@ -119,19 +115,17 @@ class MeasureTool extends ToolEvt {
         }
     }
     onTouchEnd(e, e2) {
-        //let angle2point = rotateCalculation(e,true);
-        //Measure_Point2 = angle2point;
-
-        if (Measure_now_choose) {
-            Measure_now_choose.pointArray[Measure_now_choose.order].x = angle2point[0];
-            Measure_now_choose.pointArray[Measure_now_choose.order].y = angle2point[1];
-            refreshMark(Measure_now_choose.dcm);
+        let angle2point = rotateCalculation(e, true);
+        if (MarkCollider.selected) {
+            MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].x = angle2point[0];
+            MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].y = angle2point[1];
+            refreshMark(MarkCollider.selected.targetMark);
         }
-        else if (Measure_previous_choose) {
+        else if (MeasureTool.previous_choose) {
 
         }
-        if (Measure_now_choose) Measure_previous_choose = Measure_now_choose;
-        Measure_now_choose = null;
+        //if (Measure_now_choose) MeasureTool.previous_choose = Measure_now_choose;
+        //Measure_now_choose = null;
         displayAllMark();
 
         if (rightMouseDown == true) displayMark();
@@ -141,45 +135,25 @@ class MeasureTool extends ToolEvt {
     onKeyDown(KeyboardKeys) {
         var key = KeyboardKeys.which;
 
-        if (Measure_previous_choose && (key === 46 || key === 110)) {
-            PatientMark.splice(PatientMark.indexOf(Measure_previous_choose.dcm), 1);
+        if (MarkCollider.selected && (key === 46 || key === 110)) {
+            PatientMark.splice(PatientMark.indexOf(MarkCollider.selected.targetMark), 1);
             displayMark();
-            Measure_previous_choose = null;
+            MarkCollider.selected = null;
             refreshMarkFromSop(GetViewport().sop);
         }
-        Measure_previous_choose = null;
+        if (MeasureTool.previous_choose && (key === 46 || key === 110)) {
+            PatientMark.splice(PatientMark.indexOf(MeasureTool.previous_choose), 1);
+            displayMark();
+            MeasureTool.previous_choose = null;
+            refreshMarkFromSop(GetViewport().sop);
+        }
     }
 }
 
 function measure() {
-
     cancelTools();
     toolEvt.onSwitch();
     toolEvt = new MeasureTool();
-}
-
-function measure_pounch(currX, currY) {
-    let block_size = getMarkSize(GetViewportMark(), false) * 4;
-    for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == GetViewport().sop) {
-            if (PatientMark[n].type == "MeasureRuler") {
-                var tempMark = PatientMark[n].pointArray;
-
-                var x1 = parseInt(tempMark[0].x), y1 = parseInt(tempMark[0].y);
-                if (currY + block_size >= y1 && currY - block_size <= y1 && currX + block_size >= x1 && currX - block_size <= x1) {
-                    Measure_now_choose = { dcm: PatientMark[n], pointArray: PatientMark[n].pointArray, order: 0 };
-                }
-
-                var x2 = parseInt(tempMark[1].x), y2 = parseInt(tempMark[1].y);
-                if (currY + block_size >= y2 && currY - block_size <= y2 && currX + block_size >= x2 && currX - block_size <= x2) {
-                    Measure_now_choose = { dcm: PatientMark[n], pointArray: PatientMark[n].pointArray, order: 1 };
-                }
-                /*if (currY + block_size >= y1 && currX + block_size >= x1 / 2 + x2 / 2 && currY < y1 + block_size && currX < x1 / 2 + x2 / 2 + block_size) {
-
-                }*/
-            }
-        }
-    }
 }
 
 function drawMeasureRuler(obj) {

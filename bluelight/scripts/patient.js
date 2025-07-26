@@ -16,7 +16,6 @@ onloadFunction.push2First(
     function () {
         leftLayout = new LeftLayout();
         ImageManager = new BlueLightImageManager();
-        //PatientMark = new BlueLightPatientMark();
     }
 );
 
@@ -148,9 +147,6 @@ onloadFunction.push2First(
     }
 );
 
-/*class BlueLightPatientMark {
-    constructor() { }
-}*/
 class BlueLightImageManager {
     constructor() {
         this.Study = [];

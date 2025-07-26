@@ -1,6 +1,5 @@
 
 class ScrollTool extends ToolEvt {
-
     onMouseMove(e) {
         if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
         if (MouseDownCheck) {

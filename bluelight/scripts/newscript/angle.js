@@ -1,10 +1,4 @@
 
-//存放量角器
-var Angle_Point0 = [];
-var Angle_Point1 = [];
-var Angle_Point2 = [];
-var Angle_Point3 = [];
-
 //正在選取的Angle
 var Angle_now_choose = null;
 //正在繪製的Angle
@@ -12,6 +6,13 @@ var Angle_previous_choose = null;
 var angleState;
 
 class AngleTool extends ToolEvt {
+
+    //存放量角器
+    static Angle_Point00 = [];
+    static Angle_Point01 = [];
+    static Angle_Point02 = [];
+    static Angle_Point03 = [];
+
     onMouseDown(e) {
         if (angleState == "rotate") return; //angleState = "stop";
         if (!MouseDownCheck) return;
@@ -19,7 +20,7 @@ class AngleTool extends ToolEvt {
         Angle_previous_choose = null;
         if (Angle_now_choose) return;
         if (angleState == "stop" && !Angle_previous_choose) {
-            Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
+            AngleTool.Angle_Point00 = AngleTool.Angle_Point01 = rotateCalculation(e, true);
             var AngleMark = new BlueLightMark();
 
             AngleMark.setQRLevels(GetViewport().QRLevels);
@@ -37,15 +38,15 @@ class AngleTool extends ToolEvt {
 
         let angle2point = rotateCalculation(e, true);
         if (angleState == "rotate") {
-            Angle_Point2 = angle2point;
+            AngleTool.Angle_Point02 = angle2point;
 
             if (!Angle_previous_choose) return;
             var AngleMark = Angle_previous_choose;
 
             AngleMark.pointArray = [];
-            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point00[0], AngleTool.Angle_Point00[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point01[0], AngleTool.Angle_Point01[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point02[0], AngleTool.Angle_Point02[1]);
             AngleMark.Text = getAnglelValue(e);
 
             refreshMark(AngleMark);
@@ -53,12 +54,12 @@ class AngleTool extends ToolEvt {
         }
         else if (MouseDownCheck && Angle_previous_choose) {
             if (angleState == "line") {
-                Angle_Point1 = angle2point;
+                AngleTool.Angle_Point01 = angle2point;
 
                 var AngleMark = Angle_previous_choose;
                 AngleMark.pointArray = [];
-                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+                AngleMark.setPoint2D(AngleTool.Angle_Point00[0], AngleTool.Angle_Point00[1]);
+                AngleMark.setPoint2D(AngleTool.Angle_Point01[0], AngleTool.Angle_Point01[1]);
                 AngleMark.Text = "";
 
                 refreshMark(AngleMark);
@@ -84,15 +85,15 @@ class AngleTool extends ToolEvt {
         }
         if (angleState == "rotate") {
             let angle2point = rotateCalculation(e, true);
-            Angle_Point2 = angle2point;
+            AngleTool.Angle_Point02 = angle2point;
 
             if (!Angle_previous_choose) return;
             var AngleMark = Angle_previous_choose;
 
             AngleMark.pointArray = [];
-            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point00[0], AngleTool.Angle_Point00[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point01[0], AngleTool.Angle_Point01[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point02[0], AngleTool.Angle_Point02[1]);
             AngleMark.Text = getAnglelValue(e);
             refreshMark(AngleMark);
             displayAllMark();
@@ -129,14 +130,14 @@ class AngleTool2 extends ToolEvt {
     onMouseDown(e) {
         if (!MouseDownCheck) return;
         if (angleState == "waitline2" && Angle_previous_choose) {
-            Angle_Point2 = Angle_Point3 = rotateCalculation(e, true);
+            AngleTool.Angle_Point02 = AngleTool.Angle_Point03 = rotateCalculation(e, true);
             var AngleMark = Angle_previous_choose;
 
             AngleMark.pointArray = [];
-            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
-            AngleMark.setPoint2D(Angle_Point3[0], Angle_Point3[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point00[0], AngleTool.Angle_Point00[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point01[0], AngleTool.Angle_Point01[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point02[0], AngleTool.Angle_Point02[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point03[0], AngleTool.Angle_Point03[1]);
 
             //PatientMark.push(AngleMark);
             Angle_previous_choose = AngleMark;
@@ -152,7 +153,7 @@ class AngleTool2 extends ToolEvt {
 
         //if (angleState == "line2") angleState = "stop";
         if (angleState == "stop"/*&& !Angle_previous_choose*/) {
-            Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
+            AngleTool.Angle_Point00 = AngleTool.Angle_Point01 = rotateCalculation(e, true);
             var AngleMark = new BlueLightMark();
 
             AngleMark.setQRLevels(GetViewport().QRLevels);
@@ -170,16 +171,16 @@ class AngleTool2 extends ToolEvt {
 
         let angle2point = rotateCalculation(e, true);
         if (angleState == "line2") {
-            Angle_Point3 = angle2point;
+            AngleTool.Angle_Point03 = angle2point;
 
             if (!Angle_previous_choose) return;
             var AngleMark = Angle_previous_choose;
 
             AngleMark.pointArray = [];
-            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
-            AngleMark.setPoint2D(Angle_Point3[0], Angle_Point3[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point00[0], AngleTool.Angle_Point00[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point01[0], AngleTool.Angle_Point01[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point02[0], AngleTool.Angle_Point02[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point03[0], AngleTool.Angle_Point03[1]);
             AngleMark.Text = getAnglelValueBy2Point2(Angle_previous_choose.pointArray);
 
             refreshMark(AngleMark);
@@ -187,12 +188,12 @@ class AngleTool2 extends ToolEvt {
         }
         else if (MouseDownCheck && Angle_previous_choose) {
             if (angleState == "line") {
-                Angle_Point1 = angle2point;
+                AngleTool.Angle_Point01 = angle2point;
 
                 var AngleMark = Angle_previous_choose;
                 AngleMark.pointArray = [];
-                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+                AngleMark.setPoint2D(AngleTool.Angle_Point00[0], AngleTool.Angle_Point00[1]);
+                AngleMark.setPoint2D(AngleTool.Angle_Point01[0], AngleTool.Angle_Point01[1]);
                 AngleMark.Text = "";
 
                 refreshMark(AngleMark);
@@ -221,16 +222,16 @@ class AngleTool2 extends ToolEvt {
         }
         if (angleState == "line2") {
             let angle2point = rotateCalculation(e, true);
-            Angle_Point3 = angle2point;
+            AngleTool.Angle_Point03 = angle2point;
 
             if (!Angle_previous_choose) return;
             var AngleMark = Angle_previous_choose;
 
             AngleMark.pointArray = [];
-            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
-            AngleMark.setPoint2D(Angle_Point3[0], Angle_Point3[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point00[0], AngleTool.Angle_Point00[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point01[0], AngleTool.Angle_Point01[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point02[0], AngleTool.Angle_Point02[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point03[0], AngleTool.Angle_Point03[1]);
             AngleMark.Text = getAnglelValueBy2Point2(Angle_previous_choose.pointArray);
             refreshMark(AngleMark);
             displayAllMark();
@@ -254,7 +255,7 @@ class AngleTool2 extends ToolEvt {
         if (Angle_now_choose) return;
         if (angleState == "rotate") angleState = "stop";
         if (angleState == "stop" && !Angle_previous_choose) {
-            Angle_Point0 = Angle_Point1 = rotateCalculation(e, true);
+            AngleTool.Angle_Point00 = AngleTool.Angle_Point01 = rotateCalculation(e, true);
             var AngleMark = new BlueLightMark();
 
             AngleMark.setQRLevels(GetViewport().QRLevels);
@@ -272,15 +273,15 @@ class AngleTool2 extends ToolEvt {
 
         let angle2point = rotateCalculation(e, true);
         if (angleState == "rotate") {
-            Angle_Point2 = angle2point;
+            AngleTool.Angle_Point02 = angle2point;
 
             if (!Angle_previous_choose) return;
             var AngleMark = Angle_previous_choose;
 
             AngleMark.pointArray = [];
-            AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-            AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
-            AngleMark.setPoint2D(Angle_Point2[0], Angle_Point2[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point00[0], AngleTool.Angle_Point00[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point01[0], AngleTool.Angle_Point01[1]);
+            AngleMark.setPoint2D(AngleTool.Angle_Point02[0], AngleTool.Angle_Point02[1]);
             AngleMark.Text = getAnglelValue(e);
 
             refreshMark(AngleMark);
@@ -288,12 +289,12 @@ class AngleTool2 extends ToolEvt {
         }
         else if (TouchDownCheck && Angle_previous_choose) {
             if (angleState == "line") {
-                Angle_Point1 = angle2point;
+                AngleTool.Angle_Point01 = angle2point;
 
                 var AngleMark = Angle_previous_choose;
                 AngleMark.pointArray = [];
-                AngleMark.setPoint2D(Angle_Point0[0], Angle_Point0[1]);
-                AngleMark.setPoint2D(Angle_Point1[0], Angle_Point1[1]);
+                AngleMark.setPoint2D(AngleTool.Angle_Point00[0], AngleTool.Angle_Point00[1]);
+                AngleMark.setPoint2D(AngleTool.Angle_Point01[0], AngleTool.Angle_Point01[1]);
                 AngleMark.Text = "";
 
                 refreshMark(AngleMark);
@@ -565,7 +566,6 @@ function getAnglelValueBy2Point2(pointArray) {
     if (dist1 < dist2) p1 = [pointArray[0].x, pointArray[0].y];
     else p1 = [pointArray[1].x, pointArray[1].y];
 
-
     var x = intersectionPoint[0], y = intersectionPoint[1];
     var x1 = pointArray[2].x, y1 = pointArray[2].y;
     var x2 = pointArray[3].x, y2 = pointArray[3].y;
@@ -595,11 +595,11 @@ function getAnglelValue(e) {
         return (angle + 360) % 360
     }
     var angleV = getAngle({
-        x: Angle_Point1[0] - Angle_Point2[0],
-        y: Angle_Point1[1] - Angle_Point2[1],
+        x: AngleTool.Angle_Point01[0] - AngleTool.Angle_Point02[0],
+        y: AngleTool.Angle_Point01[1] - AngleTool.Angle_Point02[1],
     }, {
-        x: Angle_Point1[0] - Angle_Point0[0],
-        y: Angle_Point1[1] - Angle_Point0[1],
+        x: AngleTool.Angle_Point01[0] - AngleTool.Angle_Point00[0],
+        y: AngleTool.Angle_Point01[1] - AngleTool.Angle_Point00[1],
     });
     if (angleV > 180) angleV = 360 - angleV;
     return parseInt(angleV) + "°";
@@ -608,7 +608,6 @@ function getAnglelValue(e) {
 onloadFunction.push2Last(function () {
     getByid("AngleRuler").onclick = function () {
         if (this.enable == false) return;
-        //cancelTools();
         angle1();
         drawBorder(getByid("openMeasureImg"));
         hideAllDrawer();
@@ -616,7 +615,6 @@ onloadFunction.push2Last(function () {
 
     getByid("AngleRuler2").onclick = function () {
         if (this.enable == false) return;
-        //cancelTools();
         angle2();
         drawBorder(getByid("openMeasureImg"));
         hideAllDrawer();

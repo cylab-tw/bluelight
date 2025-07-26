@@ -316,7 +316,6 @@ var RTSS_format_tail_6 = `
                                 <element tag="3006,0050" vr="DS" vm="___vm___" len="___len___" name="ContourData">___ContourData___</element>
                             </item>
                         `;
-var RTSS_now_choose = null;
 var temp_xml_format = "";
 
 class eraseRTSSTool extends ToolEvt {
@@ -338,46 +337,30 @@ class eraseRTSSTool extends ToolEvt {
         currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
         currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
 
-
-        RTSS_pounch(currX02, currY02);
-        if (RTSS_now_choose) {
-            PatientMark.splice(PatientMark.indexOf(RTSS_now_choose.dcm), 1);
+        MarkCollider.detect(currX02, currY02, "RTSS");
+        if (MarkCollider.selected) {
+            PatientMark.splice(PatientMark.indexOf(MarkCollider.selected.targetMark), 1);
             displayMark();
-            RTSS_now_choose = null;
+            MarkCollider.selected = null;
             refreshMarkFromSop(GetViewport().sop);
-            return;
         }
     }
     onSwitch() {
+        MarkCollider.selected = null;
         displayMark();
     }
     onKeyDown(KeyboardKeys) {
         var key = KeyboardKeys.which
         if (key === 46 || key === 110) DeleteSelectedRTSS();
     }
+    onSwitch() {
+        displayMark();
+    }
 }
 
 function eraseRTSS() {
     toolEvt.onSwitch();
     toolEvt = new eraseRTSSTool();
-}
-function RTSS_pounch(currX, currY) {
-    let block_size = getMarkSize(GetViewportMark(), false) * 4;
-
-    for (var n = 0; n < PatientMark.length; n++) {
-        if (PatientMark[n].sop == GetViewport().sop) {
-            if (PatientMark[n].type == "RTSS") {
-                var tempMark = PatientMark[n].pointArray;
-                var x1 = parseInt(tempMark[0].x), y1 = parseInt(tempMark[0].y);
-                if (currY + block_size >= y1 && currY - block_size <= y1 && currX + block_size >= x1 && currX - block_size <= x1) {
-                    RTSS_now_choose = { dcm: PatientMark[n], pointArray: tempMark, order: 0 };
-                    return true;
-                }
-            }
-        }
-    }
-    RTSS_now_choose = null;
-    return false;
 }
 
 function set_RTSS_context() {
@@ -541,7 +524,8 @@ class writeRTSSTool extends ToolEvt {
             RtssMark.setPoint2D(angle2point[0] - Math.abs(currX02 - angle2point[0]), angle2point[1] - Math.abs(currY02 - angle2point[1]));
 
             PatientMark.push(RtssMark);
-            RTSS_now_choose = RtssMark;
+            RtssMark.colliders = [new MarkCollider(RtssMark, RtssMark.pointArray[0].x, RtssMark.pointArray[0].y)];
+            MarkCollider.selected = RtssMark.colliders[0];
             refreshMark(RtssMark);
             displayAllMark();
         }
@@ -551,7 +535,7 @@ class writeRTSSTool extends ToolEvt {
 
         if (rightMouseDown == true) scale_size(e, getCurrPoint(e)[0], getCurrPoint(e)[1]);
 
-        if (!rightMouseDown && RTSS_now_choose) {
+        if (!rightMouseDown && MarkCollider.selected) {
             var angle2point = rotateCalculation(e, true)
             var currX11 = Math.floor(angle2point[0]);
             var currY11 = Math.floor(angle2point[1]);
@@ -569,15 +553,16 @@ class writeRTSSTool extends ToolEvt {
             currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
             currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
 
-            var RtssMark = RTSS_now_choose;
-            RtssMark.setPoint2D(angle2point[0] - Math.abs(currX02 - angle2point[0]), angle2point[1] - Math.abs(currY02 - angle2point[1]));
+            MarkCollider.selected.targetMark.setPoint2D(angle2point[0] - Math.abs(currX02 - angle2point[0]), angle2point[1] - Math.abs(currY02 - angle2point[1]));
+            MarkCollider.selected.x = MarkCollider.selected.targetMark.pointArray[0].x;
+            MarkCollider.selected.y = MarkCollider.selected.targetMark.pointArray[0].y;
 
             refreshMarkFromSop(GetViewport().sop);
             displayAllMark();
         }
     }
     onMouseUp(e) {
-        if (RTSS_now_choose) RTSS_now_choose = null;
+        if (MarkCollider.selected) MarkCollider.selected = null;
     }
     onKeyDown(KeyboardKeys) {
         var key = KeyboardKeys.which
@@ -589,6 +574,7 @@ function writertss() {
     drawBorder(getByid("drawRTSS"));
 
     toolEvt.onSwitch();
+    MarkCollider.selected = null;
     toolEvt = new writeRTSSTool();
 }
 
