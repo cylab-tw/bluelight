@@ -730,7 +730,8 @@ class EraseTool extends ToolEvt {
             refreshMarkFromSop(GetViewport().sop);
             return;
         }
-        measure_pounch(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1]);
+        
+        MarkCollider.detect(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1], "MeasureRuler");
         if (MarkCollider.selected) {
             PatientMark.splice(PatientMark.indexOf(MarkCollider.selected.targetMark), 1);
             displayMark();
