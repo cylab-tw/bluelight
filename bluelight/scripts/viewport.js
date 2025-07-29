@@ -3,6 +3,7 @@ const Viewport_Total = 16;
 //Viewport的即時數量
 let Viewport_row = 1;
 let Viewport_col = 1;
+let GridMode = "default";
 
 //表示Viewport為連接狀態
 var openLink = false;

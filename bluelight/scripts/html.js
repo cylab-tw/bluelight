@@ -409,7 +409,7 @@ function html_onload() {
       outerDiv.innerHTML = "";
       outerDiv.selectObj = null;
       outerDiv.style.backgroundColor = "rgb(55,55,55)"
-      outerDiv.style.width = (4 * 30 + 4 * 5 + 4) + "px";
+      outerDiv.style.width = (6 * 30 + 6 * 5 + 6) + "px";
       outerDiv.style.height = (4 * 30 + 4 * 5 + 4) + "px";
       outerDiv.onclick = function () {
         if (this.selectObj) {
@@ -417,20 +417,55 @@ function html_onload() {
           this.selectObj = null;
         }
       }
-
+      var b_col2x1 = document.createElement("img");
+      var b_row1x2 = document.createElement("img");
+      b_col2x1.className = b_row1x2.className = "img";
+      b_col2x1.src = "../image/icon/lite/b_col2x1.png";
+      b_row1x2.src = "../image/icon/lite/b_row1x2.png";
+      b_col2x1.style["max-width"] = b_row1x2.style["max-width"] = "unset";
+      b_col2x1.style.position = b_row1x2.style.position = "absolute";
+      b_col2x1.style.width = b_col2x1.style.height = 60 + "px";
+      b_row1x2.style.width = b_row1x2.style.height = 60 + "px";
+      b_col2x1.style.left = b_row1x2.style.left = b_col2x1.style.top = "6px";
+      b_row1x2.style.top = "72px";
+      outerDiv.appendChild(b_col2x1);
+      outerDiv.appendChild(b_row1x2);
+      b_col2x1.onclick = function (e) {
+        e.stopPropagation();
+        hideAllDrawer();
+        Viewport_row = Viewport_col = 2;
+        getByid("MouseOperation").click();
+        if (viewportNumber >= 2) viewportNumber = 0;
+        BlueLightViewPort.only1Viewport = -1;
+        GridMode = "fullcol";
+        SetTable();
+        window.onresize();
+      }
+      b_row1x2.onclick = function (e) {
+        e.stopPropagation();
+        hideAllDrawer();
+        Viewport_row = Viewport_col = 2;
+        getByid("MouseOperation").click();
+        if (viewportNumber >= 2) viewportNumber = 0;
+        BlueLightViewPort.only1Viewport = -1;
+        GridMode = "fullrow";
+        SetTable();
+        window.onresize();
+      }
       for (var r = 0; r < 4; r++) {
         for (var c = 0; c < 4; c++) {
           var div = document.createElement("DIV");
           div.className = "SplitWindowCell";
           div.style.position = "absolute";
           div.style.width = div.style.height = 30 + "px";
-          div.style.left = 5 + (5 + 30) * c + "px";
+          div.style.left = (36 * 2) + 5 + (5 + 30) * c + "px";
           div.style.top = 5 + (5 + 30) * r + "px";
           div.row = r;
           div.col = c;
           div.style.backgroundColor = "rgb(105,105,105)"
           outerDiv.appendChild(div);
           div.onclick = function () {
+            GridMode = "default";
             hideAllDrawer();
             Viewport_row = this.row + 1;
             Viewport_col = this.col + 1;

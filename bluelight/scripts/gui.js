@@ -432,6 +432,25 @@ function SetTable(row0, col0) {
         GetViewport(i).enable = false;
     }
 
+    if (GridMode == "fullcol") {
+        GetViewport(0).div.style.height = `calc(${100 / 1}% - ${bordersize * 2}px)`;
+        for (var r = 1; r < row; r++) {
+            for (var c = 0; c < col; c++) {
+                GetViewport(r * col + 0).div.style.display = "none";
+                GetViewport(r * col + 0).enable = false;
+            }
+        }
+    }
+    else if (GridMode == "fullrow") {
+        GetViewport(0).div.style.width = `calc(${100 / 1}% - ${bordersize * 2}px)`;
+        for (var r = 0; r < row; r++) {
+            for (var c = 1; c < col; c++) {
+                GetViewport(0 * col + c).div.style.display = "none";
+                GetViewport(0 * col + c).enable = false;
+            }
+        }
+    }
+
     //if (viewportNumber >= row * col) viewportNumber = 0;
 
     refleshGUI();
