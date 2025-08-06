@@ -205,10 +205,8 @@ function html_onload() {
     GetViewport().rotate = (GetViewport().rotate % 360 + 360) % 360;//有考慮負值
     setTransform();
     if (openLink == true) {
-      for (var z = 0; z < Viewport_Total; z++) {
-        GetViewport(z).rotate = GetViewport().rotate;
-        setTransform(z);
-      }
+      SetAllViewport("rotate", GetViewport().rotate);
+      setTransformAll();
     }
   }
 
@@ -217,10 +215,8 @@ function html_onload() {
     GetViewport().rotate = (GetViewport().rotate % 360 + 360) % 360;//有考慮負值
     setTransform();
     if (openLink == true) {
-      for (var z = 0; z < Viewport_Total; z++) {
-        GetViewport(z).rotate = GetViewport().rotate;
-        setTransform(z);
-      }
+      SetAllViewport("rotate", GetViewport().rotate);
+      setTransformAll();
     }
   }
 
@@ -228,10 +224,8 @@ function html_onload() {
     GetViewport().rotate = 0;
     setTransform();
     if (openLink == true) {
-      for (var z = 0; z < Viewport_Total; z++) {
-        GetViewport(z).rotate = GetViewport().rotate;
-        setTransform(z);
-      }
+      SetAllViewport("rotate", GetViewport().rotate);
+      setTransformAll();
     }
   }
   /*getByid("Rotate_180").onclick = function () {

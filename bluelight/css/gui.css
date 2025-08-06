@@ -11,13 +11,14 @@
   --leftScrollSize: 15px;
   --ishaveLeftScroll: 0;
 
-  --globalPadding:1px;
+  --globalPadding: 1px;
 }
 
-html, body {
+html,
+body {
   margin: var(--globalPadding);
   padding: var(--globalPadding);
-  width:  calc(100% - var(--globalPadding));
+  width: calc(100% - var(--globalPadding));
   height: calc(100% - var(--globalPadding));
 }
 
@@ -335,6 +336,22 @@ button:hover {
   height: 100%;
   left: 0px;
   position: absolute;
+}
+
+.outterScrollBar {
+  background-color: rgb(241,241,241);
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 37;
+}
+
+.innerScrollBar {
+  background-color: rgb(193,193,193);
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 38;
 }
 
 #EcgView {

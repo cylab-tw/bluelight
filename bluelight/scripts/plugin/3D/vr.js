@@ -353,25 +353,6 @@ function resizeVR(event) {
             }
             if (tempSizeNum != viewportNumber) continue;
         }
-        //需要再做更正--*
-        //於20210919註解掉
-        /*
-        try {
-            MainCanvasT = GetViewport(tempSizeNum).canvas;
-            MarkCanvasT = GetViewport(tempSizeNum).div;
-            var HandWT = getStretchSize(GetViewport(tempSizeNum)..div.imageWidth, GetViewport(tempSizeNum).height, GetViewport(tempSizeNum)..div);
-            MainCanvasT.style = "width:" + HandWT[0] + "px;height:" + HandWT[1] + "px;display:block;position:absolute;top:50%;left:50%";
-            MainCanvasT.style.margin = "-" + (HandWT[0] / 2) + "px 0 0 -" + (HandWT[1] / 2) + "px";
-            GetViewport(tempSizeNum)..div.newMousePointX = 0;
-            GetViewport(tempSizeNum)..div.newMousePointY = 0;
-            // NowCanvasSizeHeight = 0;
-            // NowCanvasSizeWidth = 0;
-            MainCanvasT.style['transform']="translate(" + ToPx(GetViewport(tempSizeNum)..div.newMousePointX) + "," + ToPx(GetViewport(tempSizeNum)..div.newMousePointY) + ")rotate(" + GetViewport().rotate + "deg)";
-            MarkCanvasT.style['transform']="translate(" + ToPx(GetViewport(tempSizeNum)..div.newMousePointX) + "," + ToPx(GetViewport(tempSizeNum)..div.newMousePointY) + ")rotate(" + GetViewport().rotate + "deg)";
-            MarkCanvasT.width = MainCanvasT.width;
-            MarkCanvasT.height = MainCanvasT.height;
-        } catch (ex) { }
-        */
     }
 }
 
@@ -1953,9 +1934,7 @@ function VRscreenshot() {
 function get3dCurrPoint(e) {
     var currX = parseFloat(e.pageX);
     var currY = parseFloat(e.pageY);
-    // var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().width / parseFloat(canvas.style.width)));
-    //var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().height / parseFloat(canvas.style.height)));
-
+ 
     return [currX, currY];
 }
 

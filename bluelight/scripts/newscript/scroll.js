@@ -58,23 +58,8 @@ class ScrollBar {
         this.outerDIV = document.createElement("DIV");
         this.innerDIV = document.createElement("DIV");
 
-        this.outerDIV.style.backgroundColor = "rgb(241,241,241)";
-        this.innerDIV.style.backgroundColor = "rgb(193,193,193)";
-
-        this.outerDIV.style.position = "absolute";
-        this.innerDIV.style.position = "absolute";
-
-        this.outerDIV.className = "ScrollBar"
-        this.innerDIV.className = "ScrollBar"
-
-        this.outerDIV.style.top = "0px";
-        this.innerDIV.style.top = "0px";
-
-        this.outerDIV.style.right = "0px";
-        this.innerDIV.style.right = "0px";
-
-        this.outerDIV.style.zIndex = "37";
-        this.innerDIV.style.zIndex = "38";
+        this.outerDIV.className = "outterScrollBar"
+        this.innerDIV.className = "innerScrollBar"
 
         this.outerDIV.appendChild(this.innerDIV);
         this.viewport.appendChild(this.outerDIV);

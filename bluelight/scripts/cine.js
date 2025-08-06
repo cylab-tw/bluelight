@@ -9,17 +9,13 @@ var PlayCine = function () {
         getByid('playvideo').src = '../image/icon/lite/b_CinePause.png';
     }
 
-    if (openLink == true || GetViewport().cine == false) {
-        for (var i = 0; i < Viewport_Total; i++) {
-            GetViewport(i).cine = GetViewport().cine;
-        }
-    }
+    if (openLink == true || GetViewport().cine == false) SetAllViewport("cine", GetViewport().cine);
 
     clearInterval(CineTimer);
     if (!GetViewport().cine) return;
     var fps = parseInt((1 / parseFloat(getByid("textPlay").value) * 1000));
     CineEnd = true;
-    
+
     CineTimer = setInterval(function () {
         if (!CineEnd) return;
         CineEnd = false;

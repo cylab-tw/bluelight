@@ -127,6 +127,10 @@ function displayRuler2(viewportNum = viewportNumber) {
     } catch (ex) { }
 }
 
+function setTransformAll() {
+    for (var z = 0; z < Viewport_Total; z++) setTransform(z);
+}
+
 function setTransform(viewportnum = viewportNumber) {
     var element = GetViewport(viewportnum);
     var scale = element.scale ? element.scale : 1;

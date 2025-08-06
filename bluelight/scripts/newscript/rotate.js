@@ -9,10 +9,8 @@ class RotatelTool extends ToolEvt {
             GetViewport().rotate = (GetViewport().rotate % 360 + 360) % 360;//有考慮負值
             setTransform();
             if (openLink == true) {
-                for (var z = 0; z < Viewport_Total; z++) {
-                    GetViewport(z).rotate = GetViewport().rotate;
-                    setTransform(z);
-                }
+                SetAllViewport("rotate", GetViewport().rotate);
+                setTransformAll();
             }
         }
 
@@ -36,10 +34,8 @@ class RotatelTool extends ToolEvt {
             GetViewport().rotate = (GetViewport().rotate % 360 + 360) % 360;//有考慮負值
             setTransform();
             if (openLink) {
-                for (var z = 0; z < Viewport_Total; z++) {
-                    GetViewport(z).rotate = GetViewport().rotate;
-                    setTransform(z);
-                }
+                SetAllViewport("rotate", GetViewport().rotate);
+                setTransformAll();
             }
         }
         if (TouchDownCheck) {

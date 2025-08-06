@@ -84,11 +84,9 @@ function splitArrayByElem(arr, str) {
 function getCurrPoint(e) {
     var canvas = GetViewport().canvas
     if (!canvas) return [0, 0];
-    //BlueLight2
-    //var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (GetViewport().width / parseFloat(canvas.style.width)));
-    //var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (GetViewport().height / parseFloat(canvas.style.height)));
-    var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left /* - newMousePointX[viewportNumber]*/ - 0)) * (1.0 / GetViewport().scale));
-    var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top /*- newMousePointY[viewportNumber] */ - 0)) * (1.0 / GetViewport().scale));
+
+    var currX = parseFloat(parseFloat((e.pageX - canvas.getBoundingClientRect().left - 0)) * (1.0 / GetViewport().scale));
+    var currY = parseFloat(parseFloat((e.pageY - canvas.getBoundingClientRect().top - 0)) * (1.0 / GetViewport().scale));
     return [currX, currY];
 }
 

@@ -98,11 +98,6 @@ class BlueLightViewPort {
 
         this.content.framesNumber = 0;
 
-        //div.newMousePointX = 0;
-        //div.newMousePointY = 0;
-        //div.openMark = true;
-        //div.openInvert = false;
-
         div.enable = true;
         div.lockRender = false;
         this.DicomTagsList = [];

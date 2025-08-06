@@ -19,10 +19,8 @@ class WLevelTool extends ToolEvt {
             getByid("textWC").value = "" + parseInt(GetViewport().windowCenter);
             getByid("textWW").value = "" + parseInt(GetViewport().windowWidth);
             if (openLink == true) {
-                for (var z = 0; z < Viewport_Total; z++) {
-                    GetViewport(z).windowWidth = GetViewport().windowWidth;
-                    GetViewport(z).windowCenter = GetViewport().windowCenter;
-                }
+                SetAllViewport("windowWidth", GetViewport().windowWidth);
+                SetAllViewport("windowCenter", GetViewport().windowCenter);
             }
             setWindowLevel();
             refleshViewport();
@@ -55,10 +53,8 @@ class WLevelTool extends ToolEvt {
             getByid("textWC").value = "" + parseInt(GetViewport().windowCenter);
             getByid("textWW").value = "" + parseInt(GetViewport().windowWidth);
             if (openLink == true) {
-                for (var z = 0; z < Viewport_Total; z++) {
-                    GetViewport(z).windowWidth = GetViewport().windowWidth;
-                    GetViewport(z).windowCenter = GetViewport().windowCenter;
-                }
+                SetAllViewport("windowWidth", GetViewport().windowWidth);
+                SetAllViewport("windowCenter", GetViewport().windowCenter);
             }
             setWindowLevel();
             refleshViewport();
