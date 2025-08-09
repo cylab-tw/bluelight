@@ -212,7 +212,38 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
         }
         return pixelData;
     }
+    function dealAssumingRGB(imageObj, dataSet, pixelData) {
+        if (!imageObj.AssumingRGB) return pixelData;
+        var width = imageObj.width, height = imageObj.height;
+        function discardOddLines(pixelData, width, height) {
+            const rowSize = width * 3;
+            const output = new Uint8ClampedArray((height / 2) * rowSize);
+            for (let y = 0; y < height; y += 2) {
+                const srcIndex = y * rowSize;
+                const dstIndex = (y / 2) * rowSize;
+                output.set(pixelData.subarray(srcIndex, srcIndex + rowSize), dstIndex);
+            }
+            return output;
+        }
+        pixelData = discardOddLines(pixelData, width, height);
+
+        var outputArray = new Uint8ClampedArray(width * height * 3);
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width * 3 - 3; x++) {
+                outputArray[y * 2 * width * 3 + x] = pixelData[parseInt(y * width * 3 + x)];
+                outputArray[y * 2 * width * 3 + x + 1] = pixelData[parseInt(y * width * 3 + x) + 1];
+                outputArray[y * 2 * width * 3 + x + 2] = pixelData[parseInt(y * width * 3 + x) + 2];
+                outputArray[(y * 2 - 1) * width * 3 + x] = pixelData[parseInt(y * width * 3 + x)];
+                outputArray[(y * 2 - 1) * width * 3 + x + 1] = pixelData[parseInt(y * width * 3 + x) + 1];
+                outputArray[(y * 2 - 1) * width * 3 + x + 2] = pixelData[parseInt(y * width * 3 + x) + 2];
+            }
+        }
+
+        pixelData = outputArray;
+        return pixelData;
+    }
     function PixelProcessing(imageObj, dataSet, pixelData) {
+        pixelData = dealAssumingRGB(imageObj, dataSet, pixelData);
         pixelData = YBR(imageObj, dataSet, pixelData);
         IfNoWL(imageObj, dataSet, pixelData);
         return pixelData;
