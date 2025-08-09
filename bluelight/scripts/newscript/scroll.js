@@ -69,7 +69,14 @@ class ScrollBar {
             e.stopPropagation();
         };
         this.innerDIV.ondblclick = (e) => { e.stopPropagation(); };
-        this.outerDIV.onmousedown = (e) => { e.stopPropagation(); };
+        this.outerDIV.onmousedown = (e) => {
+            e.stopPropagation();
+            var index = this.viewport.viewportNum;
+            var pointY = e.clientY - GetViewport().ScrollBar.outerDIV.getBoundingClientRect().y; //加上偏移
+            var targetGap = GetViewport(index).ScrollBar.outerDIV.clientHeight / GetViewport(index).ScrollBar.total; //動多少一格
+            var nextFrame = parseInt((pointY + targetGap / 2) / targetGap);
+            GetViewport(index).specifiedFrame(nextFrame, false);
+        };
         this.outerDIV.ondblclick = (e) => { e.stopPropagation(); };
 
         this.reflesh();

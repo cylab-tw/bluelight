@@ -82,11 +82,7 @@ function getParameterByName(name) {
   else results = decodeURIComponent(results[1].replace(/\+/g, " "));
 
   var pair1 = ("" + results).split(",");
-  var pairList = [];
-  for (var j = 0; j < pair1.length; j++) {
-    pairList.push(pair1[j]);
-  }
-  return pairList;
+  return pair1.slice();
 }
 
 function setLabelPadding() {
@@ -185,20 +181,15 @@ function operateQueryString(queryString) {
 
 function load_WebImg() {
   function getQueryVariable_WebImg(variable) {
-    var query = window.location.search.substring(1);
+    var query = location.search.substring(1);
     var vars = query.split("&");
     for (var i = 0; i < vars.length; i++) {
       var pair = vars[i].split("=");
-      if (pair[0] == variable) {
-        return pair[1];
-      }
+      if (pair[0] == variable) return pair[1];
     }
-    return false;
   }
   var webimgurl = getQueryVariable_WebImg("webimgurl");
-  if (webimgurl) {
-    loadPicture(webimgurl);
-  }
+  if (webimgurl) loadPicture(webimgurl);
 }
 
 function readAllJson(readJson) {
@@ -327,11 +318,10 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
     var url = getWadoUriURL(firestImage["0020000D"].Value[0], firestImage["0020000E"].Value[0], firestImage["00080018"].Value[0]);
   else if (ConfigLog.WADO.WADOType == "RS")
     var url = getWadoUriRS(firestImage["0020000D"].Value[0], firestImage["0020000E"].Value[0], firestImage["00080018"].Value[0]);
-  
+
   url = fitUrl(url);
   LoadFileInBatches.wadoPreLoad(url);
 
-  
   //載入其餘所有影像
   function loadDicom(dicomImg) {
     if (ConfigLog.WADO.WADOType == "URI")

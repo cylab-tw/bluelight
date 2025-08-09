@@ -386,7 +386,6 @@ function initVR() {
                 elem.getElementsByClassName("VrCanvas")[0] = null;
             } catch (ex) { }
         }
-        ViewPortList[0].lockRender = false;
         // o3DListLength = 0;
         window.removeEventListener("resize", resizeVR, false);
         GetViewport(0).div.removeEventListener("mousemove", mousemove3D, false);
@@ -456,7 +455,6 @@ function initVR() {
         GetViewportMark().style.display = "none";
         GetViewport(0).canvas.style.display = "none";
         GetViewportMark(0).style.display = "none";
-        ViewPortList[0].lockRender = true;
 
         window.addEventListener("resize", resizeVR, false);
 

@@ -8,9 +8,7 @@ function cancelTools() {
 
     setWindowLevel();
     displayMark();
-    for (var i = 0; i < Viewport_Total; i++) {
-        GetViewport(i).cine = false;
-    }
+    SetAllViewport("cine", false);
     PlayCine();
 }
 

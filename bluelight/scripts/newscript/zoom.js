@@ -134,9 +134,8 @@ class zoomTool extends ToolEvt {
     onMouseEnter(viewportNum) {
         if (isNaN(viewportNum)) return;
         viewportNumber = viewportNum;
-        if (GetViewport().Sop) GetViewport().reload();
+        //if (GetViewport().Sop) GetViewport().reload();
         magnifierDiv.show();
-
     }
     onMouseOut() {
         magnifierDiv.hide();

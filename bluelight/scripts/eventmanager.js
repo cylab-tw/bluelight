@@ -77,6 +77,7 @@ function initNewCanvas2() {
 }
 
 var SwitchViewport = function () {
+    if (viewportNumber == this.viewportNum) return;
     getByid("WindowDefault").selected = true;
 
     var viewportNum = viewportNumber;
@@ -88,12 +89,6 @@ var SwitchViewport = function () {
     else getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
 
     changeMarkImg();
-    if (GetViewport().Sop) GetViewport().reload();
-    else {
-        try {
-            GetViewport().loadImgBySop(GetViewport(viewportNum).Sop);
-        } catch (ex) { }
-    }
     for (var z = 0; z < Viewport_Total; z++) {
         GetViewport(z).setLabel("PixelValue", "");
         GetViewport(z).refleshLabel();

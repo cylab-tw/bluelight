@@ -64,12 +64,10 @@ class BlueLightViewPort {
         this.play = false;
 
         this.enable = true;
-        this.lockRender = false;
         this.cine = false;
 
         this.content = {};
         this.div.enable = true;
-        this.div.lockRender = false;
         this.DicomTagsList = [];
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.canvas.width = this.canvas.height = 1;
@@ -93,13 +91,11 @@ class BlueLightViewPort {
         this.play = false;
 
         this.enable = true;
-        this.lockRender = false;
         this.cine = false;
 
         this.content.framesNumber = 0;
 
         div.enable = true;
-        div.lockRender = false;
         this.DicomTagsList = [];
         this.labelDict = {};
         this.initViewportCanvas(div, index);
@@ -107,9 +103,7 @@ class BlueLightViewPort {
     get enable() { return this.div.enable };
     get width() { return this.content.image ? this.content.image.width : undefined };
     get height() { return this.content.image ? this.content.image.height : undefined };
-    get lockRender() { return this.div.lockRender };
     set enable(v) { this.div.enable = v };
-    set lockRender(v) { this.div.lockRender = v };
 
     get study() { if (this.tags) return this.tags.StudyInstanceUID };
     get series() { if (this.tags) return this.tags.SeriesInstanceUID };
@@ -306,7 +300,7 @@ class BlueLightViewPort {
             if (Sop != undefined) this.loadImgBySop(Sop);
         }
         else if (this.QRLevel == "frames" && this.framesNumber != undefined) {
-            this.framesNumber += invert == true ? -1 : 1;
+            this.framesNumber += (invert == true ? -1 : 1);
             if (this.framesNumber == -1) this.framesNumber = this.content.image.NumberOfFrames - 1;
             else if (this.framesNumber >= this.content.image.NumberOfFrames) this.framesNumber = 0;
             setSeriesCount(this.index);
@@ -328,7 +322,7 @@ class BlueLightViewPort {
     //readDicom要注意
     loadImgBySop(Sop) {
         if (!Sop) return;
-        if (this.enable == false || this.lockRender == true) return;
+        if (this.enable == false) return;
         this.labelDict = {};
         if (Sop.constructor.name == 'String') Sop = ImageManager.findSop(Sop);
 

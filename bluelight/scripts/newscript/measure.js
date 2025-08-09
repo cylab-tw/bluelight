@@ -1,10 +1,10 @@
 
-//紀錄測量工具座標
-var Measure_Point1 = [0, 0];
-var Measure_Point2 = [0, 0];
-
 class MeasureTool extends ToolEvt {
+    //紀錄測量工具座標
+    static Measure_Point1 = [0, 0];
+    static Measure_Point2 = [0, 0];
     static previous_choose = null;
+
     onMouseDown(e) {
         let angle2point = rotateCalculation(e, true);
         MarkCollider.selected = null;
@@ -27,14 +27,14 @@ class MeasureTool extends ToolEvt {
             MarkCollider.selected = MeasureMark.colliders[1];
             PatientMark.push(MeasureMark);
         }
-        Measure_Point1 = Measure_Point2 = rotateCalculation(e, true);
+        MeasureTool.Measure_Point1 = MeasureTool.Measure_Point2 = rotateCalculation(e, true);
         displayAllMark();
     }
     onMouseMove(e) {
         if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
         let angle2point = rotateCalculation(e, true);
         if (MouseDownCheck) {
-            Measure_Point2 = angle2point;
+            MeasureTool.Measure_Point2 = angle2point;
             if (MarkCollider.selected) {
                 MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].x = angle2point[0];
                 MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].y = angle2point[1];
@@ -45,7 +45,7 @@ class MeasureTool extends ToolEvt {
     }
     onMouseUp(e) {
         let angle2point = rotateCalculation(e, true);
-        Measure_Point2 = angle2point;
+        MeasureTool.Measure_Point2 = angle2point;
 
         if (MarkCollider.selected) {
             MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].x = angle2point[0];
@@ -80,14 +80,14 @@ class MeasureTool extends ToolEvt {
             MarkCollider.selected = MeasureMark.colliders[1];
             PatientMark.push(MeasureMark);
         }
-        Measure_Point1 = Measure_Point2 = rotateCalculation(e, true);
+        MeasureTool.Measure_Point1 = MeasureTool.Measure_Point2 = rotateCalculation(e, true);
         displayAllMark();
     }
     onTouchMove(e, e2) {
         if (rightTouchDown) scale_size(e, originalPoint_X, originalPoint_Y);
         let angle2point = rotateCalculation(e, true);
         if (TouchDownCheck) {
-            Measure_Point2 = angle2point;
+            MeasureTool.Measure_Point2 = angle2point;
             if (MarkCollider.selected) {
                 MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].x = angle2point[0];
                 MarkCollider.selected.targetMark.pointArray[MarkCollider.selected.parm].y = angle2point[1];
@@ -158,7 +158,6 @@ function drawMeasureRuler(obj) {
                 viewport.drawText(ctx, viewport, Mark.lastMark, value, 22, "#FF0000", alpha = 1.0);
             }
         }
-
     } catch (ex) { console.log(ex) }
 }
 PLUGIN.PushMarkList(drawMeasureRuler);

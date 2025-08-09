@@ -212,7 +212,6 @@ function exitMPR2() {
     exitMPR2_UI();
     VIEWPORT.fixRow = VIEWPORT.fixCol = null;
 
-    ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = false;
     window.removeEventListener("resize", resizeVR, false);
     GetViewport(0).div.removeEventListener("wheel", MPRWheel, false);
     GetViewport(1).div.removeEventListener("wheel", MPRWheel, false);
@@ -279,7 +278,6 @@ function initMPR2() {
     viewportNumber = 0;
     GetViewport().reload();
     displayAnnotation();
-    ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
     window.addEventListener("resize", resizeVR, false);
     /*for (var i1 = 0; i1 < Viewport_Total; i1++) {
         GetViewport(i1).div.removeEventListener("contextmenu", contextmenuF, false);

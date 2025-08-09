@@ -535,7 +535,6 @@ function initMPR() {
             } catch (ex) { }
         }
 
-        ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = false;
         window.removeEventListener("resize", resizeVR, false);
         GetViewport(3).div.removeEventListener("mousemove", mousemove3D, false);
         GetViewport(3).div.removeEventListener("mousedown", mousedown3D, false);
@@ -618,8 +617,6 @@ function initMPR() {
         originSop_of_viewport2 = GetViewport(2).Sop;
         resetViewport(2);
         GetViewport(2).loadImgBySop(GetViewport().Sop);
-
-        ViewPortList[0].lockRender = ViewPortList[1].lockRender = ViewPortList[3].lockRender = true;
 
         window.addEventListener("resize", resizeVR, false);
         /*for (var i1 = 0; i1 < Viewport_Total; i1++) {
