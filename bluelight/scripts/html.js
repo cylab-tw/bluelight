@@ -1,7 +1,5 @@
 var BorderList_Icon = ["MouseOperation", "WindowRevision", "MeasureRuler", "MouseRotate", "playvideo", "zoom", "b_Scroll", "AngleRuler", "openMeasureImg"];
 
-
-
 function html_onload() {
   document.body.style.overscrollBehavior = "none";
   getByid("openFile").onclick = function () {
@@ -48,14 +46,12 @@ function html_onload() {
     } else if (KeyboardKeys.key == '+') {
       var viewport = GetViewport(), canvas = GetViewport().canvas;
       if (viewport.scale < 10) viewport.scale += viewport.scale * 0.05;
-      setTransform();
+
       if (openLink == true) {
-        for (var i = 0; i < Viewport_Total; i++) {
-          if (i == viewportNumber) continue;
-          GetViewport(i).scale = GetViewport().scale;
-          setTransform(i);
-        }
-      }
+        SetAllViewport("scale", GetViewport().scale);
+        setTransformAll();
+      } else setTransform();
+      
       displayAllRuler();
     }
   }
@@ -835,13 +831,11 @@ function onElementLeave() {
   var elem = getByid("tooltiptext_img");
   if (elem) elem.remove();
 }
+
 function hideAllDrawer(id) {
   for (var obj of getClass("drawer")) {
-    if (id && obj.id == id) {
-
-    } else {
-      obj.style.display = "none";
-    }
+    if (id && obj.id == id);
+    else obj.style.display = "none";
   }
   SetTable();
 }

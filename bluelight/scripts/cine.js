@@ -1,13 +1,11 @@
 
-//播放動畫用的計時器
-var CineTimer = null;
-var CineEnd = null;
 var PlayCine = function () {
-    if (GetViewport().cine == false) {
+    //播放動畫用的計時器
+    let CineTimer = CineEnd = null;
+    if (GetViewport().cine == false)
         getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
-    } else {
+    else
         getByid('playvideo').src = '../image/icon/lite/b_CinePause.png';
-    }
 
     if (openLink == true || GetViewport().cine == false) SetAllViewport("cine", GetViewport().cine);
 

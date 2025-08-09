@@ -259,7 +259,7 @@ class BlueLightViewPort {
     }
 
     initScrollBar(div, index) {
-        this.ScrollBar = new ScrollBar(div);//增加右側卷軸
+        this.ScrollBar = new ScrollBar(div); //增加右側卷軸
     }
 
     get QRLevels() {
@@ -482,13 +482,8 @@ class BlueLightViewPort {
 }
 
 function GetViewport(num) {
-    if (!num) {
-        if (num === 0) {
-            return ViewPortList[0];
-        }
-        return ViewPortList[viewportNumber];
-    }
-    return ViewPortList[num];
+    if (!isNaN(num)) return ViewPortList[num];
+    else return ViewPortList[viewportNumber];
 }
 
 function SetAllViewport(key, value) {
@@ -499,13 +494,8 @@ function SetAllViewport(key, value) {
 }
 
 function GetViewportMark(num) {
-    if (!num) {
-        if (num === 0) {
-            return getByid("MarkCanvas" + (0 - 0));
-        }
-        return getByid("MarkCanvas" + (viewportNumber - 0));
-    }
-    return getByid("MarkCanvas" + (num - 0));
+    if (!isNaN(num)) return getByid("MarkCanvas" + (num));
+    else return getByid("MarkCanvas" + (viewportNumber));
 }
 
 function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {

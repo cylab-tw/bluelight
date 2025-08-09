@@ -104,12 +104,25 @@ class zoomTool extends ToolEvt {
     onTouchStart(e, e2) {
         magnifierDiv.show();
         let angle2point = rotateCalculation(e);
-        [currX11, currY11] = angle2point[0];
-        magnifierIng(currX11, currY11);
+        magnifierIng(angle2point[0], angle2point[1]);
     }
     onTouchMove(e, e2) {
         if (getByid("DICOMTagsSelect").selected) return;
         if (TouchDownCheck == true && rightTouchDown == false) {
+            var dgs = document.getElementById("magnifierDiv").style;
+            if (document.body.scrollTop && document.body.scrollTop != 0) {
+                var dbst = document.body.scrollTop;
+                var dbsl = document.body.scrollLeft;
+            }
+            else {
+                var dbst = getByTag("html")[0].scrollTop;
+                var dbsl = getByTag("html")[0].scrollLeft;
+            }
+            var y = e.clientY, x = e.clientX;
+            if (!y || !x) { y = e.touches[0].clientY; x = e.touches[0].clientX; }
+            dgs.top = y + dbst + (-parseInt(magnifierCanvas.style.height) / 2) + "px";
+            dgs.left = x + dbsl + (-parseInt(magnifierCanvas.style.width) / 2) + "px";
+
             magnifierDiv.show();
             let angle2point = rotateCalculation(e);
             magnifierIng(angle2point[0], angle2point[1]);
