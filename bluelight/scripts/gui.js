@@ -17,7 +17,7 @@ onloadFunction.push2Last(
     //載入延遲載入的影像
     function () {
         var imgs = document.querySelectorAll('.img,.innerimg');//className is img or innerimg
-        for (img of imgs) {
+        for (var img of imgs) {
             if (img.loading && img.loading == "lazy") img.loading = "eager";
         }
     }
@@ -25,7 +25,7 @@ onloadFunction.push2Last(
 
 function HideElemByID(Elem) {
     if (Elem.constructor.name == "Array") {
-        for (elem of Elem) getByid(elem).style.display = "none";
+        for (var elem of Elem) getByid(elem).style.display = "none";
     }
     else if (Elem.constructor.name == "String") {
         getByid(Elem).style.display = "none";
@@ -34,7 +34,7 @@ function HideElemByID(Elem) {
 
 function ShowElemByID(Elem) {
     if (Elem.constructor.name == "Array") {
-        for (elem of Elem) getByid(elem).style.display = "";
+        for (var elem of Elem) getByid(elem).style.display = "";
     }
     else if (Elem.constructor.name == "String") {
         getByid(Elem).style.display = "";
@@ -151,7 +151,7 @@ class LeftLayout {
 
         var series_div = document.createElement("DIV");
         series_div.className = "LeftImgAndMark";
-        //series_div.style = "width:" + 65 + "px;height:" + 65 + "px;border:" + bordersize + "px #D3D9FF groove;";
+        
         series_div.series = QRLevel.series;
         if (QRLevel.frames) series_div.sop = QRLevel.sop;
         series_div.style.touchAction = 'none';
@@ -189,10 +189,7 @@ class LeftLayout {
         if (!series_div) return;
         var ImgDiv = series_div.ImgDiv;
 
-        if (ImgDiv.canvas()) {
-            //return;
-            //displayLeftCanvas(ImgDiv.canvas(), image, pixelData);
-        } else {
+        if (!ImgDiv.canvas()) {
             var leftCanvas = document.createElement("CANVAS");
             leftCanvas.className = "LeftCanvas";
             ImgDiv.appendChild(leftCanvas);
@@ -210,10 +207,7 @@ class LeftLayout {
         if (!sop_div) return;
         var ImgDiv = sop_div.ImgDiv;
 
-        if (ImgDiv.canvas()) {
-            //return;
-            //displayLeftCanvas(ImgDiv.canvas(), image, pixelData);
-        } else {
+        if (!ImgDiv.canvas()) {
             var leftCanvas = document.createElement("CANVAS");
             leftCanvas.className = "LeftCanvas";
             ImgDiv.appendChild(leftCanvas);
@@ -241,7 +235,6 @@ class LeftLayout {
         if (!series_div) return;
         if (getByid("menu" + series)) {
             getByid("menu" + series).innerHTML = "";
-            //series_div.style.height = 65 + "px";
         }
 
         var showNameList = [];
@@ -273,7 +266,7 @@ class LeftLayout {
         }
 
         for (var o = 0; o < showNameList.length; o++) {
-            //series_div.style.height = parseInt(series_div.style.height) + 35 + "px";
+            
             var label = document.createElement('LABEL');
             label.innerText = "" + showNameList[o];
             label.name = "" + hideNameList[o];
@@ -312,10 +305,6 @@ class LeftLayout {
                 document.documentElement.style.setProperty('--ishaveLeftScroll', `1`);
             else document.documentElement.style.setProperty('--ishaveLeftScroll', `0`);
     }
-
-    reflesh() {
-
-    }
 }
 
 //此段原有Bug，若沒有載入滿Series，便載入最後一個，現在已修復
@@ -335,8 +324,6 @@ function PictureOnclick(QRLevel) {
 function displayLeftCanvas(DicomCanvas, image, pixelData) {
     DicomCanvas.width = image.width;
     DicomCanvas.height = image.height
-    //DicomCanvas.style.width = 66 + "px";
-    //DicomCanvas.style.height = 66 + "px";
     if (pixelData) renderPixelData2Cnavas(image, pixelData, DicomCanvas);
     else {
         var ctx = DicomCanvas.getContext("2d");

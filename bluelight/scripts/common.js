@@ -82,7 +82,6 @@ function displayRuler2(viewportNum = viewportNumber) {
         leftRule.height = offsetHeight;
         leftRule.style.display = "";
 
-        //leftRule[viewportNum].style.left = 10 + bordersize + "px";
         var tempctx = leftRule.getContext("2d");
 
         tempctx.clearRect(0, 0, 20, offsetHeight);

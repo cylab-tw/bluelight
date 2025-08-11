@@ -178,8 +178,8 @@ function drawSEG(canvas, Mark, viewport) {
         ctx.restore(); // restore the state as it was when this function was called
     }
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    mirrorImage(ctx, Mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip)
-    // ctx.drawImage(mark.canvas, 0, 0, viewport.width, viewport.height);
+    mirrorImage(ctx, Mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip);
+    
     ctx.globalAlpha = 1;
     var globalCompositeOperation = ctx.globalCompositeOperation;
 
@@ -204,8 +204,8 @@ function drawOverLay(canvas, Mark, viewport) {
         ctx.restore(); // restore the state as it was when this function was called
     }
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    mirrorImage(ctx, Mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip)
-    // ctx.drawImage(mark.canvas, 0, 0, viewport.width, viewport.height);
+    mirrorImage(ctx, Mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip);
+    
     ctx.globalAlpha = 1;
     var globalCompositeOperation = ctx.globalCompositeOperation;
     ctx.globalCompositeOperation = "source-in";
@@ -368,13 +368,8 @@ function drawELLIPSE(canvas, Mark, viewport) {
         ctx.beginPath();
 
         var x1 = Mark.pointArray[o].x * 1;
-        //var y1 = mark.markY[o] * 1;
-        //var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-        //var x2 = mark.markX[o + 1] * 1;
         var y2 = Mark.pointArray[o + 1].y * 1;
         var x3 = Mark.pointArray[o + 2].x * 1;
-        //var y3 = mark.markY[o + 2] * 1;
-        //var x4 = mark.markX[o + 3] * 1;
         var y4 = Mark.pointArray[o + 3].y * 1;
 
         ctx.ellipse((x1 + x3) / 2, (y2 + y4) / 2, Math.abs(x1 - x3), Math.abs(y2 - y4), 0 * Math.PI / 180, 0, 2 * Math.PI);
@@ -581,7 +576,7 @@ function displayAllMark() {
 
 function displayMark(viewportNum = viewportNumber) {
 
-    if (openLink) for (var z = 0; z < Viewport_Total; z++)  GetViewport(z).drawMark = GetViewport().drawMark;
+    if (openLink) SetAllViewport("drawMark", GetViewport().drawMark);
 
     var viewport = GetViewport(viewportNum), MarkCanvas = GetViewportMark(viewportNum);
     if (!viewport.drawMark) return;

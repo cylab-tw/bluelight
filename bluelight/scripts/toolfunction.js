@@ -237,26 +237,7 @@ function rotateCalculation(e, flip = false) {
     }
     return [currX11, currY11];
 }
-/*function rotateCalculation(e) {
-    var canvas = GetViewport().canvas;
-    if (!canvas) return [0, 0];
-    let cx = (GetViewport().width / 2);
-    let cy = (GetViewport().height / 2);
-    canvas.style.transform = "translate(" + Fpx(GetViewport().translate.x) + "," + Fpx(GetViewport().translate.y) + ") scaleX(" + (GetViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetViewport().VerticalFlip ? -1 : 1) + ")";
-    let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
-        (GetViewport().width / parseFloat(canvas.style.width));
-    let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
-        (GetViewport().height / parseFloat(canvas.style.height));
-    canvas.style.transform = "translate(" + Fpx(GetViewport().translate.x) + "," + Fpx(GetViewport().translate.y) + ") scaleX(" + (GetViewport().HorizontalFlip ? -1 : 1) + ") scaleY(" + (GetViewport().VerticalFlip ? -1 : 1) + ") " + "rotate(" + GetViewport().rotate + "deg)";
-    let radians = GetViewport().rotate * (Math.PI / 180),
-        cos = Math.cos(radians),
-        sin = Math.sin(radians),
-        nx = (cos * (currX11 - cx)) + (sin * (currY11 - cy)) + cx,
-        ny = (cos * (currY11 - cy)) - (sin * (currX11 - cx)) + cy;
-    currX11 = nx;
-    currY11 = ny;
-    return [currX11, currY11];
-}*/
+
 function rotatePoint(point, RotationAngle, RotationPoint) {
     let cx = RotationPoint[0];
     let cy = RotationPoint[1];

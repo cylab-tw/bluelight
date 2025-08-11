@@ -66,14 +66,6 @@ class MoveTool extends ToolEvt {
         if (getByid("DICOMTagsSelect").selected) return;
 
         if (rightTouchDown == true && e2) {
-            if (openLink == true) {
-                for (var i = 0; i < Viewport_Total; i++) {
-                    if (i == viewportNumber) continue;
-                    try {
-                        setTransform(i);
-                    } catch (ex) { }
-                }
-            }
             if (windowTouchDistDiffY > + 2 || windowTouchDistDiffX > 2) {
                 if (viewport.scale < 10) viewport.scale += viewport.scale * 0.05;
                 setTransform();

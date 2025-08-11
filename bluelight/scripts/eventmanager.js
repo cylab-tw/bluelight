@@ -80,8 +80,6 @@ var SwitchViewport = function () {
     if (viewportNumber == this.viewportNum) return;
     getByid("WindowDefault").selected = true;
 
-    var viewportNum = viewportNumber;
-
     viewportNumber = isNaN(this.viewportNum) ? viewportNumber : this.viewportNum;
     if (GetViewport().Sop) leftLayout.setAccent(GetViewport().Sop.parent.SeriesInstanceUID);
 
@@ -309,7 +307,7 @@ let BlueLightTouchmove = function (E) {
 
     var [MouseX, MouseY] = GetmouseXY(e);
     [windowMouseDiffX, windowMouseDiffY] = [MouseX - windowMouseX, MouseY - windowMouseY];
-
+    
     if (rightTouchDown == true && e2) {
         //紀錄雙指距變化
         windowTouchDistDiffX = Math.abs(GetmouseX(e2) - GetmouseX(e)) - Math.abs(windowMouseX - windowMouseXF2);
@@ -323,7 +321,7 @@ let BlueLightTouchmove = function (E) {
         [originalPoint_X2, originalPoint_Y2] = getCurrPoint(e2);
     }
 
-    toolEvt.onTouchMove(e);
+    toolEvt.onTouchMove(e, e2);
 }
 
 let BlueLightMouseup = function (e) {
