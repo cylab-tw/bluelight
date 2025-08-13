@@ -258,7 +258,6 @@ class Matrix4x4 {
 
 function displayDicomTagsList(viewportNum = viewportNumber) {
     dropTable(viewportNum);
-    if (getByid("DICOMTagsSelect").selected == false) return;
 
     var TableDIV = document.createElement("DIV");
     TableDIV.id = "DicomTableDIV" + (viewportNum + 1);
@@ -280,6 +279,8 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
     cells0.innerHTML = "Name";
     var cells0 = row0.insertCell(2);
     cells0.innerHTML = "Value";
+    cells0.style.position = "relative";
+    cells0.innerHTML = `Value<img class="closeBtn" onclick="dropTable(${viewportNum})" style='right:3px;position:absolute;height:100%' src='../image/icon/lite/X.png'>`;
 
     var rowCount = 1;
     for (var i = 0; i < GetViewport().tags.length; i++) {

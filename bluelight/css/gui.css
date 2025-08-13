@@ -144,7 +144,7 @@ button:hover {
   filter: invert(80%);
 }
 
-.img:hover {
+.closeBtn:hover, .img:hover {
   filter: invert(80%);
 }
 
@@ -205,7 +205,7 @@ button:hover {
   transform: translateX(-50%);
 }
 
-.WindowSelect {
+.AnnotationSelect,.WindowSelect {
   background-color: rgb(105, 105, 105);
   display: flex;
   justify-content: center;
@@ -220,7 +220,7 @@ button:hover {
   border-style: solid;
 }
 
-.WindowSelect:hover {
+.AnnotationSelect:hover,.WindowSelect:hover {
   background-color: rgb(190, 175, 175);
   color: rgb(40, 25, 25);
 }

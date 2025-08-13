@@ -51,7 +51,7 @@ function html_onload() {
         SetAllViewport("scale", GetViewport().scale);
         setTransformAll();
       } else setTransform();
-      
+
       displayAllRuler();
     }
   }
@@ -357,6 +357,31 @@ function html_onload() {
     }
   }
 
+  getByid("annotationOption").onclick = function () {
+    if (this.enable == false) return;
+    hideAllDrawer("annotationDiv");
+    invertDisplayById('annotationDiv');
+    if (getByid("annotationDiv").style.display == "none") getByid("annotationOption_span").style.position = "";
+    else {
+      getByid("AnnotationParent").style.position = "relative";
+      onElementLeave();
+    }
+  }
+
+  getByid("ShowDicomTag").onclick = function () {
+    displayDicomTagsList();
+    hideAllDrawer("annotationDiv");
+    invertDisplayById('annotationDiv');
+    getByid("annotationOption_span").style.position = "";
+  }
+  getByid("ShowScrollBar").onclick = function () {
+    ScrollBar.ShowOrHide = !ScrollBar.ShowOrHide;
+    for (var z = 0; z < Viewport_Total; z++) GetViewport(z).ScrollBar.reflesh();
+    hideAllDrawer("annotationDiv");
+    invertDisplayById('annotationDiv');
+    getByid("annotationOption_span").style.position = "";
+  }
+
   getByid("WindowRevisionOption").onclick = function () {
     if (this.enable == false) return;
     hideAllDrawer("openWindowRevisionDiv");
@@ -498,6 +523,10 @@ function html_onload() {
     Mark_previous_choose = null;
   }
 
+  getByid("settingImg").onclick = function () {
+
+  }
+
   getByid("removeAllRuler").onclick = function () {
     var removeRulerWindow = document.createElement("DIV");
     removeRulerWindow.style.width = "40vw";
@@ -622,7 +651,7 @@ function html_onload() {
     displayAnnotation();
   }
 
-  getByid("MarkupImg").onclick = function () {
+  /*getByid("MarkupImg").onclick = function () {
     if (this.enable == false) return;
     hideAllDrawer();
 
@@ -642,7 +671,7 @@ function html_onload() {
     }
     getByid("TableSelect").onchange = TableSelectOnChange;
     TableSelectOnChange();
-  }
+  }*/
 
   getByid("ScrollBarSelect").onchange = function () {
     if (getByid("ScrollBarSelectShow").selected == true) ScrollBar.ShowOrHide = true;
@@ -812,7 +841,6 @@ function onElementOver(OriginElem) {
   var label = document.createElement("label");
 
   if (OriginElem.getAttribute("alt")) label.innerHTML = OriginElem.getAttribute("alt");
-
 
   var userLanguage = navigator.language || navigator.userLanguage;
 

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -72,13 +72,13 @@
       <span id="SplitParent">
         <img class="img" alt="Split Screen" altzhtw="分隔" id="SplitWindow"
           src="../image/icon/lite/b_LayoutWithinViewport.png" width="50" height="50">
-        <div id="openSplitWindowDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+        <div id="openSplitWindowDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
               width: 500; display: none;"></div>
       </span>
       <span id="TransformationsImgParent">
         <img class="img" id="openTransformationsImg" altzhtw="Transformations" alt="Transformations"
           src="../image/icon/lite/b_Transformations.png" width="50" height="50">
-        <div id="openTransformationsDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+        <div id="openTransformationsDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
           width: 500; display: none;background-color: black;">
           <span id="horizontal_flip_span"><img alt="Horizontal Flip" class="innerimg" loading="lazy" altzhtw="水平翻轉"
               id="horizontal_flip" src="../image/icon/lite/b_FlipHorizontally.png" width="50" height="50"></span>
@@ -106,7 +106,7 @@
         <span id="WindowRevisionOption_span">
           <img class="cropimg VR MPR SEG" alt="Window Level" altzhtw="Window Level" id="WindowRevisionOption"
             src="../image/icon/lite/b_Window_Presets_right.png" width="12" height="50"></span>
-        <div id="openWindowRevisionDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+        <div id="openWindowRevisionDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
               width: 500; display: none;">
           <div class="WindowSelect" id="WindowDefault">Default</div>
           <div class="WindowSelect" id="WindowCustom">Custom</div>
@@ -130,7 +130,7 @@
       <span id="MeasureImgParent">
         <img class="img" id="openMeasureImg" altzhtw="測量" alt="Measure" src="../image/icon/lite/M.png" width="50"
           height="50">
-        <div id="openMeasureDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+        <div id="openMeasureDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
         width: 500; display: none;background-color: black;">
           <span id="removeAllRuler_span">
             <img alt="remove all" altzhtw="清除所有測量" class="innerimg" loading="lazy" id="removeAllRuler"
@@ -185,14 +185,29 @@
           src="../image/icon/lite/b_CinePlay.png" width="50" height="50"></span>
       <span id="MarkButton_span"><img class="img VR MPR" loading="lazy" altzhtw="標記" alt="Display Mark" id="MarkButton"
           src="../image/icon/lite/fist0.png" width="50" height="50"></span>
-      <span id="annotation_span"><img class="img" loading="lazy" alt="Annotation" id="annotation"
-          src="../image/icon/lite/b_Annotation.png" width="50" height="50"></span>
-      <span id="MarkupImg_span"><img class="img VR MPR RTSS" loading="lazy" alt="Markup & Annotation" id="MarkupImg"
-          src="../image/icon/lite/b_ShowReport.png" width="50" height="50"></span>
+
+      <span id="AnnotationParent">
+        <span id="annotation_span">
+          <img class="cropimg" loading="lazy" alt="Annotation" id="annotation" src="../image/icon/lite/b_Annotation.png"
+            width="50" height="50">
+        </span>
+        <span id="annotationOption_span">
+          <img class="cropimg" alt="annotation options" id="annotationOption"
+            src="../image/icon/lite/b_Window_Presets_right.png" width="12" height="50">
+          <div id="annotationDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
+              width: 500; display: none;">
+            <div class="AnnotationSelect" id="ShowDicomTag">Show Dicom Tag</div>
+            <div class="AnnotationSelect" id="ShowScrollBar">Show/Hide ScrollBar</div>
+          </div>
+        </span>
+      </span>
+
+      <!--<span id="MarkupImg_span"><img class="img VR MPR RTSS" loading="lazy" alt="Markup & Annotation" id="MarkupImg"
+          src="../image/icon/lite/b_ShowReport.png" width="50" height="50"></span>-->
       <span id="OtherImgParent">
         <img class="img" loading="lazy" altzhtw="其他" alt="other" id="OtherImg" src="../image/icon/lite/b_CineTools.png"
           width="50" height="50">
-        <div id="othereDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 100;
+        <div id="othereDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
            width: 500; display: none;background-color: black;">
           <span id="clearViewport_span">
             <img altzhtw="清除視窗" alt="clear viewport" class="innerimg" loading="lazy" id="clearviewportImg"
@@ -201,8 +216,7 @@
           <span id="TrueSize_span">
             <img altzhtw="真實大小" alt="true size" class="innerimg" loading="lazy" id="TrueSizeImg"
               src="../image/icon/lite/b_TrueSize.png" width="50" height="50">
-            <br>
-          </span>
+          </span> <br>
           <span id="downloadImg_span">
             <img altzhtw="下載圖片" alt="download image" class="innerimg" loading="lazy" id="downloadImg"
               src="../image/icon/lite/download_img.png" width="50" height="50">
@@ -210,6 +224,10 @@
           <span id="downloadDcm_span">
             <img altzhtw="下載DICOM" alt="download DICOM" class="innerimg" loading="lazy" id="downloadDcm"
               src="../image/icon/lite/download_dcm.png" width="50" height="50">
+          </span> <br>
+          <span id="Setting_span">
+            <img altzhtw="設定" alt="setting" class="innerimg" loading="lazy" id="settingImg"
+              src="../image/icon/lite/b_Setting.png" width="50" height="50">
           </span>
       </span>
       </div>
@@ -247,20 +265,17 @@
         <option id="ScrollBarSelectShow" selected="selected">Show</option>
         <option id="ScrollBarSelectHide">Hide</option>
       </select>
-      <!--<button id="ExportButton" sytle="">Export Image</button>
-      <button id="ExportButton2" sytle="">Export Dicom</button>-->
-      <!--<button id="remove__ClearMarkupButton__remove" sytle="">Clear Markup</button>-->
     </div>
 
     <span id="WindowLevelDiv_span">
       <div id="WindowLevelDiv" style="background-color:#33666644;" class="drawer">
-        <font color="white" id="myWC">WC：</font><input type="text" id="textWC" value="520" />
-        <font color="white" id="myWW">WW：</font><input type="text" id="textWW" value="50" />
+        <font color="white" id="myWC">WC：</font><input type="number" id="textWC" value="520" />
+        <font color="white" id="myWW">WW：</font><input type="number" id="textWW" value="50" />
       </div>
     </span>
-    <font color="white" class="drawer" id="labelZoom">Zoom：</font><input type="text" class="drawer" id="textZoom"
+    <font color="white" class="drawer" id="labelZoom">Zoom：</font><input type="number" class="drawer" id="textZoom"
       value="200" />
-    <font color="white" class="drawer" id="labelPlay">fps：</font><input type="text" class="drawer" id="textPlay"
+    <font color="white" class="drawer" id="labelPlay">fps：</font><input type="number" class="drawer" id="textPlay"
       value="15" />
     <span id="span_TextAnnotation" style="display: none;">
       <font color="white" id="label_TextAnnotation">Text：</font><input type="text" id="text_TextAnnotation"
