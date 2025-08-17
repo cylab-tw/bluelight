@@ -1033,7 +1033,7 @@ function Alpha3D() {
                 pointer = Uint8Canvas[l];
                 pixelPoint1 = l * NewCanvas.width * 4;
                 pixelPoint2 = (parseInt((ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4;
-                for (dataW = 0; dataW < NewCanvas.width * 4; dataW += 4) {
+                for (var dataW = 0; dataW < NewCanvas.width * 4; dataW += 4) {
                     imgData2.data[pixelPoint1 + dataW] = pointer[pixelPoint2 + dataW + 0];
                     imgData2.data[pixelPoint1 + dataW + 1] = pointer[pixelPoint2 + dataW + 1];
                     imgData2.data[pixelPoint1 + dataW + 2] = pointer[pixelPoint2 + dataW + 2];
@@ -1046,7 +1046,7 @@ function Alpha3D() {
                 pixelPoint1 = l * NewCanvas.width * 4;
                 pointer = Uint8Canvas[o3DListLength - l - 1];
                 pixelPoint2 = (parseInt((ll) * (canvas.height / o3d_3degree))) * o3Dcanvas.width * 4;
-                for (dataW = 0; dataW < NewCanvas.width * 4; dataW += 4) {
+                for (var dataW = 0; dataW < NewCanvas.width * 4; dataW += 4) {
                     imgData2.data[pixelPoint1 + dataW] = pointer[pixelPoint2 + dataW + 0];
                     imgData2.data[pixelPoint1 + dataW + 1] = pointer[pixelPoint2 + dataW + 1];
                     imgData2.data[pixelPoint1 + dataW + 2] = pointer[pixelPoint2 + dataW + 2];
@@ -1106,7 +1106,7 @@ function Alpha3D() {
                 pointer = Uint8Canvas[l];
                 pixelPoint1 = NewCanvas.width * 4;
                 pixelPoint2 = (parseInt((ll) * (canvas.width / o3d_3degree))) * 4;
-                for (dataH = 0; dataH < NewCanvas.height; dataH += 1) {
+                for (var dataH = 0; dataH < NewCanvas.height; dataH += 1) {
                     pixelPoint_1 = dataH * pixelPoint1 + dataW;
                     pixelPoint_2 = dataH * o3Dcanvas.width * 4 + pixelPoint2;
                     imgData2.data[pixelPoint_1] = pointer[pixelPoint_2];
@@ -1122,7 +1122,7 @@ function Alpha3D() {
                 pixelPoint1 = NewCanvas.width * 4;
                 pixelPoint2 = (parseInt((ll) * (canvas.width / o3d_3degree))) * 4;
                 pointer = Uint8Canvas[o3DListLength - l - 1];
-                for (dataH = 0; dataH < NewCanvas.height; dataH += 1) {
+                for (var dataH = 0; dataH < NewCanvas.height; dataH += 1) {
                     pixelPoint_1 = dataH * pixelPoint1 + dataW;
                     pixelPoint_2 = (dataH) * o3Dcanvas.width * 4 + pixelPoint2;
                     imgData2.data[pixelPoint_1] = pointer[pixelPoint_2];

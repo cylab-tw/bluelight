@@ -645,8 +645,8 @@ function display3dImage2Canvas() {
         var tableY2 = new Array(this.width).fill(0).map((o, w) => (getPointFromCube3(vector1, center, len1, w).y - center.y));
         var tableZ2 = new Array(this.width).fill(0).map((o, w) => (getPointFromCube3(vector1, center, len1, w).z - center.z));
 
-        for (h = 0; h < this.height; h++) {
-            for (w = 0, w4 = 0; w < this.width; w++, w4 += 4) {
+        for (var h = 0; h < this.height; h++) {
+            for (var w = 0, w4 = 0; w < this.width; w++, w4 += 4) {
                 x = parseInt((center.x + offsetX) * invertX + (tableX1[h] + tableX2[w]));
                 y = parseInt((center.y + offsetY) * invertY + (tableY1[h] + tableY2[w]));
                 z = parseInt(((center.z + offsetZ) * invertZ + (tableZ1[h] + tableZ2[w])) / VrDistance);
@@ -698,8 +698,8 @@ function display3dImage2Canvas() {
         var tableY2 = new Array(this.width).fill(0).map((o, w) => (getPointFromCube3(vector1, center, len1, w).y - center.y));
         var tableZ2 = new Array(this.width).fill(0).map((o, w) => (getPointFromCube3(vector1, center, len1, w).z - center.z));
         //invertX=invertY=invertZ=1;offsetX=offsetY=offsetZ=0;
-        for (h = 0; h < this.height; h++) {
-            for (w = 0, w4 = 0; w < this.width; w++, w4 += 4) {
+        for (var h = 0; h < this.height; h++) {
+            for (var w = 0, w4 = 0; w < this.width; w++, w4 += 4) {
                 x = parseInt((center.x + offsetX) * invertX + (tableX1[h] + tableX2[w]));
                 y = parseInt((center.y + offsetY) * invertY + (tableY1[h] + tableY2[w]));
                 z = parseInt(((center.z + offsetZ) * invertZ + (tableZ1[h] + tableZ2[w])) / VrDistance);
@@ -751,8 +751,8 @@ function display3dImage2Canvas() {
         var tableY2 = new Array(this.width).fill(0).map((o, w) => (getPointFromCube3(vector1, center, len1, w).y - center.y));
         var tableZ2 = new Array(this.width).fill(0).map((o, w) => (getPointFromCube3(vector1, center, len1, w).z - center.z));
 
-        for (h = 0; h < this.height; h++) {
-            for (w = 0, w4 = 0; w < this.width; w++, w4 += 4) {
+        for (var h = 0; h < this.height; h++) {
+            for (var w = 0, w4 = 0; w < this.width; w++, w4 += 4) {
                 x = parseInt((center.x + offsetX) * invertX + (tableX1[h] + tableX2[w]));
                 y = parseInt((center.y + offsetY) * invertY + (tableY1[h] + tableY2[w]));
                 z = parseInt(((center.z + offsetZ) * invertZ + (tableZ1[h] + tableZ2[w])) / VrDistance);

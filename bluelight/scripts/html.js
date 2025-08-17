@@ -808,7 +808,7 @@ function changeLinkImg() {
 function drawBorder(element) {
 
   var list = BorderList_Icon;
-  for (elemID of list) getByid(elemID).style['border'] = "";
+  for (var elemID of list) getByid(elemID).style['border'] = "";
 
   element.style["border"] = 3 + "px #FFFFFF solid"
   element.style["borderRadius"] = "3px 3px 3px 3px"

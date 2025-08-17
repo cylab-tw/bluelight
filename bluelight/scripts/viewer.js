@@ -651,7 +651,7 @@ function createDicomTagsList2Viewport(viewport) {
     viewport.DicomTagsList = [];
     if (viewport.Sop.type == "img") viewport.DicomTagsList.SOPInstanceUID = viewport.content.image.SOPInstanceUID;
 
-    for (el in viewport.content.image.data.elements) {
+    for (var el in viewport.content.image.data.elements) {
         try {
             var tag = (`(${el.substring(1, 5)},${el.substring(5, 9)})`).toUpperCase();
             var el1 = getTag(el);

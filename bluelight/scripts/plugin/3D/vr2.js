@@ -292,7 +292,7 @@ getByid("ImgVR2").onclick = function () {
         getByid("windowVR2").style.display = "none";
         getByid("saveVR2").style.display = "none";
         getByid("moveVR2").style.display = "none";
-        for (cube of VRCube.VRCubeList) {
+        for (var cube of VRCube.VRCubeList) {
             cube.clear();
         }
         VRCube.cube = null;

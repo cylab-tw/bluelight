@@ -142,7 +142,7 @@ class LeftLayout {
         Patient_div.PatientId = patientID;
         if (!this.findPatienID(patientID)) pic.appendChild(Patient_div);
         else {
-            for (elem of getClass("OutLeftImg"))
+            for (var elem of getClass("OutLeftImg"))
                 if (elem.PatientId == patientID) Patient_div = elem;
         }
 
