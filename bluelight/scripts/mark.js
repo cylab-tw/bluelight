@@ -179,7 +179,7 @@ function drawSEG(canvas, Mark, viewport) {
     }
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     mirrorImage(ctx, Mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip);
-    
+
     ctx.globalAlpha = 1;
     var globalCompositeOperation = ctx.globalCompositeOperation;
 
@@ -205,7 +205,7 @@ function drawOverLay(canvas, Mark, viewport) {
     }
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     mirrorImage(ctx, Mark.canvas, 0, 0, viewport.HorizontalFlip, viewport.VerticalFlip);
-    
+
     ctx.globalAlpha = 1;
     var globalCompositeOperation = ctx.globalCompositeOperation;
     ctx.globalCompositeOperation = "source-in";
@@ -553,6 +553,45 @@ function drawTextAnnotationEntity(canvas, mark, viewport) {
     restoreImageOrientation2MarkCanvas(ctx);
 }
 
+function drawCrossReferenceLines() {
+    var viewport = GetViewport();
+    if (!viewport.content || !viewport.content.image || !viewport.content.image.Orientation) return;
+    const cornersA = [
+        get3dPositionOf2dPoint(viewport, [0, 0]), // TopLeft
+        get3dPositionOf2dPoint(viewport, [0, viewport.width]), // TopRight
+        get3dPositionOf2dPoint(viewport, [viewport.height, 0]), // BottomLeft
+        get3dPositionOf2dPoint(viewport, [viewport.height, viewport.width]), // BottomRight
+    ];
+
+    for (var z = 0; z < Viewport_Total; z++) {
+        var viewport_ = GetViewport(z);
+        if (viewport_.CrossReferenceLines && viewport_.width) {
+            GetViewportMark(z).getContext('2d').clearRect(0, 0, viewport_.width, viewport_.height);
+            viewport_.CrossReferenceLines = null;
+        }
+    }
+    for (var z = 0; z < Viewport_Total; z++) {
+        if (z == viewport.index) continue;
+        var viewportB = GetViewport(z);
+        if (viewportB.series != viewport.series) continue;
+        if (!viewportB.content.image) continue;
+        if (!viewportB.content.image.Orientation) continue;
+        if (avgDiff(viewportB.content.image.Orientation, viewport.content.image.Orientation) < 0.1) continue;
+        const cornersB = [
+            get3dPositionOf2dPoint(viewportB, [0, 0]), // TopLeft
+            get3dPositionOf2dPoint(viewportB, [0, viewport.width]), // TopRight
+            get3dPositionOf2dPoint(viewportB, [viewport.height, 0]), // BottomLeft
+            get3dPositionOf2dPoint(viewportB, [viewport.height, viewport.width]), // BottomRight
+        ];
+
+        var points = getCrossReferenceLine(cornersB, cornersA, { rows: viewport.Rows, columns: viewport.Columns });
+        [points.start.x, points.start.y] = [points.start.y, points.start.x];
+        [points.end.x, points.end.y] = [points.end.y, points.end.x];
+        viewportB.CrossReferenceLines = true;
+        viewportB.drawLine(GetViewportMark(z).getContext('2d'), viewportB, points.start, points.end, "blue");
+    }
+}
+
 function getMarkSize(MarkCanvas, sizeCheck, viewport) {
     if (!viewport) viewport = GetViewport();
     var lineSize = parseFloat(getByid('markSizeText').value);
@@ -641,6 +680,7 @@ function displayMark(viewportNum = viewportNumber) {
             }
         }
     }
+    drawCrossReferenceLines();
 }
 
 class BlueLightMark {
@@ -725,7 +765,7 @@ class EraseTool extends ToolEvt {
             refreshMarkFromSop(GetViewport().sop);
             return;
         }
-        
+
         MarkCollider.detect(rotateCalculation(e, true)[0], rotateCalculation(e, true)[1], "MeasureRuler");
         if (MarkCollider.selected) {
             PatientMark.splice(PatientMark.indexOf(MarkCollider.selected.targetMark), 1);

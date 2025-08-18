@@ -69,9 +69,7 @@ function loadVR2() {
         var g2 = parseFloat((120 - 50) / 85);
         var b2 = parseFloat((65 - 35) / 85);
 
-        var rList = [];
-        var gList = [];
-        var bList = [];
+        var rList = [], gList = [], bList = [];
 
         for (var i = 0; i <= 85; i++) {
             rList.push(parseInt(0 + r0 * i));
@@ -152,8 +150,7 @@ function loadVR2() {
         }
 
         VR2_LutArray.push(Combine_LutArray);*/
-        var lutArray = new Int32Array(256);
-        var AirlutArray = new Int32Array(256);
+        var lutArray = new Int32Array(256), AirlutArray = new Int32Array(256);
         for (var i = 0; i < lutArray.length; i++) {
             var tempcolor = 128 - Math.abs(128 - i);
             AirlutArray[i] = parseInt(parseInt(93) +
@@ -198,7 +195,6 @@ function loadVR2() {
                 var b = parseInt(colormap[m - 1].b + (colormap[m].b - colormap[m - 1].b) * ratio);
                 var a = parseInt(colormap[m - 1].a + (colormap[m].a - colormap[m - 1].a) * ratio * 255);
                 var hu = parseInt(colormap[m - 1].hu + (colormap[m].hu - colormap[m - 1].hu) * ratio);
-                //console.log(i, r, g, b, a);
                 ColorMap[hu + 1000] = [r, g, b, a];
             }
         }
@@ -292,9 +288,8 @@ getByid("ImgVR2").onclick = function () {
         getByid("windowVR2").style.display = "none";
         getByid("saveVR2").style.display = "none";
         getByid("moveVR2").style.display = "none";
-        for (var cube of VRCube.VRCubeList) {
-            cube.clear();
-        }
+        VRCube.cube.clear();
+
         VRCube.cube = null;
 
         Pages.displayPage("DicomPage");
@@ -315,7 +310,6 @@ getByid("ImgVR2").onclick = function () {
 }
 
 class VRCube {
-    static VRCubeList = [];
     static operate_mode = "move";
 
     constructor(sop, slice = 15, step = 1) {
@@ -356,7 +350,6 @@ class VRCube {
         this.filter = null;
         if (this.sopList.length >= 50) this.reduceSlices = true;
         this.RotationMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; // 初始旋轉矩陣
-        VRCube.VRCubeList.push(this);
         VRCube.cube = this;
         getByid("saveVR2").onclick = this.saveVR2;
     }
@@ -364,29 +357,25 @@ class VRCube {
     saveVR2() {
 
         var outer = `solid name
-    facet normal 0 0 0
-    __intter__
-    endfacet
-endsolid name`
+                facet normal 0 0 0
+                __intter__
+                endfacet
+            endsolid name`
         var intter = `
-    outer loop
-        vertex v1x v1y v1z
-        vertex v2x v2y v2z
-        vertex v3x v3y v3z
-    endloop
-    `
+            outer loop
+                vertex v1x v1y v1z
+                vertex v2x v2y v2z
+                vertex v3x v3y v3z
+            endloop
+            `
         var intters = "";
 
         function pushIntters(v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z) {
             var intter_ = intter;
-            intter_ = intter_.replace("v1x", "" + v1x);
-            intter_ = intter_.replace("v1y", "" + v1y);
-            intter_ = intter_.replace("v1z", "" + v1z);
-            intter_ = intter_.replace("v2x", "" + v2x);
-            intter_ = intter_.replace("v2y", "" + v2y);
-            intter_ = intter_.replace("v2z", "" + v2z);
-            intter_ = intter_.replace("v3x", "" + v3x);
-            intter_ = intter_.replace("v3y", "" + v3y);
+            intter_ = intter_.replace("v1x", "" + v1x); intter_ = intter_.replace("v1y", "" + v1y);
+            intter_ = intter_.replace("v1z", "" + v1z); intter_ = intter_.replace("v2x", "" + v2x);
+            intter_ = intter_.replace("v2y", "" + v2y); intter_ = intter_.replace("v2z", "" + v2z);
+            intter_ = intter_.replace("v3x", "" + v3x); intter_ = intter_.replace("v3y", "" + v3y);
             intter_ = intter_.replace("v3z", "" + v3z);
             intters += intter_;
         }
@@ -463,26 +452,10 @@ endsolid name`
                     if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w - 1] <= 0xFF000000) {
                         for (var w2 = w; w2 < width; w2++) {
                             if (pixel[h * width + w2] <= 0xFF000000 && pixel[h * width + w2 - 1] > 0xFF000000) {
-                                pushIntters(
-                                    h, w, seg0.PositionZ,
-                                    h + 1, w, seg0.PositionZ,
-                                    h, w2, seg0.PositionZ
-                                );
-                                pushIntters(
-                                    h, w2, seg0.PositionZ,
-                                    h + 1, w2, seg0.PositionZ,
-                                    h, w, seg0.PositionZ
-                                );
-                                pushIntters(
-                                    h, w, seg0.PositionZ,
-                                    h - 1, w, seg0.PositionZ,
-                                    h, w2, seg0.PositionZ
-                                );
-                                pushIntters(
-                                    h, w2, seg0.PositionZ,
-                                    h - 1, w2, seg0.PositionZ,
-                                    h, w, seg0.PositionZ
-                                );
+                                pushIntters(h, w, seg0.PositionZ, h + 1, w, seg0.PositionZ, h, w2, seg0.PositionZ);
+                                pushIntters(h, w2, seg0.PositionZ, h + 1, w2, seg0.PositionZ, h, w, seg0.PositionZ);
+                                pushIntters(h, w, seg0.PositionZ, h - 1, w, seg0.PositionZ, h, w2, seg0.PositionZ);
+                                pushIntters(h, w2, seg0.PositionZ, h - 1, w2, seg0.PositionZ, h, w, seg0.PositionZ);
                                 break;
                             }
                         }
@@ -496,26 +469,10 @@ endsolid name`
                     if (pixel[h * width + w] > 0xFF000000 && pixel[(h - 1) * width + w] <= 0xFF000000) {
                         for (var h2 = h; h2 < height; h2++) {
                             if (pixel[h2 * width + w] <= 0xFF000000 && pixel[(h2 - 1) * width + w] > 0xFF000000) {
-                                pushIntters(
-                                    h, w, seg0.PositionZ,
-                                    h, w + 1, seg0.PositionZ,
-                                    h2, w, seg0.PositionZ
-                                );
-                                pushIntters(
-                                    h2, w, seg0.PositionZ,
-                                    h2, w + 1, seg0.PositionZ,
-                                    h, w, seg0.PositionZ
-                                );
-                                pushIntters(
-                                    h, w, seg0.PositionZ,
-                                    h, w - 1, seg0.PositionZ,
-                                    h2, w, seg0.PositionZ
-                                );
-                                pushIntters(
-                                    h2, w, seg0.PositionZ,
-                                    h2, w - 1, seg0.PositionZ,
-                                    h, w, seg0.PositionZ
-                                );
+                                pushIntters(h, w, seg0.PositionZ, h, w + 1, seg0.PositionZ, h2, w, seg0.PositionZ);
+                                pushIntters(h2, w, seg0.PositionZ, h2, w + 1, seg0.PositionZ, h, w, seg0.PositionZ);
+                                pushIntters(h, w, seg0.PositionZ, h, w - 1, seg0.PositionZ, h2, w, seg0.PositionZ);
+                                pushIntters(h2, w, seg0.PositionZ, h2, w - 1, seg0.PositionZ, h, w, seg0.PositionZ);
                                 break;
                             }
                         }
@@ -668,15 +625,10 @@ endsolid name`
     }
 
     clear() {
-        for (var obj of this.ElemXs)
+        for (var obj of [...this.ElemXs, ...this.ElemYs, ...this.ElemZs])
             this.container.removeChild(obj);
-        for (var obj of this.ElemYs)
-            this.container.removeChild(obj);
-        for (var obj of this.ElemZs)
-            this.container.removeChild(obj);
-        this.ElemXs = [];
-        this.ElemYs = [];
-        this.ElemZs = [];
+
+        this.ElemXs = []; this.ElemYs = []; this.ElemZs = [];
         if (this.container) getByid("VR2_DIV").removeChild(this.container);
         if (this.userDIV_LB) getByid("VR2_DIV").removeChild(this.userDIV_LB);
         if (this.userDIV) getByid("VR2_DIV").removeChild(this.userDIV);
@@ -1087,9 +1039,8 @@ endsolid name`
                 if (!isNaN(this.cube.windowCenter)) this.cube.WCText.value = this.cube.windowCenter;
                 if (!isNaN(this.cube.windowWidth)) this.cube.WWText.value = this.cube.windowWidth;
             }
-            if (filter) {
-                this.cube.filter = filter;
-            } else this.cube.filter = null;
+            if (filter) this.cube.filter = filter;
+            else this.cube.filter = null;
             this.cube.resetZXY();
             this.cube.reflesh();
         }

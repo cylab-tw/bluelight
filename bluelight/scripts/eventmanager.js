@@ -38,9 +38,11 @@ var windowTouchDistX = 0, windowTouchDistY = 0;
 
 //代表按下ctrl
 let KeyCode_ctrl = false;
+//代表Debug模式
+let Develop_Mode = false;
 
 var contextmenuF = function (e) {
-    e.preventDefault();
+    if (!Develop_Mode) e.preventDefault();
 };
 
 var stopPropagation = function (e) {
@@ -92,6 +94,7 @@ var SwitchViewport = function () {
         GetViewport(z).refleshLabel();
     }
     refleshGUI();
+    drawCrossReferenceLines();
 }
 
 window.addEventListener("beforeunload", () => {
@@ -239,6 +242,7 @@ function BlueLightWheel(e) {
             else GetViewport(z).nextFrame(false);
         }
     }
+
     toolEvt.onWheel(e);
 }
 
@@ -307,7 +311,7 @@ let BlueLightTouchmove = function (E) {
 
     var [MouseX, MouseY] = GetmouseXY(e);
     [windowMouseDiffX, windowMouseDiffY] = [MouseX - windowMouseX, MouseY - windowMouseY];
-    
+
     if (rightTouchDown == true && e2) {
         //紀錄雙指距變化
         windowTouchDistDiffX = Math.abs(GetmouseX(e2) - GetmouseX(e)) - Math.abs(windowMouseX - windowMouseXF2);
