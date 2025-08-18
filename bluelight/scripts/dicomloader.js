@@ -97,10 +97,12 @@ function getDefaultImageObj(dataSet, type) {
     if (dataSet.string('x00280030')) {
         imageObj.rowPixelSpacing = parseFloat(dataSet.string('x00280030').split("\\")[0]);
         imageObj.columnPixelSpacing = parseFloat(dataSet.string('x00280030').split("\\")[1]);
+        imageObj.PixelSpacing = [imageObj.rowPixelSpacing, imageObj.columnPixelSpacing];
     }
     else if (dataSet.string('x00181164')) {
         imageObj.rowPixelSpacing = parseFloat(dataSet.string('x00181164').split("\\")[0]);
         imageObj.columnPixelSpacing = parseFloat(dataSet.string('x00181164').split("\\")[1]);
+        imageObj.PixelSpacing = [imageObj.rowPixelSpacing, imageObj.columnPixelSpacing];
     }
 
     imageObj.samplesPerPixel = (dataSet.string('x00280004') === 'YBR_FULL_422' || dataSet.string('x00280004') === 'YBR_FULL') ? 2 : dataSet.uint16('x00280002');

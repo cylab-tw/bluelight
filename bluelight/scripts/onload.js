@@ -305,7 +305,7 @@ function getWadoUriRS(studyUID, seriesUID, objectUID) {
 
 function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
   let DicomResponse = InstanceRequest.response;
-  var min = Number.MAX_VALUE, minI = -1;
+  var min = Number.MAX_VALUE, minI = 0;
 
   //取得最小的Instance Number
   for (var i = 0; i < DicomResponse.length; i++) {
