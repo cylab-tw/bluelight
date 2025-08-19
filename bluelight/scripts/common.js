@@ -316,132 +316,106 @@ function dropTable(num) {
     }
 }
 
-//用來計算，2D座標在3D空間中的位置
-function get3dPositionOf2dPoint(viewport, point) {
-    //用來計算，2D座標在3D空間中的位置(供下方調用)
-    function calculateDicom3DPosition(pixelCoordinates, imagePosition, imageOrientation, pixelSpacing) {
-        // --- 1. 參數驗證 ---
-        if (!pixelCoordinates || pixelCoordinates.length !== 2 ||
-            !imagePosition || imagePosition.length !== 3 ||
-            !imageOrientation || imageOrientation.length !== 6 ||
-            !pixelSpacing || pixelSpacing.length !== 2) {
-            console.error("無效的輸入參數。請檢查陣列長度。");
-            return null;
-        }
-
-        // --- 2. 為了可讀性，解構輸入參數 ---
-        const [j, i] = pixelCoordinates; // j 是 column index, i 是 row index
-        const [Sx, Sy, Sz] = imagePosition;
-        const [Xx, Xy, Xz, Yx, Yy, Yz] = imageOrientation;
-        // Xx, Xy, Xz 是行向量 (Row Vector)、 Yx, Yy, Yz 是列向量 (Column Vector)
-
-        const [rowSpacing, columnSpacing] = pixelSpacing; // Δi, Δj
-
-        // --- 3. 應用 DICOM 標準公式計算 ---
-        // P(i,j) = S + X * Δj * j + Y * Δi * i
-        const Px = Sx + (Xx * columnSpacing * j) + (Yx * rowSpacing * i);
-        const Py = Sy + (Xy * columnSpacing * j) + (Yy * rowSpacing * i);
-        const Pz = Sz + (Xz * columnSpacing * j) + (Yz * rowSpacing * i);
-
-        // --- 4. 回傳結果 ---
-        return { x: Px, y: Py, z: Pz };
-    }
-    var exampleImagePosition = viewport.content.image.imagePosition;
-    var exampleImageOrientation = viewport.content.image.Orientation;
-    var examplePixelSpacing = viewport.content.image.PixelSpacing;
-    var position = calculateDicom3DPosition(point, exampleImagePosition, exampleImageOrientation, examplePixelSpacing);
-    return position;
-}
-
-function getCrossReferenceLine(cornersA, cornersB, dimensionsA) {
+function generateCrossLine(imageA, imageB) {
+    // 1. 向量運算
     const vec3 = {
-        // 向量相減: v1 - v2
         subtract: (v1, v2) => ({ x: v1.x - v2.x, y: v1.y - v2.y, z: v1.z - v2.z }),
-        // 向量叉積: v1 x v2
         cross: (v1, v2) => ({ x: v1.y * v2.z - v1.z * v2.y, y: v1.z * v2.x - v1.x * v2.z, z: v1.x * v2.y - v1.y * v2.x, }),
-        dot: (v1, v2) => v1.x * v2.x + v1.y * v2.y + v1.z * v2.z, // 向量點積: v1 · v2
-        add: (v1, v2) => ({ x: v1.x + v2.x, y: v1.y + v2.y, z: v1.z + v2.z }), // 向量加法: v1 + v2
-        scale: (v, s) => ({ x: v.x * s, y: v.y * s, z: v.z * s }), // 向量與純量相乘
-        lengthSq: (v) => v.x * v.x + v.y * v.y + v.z * v.z, // 向量長度的平方
+        dot: (v1, v2) => v1.x * v2.x + v1.y * v2.y + v1.z * v2.z,
+        add: (v1, v2) => ({ x: v1.x + v2.x, y: v1.y + v2.y, z: v1.z + v2.z }),
+        scale: (v, s) => ({ x: v.x * s, y: v.y * s, z: v.z * s }),
+        lengthSq: (v) => v.x * v.x + v.y * v.y + v.z * v.z,
     };
-    function intersectLineSegmentWithPlane(lineStart, lineEnd, plane) {
-        const lineDirection = vec3.subtract(lineEnd, lineStart);
-        const denominator = vec3.dot(plane.normal, lineDirection);
 
-        // 如果分母接近於零，表示線與平面平行或共面
-        if (Math.abs(denominator) < 1e-6) return null;
+    // 2. 根據 DICOM 標籤計算 3D 座標的函數
+    const calculate3DPosition = (col, row, info) => {
+        const [Sx, Sy, Sz] = info.imagePosition;
+        const [Xx, Xy, Xz, Yx, Yy, Yz] = info.Orientation;
+        const [rowSpacing, colSpacing] = info.PixelSpacing;
 
-        const w = vec3.subtract(lineStart, plane.point);
-        const t = -vec3.dot(plane.normal, w) / denominator;
+        return {
+            x: Sx + (Xx * colSpacing * col) + (Yx * rowSpacing * row),
+            y: Sy + (Xy * colSpacing * col) + (Yy * rowSpacing * row),
+            z: Sz + (Xz * colSpacing * col) + (Yz * rowSpacing * row),
+        };
+    };
 
-        // 如果 t 在 [0, 1] 範圍內，交點才在線段上
-        if (t >= 0 && t <= 1) return vec3.add(lineStart, vec3.scale(lineDirection, t));
-        return null;
-    }
+    // --- 主要計算流程 ---
 
-    function project3DPointTo2D(point3D, cornersA, dimensionsA) {
-        const [p00, p10, p01] = cornersA; // TopLeft, TopRight, BottomLeft
+    // 步驟 1: 精確計算兩張影像的四個角點像素中心 3D 座標
+    const getLast = (dim) => dim > 0 ? dim - 1 : 0;
+    const cornersA = [
+        calculate3DPosition(0, 0, imageA),
+        calculate3DPosition(getLast(imageA.columns), 0, imageA),
+        calculate3DPosition(0, getLast(imageA.rows), imageA),
+        calculate3DPosition(getLast(imageA.columns), getLast(imageA.rows), imageA),
+    ];
+    const cornersB = [
+        calculate3DPosition(0, 0, imageB),
+        calculate3DPosition(getLast(imageB.columns), 0, imageB),
+        calculate3DPosition(0, getLast(imageB.rows), imageB),
+        calculate3DPosition(getLast(imageB.columns), getLast(imageB.rows), imageB),
+    ];
 
-        const vecRow = vec3.subtract(p10, p00);
-        const vecCol = vec3.subtract(p01, p00);
-        const vecToPoint = vec3.subtract(point3D, p00);
-
-        // 投影到行向量和列向量上，得到相對距離比例 (0 to 1)
-        const distCol = vec3.dot(vecToPoint, vecRow) / vec3.lengthSq(vecRow);
-        const distRow = vec3.dot(vecToPoint, vecCol) / vec3.lengthSq(vecCol);
-
-        // 轉換為像素座標
-        const pixelX = distCol * (dimensionsA.columns);
-        const pixelY = distRow * (dimensionsA.rows);
-
-        return { x: pixelX, y: pixelY };
-    }
-
-    // 步驟 1: 從 B 的角點定義出 B 的平面
+    // 步驟 2: 從影像 B 的角點定義其 3D 平面
     const planeB = {
-        point: cornersB[0], // 平面上的一點
+        point: cornersB[0],
         normal: vec3.cross(
             vec3.subtract(cornersB[1], cornersB[0]), // B的行向量
             vec3.subtract(cornersB[2], cornersB[0])  // B的列向量
         )
     };
 
-    // 如果法向量為零向量（例如，角點共線），則無法定義平面
-    if (vec3.lengthSq(planeB.normal) < 1e-6) {
-        console.error("無法從影像B的角點定義一個有效的平面。");
-        return null;
-    }
+    // 若法向量長度過小，表示 B 的角點共線，無法定義平面
+    if (vec3.lengthSq(planeB.normal) < 1e-6) return null;
 
-    // 步驟 2: 計算 B 平面與 A 的四條邊界的交點
+    // 步驟 3: 計算 B 平面與 A 的四條邊界線段的交點
     const edgesA = [
-        { start: cornersA[0], end: cornersA[1] }, // Top
-        { start: cornersA[1], end: cornersA[3] }, // Right
-        { start: cornersA[3], end: cornersA[2] }, // Bottom
-        { start: cornersA[2], end: cornersA[0] }, // Left
+        { start: cornersA[0], end: cornersA[1] }, // 上邊界
+        { start: cornersA[1], end: cornersA[3] }, // 右邊界
+        { start: cornersA[3], end: cornersA[2] }, // 下邊界
+        { start: cornersA[2], end: cornersA[0] }, // 左邊界
     ];
 
     const intersectionPoints3D = [];
     for (const edge of edgesA) {
-        const intersection = intersectLineSegmentWithPlane(edge.start, edge.end, planeB);
-        if (intersection) {
-            intersectionPoints3D.push(intersection);
+        // 內部函數：線段與平面相交測試
+        const lineDir = vec3.subtract(edge.end, edge.start);
+        const denominator = vec3.dot(planeB.normal, lineDir);
+
+        if (Math.abs(denominator) > 1e-6) {
+            const w = vec3.subtract(edge.start, planeB.point);
+            const t = -vec3.dot(planeB.normal, w) / denominator;
+
+            if (t >= 0 && t <= 1) { // 確保交點在線段上
+                const intersectPoint = vec3.add(edge.start, vec3.scale(lineDir, t));
+                // 避免因浮點數誤差加入幾乎相同的點
+                if (!intersectionPoints3D.some(p => vec3.lengthSq(vec3.subtract(p, intersectPoint)) < 1e-6))
+                    intersectionPoints3D.push(intersectPoint);
+            }
         }
     }
 
-    // 一個平面與矩形邊界應該恰好有兩個交點
-    if (intersectionPoints3D.length !== 2) {
-        // 可能的情況：B平面與A平面平行、共面，或完全不相交
-        console.warn(`找到 ${intersectionPoints3D.length} 個交點，無法繪製線段。兩平面可能平行或不相交。`);
-        return null;
-    }
+    // 步驟 4: 驗證交點數量，必須剛好為 2
+    if (intersectionPoints3D.length !== 2) return null; // 不相交、共面或僅接觸一點
 
-    // 步驟 3: 將兩個3D交點轉換回影像A的2D像素座標
-    const startPoint2D = project3DPointTo2D(intersectionPoints3D[0], cornersA, dimensionsA);
-    const endPoint2D = project3DPointTo2D(intersectionPoints3D[1], cornersA, dimensionsA);
+    // 步驟 5: 將兩個 3D 交點投影回影像 A 的 2D 像素座標
+    const project3DPointTo2D = (point3D) => {
+        const [p00, p10, p01] = cornersA; // 左上, 右上, 左下
+        const vecRow = vec3.subtract(p10, p00);
+        const vecCol = vec3.subtract(p01, p00);
+        const vecToPoint = vec3.subtract(point3D, p00);
 
-    return { start: startPoint2D, end: endPoint2D };
-}
+        const lenSqRow = vec3.lengthSq(vecRow);
+        const lenSqCol = vec3.lengthSq(vecCol);
 
-function avgDiff(a, b) {
-    return a.reduce((sum, val, i) => sum + Math.abs(val - b[i]), 0) / a.length;
+        if (lenSqRow < 1e-6 || lenSqCol < 1e-6) return { x: 0, y: 0 };
+
+        const distCol = vec3.dot(vecToPoint, vecRow) / lenSqRow;
+        const distRow = vec3.dot(vecToPoint, vecCol) / lenSqCol;
+
+        return { x: distCol * getLast(imageA.columns), y: distRow * getLast(imageA.rows), };
+    };
+
+    return { start: project3DPointTo2D(intersectionPoints3D[0]), end: project3DPointTo2D(intersectionPoints3D[1]) };
 }

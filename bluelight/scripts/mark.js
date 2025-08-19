@@ -556,12 +556,6 @@ function drawTextAnnotationEntity(canvas, mark, viewport) {
 function drawCrossReferenceLines() {
     var viewport = GetViewport();
     if (!viewport.content || !viewport.content.image || !viewport.content.image.Orientation) return;
-    const cornersA = [
-        get3dPositionOf2dPoint(viewport, [0, 0]), // TopLeft
-        get3dPositionOf2dPoint(viewport, [0, viewport.width]), // TopRight
-        get3dPositionOf2dPoint(viewport, [viewport.height, 0]), // BottomLeft
-        get3dPositionOf2dPoint(viewport, [viewport.height, viewport.width]), // BottomRight
-    ];
 
     for (var z = 0; z < Viewport_Total; z++) {
         var viewport_ = GetViewport(z);
@@ -573,20 +567,12 @@ function drawCrossReferenceLines() {
     for (var z = 0; z < Viewport_Total; z++) {
         if (z == viewport.index) continue;
         var viewportB = GetViewport(z);
-        if (viewportB.series != viewport.series) continue;
+        if (viewportB.study != viewport.study) continue;
         if (!viewportB.content.image) continue;
         if (!viewportB.content.image.Orientation) continue;
-        if (avgDiff(viewportB.content.image.Orientation, viewport.content.image.Orientation) < 0.1) continue;
-        const cornersB = [
-            get3dPositionOf2dPoint(viewportB, [0, 0]), // TopLeft
-            get3dPositionOf2dPoint(viewportB, [0, viewport.width]), // TopRight
-            get3dPositionOf2dPoint(viewportB, [viewport.height, 0]), // BottomLeft
-            get3dPositionOf2dPoint(viewportB, [viewport.height, viewport.width]), // BottomRight
-        ];
 
-        var points = getCrossReferenceLine(cornersB, cornersA, { rows: viewport.Rows, columns: viewport.Columns });
-        [points.start.x, points.start.y] = [points.start.y, points.start.x];
-        [points.end.x, points.end.y] = [points.end.y, points.end.x];
+        var points = generateCrossLine(viewportB.content.image, viewport.content.image);
+        if (points == null) return;
         viewportB.CrossReferenceLines = true;
         viewportB.drawLine(GetViewportMark(z).getContext('2d'), viewportB, points.start, points.end, "blue");
     }
