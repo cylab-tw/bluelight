@@ -316,6 +316,10 @@ function dropTable(num) {
     }
 }
 
+function avgDiff(a, b) {
+    return a.reduce((sum, val, i) => sum + Math.abs(val - b[i]), 0) / a.length;
+}
+
 function generateCrossLine(imageA, imageB) {
     // 1. 向量運算
     const vec3 = {

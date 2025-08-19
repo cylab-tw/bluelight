@@ -570,6 +570,7 @@ function drawCrossReferenceLines() {
         if (viewportB.study != viewport.study) continue;
         if (!viewportB.content.image) continue;
         if (!viewportB.content.image.Orientation) continue;
+        if (avgDiff(viewportB.content.image.Orientation, viewport.content.image.Orientation) < 0.1) continue;
 
         var points = generateCrossLine(viewportB.content.image, viewport.content.image);
         if (points == null) return;
