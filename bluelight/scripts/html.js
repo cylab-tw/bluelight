@@ -2,59 +2,50 @@ var BorderList_Icon = ["MouseOperation", "WindowRevision", "MeasureRuler", "Mous
 
 function html_onload() {
   document.body.style.overscrollBehavior = "none";
+
   getByid("openFile").onclick = function () {
     if (this.enable == false) return;
-    getByid('myfile').click();
+    var fileElem = document.createElement("input");
+    fileElem.setAttribute("type", "file");
+    fileElem.setAttribute("multiple", "multiple");
+    fileElem.onchange = function () {
+      for (var k = 0; k < this.files.length; k++) {
+
+        function basename(path) { return path.split('.').reverse()[0]; }
+
+        var fileExtension = basename(this.files[k].name);
+        if (fileExtension == "mht") wadorsLoader2(URL.createObjectURL(this.files[k]));
+        else if (fileExtension == "jpg") loadPicture(URL.createObjectURL(this.files[k]));
+        else if (fileExtension == "jpeg") loadPicture(URL.createObjectURL(this.files[k]));
+        else if (fileExtension == "png") loadPicture(URL.createObjectURL(this.files[k]));
+        else if (fileExtension == "webp") loadPicture(URL.createObjectURL(this.files[k]));
+        else {
+          let reader = new FileReader();
+          reader.readAsArrayBuffer(this.files[k]);
+          reader.fileExtension = fileExtension;
+          reader.url = URL.createObjectURL(this.files[k]);
+          ImageManager.NumOfPreLoadSops += 1;
+          reader.onloadend = function () {
+            var Sop = loadDicomDataSet(reader.result);
+            if (Sop) {
+              Sop.Image.url = this.url;
+              for (var z = 0; z < Viewport_Total; z++) setSeriesCount(z);
+              ImageManager.preLoadSops.push({
+                dataSet: Sop.dataSet, image: Sop.Image, Sop: Sop, SeriesInstanceUID: Sop.Image.SeriesInstanceUID,
+                Index: Sop.Image.NumberOfFrames | Sop.Image.InstanceNumber
+              });
+            }
+            ImageManager.NumOfPreLoadSops -= 1;
+            if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
+          }
+        }
+      }
+    }
+    fileElem.click();
   }
 
   //點到其他地方時，關閉抽屜
   getByid("container").addEventListener("mousedown", hideAllDrawer, false);
-
-  window.addEventListener("keydown", KeyDown, true);
-  window.addEventListener("keyup", KeyUp, true);
-  function KeyUp(KeyboardKeys) {
-    KeyCode_ctrl = false;
-  }
-
-  function KeyDown(KeyboardKeys) {
-    var key = KeyboardKeys.which
-    //修復key===33和34時，GetViewport().tags.InstanceNumber為字串之問題
-    if (key === 33) {
-      jump2UpOrEnd(parseInt(GetViewport().tags.InstanceNumber) - parseInt(ImageManager.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
-    } else if (key === 34) {
-      jump2UpOrEnd(parseInt(GetViewport().tags.InstanceNumber) + parseInt(ImageManager.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
-    } else if (key === 36) {
-      jump2UpOrEnd(0, 'up');
-    } else if (key === 35) {
-      jump2UpOrEnd(0, 'end');
-    } else if (key === 17) {
-      KeyCode_ctrl = true;
-    } else if (KeyboardKeys.key == '-') {
-      var viewport = GetViewport(), canvas = GetViewport().canvas;
-      if (viewport.scale > 0.1) viewport.scale -= viewport.scale * 0.05;
-      setTransform();
-      if (openLink == true) {
-        for (var i = 0; i < Viewport_Total; i++) {
-          if (i == viewportNumber) continue;
-          GetViewport(i).scale = GetViewport().scale;
-          GetViewport(i).translate.x = viewport.translate.x;
-          GetViewport(i).translate.y = viewport.translate.y;
-          setTransform(i);
-        }
-      }
-      displayAllRuler();
-    } else if (KeyboardKeys.key == '+') {
-      var viewport = GetViewport(), canvas = GetViewport().canvas;
-      if (viewport.scale < 10) viewport.scale += viewport.scale * 0.05;
-
-      if (openLink == true) {
-        SetAllViewport("scale", GetViewport().scale);
-        setTransformAll();
-      } else setTransform();
-
-      displayAllRuler();
-    }
-  }
 
   document.getElementsByTagName("BODY")[0].ondragover = function (e) {
     e.preventDefault();
@@ -311,7 +302,6 @@ function html_onload() {
       ImageManager = new BlueLightImageManager()
       getByid("LeftPicture").innerHTML = ""; //leftLayout = new LeftLayout();
 
-      getByid("myfile").value = null;
       for (var i = 0; i < Viewport_Total; i++) {
         GetViewport(i).clear();
         VIEWPORT.loadViewport(GetViewport(), null, i);
@@ -529,19 +519,8 @@ function html_onload() {
 
   getByid("removeAllRuler").onclick = function () {
     var removeRulerWindow = document.createElement("DIV");
-    removeRulerWindow.style.width = "40vw";
-    removeRulerWindow.style.height = "40vh";
-    removeRulerWindow.style.position = "absolute";
-    //removeRulerWindow.style.margin = "25vh 0 0 25vw";
-    removeRulerWindow.style.zIndex = "105";
-    removeRulerWindow.style.left = "0";
-    removeRulerWindow.style.right = "0";
-    removeRulerWindow.style.top = "0";
-    removeRulerWindow.style.bottom = "0";
-    removeRulerWindow.style.margin = "auto";
-    removeRulerWindow.style.backgroundColor = "rgba(30,60,90,0.8)";
-    removeRulerWindow.style["display"] = "flex";
-    removeRulerWindow.style["justify-content"] = "center";
+    removeRulerWindow.className = "removeRulerWindow";
+
     var label = document.createElement("LABEL");
     label.innerText = "Remove all measurements?";
     label.style['color'] = "white";
@@ -632,7 +611,6 @@ function html_onload() {
 
   getByid("eraseRuler").onclick = function () {
     if (this.enable == false) return;
-    //cancelTools();
     erase();
     drawBorder(getByid("openMeasureImg"));
     hideAllDrawer();
@@ -651,37 +629,11 @@ function html_onload() {
     displayAnnotation();
   }
 
-  /*getByid("MarkupImg").onclick = function () {
-    if (this.enable == false) return;
-    hideAllDrawer();
-
-    var TableSelectOnChange = function () {
-      if (getByid("DICOMTagsSelect").selected == true)
-        displayDicomTagsList();
-      else {
-        for (var i = 0; i < Viewport_Total; i++)
-          dropTable(i);
-      }
-      SetTable();
-    }
-    if (getByid('MarkStyleDiv').style.display == 'none') {
-      getByid('MarkStyleDiv').style.display = '';
-    } else {
-      getByid('MarkStyleDiv').style.display = 'none';
-    }
-    getByid("TableSelect").onchange = TableSelectOnChange;
-    TableSelectOnChange();
-  }*/
-
   getByid("ScrollBarSelect").onchange = function () {
     if (getByid("ScrollBarSelectShow").selected == true) ScrollBar.ShowOrHide = true;
     else if (getByid("ScrollBarSelectHide").selected == true) ScrollBar.ShowOrHide = false;
     for (var z = 0; z < Viewport_Total; z++) GetViewport(z).ScrollBar.reflesh();
   }
-
-  /*getByid("openPenfile").onclick = function () {
-    createSeg();
-  }*/
 
   getByid("rwdImgTag").onclick = function () {
     EnterRWD();
@@ -752,44 +704,6 @@ function html_onload() {
     else if ((parseInt(getByid('markSizeText').value) < 10));
     else getByid('markSizeText').value = 1;
     displayAllMark()
-  }
-
-  getByid("myfile").onchange = function () {
-    for (var k = 0; k < this.files.length; k++) {
-
-      function basename(path) {
-        return path.split('.').reverse()[0];
-      }
-
-      var fileExtension = basename(this.files[k].name);
-
-      if (fileExtension == "mht") wadorsLoader2(URL.createObjectURL(this.files[k]));
-      else if (fileExtension == "jpg") loadPicture(URL.createObjectURL(this.files[k]));
-      else if (fileExtension == "jpeg") loadPicture(URL.createObjectURL(this.files[k]));
-      else if (fileExtension == "png") loadPicture(URL.createObjectURL(this.files[k]));
-      else if (fileExtension == "webp") loadPicture(URL.createObjectURL(this.files[k]));
-      else {
-        let reader = new FileReader();
-        reader.readAsArrayBuffer(this.files[k]);
-        reader.fileExtension = fileExtension;
-        reader.url = URL.createObjectURL(this.files[k]);
-        ImageManager.NumOfPreLoadSops += 1;
-        reader.onloadend = function () {
-          //resetViewport();
-          var Sop = loadDicomDataSet(reader.result);
-          if (Sop) {
-            Sop.Image.url = this.url;
-            for (var z = 0; z < Viewport_Total; z++) setSeriesCount(z);
-            ImageManager.preLoadSops.push({
-              dataSet: Sop.dataSet, image: Sop.Image, Sop: Sop, SeriesInstanceUID: Sop.Image.SeriesInstanceUID,
-              Index: Sop.Image.NumberOfFrames | Sop.Image.InstanceNumber
-            });
-          }
-          ImageManager.NumOfPreLoadSops -= 1;
-          if (ImageManager.NumOfPreLoadSops == 0) ImageManager.loadPreLoadSops();
-        }
-      }
-    }
   }
 
   getByid("MouseOperation").click();

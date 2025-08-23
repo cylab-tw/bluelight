@@ -1,6 +1,6 @@
 function cancelTools() {
 
-    HideElemByID(["magnifierDiv", "textWC", "textWW", "WindowLevelDiv",
+    HideElemByID(["textWC", "textWW", "WindowLevelDiv",
         "labelZoom", "labelPlay", "textZoom", "textPlay"]);
 
     getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';

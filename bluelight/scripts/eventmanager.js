@@ -11,6 +11,7 @@ class ToolEvt {
     onMouseOut() { }
     onMouseEnter() { }
     onKeyDown(KeyboardKeys) { }
+    onKeyUp(KeyboardKeys) { }
     onSwitch() { }
 }
 let toolEvt = new ToolEvt();
@@ -75,6 +76,7 @@ function initNewCanvas2() {
             GetViewport(i).div.addEventListener("wheel", BlueLightWheel, false);
         }
         window.addEventListener("keydown", BlueLightKeyDown, false);
+        window.addEventListener("keyup", BlueLightKeyUp, false);
     } catch (ex) { console.log(ex); }
 }
 
@@ -183,11 +185,9 @@ let MouseUpPointByCanvas = new Point2D(0, 0);
 
 let BlueLightKeyDown = function (e) {
     if (!ToolEvt.enable) return;
-    const target = e.target;
-    const isTyping = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
 
-    //如果正在輸入文字
-    if (isTyping) return;
+    //如果正在輸入文字(isTyping)
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
 
     //////////////////////////////////
     if (e.key.toLowerCase() === 'm') getByid("openMeasureImg").onclick();
@@ -197,20 +197,42 @@ let BlueLightKeyDown = function (e) {
         else if (e.key.toLowerCase() === 't') getByid("TextAnnotation").onclick();
     }
     //////////////////////////////////
-    var nextInstanceNumber = 0;
-    if (e.keyCode == '38') nextInstanceNumber = -1;
-    else if (e.keyCode == '40') nextInstanceNumber = 1;
-    else if (e.keyCode == '37') nextInstanceNumber = -1;
-    else if (e.keyCode == '39') nextInstanceNumber = 1;
+    var viewport = GetViewport(), nextInstanceNumber = 0;
+    if (e.key == 'ArrowUp') nextInstanceNumber = -1;
+    else if (e.key == 'ArrowDown') nextInstanceNumber = 1;
+    else if (e.key == 'ArrowLeft') nextInstanceNumber = -1;
+    else if (e.key == 'ArrowRight') nextInstanceNumber = 1;
 
-    if (GetViewport() && nextInstanceNumber == -1) GetViewport().nextFrame(true);
-    else if (GetViewport() && nextInstanceNumber == 1) GetViewport().nextFrame(false);
+    if (viewport && nextInstanceNumber == -1) viewport.nextFrame(true);
+    else if (viewport && nextInstanceNumber == 1) viewport.nextFrame(false);
+    /////////////////////////////////
+    if (e.key === 'PageUp') jump2UpOrEnd(parseInt(GetViewport().tags.InstanceNumber) - parseInt(ImageManager.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
+    else if (e.key === 'PageDown') jump2UpOrEnd(parseInt(GetViewport().tags.InstanceNumber) + parseInt(ImageManager.findSeries(GetViewport().series).Sop.length / 10) + 0, undefined);
+    else if (e.key === 'Home') jump2UpOrEnd(0, 'up');
+    else if (e.key === 'End') jump2UpOrEnd(0, 'end');
+    else if (e.key === 'Control') KeyCode_ctrl = true;
+    else if (e.key == '-' || e.key == '+') {
+
+        if (viewport.scale > 0.1 && e.key == '-') viewport.scale -= viewport.scale * 0.05;
+        if (viewport.scale < 10 && e.key == '+') viewport.scale += viewport.scale * 0.05;
+        if (openLink == true) {
+            SetAllViewport("scale", GetViewport().scale);
+            setTransformAll();
+        } else setTransform();
+        displayAllRuler();
+    }
     /////////////////////////////////
 
     //esc
     if (e.key.toLowerCase() === 'escape') getByid("MouseOperation").onclick();
 
     toolEvt.onKeyDown(e);
+}
+
+let BlueLightKeyUp = function (e) {
+    if (!ToolEvt.enable) return;
+    KeyCode_ctrl = false;
+    toolEvt.onKeyUp();
 }
 
 let BlueLightMouseout = function () {

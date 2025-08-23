@@ -1,19 +1,8 @@
 
-//放大鏡元素
-let magnifierDiv;
-
-//放大鏡預設長寬
-var magnifierDefaultWidth = 200;
-var magnifierDefaultHeight = 200;
-//放大鏡設定長寬
-var magnifierWidth = 200;
-var magnifierHeight = 200;
-
-
 onloadFunction.push(
     function () {
-        magnifierDiv = getByid("magnifierDiv");
-        initMagnifier();
+        zoomTool.magnifierDiv = getByid("magnifierDiv");
+
         getByid("zoom").onclick = function () {
             if (this.enable == false) return;
             hideAllDrawer();
@@ -23,19 +12,26 @@ onloadFunction.push(
     });
 
 function initMagnifier() {
+    var magnifierDiv = document.createElement("DIV");
+    var magnifierCanvas = document.createElement("Canvas");
+    magnifierDiv.id = "magnifierDiv";
+    magnifierCanvas.id = "magnifierCanvas";
+    magnifierDiv.appendChild(magnifierCanvas);
+    document.body.appendChild(magnifierDiv);
+
     //設定放大鏡長寬
-    getByid("magnifierCanvas").style.width = getByid("magnifierDiv").style.width = magnifierWidth + "px";
-    getByid("magnifierCanvas").style.height = getByid("magnifierDiv").style.height = magnifierHeight + "px";
-    getByid("magnifierCanvas").width = getByid("magnifierDiv").width = magnifierWidth;
-    getByid("magnifierCanvas").height = getByid("magnifierDiv").height = magnifierHeight;
+    getByid("magnifierCanvas").style.width = getByid("magnifierDiv").style.width = zoomTool.magnifierWidth + "px";
+    getByid("magnifierCanvas").style.height = getByid("magnifierDiv").style.height = zoomTool.magnifierHeight + "px";
+    getByid("magnifierCanvas").width = getByid("magnifierDiv").width = zoomTool.magnifierWidth;
+    getByid("magnifierCanvas").height = getByid("magnifierDiv").height = zoomTool.magnifierHeight;
 
-    magnifierDiv = document.getElementById("magnifierDiv");
-    magnifierDiv.style.display = "none";
+    zoomTool.magnifierDiv = document.getElementById("magnifierDiv");
+    zoomTool.magnifierDiv.style.display = "none";
 
-    magnifierDiv.hide = function () {
+    zoomTool.magnifierDiv.hide = function () {
         this.style.display = "none";
     }
-    magnifierDiv.show = function () {
+    zoomTool.magnifierDiv.show = function () {
         this.style.display = "";
     }
 }
@@ -46,32 +42,40 @@ function magnifierIng(currX, currY) {
     if ((zoom <= 25)) getByid('textZoom').value = zoom = 25;
     if (zoom >= 400) getByid('textZoom').value = zoom = 400;
     zoom /= 100;
-    magnifierWidth = parseFloat(1.0 / GetViewport().scale) * (magnifierDefaultWidth / zoom);
-    magnifierHeight = parseFloat(1.0 / GetViewport().scale) * (magnifierDefaultHeight / zoom);
+    zoomTool.magnifierWidth = parseFloat(1.0 / GetViewport().scale) * (zoomTool.magnifierDefaultWidth / zoom);
+    zoomTool.magnifierHeight = parseFloat(1.0 / GetViewport().scale) * (zoomTool.magnifierDefaultHeight / zoom);
     var magnifierCanvas = document.getElementById("magnifierCanvas");
     var magnifierCtx = magnifierCanvas.getContext("2d");
-    magnifierCanvas.width = magnifierWidth;
-    magnifierCanvas.height = magnifierHeight;
-    magnifierCanvas.style.width = magnifierDefaultWidth + "px";
-    magnifierCanvas.style.height = magnifierDefaultHeight + "px";
+    magnifierCanvas.width = zoomTool.magnifierWidth;
+    magnifierCanvas.height = zoomTool.magnifierHeight;
+    magnifierCanvas.style.width = zoomTool.magnifierDefaultWidth + "px";
+    magnifierCanvas.style.height = zoomTool.magnifierDefaultHeight + "px";
     magnifierCanvas.style.transform = "rotate(" + GetViewport().rotate + "deg)";
-    magnifierCtx.clearRect(0, 0, magnifierWidth, magnifierHeight);
+    magnifierCtx.clearRect(0, 0, zoomTool.magnifierWidth, zoomTool.magnifierHeight);
 
-    var currX02 = Math.floor(currX) - magnifierWidth / 2;
-    var currY02 = Math.floor(currY) - magnifierHeight / 2;
-    magnifierCtx.drawImage(canvas, currX02, currY02, magnifierWidth, magnifierHeight, 0, 0, magnifierWidth, magnifierHeight);
-    magnifierCtx.drawImage(GetViewportMark(), currX02, currY02, magnifierWidth, magnifierHeight, 0, 0, magnifierWidth, magnifierHeight);
+    var currX02 = Math.floor(currX) - zoomTool.magnifierWidth / 2;
+    var currY02 = Math.floor(currY) - zoomTool.magnifierHeight / 2;
+    magnifierCtx.drawImage(canvas, currX02, currY02, zoomTool.magnifierWidth, zoomTool.magnifierHeight, 0, 0, zoomTool.magnifierWidth, zoomTool.magnifierHeight);
+    magnifierCtx.drawImage(GetViewportMark(), currX02, currY02, zoomTool.magnifierWidth, zoomTool.magnifierHeight, 0, 0, zoomTool.magnifierWidth, zoomTool.magnifierHeight);
 }
 
 class zoomTool extends ToolEvt {
+    //放大鏡元素
+    static magnifierDiv;
 
+    //放大鏡預設長寬
+    static magnifierDefaultWidth = 200;
+    static magnifierDefaultHeight = 200;
+    //放大鏡設定長寬
+    static magnifierWidth = 200;
+    static magnifierHeight = 200;
     onMouseDown(e) {
         let angle2point = rotateCalculation(e);
         magnifierIng(angle2point[0], angle2point[1]);
     }
     onMouseMove(e) {
         if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
-        magnifierDiv.show();
+        zoomTool.magnifierDiv.show();
         let angle2point = rotateCalculation(e);
         magnifierIng(angle2point[0], angle2point[1]);
 
@@ -93,10 +97,11 @@ class zoomTool extends ToolEvt {
     onSwitch() {
         getByid('labelZoom').style.display = 'none';
         getByid('textZoom').style.display = 'none';
-        magnifierDiv.hide();
+        getByid("magnifierDiv").removeChild(getByid("magnifierCanvas"));
+        document.body.removeChild(getByid("magnifierDiv"));
     }
     onTouchStart(e, e2) {
-        magnifierDiv.show();
+        zoomTool.magnifierDiv.show();
         let angle2point = rotateCalculation(e);
         magnifierIng(angle2point[0], angle2point[1]);
     }
@@ -113,21 +118,21 @@ class zoomTool extends ToolEvt {
             dgs.top = y + dbst + (-parseInt(magnifierCanvas.style.height) / 2) + "px";
             dgs.left = x + dbsl + (-parseInt(magnifierCanvas.style.width) / 2) + "px";
 
-            magnifierDiv.show();
+            zoomTool.magnifierDiv.show();
             let angle2point = rotateCalculation(e);
             magnifierIng(angle2point[0], angle2point[1]);
         }
     }
     onTouchEnd(e, e2) {
-        magnifierDiv.hide();
+        zoomTool.magnifierDiv.hide();
     }
     onMouseEnter(viewportNum) {
         if (isNaN(viewportNum)) return;
         viewportNumber = viewportNum;
-        magnifierDiv.show();
+        zoomTool.magnifierDiv.show();
     }
     onMouseOut() {
-        magnifierDiv.hide();
+        zoomTool.magnifierDiv.hide();
     }
     onWheel(e) {
         var angle2point = rotateCalculation(e);
@@ -137,6 +142,7 @@ class zoomTool extends ToolEvt {
 
 function zoom() {
 
+    initMagnifier();
     refleshViewport();
     getByid('labelZoom').style.display = '';
     getByid('textZoom').style.display = '';

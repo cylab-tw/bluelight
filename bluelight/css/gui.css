@@ -300,6 +300,26 @@ button:hover {
   -webkit-user-select: none;
 }
 
+#magnifierDiv{
+  z-index:40;position: absolute;pointer-events: none;
+}
+
+.removeRulerWindow {
+  width: 40vw;
+  height: 40vh;
+  position: absolute;
+  /*margin:25vh 0 0 25vw*/
+  z-index: 105;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(30,60,90,0.8);
+  display:flex;
+  justify-content:center;
+}
+
 /*
 
 .labelLT {
@@ -339,7 +359,7 @@ button:hover {
 }
 
 .outterScrollBar {
-  background-color: rgb(241,241,241);
+  background-color: rgb(241, 241, 241);
   position: absolute;
   top: 0px;
   right: 0px;
@@ -347,7 +367,7 @@ button:hover {
 }
 
 .innerScrollBar {
-  background-color: rgb(193,193,193);
+  background-color: rgb(193, 193, 193);
   position: absolute;
   top: 0px;
   right: 0px;
