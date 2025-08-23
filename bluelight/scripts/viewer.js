@@ -515,7 +515,7 @@ function loadDicomDataSet(fileData) {
 
     //PDF
     if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EncapsulatedPDFStorage)
-        Sop = loadSopFromDataSet2(dataSet, 'pdf');
+        Sop = loadSopFromDataSet(dataSet, 'pdf');
 
     //Mark
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.RTStructureSetStorage)//RTSS
@@ -527,7 +527,7 @@ function loadDicomDataSet(fileData) {
 
     //ECG
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID._12_leadECGWaveformStorage) {
-        if (openECG) Sop = loadSopFromDataSet2(dataSet, 'ecg');
+        if (openECG) Sop = loadSopFromDataSet(dataSet, 'ecg');
         else throw "not support ECG";
     }
 
@@ -536,26 +536,26 @@ function loadDicomDataSet(fileData) {
 
     //DiCOM Image
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.MRImageStorage)//MR
-        Sop = loadSopFromDataSet2(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
+        Sop = loadSopFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.CTImageStorage)//CT
-        Sop = loadSopFromDataSet2(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
+        Sop = loadSopFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.ComputedRadiographyImageStorage)//X-Ray
-        Sop = loadSopFromDataSet2(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
+        Sop = loadSopFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
 
     //DiCOM Image(Multi-Frame)
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.Multi_frameSingleBitSecondaryCaptureImageStorage)
-        Sop = loadSopFromDataSet2(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
+        Sop = loadSopFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.Multi_frameGrayscaleByteSecondaryCaptureImageStorage)
-        Sop = loadSopFromDataSet2(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
+        Sop = loadSopFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.Multi_frameGrayscaleWordSecondaryCaptureImageStorage)
-        Sop = loadSopFromDataSet2(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
+        Sop = loadSopFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.Multi_frameTrueColorSecondaryCaptureImageStorage)
-        Sop = loadSopFromDataSet2(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
+        Sop = loadSopFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
 
     //try parse
-    else Sop = loadSopFromDataSet2(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
-    //else if (dataSet.intString(Tag.NumberOfFrames) > 1) loadSopFromDataSet2(dataSet, 'frame', loadimage, url);
-    //else loadSopFromDataSet2(dataSet, 'sop', loadimage, url);
+    else Sop = loadSopFromDataSet(dataSet, dataSet.intString(Tag.NumberOfFrames) > 1 ? 'frame' : 'sop');
+    //else if (dataSet.intString(Tag.NumberOfFrames) > 1) loadSopFromDataSet(dataSet, 'frame', loadimage, url);
+    //else loadSopFromDataSet(dataSet, 'sop', loadimage, url);
 
 
     //else if (image.data.string(Tag.SOPClassUID) == SOPClassUID.SegmentationStorage) loadDicomSeg(image, DICOM_obj.imageId);

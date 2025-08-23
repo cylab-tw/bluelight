@@ -1,5 +1,5 @@
 
-function loadSopFromDataSet2(dataSet, type) {
+function loadSopFromDataSet(dataSet, type) {
     var imageObj = getDefaultImageObj(dataSet, type);
     if (type == 'pdf') setPDF(imageObj);
     if (type == 'ecg' && openECG) setECG(imageObj);

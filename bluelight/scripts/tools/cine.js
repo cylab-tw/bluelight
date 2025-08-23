@@ -2,12 +2,10 @@
 var PlayCine = function () {
     //播放動畫用的計時器
     let CineTimer = CineEnd = null;
-    if (GetViewport().cine == false)
-        getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
-    else
-        getByid('playvideo').src = '../image/icon/lite/b_CinePause.png';
+    if (GetViewport().cine) getByid('playvideo').src = '../image/icon/lite/b_CinePause.png';
+    else getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
 
-    if (openLink == true || GetViewport().cine == false) SetAllViewport("cine", GetViewport().cine);
+    if (openLink || !GetViewport().cine) SetAllViewport("cine", GetViewport().cine);
 
     clearInterval(CineTimer);
     if (!GetViewport().cine) return;
@@ -17,9 +15,8 @@ var PlayCine = function () {
     CineTimer = setInterval(function () {
         if (!CineEnd) return;
         CineEnd = false;
-        for (var i = 0; i < Viewport_Total; i++) {
-            if (GetViewport(i).cine == true) GetViewport(i).nextFrame(false);
-        }
+        for (var i = 0; i < Viewport_Total; i++)
+            if (GetViewport(i).cine) GetViewport(i).nextFrame(false);
         CineEnd = true;
     }, fps);
 }

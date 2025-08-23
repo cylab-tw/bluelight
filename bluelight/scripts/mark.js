@@ -14,19 +14,6 @@ MARKER.drawMark = function (obj) {
     }
 }
 
-function compatibleMark(mark) {
-    if (!mark.point) {
-        mark.point = [];
-        if (mark.markX && mark.markY) {
-            var len = mark.markX.length >= mark.markY.length ? mark.markX.length : mark.markY.length;
-            for (var o = 0; o < len; o++) {
-                mark.point.push([mark.markX[o], mark.markY[o]]);
-            }
-        }
-    }
-    return mark;
-}
-
 function getColorFrom16(r, g, b, bit) {
     if (bit == 16) {
         r = parseInt(r / 256);
@@ -619,13 +606,6 @@ function displayMark(viewportNum = viewportNumber) {
     if (!viewport.tags) return;
     var patientMark_all = PatientMark.filter(M => M.sop == viewport.sop);
     var patientMark_enable = patientMark_all.filter(M => checkMarkEnabled(viewport.series, M));
-
-    //compatibleMark
-    /*for (var Mark of patientMark_all) {
-        for (var mark of Mark.mark) {
-            if (!mark.point) mark = compatibleMark(mark);
-        }
-    }*/
 
     for (var Mark of patientMark_enable) {
         if (Mark.type == "SEG") drawSEG(MarkCanvas, Mark, viewport);
