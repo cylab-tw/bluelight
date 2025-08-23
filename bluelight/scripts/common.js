@@ -38,20 +38,21 @@ function displayRuler(viewportNum = viewportNumber) {
         var x1 = 0, y1 = 0;
 
         tempctx.beginPath();
-        if (GetViewport(viewportNum).transform.PixelSpacingX && GetViewport(viewportNum).transform.PixelSpacingY) {
-            tempctx.moveTo(0 + (offsetWidth / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), 10 + 10);
-            tempctx.lineTo((90 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale) + (offsetWidth / 2) - (40 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), 10 + 10);
+        var PixelSpacingX = 1.0 / GetViewport(viewportNum).PixelSpacing[0];
+        if (PixelSpacingX) {
+            tempctx.moveTo(0 + (offsetWidth / 2) - (50 * PixelSpacingX) * (GetViewport(viewportNum).scale), 10 + 10);
+            tempctx.lineTo((90 * PixelSpacingX) * (GetViewport(viewportNum).scale) + (offsetWidth / 2) - (40 * PixelSpacingX) * (GetViewport(viewportNum).scale), 10 + 10);
             for (var i = 0; i <= 10; i++) {
-                tempctx.moveTo(x1 + (offsetWidth / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 10);
-                tempctx.lineTo(x1 + (offsetWidth / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 10 + 10);
+                tempctx.moveTo(x1 + (offsetWidth / 2) - (50 * PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 10);
+                tempctx.lineTo(x1 + (offsetWidth / 2) - (50 * PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 10 + 10);
                 tempctx.stroke();
-                x1 += (10 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale);
+                x1 += (10 * PixelSpacingX) * (GetViewport(viewportNum).scale);
             }
             tempctx.closePath();
-            x1 -= (10 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale);
+            x1 -= (10 * PixelSpacingX) * (GetViewport(viewportNum).scale);
 
             tempctx.font = "" + (12) + "px Arial";
-            tempctx.fillText("100 mm", 2 + x1 + (offsetWidth / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 3 + 10 + 5)
+            tempctx.fillText("100 mm", 2 + x1 + (offsetWidth / 2) - (50 * PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 3 + 10 + 5)
         } else {
             tempctx.strokeStyle = "#4855FF";
             var PX = 1, PY = 1;
@@ -90,18 +91,19 @@ function displayRuler2(viewportNum = viewportNumber) {
         tempctx.beginPath();
         var x1 = 0, y1 = 0;
 
-        if (GetViewport(viewportNum).transform.PixelSpacingX && GetViewport(viewportNum).transform.PixelSpacingY) {
+        var PixelSpacingY = 1.0 / GetViewport(viewportNum).PixelSpacing[1];
+        if (PixelSpacingY) {
             tempctx.font = "12px Arial";
-            tempctx.fillText("100 mm", 0, -5 + (offsetHeight / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale))
+            tempctx.fillText("100 mm", 0, -5 + (offsetHeight / 2) - (50 * PixelSpacingY) * (GetViewport(viewportNum).scale))
 
-            tempctx.moveTo(0, 0 + (offsetHeight / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale));
-            tempctx.lineTo(0, (90 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale) - (40 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale) + (offsetHeight / 2));
+            tempctx.moveTo(0, 0 + (offsetHeight / 2) - (50 * PixelSpacingY) * (GetViewport(viewportNum).scale));
+            tempctx.lineTo(0, (90 * PixelSpacingY) * (GetViewport(viewportNum).scale) - (40 * PixelSpacingY) * (GetViewport(viewportNum).scale) + (offsetHeight / 2));
             tempctx.stroke();
             for (var i = 0; i <= 10; i++) {
-                tempctx.moveTo(x1, y1 + (offsetHeight / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale));
-                tempctx.lineTo(x1 + 10, y1 + (offsetHeight / 2) - (50 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale));
+                tempctx.moveTo(x1, y1 + (offsetHeight / 2) - (50 * PixelSpacingY) * (GetViewport(viewportNum).scale));
+                tempctx.lineTo(x1 + 10, y1 + (offsetHeight / 2) - (50 * PixelSpacingY) * (GetViewport(viewportNum).scale));
                 tempctx.stroke();
-                y1 += (10 * GetViewport(viewportNum).transform.PixelSpacingY) * (GetViewport(viewportNum).scale);
+                y1 += (10 * PixelSpacingY) * (GetViewport(viewportNum).scale);
             }
             tempctx.closePath();
         } else {

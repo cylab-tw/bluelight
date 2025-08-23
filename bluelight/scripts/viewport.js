@@ -103,6 +103,9 @@ class BlueLightViewPort {
     get enable() { return this.div.enable };
     get width() { return this.content.image ? this.content.image.width : undefined };
     get height() { return this.content.image ? this.content.image.height : undefined };
+    get PixelSpacing() { return this.content.image? this.content.image.PixelSpacing : undefined };
+    get Orientation() { return this.content.image? this.content.image.Orientation : undefined };
+    get imagePosition() { return this.content.image? this.content.image.imagePosition : undefined };
     set enable(v) { this.div.enable = v };
 
     get study() { if (this.tags) return this.tags.StudyInstanceUID };
@@ -268,7 +271,6 @@ class BlueLightViewPort {
         if (this.enable == false) return;
         if (this.QRLevel == "series" && this.tags && this.tags.length) {
             var Sop = SortArrayByElem(ImageManager.findSeries(this.QRLevels.series).Sop, "InstanceNumber")[index];
-            //var Sop = ImageManager.getTargetSopByQRLevelsAndInstanceNumber(this.QRLevels, index);
             if (Sop != undefined) this.loadImgBySop(Sop);
         }
         else if (this.QRLevel == "frames" && this.framesNumber != undefined) {
@@ -557,11 +559,11 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     ctx.putImageData(imgData, 0, 0);
     var shouldReDraw = false;
     ctx.save();
-    /*if (CheckNull(viewport.transform.imageOrientationX) == false && CheckNull(viewport.transform.imageOrientationY) == false && CheckNull(viewport.transform.imageOrientationZ) == false) {
+    /*if (viewport.Orientation&&viewport.Orientation.length) {
         ctx.setTransform(new DOMMatrix(
-            [viewport.transform.imageOrientationX, -viewport.transform.imageOrientationX2, 0, viewport.transform.imagePositionX * viewport.transform.PixelSpacingX,
-            -viewport.transform.imageOrientationY, viewport.transform.imageOrientationY2, 0, viewport.transform.imagePositionY * viewport.transform.PixelSpacingY,
-            viewport.transform.imageOrientationZ, viewport.transform.imageOrientationZ2, 0, viewport.transform.imagePositionZ,
+            [viewport.Orientation[0], -viewport.Orientation[3], 0, viewport.imagePosition[0] * viewport.PixelSpacing[0],
+            -viewport.Orientation[1], viewport.Orientation[4], 0, viewport.imagePosition[1] * viewport.PixelSpacing[1],
+            viewport.Orientation[2], viewport.Orientation[5], 0, viewport.imagePosition[2],
                 0, 0, 0, 1
             ]
         ));

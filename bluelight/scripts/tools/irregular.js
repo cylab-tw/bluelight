@@ -257,8 +257,8 @@ function drawIrregularRuler(obj) {
     try {
         if (Mark.PixelNumber) {
             var value = "";
-            if (viewport.transform.PixelSpacingX && viewport.transform.PixelSpacingY) {
-                value = parseInt(Mark.PixelNumber / (viewport.transform.PixelSpacingX * viewport.transform.PixelSpacingY)) + "mm²";
+            if (viewport.PixelSpacing) {
+                value = parseInt(Mark.PixelNumber * (viewport.PixelSpacing[0] * viewport.PixelSpacing[1])) + "mm²";
             } else {
                 value = parseInt(Mark.PixelNumber) + "px²";
             }

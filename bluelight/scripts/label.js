@@ -92,9 +92,9 @@ function setSeriesCount(viewportNum = viewportNumber) {
 function setTransformLabel(viewportNum = viewportNumber) {
   var viewport = GetViewport(viewportNum);
   if (!viewport.transform || !viewport.transform.imagePositionZ) return;
-  viewport.setLabel("imagePositionX", viewport.transform.imagePositionX.toFixed(1));
-  viewport.setLabel("imagePositionY", viewport.transform.imagePositionY.toFixed(1));
-  viewport.setLabel("imagePositionZ", viewport.transform.imagePositionZ.toFixed(1));
+  viewport.setLabel("imagePositionX", viewport.imagePosition[0].toFixed(1));
+  viewport.setLabel("imagePositionY", viewport.imagePosition[1].toFixed(1));
+  viewport.setLabel("imagePositionZ", viewport.imagePosition[0].toFixed(1));
   viewport.refleshLabel();
 }
 

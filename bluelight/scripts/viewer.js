@@ -3,44 +3,6 @@ let VIEWPORT = {};
 VIEWPORT.fixRow = null;
 VIEWPORT.fixCol = null;
 
-VIEWPORT.initTransform = function (viewport, image) {
-    if (!viewport.Sop) return;
-    if (viewport.Sop.type == "img") return;
-    if (!image) return;
-    if (viewport.tags.PixelSpacing) {
-        viewport.transform.PixelSpacingX = 1.0 / parseFloat(viewport.tags.PixelSpacing.split("\\")[0]);
-        viewport.transform.PixelSpacingY = 1.0 / parseFloat(viewport.tags.PixelSpacing.split("\\")[1]);
-    } else if (viewport.tags.ImagerPixelSpacing) {
-        viewport.transform.PixelSpacingX = 1.0 / parseFloat(viewport.tags.ImagerPixelSpacing.split("\\")[0]);
-        viewport.transform.PixelSpacingY = 1.0 / parseFloat(viewport.tags.ImagerPixelSpacing.split("\\")[1]);
-    }
-    else {
-        //viewport.transform.PixelSpacingX = viewport.transform.PixelSpacingY = 1.0;
-    }
-
-    if (viewport.tags.ImageOrientationPatient) {
-        viewport.transform.imageOrientationX = viewport.tags.ImageOrientationPatient.split("\\")[0];
-        viewport.transform.imageOrientationY = viewport.tags.ImageOrientationPatient.split("\\")[1];
-        viewport.transform.imageOrientationZ = viewport.tags.ImageOrientationPatient.split("\\")[2];
-        viewport.transform.imageOrientationX2 = viewport.tags.ImageOrientationPatient.split("\\")[3];
-        viewport.transform.imageOrientationY2 = viewport.tags.ImageOrientationPatient.split("\\")[4];
-        viewport.transform.imageOrientationZ2 = viewport.tags.ImageOrientationPatient.split("\\")[5];
-    } else {
-        viewport.transform.imageOrientationX = viewport.transform.imageOrientationY = viewport.transform.imageOrientationZ = 0;
-        viewport.transform.imageOrientationX2 = viewport.transform.imageOrientationY2 = viewport.transform.imageOrientationZ2 = 0;
-    }
-
-    if (viewport.tags.ImagePositionPatient) {
-        viewport.transform.imagePositionX = parseFloat(viewport.tags.ImagePositionPatient.split("\\")[0]);
-        viewport.transform.imagePositionY = parseFloat(viewport.tags.ImagePositionPatient.split("\\")[1]);
-        viewport.transform.imagePositionZ = parseFloat(viewport.tags.ImagePositionPatient.split("\\")[2]);
-    } else {
-        viewport.transform.imagePositionX = viewport.transform.imagePositionY = viewport.transform.imagePositionZ = 0;
-    }
-
-    setTransformLabel(viewport.index);
-}
-
 VIEWPORT.putLabel2Element = function (element, image, viewportNum) {
     if (!element.Sop || element.Sop.type == "img") return;
     setCommonLabel(viewportNum);
@@ -53,7 +15,7 @@ VIEWPORT.loadViewport = function (viewport, image, viewportNum) {
     }
 }
 //VIEWPORT.loadViewportList = ['initTransform', 'putLabel2Element', 'delPDFView', 'settype'];
-VIEWPORT.loadViewportList = ['initTransform', 'putLabel2Element'];
+VIEWPORT.loadViewportList = ['putLabel2Element'];
 
 class LoadFileInBatches {
     static queue = [];

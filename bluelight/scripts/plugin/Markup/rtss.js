@@ -326,16 +326,16 @@ class eraseRTSSTool extends ToolEvt {
         var [currX11, currY11] = [Math.floor(angle2point[0]), Math.floor(angle2point[1])];
         var currX02 = currX11, currY02 = currY11;
 
-        if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
-            currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
-            currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
+        if (viewport.Orientation && viewport.Orientation.length) {
+            currX02 = (currX11 * viewport.Orientation[0] + currY11 * -viewport.Orientation[1] + 0);
+            currY02 = (currX11 * -viewport.Orientation[3] + currY11 * viewport.Orientation[4] + 0);
             if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
                 currX02 = currX02 - (currX02 - currX11) * 2;
                 currY02 = currY02 - (currY02 - currY11) * 2;
             }
         }
-        currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
-        currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
+        currX02 = currX02 * viewport.PixelSpacing[0] + viewport.imagePosition[0];
+        currY02 = currY02 * viewport.PixelSpacing[1] + viewport.imagePosition[1];
 
         MarkCollider.detect(currX02, currY02, "RTSS");
         if (MarkCollider.selected) {
@@ -495,16 +495,16 @@ class writeRTSSTool extends ToolEvt {
             var [currX11, currY11] = [Math.floor(angle2point[0]), Math.floor(angle2point[1])];
             var currX02 = currX11, currY02 = currY11;
 
-            if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
-                currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
-                currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
+            if (viewport.Orientation && viewport.Orientation.length) {
+                currX02 = (currX11 * viewport.Orientation[0] + currY11 * -viewport.Orientation[1] + 0);
+                currY02 = (currX11 * -viewport.Orientation[3] + currY11 * viewport.Orientation[4] + 0);
                 if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
                     currX02 = currX02 - (currX02 - currX11) * 2;
                     currY02 = currY02 - (currY02 - currY11) * 2;
                 }
             }
-            currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
-            currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
+            currX02 = currX02 * viewport.PixelSpacing[0] + viewport.imagePosition[0];
+            currY02 = currY02 * viewport.PixelSpacing[1] + viewport.imagePosition[1];
 
 
             var RtssMark = new BlueLightMark();
@@ -512,7 +512,7 @@ class writeRTSSTool extends ToolEvt {
             RtssMark.color = "rgb(0,0,128)";
             RtssMark.hideName = RtssMark.showName = getByid('textROIName').value;
             RtssMark.type = "RTSS";
-            RtssMark.imagePositionZ = viewport.transform.imagePositionZ;
+            RtssMark.imagePositionZ = viewport.imagePosition[2];
 
             for (var co = 0; co < getClass("RTSSColorSelectOption").length; co++) {
                 if (getClass("RTSSColorSelectOption")[co].selected == true) {
@@ -542,16 +542,16 @@ class writeRTSSTool extends ToolEvt {
             var currX02 = currX11;
             var currY02 = currY11;
 
-            if (viewport.transform.imageOrientationX && viewport.transform.imageOrientationY && viewport.transform.imageOrientationZ) {
-                currX02 = (currX11 * viewport.transform.imageOrientationX + currY11 * -viewport.transform.imageOrientationY + 0);
-                currY02 = (currX11 * -viewport.transform.imageOrientationX2 + currY11 * viewport.transform.imageOrientationY2 + 0);
+            if (viewport.Orientation && viewport.Orientation.length) {
+                currX02 = (currX11 * viewport.Orientation[0] + currY11 * -viewport.Orientation[1] + 0);
+                currY02 = (currX11 * -viewport.Orientation[3] + currY11 * viewport.Orientation[4] + 0);
                 if ((viewport.HorizontalFlip != viewport.VerticalFlip)) {
                     currX02 = currX02 - (currX02 - currX11) * 2;
                     currY02 = currY02 - (currY02 - currY11) * 2;
                 }
             }
-            currX02 = currX02 / viewport.transform.PixelSpacingX + viewport.transform.imagePositionX;
-            currY02 = currY02 / viewport.transform.PixelSpacingY + viewport.transform.imagePositionY;
+            currX02 = currX02 * viewport.PixelSpacing[0] + viewport.imagePosition[0];
+            currY02 = currY02 * viewport.PixelSpacing[1] + viewport.imagePosition[1];
 
             MarkCollider.selected.targetMark.setPoint2D(angle2point[0] - Math.abs(currX02 - angle2point[0]), angle2point[1] - Math.abs(currY02 - angle2point[1]));
             MarkCollider.selected.x = MarkCollider.selected.targetMark.pointArray[0].x;
@@ -585,8 +585,8 @@ function drawRTSSEdit(obj) {
 
     var ctx = canvas.getContext("2d"), color = null;
     try {
-        var x = Math.ceil((Mark.pointArray[0].x - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
-        var y = Math.ceil((Mark.pointArray[0].y - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
+        var x = Math.ceil((Mark.pointArray[0].x - viewport.imagePosition[0]) * (1.0 / viewport.PixelSpacing[0]));
+        var y = Math.ceil((Mark.pointArray[0].y - viewport.imagePosition[1]) * (1.0 / viewport.PixelSpacing[1]));
         var point = new Point2D(x, y);
         setImageOrientation2MarkCanvas(viewport, ctx);
         viewport.fillCircle(ctx, viewport, point, 3, "#FF0000", 1.0);

@@ -358,7 +358,7 @@ function initMPR2() {
         Arr_ = loadImageDataForMPR(o3dImage[o3dImage.length - 1], o3dPixelData[o3dPixelData.length - 1], Arr_);
         o3dPixelData2.push(Arr_);
         try {
-            var thickness = parseFloat(image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * GetViewport().transform.PixelSpacingX;
+            var thickness = parseFloat(image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1.0 / GetViewport().PixelSpacing[0]);
             thicknessList_MPR.push(thickness);
             if (thickness < Thickness_MPR) Thickness_MPR = thickness;
             if (thickness < big) big = thickness;

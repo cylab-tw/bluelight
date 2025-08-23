@@ -212,11 +212,11 @@ function drawMeasureRect(obj) {
 
         if (Mark.pointArray[0] && Mark.pointArray[1]) {
             var value = "";
-            if (viewport.transform.PixelSpacingX && viewport.transform.PixelSpacingY) {
+            if (viewport.PixelSpacing) {
                 value = parseInt(
                     (Math.abs(Mark.pointArray[0].x - Mark.pointArray[1].x)
                         * Math.abs(Mark.pointArray[0].y - Mark.pointArray[1].y)
-                    ) / (viewport.transform.PixelSpacingX * viewport.transform.PixelSpacingY)) + "mm²";
+                    ) * (viewport.PixelSpacing[0] * viewport.PixelSpacing[1])) + "mm²";
             } else {
                 value = parseInt(
                     (Math.abs(Mark.pointArray[0].x - Mark.pointArray[1].x)
@@ -251,8 +251,8 @@ function drawMeasureCIRCLE(obj) {
         viewport.fillCircle(ctx, viewport, pointArray[1], 3, "#FF0000", 1.0);
 
         var value = "";
-        if (viewport.transform.PixelSpacingX && viewport.transform.PixelSpacingY) {
-            value = parseInt((dist * dist * Math.PI) / (viewport.transform.PixelSpacingX * viewport.transform.PixelSpacingY)) + "mm²";
+        if (viewport.PixelSpacing) {
+            value = parseInt((dist * dist * Math.PI) * (viewport.PixelSpacing[0] * viewport.PixelSpacing[1])) + "mm²";
         } else {
             value = parseInt((dist * dist * Math.PI)) + "px²";
         }

@@ -110,17 +110,17 @@ function setImageOrientation2MarkCanvas(viewport, ctx) {
     var mat = ctx.getTransform();
     var checkTransform = false;
     //標記套用image Orientation和image Position，之後將以反方向旋轉
-    if (CheckNull(viewport.transform.imageOrientationX) == false && CheckNull(viewport.transform.imageOrientationY) == false && CheckNull(viewport.transform.imageOrientationZ) == false) {
+    if (CheckNull(viewport.Orientation) == false) {
         ctx.setTransform(new DOMMatrix(
-            [viewport.transform.imageOrientationX, -viewport.transform.imageOrientationX2, 0, viewport.transform.imagePositionX * viewport.transform.PixelSpacingX,
-            -viewport.transform.imageOrientationY, viewport.transform.imageOrientationY2, 0, viewport.transform.imagePositionY * viewport.PixelSpacingY,
-            viewport.transform.imageOrientationZ, viewport.transform.imageOrientationZ2, 0, viewport.transform.imagePositionZ,
+            [viewport.Orientation[0], -viewport.Orientation[3], 0, viewport.imagePosition[0] * (1.0 / viewport.PixelSpacing[0]),
+            -viewport.Orientation[1], viewport.Orientation[4], 0, viewport.imagePosition[1] * (1.0 / viewport.PixelSpacing[1]),
+            viewport.Orientation[2], viewport.Orientation[5], 0, viewport.imagePosition[2],
                 0, 0, 0, 1
             ]));
         /*
              ctx.setTransform(new DOMMatrix(
-            [viewport.transform.imageOrientationX, -viewport.transform.imageOrientationX2, 0, 0,
-            -viewport.transform.imageOrientationY, viewport.transform.imageOrientationY2, 0, 0,
+            [viewport.Orientation[0], -viewport.Orientation[3], 0, 0,
+            -viewport.Orientation[1], viewport.Orientation[4], 0, 0,
             0, 0, 0, 0,
             0, 0, 0, 1
         ])); */
@@ -397,11 +397,11 @@ function drawTwoDimensionPolyline(canvas, mark, viewport) {
     setMarkColor(ctx, mark.parent.color);
     for (var o = 0; o < mark.markX.length; o++) {
         ctx.beginPath();
-        x1 = mark.markX[o] /* * viewport.transform.PixelSpacingX*/;
-        y1 = mark.markY[o] /** viewport.PixelSpacingY*/;
+        x1 = mark.markX[o];
+        y1 = mark.markY[o];
         o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-        x2 = mark.markX[o2] /* * viewport.transform.PixelSpacingX*/;
-        y2 = mark.markY[o2] /* * viewport.PixelSpacingY*/;
+        x2 = mark.markX[o2];
+        y2 = mark.markY[o2];
 
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
@@ -421,11 +421,11 @@ function drawTwoDimensionMultiPoint(canvas, mark, viewport) {
 
     for (var o = 0; o < mark.markX.length; o++) {
         ctx.beginPath();
-        var x1 = mark.markX[o] /* * viewport.transform.PixelSpacingX*/;
-        var y1 = mark.markY[o] /* * viewport.PixelSpacingY*/;
+        var x1 = mark.markX[o];
+        var y1 = mark.markY[o];
         var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-        var x2 = mark.markX[o2] /* * viewport.transform.PixelSpacingX*/;
-        var y2 = mark.markY[o2] /* * viewport.PixelSpacingY*/;
+        var x2 = mark.markX[o2];
+        var y2 = mark.markY[o2];
 
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
@@ -472,11 +472,11 @@ function drawRTSS(canvas, Mark, viewport) {
         setMarkColor(ctx, Mark.color);
         for (var o = 0; o < Mark.pointArray.length; o++) {
             ctx.beginPath();
-            var x1 = Math.ceil((Mark.pointArray[o].x - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
-            var y1 = Math.ceil((Mark.pointArray[o].y - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
+            var x1 = Math.ceil((Mark.pointArray[o].x - viewport.imagePosition[0]) * (1.0 / viewport.PixelSpacing[0]));
+            var y1 = Math.ceil((Mark.pointArray[o].y - viewport.imagePosition[1]) * (1.0 / viewport.PixelSpacing[1]));
             var o2 = o == Mark.pointArray.length - 1 ? 0 : o + 1;
-            var x2 = Math.ceil((Mark.pointArray[o2].x - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
-            var y2 = Math.ceil((Mark.pointArray[o2].y - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
+            var x2 = Math.ceil((Mark.pointArray[o2].x - viewport.imagePosition[0]) * (1.0 / viewport.PixelSpacing[0]));
+            var y2 = Math.ceil((Mark.pointArray[o2].y - viewport.imagePosition[1]) * (1.0 / viewport.PixelSpacing[1]));
 
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
@@ -488,11 +488,11 @@ function drawRTSS(canvas, Mark, viewport) {
         if (getByid("markFillCheck").checked) {
             ctx.beginPath();
             for (var o = 0; o < Mark.pointArray.length; o++) {
-                var x1 = Math.ceil((Mark.pointArray[o].x - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
-                var y1 = Math.ceil((Mark.pointArray[o].y - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
+                var x1 = Math.ceil((Mark.pointArray[o].x - viewport.imagePosition[0]) * (1.0 / viewport.PixelSpacing[0]));
+                var y1 = Math.ceil((Mark.pointArray[o].y - viewport.imagePosition[1]) * (1.0 / viewport.PixelSpacing[1]));
                 var o2 = o == Mark.pointArray.length - 1 ? 0 : o + 1;
-                var x2 = Math.ceil((Mark.pointArray[o2].x - viewport.transform.imagePositionX) * viewport.transform.PixelSpacingX);
-                var y2 = Math.ceil((Mark.pointArray[o2].y - viewport.transform.imagePositionY) * viewport.transform.PixelSpacingY);
+                var x2 = Math.ceil((Mark.pointArray[o2].x - viewport.imagePosition[0]) * (1.0 / viewport.PixelSpacing[0]));
+                var y2 = Math.ceil((Mark.pointArray[o2].y - viewport.imagePosition[1]) * (1.0 / viewport.PixelSpacing[1]));
 
                 if (o == 0) {
                     ctx.moveTo(x1, y1);

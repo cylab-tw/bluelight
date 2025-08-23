@@ -11,14 +11,6 @@ function loadSopFromDataSet(dataSet, type) {
     return Sop;
 }
 
-function setImageObjToLeft(Sop) {
-    var imageObj = Sop.Image, dataSet = Sop.Image.data;
-    leftLayout.setImg2Left(new QRLv(dataSet), dataSet.string(Tag.PatientID));
-    if (Sop.type == "frame") leftLayout.appendCanvasBySop(dataSet.string(Tag.SOPInstanceUID), imageObj, imageObj.getPixelData());
-    else leftLayout.appendCanvasBySeries(dataSet.string(Tag.SeriesInstanceUID), imageObj, imageObj.getPixelData());
-    leftLayout.refleshMarkWithSeries(dataSet.string(Tag.SeriesInstanceUID));
-}
-
 function setPDF(imageObj) {
     var fileTag = imageObj.data.elements.x00420011;
     var pdfByteArray = imageObj.data.byteArray.slice(fileTag.dataOffset, fileTag.dataOffset + fileTag.length);
@@ -87,7 +79,7 @@ function getDefaultImageObj(dataSet, type) {
     if (dataSet.elements[Tag.ImagePositionPatient]) {
         imageObj.imagePosition = dataSet.string(Tag.ImagePositionPatient).split("\\");
         for (var i in imageObj.imagePosition) imageObj.imagePosition[i] = parseFloat(imageObj.imagePosition[i]) / (imageObj.rowPixelSpacing ? imageObj.rowPixelSpacing : 1);
-    }
+    } else imageObj.imagePosition = [0, 0, 0];
 
     ////////////////////////////
 

@@ -89,6 +89,14 @@ class BlueLightPage {
     }
 }
 
+function setImageObjToLeft(Sop) {
+    var imageObj = Sop.Image, dataSet = Sop.Image.data;
+    leftLayout.setImg2Left(new QRLv(dataSet), dataSet.string(Tag.PatientID));
+    if (Sop.type == "frame") leftLayout.appendCanvasBySop(dataSet.string(Tag.SOPInstanceUID), imageObj, imageObj.getPixelData());
+    else leftLayout.appendCanvasBySeries(dataSet.string(Tag.SeriesInstanceUID), imageObj, imageObj.getPixelData());
+    leftLayout.refleshMarkWithSeries(dataSet.string(Tag.SeriesInstanceUID));
+}
+
 class LeftLayout {
     constructor() { }
 
@@ -312,7 +320,6 @@ function PictureOnclick(QRLevel) {
     if (!openLeftImgClick || !QRLevel) return;
     cancelTools();
     resetViewport();
-    //drawBorder(getByid("MouseOperation"));
 
     if (QRLevel.frames) GetViewport().loadImgBySop(ImageManager.findSop(QRLevel.sop));
     else if (QRLevel.series) GetViewport().loadImgBySop(ImageManager.findSeries(QRLevel.series).Sop[0])
@@ -362,8 +369,6 @@ window.onresize = function () {
 function EnterRWD() {
     //刷新Viewport窗格
     SetTable();
-    //刷新ScrollBar的Style
-    //for (var slider of getClass("rightSlider")) slider.setStyle();
     if (GetViewport(0)) for (var i = 0; i < Viewport_Total; i++) GetViewport(i).ScrollBar.reflesh();
 }
 

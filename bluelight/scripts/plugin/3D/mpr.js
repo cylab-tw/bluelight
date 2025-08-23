@@ -545,13 +545,13 @@ function initMPR() {
         GetViewport(0).div.removeEventListener("mousemove", Anatomical_SectionMouseMove0, false);
         GetViewport(0).div.removeEventListener("mousedown", Anatomical_SectionMouseDown0, false);
         GetViewport(0).div.removeEventListener("mouseup", Anatomical_SectionMouseMouseup0, false);
-       // GetViewport(0).div.removeEventListener("wheel", Wheel, false);
+        // GetViewport(0).div.removeEventListener("wheel", Wheel, false);
         GetViewport(1).div.removeEventListener("mousemove", Anatomical_SectionMouseMove, false);
         GetViewport(1).div.removeEventListener("mousedown", Anatomical_SectionMouseDown, false);
         GetViewport(1).div.removeEventListener("mouseup", Anatomical_SectionMouseMouseup, false);
         //GetViewport(1).div.removeEventListener("wheel", Wheel, false);
         cancelTools();
-        
+
         drawBorder(getByid("MouseOperation"));
         getByid("ImgMPR").src = "../image/icon/lite/b_AdvancedMode_off.png";
         getByid("3dDisplay").style.display = "none";
@@ -843,7 +843,7 @@ function initMPR() {
                 NewDiv.height = image.height;
                 NewDiv.style.width = image.width + "px";
                 NewDiv.style.height = image.height + "px";
-                NewDiv.thickness = parseFloat(image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * GetViewport().transform.PixelSpacingX;
+                NewDiv.thickness = parseFloat(image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1.0 / GetViewport().PixelSpacing[0]);
                 if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
                 if (NewDiv.thickness < big) big = NewDiv.thickness;
 
@@ -1016,7 +1016,7 @@ function o3dWindowLevel() {
         NewDiv.id = "3DDiv" + l2;
         NewDiv.className = "o3DDiv";
         NewDiv.sop = image.data.string(Tag.SOPInstanceUID);
-        NewDiv.thickness = parseFloat(image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * GetViewport().transform.PixelSpacingX;
+        NewDiv.thickness = parseFloat(image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1.0 / GetViewport().PixelSpacing[0]);
         if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
         if (NewDiv.thickness < big) big = NewDiv.thickness;
         NewDiv.width = image.width;

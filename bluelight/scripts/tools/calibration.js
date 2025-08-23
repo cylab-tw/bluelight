@@ -26,14 +26,14 @@ function loadCalibration() {
 
     getByid("CalibrationButton").onclick = function () {
         if (Calibration_previous_choose && !isNaN(Calibration_previous_choose.value) && !isNaN(CalibrationValue.value)) {
-            GetViewport().transform.PixelSpacingX = Calibration_previous_choose.value / CalibrationValue.value;
-            GetViewport().transform.PixelSpacingY = Calibration_previous_choose.value / CalibrationValue.value;
+            GetViewport().PixelSpacing[0] = 1.0 / (Calibration_previous_choose.value / CalibrationValue.value);
+            GetViewport().PixelSpacing[1] = 1.0 / (Calibration_previous_choose.value / CalibrationValue.value);
 
             for (var mark of PatientMark) {
                 if (mark.type == 'CalibrationRuler') {
                     mark.Text = parseInt(Math.sqrt(
-                        Math.pow(mark.Calibration_Point2[0] / GetViewport().transform.PixelSpacingX - mark.Calibration_Point1[0] / GetViewport().transform.PixelSpacingX, 2) +
-                        Math.pow(mark.Calibration_Point2[1] / GetViewport().transform.PixelSpacingY - mark.Calibration_Point1[1] / GetViewport().transform.PixelSpacingY, 2), 2)) +
+                        Math.pow(mark.Calibration_Point2[0] * GetViewport().PixelSpacing[0] - mark.Calibration_Point1[0] * GetViewport().PixelSpacing[0], 2) +
+                        Math.pow(mark.Calibration_Point2[1] * GetViewport().PixelSpacing[1] - mark.Calibration_Point1[1] * GetViewport().PixelSpacing[1], 2), 2)) +
                         "mm";
                 }
             }
@@ -172,10 +172,10 @@ function write_calibration() {
 }
 
 function getCalibrationValue(e) {
-    if (GetViewport().transform.PixelSpacingX && GetViewport().transform.PixelSpacingY) {
+    if (GetViewport().PixelSpacing) {
         var value = parseInt(Math.sqrt(
-            Math.pow(Calibration_Point2[0] / GetViewport().transform.PixelSpacingX - Calibration_Point1[0] / GetViewport().transform.PixelSpacingX, 2) +
-            Math.pow(Calibration_Point2[1] / GetViewport().transform.PixelSpacingY - Calibration_Point1[1] / GetViewport().transform.PixelSpacingY, 2), 2)) +
+            Math.pow(Calibration_Point2[0] * GetViewport().PixelSpacing[0] - Calibration_Point1[0] * GetViewport().PixelSpacing[0], 2) +
+            Math.pow(Calibration_Point2[1] * GetViewport().PixelSpacing[1] - Calibration_Point1[1] * GetViewport().PixelSpacing[1], 2), 2)) +
             "mm";
         return value;
     } else {

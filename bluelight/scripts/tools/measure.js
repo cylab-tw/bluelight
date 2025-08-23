@@ -144,10 +144,10 @@ function drawMeasureRuler(obj) {
         viewport.fillCircle(ctx, viewport, Mark.lastMark, 3, "#00FF00", 1.0);
 
         if (Mark.pointArray[0] && Mark.pointArray[1]) {
-            if (viewport.transform.PixelSpacingX && viewport.transform.PixelSpacingY) {
+            if (viewport.PixelSpacing) {
                 var value = parseInt(Math.sqrt(
-                    Math.pow(Mark.pointArray[0].x / viewport.transform.PixelSpacingX - Mark.pointArray[1].x / viewport.transform.PixelSpacingX, 2) +
-                    Math.pow(Mark.pointArray[0].y / viewport.transform.PixelSpacingY - Mark.pointArray[1].y / viewport.transform.PixelSpacingY, 2), 2)) +
+                    Math.pow(Mark.pointArray[0].x * viewport.PixelSpacing[0] - Mark.pointArray[1].x * viewport.PixelSpacing[0], 2) +
+                    Math.pow(Mark.pointArray[0].y * viewport.PixelSpacing[1] - Mark.pointArray[1].y * viewport.PixelSpacing[1], 2), 2)) +
                     "mm";
                 viewport.drawText(ctx, viewport, Mark.lastMark, value, 22, "#FF0000", alpha = 1.0);
             } else {

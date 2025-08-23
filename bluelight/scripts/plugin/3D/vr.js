@@ -578,7 +578,7 @@ function initVR() {
                 NewDiv.height = image.height;
                 NewDiv.style.width = image.width + "px";
                 NewDiv.style.height = image.height + "px";
-                NewDiv.thickness = parseFloat(image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * GetViewport().transform.PixelSpacingX;
+                NewDiv.thickness = parseFloat(image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1.0 / GetViewport().PixelSpacing[0]);
                 if (NewDiv.thickness < Thickness) Thickness = NewDiv.thickness;
                 if (NewDiv.thickness < big) big = NewDiv.thickness;
 

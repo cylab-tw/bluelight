@@ -126,7 +126,7 @@ endsolid name`
         if (PatientMark[m].type == "SEG" && PatientMark[m].series == GetViewport().series) {
             segList.push({
                 pixelData: PatientMark[m].pixelData,
-                PositionZ: parseInt(PatientMark[m].ImagePositionPatient.split("\\")[2] * GetViewport().transform.PixelSpacingX)
+                PositionZ: parseInt(PatientMark[m].ImagePositionPatient.split("\\")[2] * (1.0 / GetViewport().PixelSpacing[0]))
             });
         }
     }

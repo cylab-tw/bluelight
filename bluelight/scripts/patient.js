@@ -234,10 +234,19 @@ class BlueLightImageManager {
         }
         //return this.Study[QRLevel.study].Series[QRLevel.series].Sop[QRLevel.sop];
     }
+    
+    getNextSopByQRLevelsAndInstanceNumber(QRLevel, InstanceNumber, invert = false) {
+        var SopList = this.findSeries(QRLevel.series).Sop; //this.Study[QRLevel.study].Series[QRLevel.series].Sop;
 
-
-    getFirstSopByQRLevels(QRLevel) {
-        return SortArrayByElem(this.Study[QRLevel.study].Series[QRLevel.series].Sop, "InstanceNumber")[0];
+        SopList = SortArrayByElem(SopList, "InstanceNumber");
+        var index = SopList.findIndex((S) => S.InstanceNumber == InstanceNumber);
+        if (invert == false) {
+            if (index >= SopList.length - 1) return SopList[0];
+            else return SopList[index + 1];
+        } else {
+            if (index <= 0) return SopList[SopList.length - 1];
+            else return SopList[index - 1];
+        }
     }
 
     pushStudy(imageObj) {
@@ -282,7 +291,6 @@ class BlueLightImageManager {
             Sop.Image = imageObj;
             Sop.InstanceNumber = Sop.Image.InstanceNumber;
             Sop.pdf = Sop.Image.pdf;
-            //Sop.frames = Sop.Image.frames;
             Sop.dataSet = imageObj.data;
             Sop.parent = parent;
             this.SopMap[Sop.SOPInstanceUID] = Sop;
@@ -297,52 +305,6 @@ class BlueLightImageManager {
                 }
             }
             return Sop;
-        }
-    }
-
-    getTargetSopByQRLevelsAndInstanceNumber(QRLevel, TargetInstanceNumber) {
-        var SopList = this.findSeries(QRLevel.series).Sop;
-        SopList = SortArrayByElem(SopList, "InstanceNumber");
-        var index = SopList.findIndex((S) => S.InstanceNumber == TargetInstanceNumber);
-        return SopList[index];
-    }
-
-    getNextSopByQRLevelsAndInstanceNumber(QRLevel, InstanceNumber, invert = false) {
-        var SopList = this.findSeries(QRLevel.series).Sop;//this.Study[QRLevel.study].Series[QRLevel.series].Sop;
-
-        SopList = SortArrayByElem(SopList, "InstanceNumber");
-        var index = SopList.findIndex((S) => S.InstanceNumber == InstanceNumber);
-        if (invert == false) {
-            if (index >= SopList.length - 1) return SopList[0];
-            else return SopList[index + 1];
-        } else {
-            if (index <= 0) return SopList[SopList.length - 1];
-            else return SopList[index - 1];
-        }
-    }
-
-    getNextFrameByQRLevelsAndFrameNumber(QRLevel, index, invert = false) {
-        var SopList = this.findSeries(QRLevel.series).Sop;//this.Study[QRLevel.study].Series[QRLevel.series].Sop;
-        var FramesList = this.Study[QRLevel.study].Series[QRLevel.series].Sop[QRLevel.sop].frames;
-
-        if (SopList.length == 1 && FramesList.length > 1) {
-            if (invert == false) {
-                if (index >= FramesList.length - 1) return 0;
-                else return index + 1;
-            } else {
-                if (index <= 0) return FramesList.length - 1;
-                else return index - 1;
-            }
-        }
-
-        SopList = SortArrayByElem(SopList, "InstanceNumber");
-        var index = SopList.findIndex((S) => S.InstanceNumber == InstanceNumber);
-        if (invert == false) {
-            if (index >= SopList.length - 1) return SopList[0]
-            else return SopList[index + 1];
-        } else {
-            if (index <= 0) return SopList[SopList.length - 1];
-            else return SopList[index - 1];
         }
     }
 }

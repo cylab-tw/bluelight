@@ -28,14 +28,11 @@ onloadFunction.push(
             drawBorder(this);
             hideAllDrawer();
             GetViewport().cine = !GetViewport().cine;
-            if (GetViewport().cine) {
-                getByid('labelPlay').style.display = '';
-                getByid('textPlay').style.display = '';
-            }
-            else {
-                getByid('labelPlay').style.display = 'none';
-                getByid('textPlay').style.display = 'none';
-            }
+            if (GetViewport().cine)
+                getByid('textPlay').style.display = getByid('labelPlay').style.display = '';
+            else
+                getByid('textPlay').style.display = getByid('labelPlay').style.display = 'none';
+
             SetTable();
             PlayCine();
         }
