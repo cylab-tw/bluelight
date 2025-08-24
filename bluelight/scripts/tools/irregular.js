@@ -292,7 +292,7 @@ function drawArrowRuler(obj) {
         var x1 = Mark.pointArray[0].x * 1, y1 = Mark.pointArray[0].y * 1;
         var x2 = Mark.pointArray[1].x * 1, y2 = Mark.pointArray[1].y * 1;
         viewport.drawLine(ctx, viewport, new Point2D(x1, y1), new Point2D(x2, y2), Mark.color, 1.0);
-        var L = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2), 2);
+        var L = getDistance(y2 - y1, x2 - x1);
         var VDist = viewport.width + viewport.height;
         L = L < VDist / 100 ? VDist / 100 : L > VDist / 40 ? VDist / 40 : L;
         var a = Math.atan2((y2 - y1), (x2 - x1));

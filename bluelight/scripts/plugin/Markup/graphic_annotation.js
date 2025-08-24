@@ -154,19 +154,13 @@ getByid("writeGSPS").onclick = function () {
     getByid("saveGSPS").onclick = function () {
         function download(text, name, type) {
             let a = document.createElement('a');
-            let file = new Blob([text], {
-                type: type
-            });
+            let file = new Blob([text], { type: type });
             a.href = window.URL.createObjectURL(file);
-            //a.style.display = '';
             a.download = name;
             a.click();
         }
         function download2(text, name, type) {
-            let a = document.createElement('a');
-            let file = new File([text], name + ".xml", {
-                type: type
-            });
+            let file = new File([text], name + ".xml", { type: type });
             var xhr = new XMLHttpRequest();
 
             xhr.open('POST', ConfigLog.Xml2Dcm.Xml2DcmUrl, true);
@@ -687,8 +681,8 @@ class writeGSPSTool extends ToolEvt {
                 GspsMark.pointArray = [];
                 GspsMark.setPoint2D(originalPoint_X, originalPoint_Y);
                 GspsMark.setPoint2D(
-                    originalPoint_X + Math.sqrt(Math.pow(Math.abs(originalPoint_X - currX), 2) + Math.pow(Math.abs(originalPoint_Y - currY), 2) / 2),
-                    originalPoint_Y + Math.sqrt(Math.pow(Math.abs(originalPoint_X - currX), 2) + Math.pow(Math.abs(originalPoint_Y - currY), 2) / 2)
+                    originalPoint_X + getDistance(originalPoint_X - currX, originalPoint_Y - currY),
+                    originalPoint_Y + getDistance(originalPoint_X - currX, originalPoint_Y - currY)
                 );
                 Gsps_previous_choose = GspsMark;
                 refreshMark(GspsMark);

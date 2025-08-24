@@ -104,24 +104,14 @@ class MeasureCircleTool extends ToolEvt {
                 MeasureCircle_now_choose.pointArray[1].y = angle2point[1];
             }
 
-            var x1 = MeasureCircle_now_choose.pointArray[0].x * 1;
-            var y1 = MeasureCircle_now_choose.pointArray[0].y * 1;
-            var x2 = MeasureCircle_now_choose.pointArray[0 + 1].x * 1;
-            var y2 = MeasureCircle_now_choose.pointArray[0 + 1].y * 1;
-
             refreshMark(MeasureCircle_now_choose.dcm);
             displayAllMark();
         }
         if (MouseDownCheck && MeasureShape_previous_choose) {
             var originalPoint_X = MeasureShape_previous_choose.pointArray[0].x;
             var originalPoint_Y = MeasureShape_previous_choose.pointArray[0].y;
-            MeasureShape_previous_choose.pointArray[1].x = originalPoint_X + Math.sqrt(Math.pow(Math.abs(originalPoint_X - angle2point[0]), 2) + Math.pow(Math.abs(originalPoint_Y - angle2point[1]), 2) / 2);
-            MeasureShape_previous_choose.pointArray[1].y = originalPoint_Y + Math.sqrt(Math.pow(Math.abs(originalPoint_X - angle2point[0]), 2) + Math.pow(Math.abs(originalPoint_Y - angle2point[1]), 2) / 2)
-
-            var x1 = MeasureShape_previous_choose.pointArray[0].x * 1;
-            var y1 = MeasureShape_previous_choose.pointArray[0].y * 1;
-            var x2 = MeasureShape_previous_choose.pointArray[0 + 1].x * 1;
-            var y2 = MeasureShape_previous_choose.pointArray[0 + 1].y * 1;
+            MeasureShape_previous_choose.pointArray[1].x = originalPoint_X + getDistance(originalPoint_X - angle2point[0],originalPoint_Y - angle2point[1]);
+            MeasureShape_previous_choose.pointArray[1].y = originalPoint_Y +  getDistance(originalPoint_X - angle2point[0],originalPoint_Y - angle2point[1]);
 
             refreshMark(MeasureShape_previous_choose);
             displayAllMark();

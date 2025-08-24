@@ -329,7 +329,7 @@ function drawINTERPOLATED(canvas, Mark, viewport) {
 
         var tempAlpha2 = ctx.globalAlpha;
         ctx.globalAlpha = 1.0;
-        var dist = Math.sqrt(Math.pow((x1 - middleX), 2) + Math.pow((y1 - middleY), 2));
+        var dist = getDistance(x1 - middleX, (y1 - middleY));
         var angle1 = (180 / Math.PI) * Math.atan2(x1 - middleX, y1 + middleY)
         var angle2 = (180 / Math.PI) * Math.atan2(x2 - middleX, y2 + middleY)
         ctx.arc(middleX, middleY, dist, (2 * Math.PI) / angle1, (2 * Math.PI) / angle2);
@@ -450,8 +450,8 @@ function drawTwoDimensionEllipse(canvas, mark, viewport) {
         var X4 = mark.markX[o + 3];
         var Y4 = mark.markY[o + 3];
 
-        var heightHalf = Math.sqrt(Math.pow((X1 - X3), 2) + Math.pow((Y1 - Y3), 2)) / 2;
-        var widthHalf = Math.sqrt(Math.pow((X2 - X4), 2) + Math.pow((Y2 - Y4), 2)) / 2;
+        var heightHalf = getDistance(X1 - X3, Y1 - Y3) / 2;
+        var widthHalf = getDistance(X2 - X4, Y2 - Y4) / 2
         ctx.ellipse(X3, Y3, heightHalf, widthHalf, 0 * Math.PI / 180, 0, 2 * Math.PI);
         if (getByid("markFillCheck").checked) ctx.fill();
         ctx.stroke();

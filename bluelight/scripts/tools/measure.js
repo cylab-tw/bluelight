@@ -145,17 +145,11 @@ function drawMeasureRuler(obj) {
 
         if (Mark.pointArray[0] && Mark.pointArray[1]) {
             if (viewport.PixelSpacing) {
-                var value = parseInt(Math.sqrt(
-                    Math.pow(Mark.pointArray[0].x * viewport.PixelSpacing[0] - Mark.pointArray[1].x * viewport.PixelSpacing[0], 2) +
-                    Math.pow(Mark.pointArray[0].y * viewport.PixelSpacing[1] - Mark.pointArray[1].y * viewport.PixelSpacing[1], 2), 2)) +
-                    "mm";
-                viewport.drawText(ctx, viewport, Mark.lastMark, value, 22, "#FF0000", alpha = 1.0);
+                var value = parseInt(getDistance(Mark.pointArray[0].x * viewport.PixelSpacing[0] - Mark.pointArray[1].x * viewport.PixelSpacing[0], Mark.pointArray[0].y * viewport.PixelSpacing[1] - Mark.pointArray[1].y * viewport.PixelSpacing[1]));
+                viewport.drawText(ctx, viewport, Mark.lastMark, value + "mm", 22, "#FF0000", alpha = 1.0);
             } else {
-                var value = parseInt(Math.sqrt(
-                    Math.pow(Mark.pointArray[0].x - Mark.pointArray[1].x, 2) +
-                    Math.pow(Mark.pointArray[0].y - Mark.pointArray[1].y, 2), 2)) +
-                    "px";
-                viewport.drawText(ctx, viewport, Mark.lastMark, value, 22, "#FF0000", alpha = 1.0);
+                var value = parseInt(getDistance(Mark.pointArray[0].x - Mark.pointArray[1].x, Mark.pointArray[0].y - Mark.pointArray[1].y));
+                viewport.drawText(ctx, viewport, Mark.lastMark, value + "px", 22, "#FF0000", alpha = 1.0);
             }
         }
     } catch (ex) { console.log(ex) }

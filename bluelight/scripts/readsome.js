@@ -7,34 +7,15 @@ function readDicomOverlay(dataSet) {
     try {
       var pixelData = new Uint8ClampedArray(dataSet.byteArray.buffer, dataSet.elements['x60' + ov_str + '3000'].dataOffset, dataSet.elements['x60' + ov_str + '3000'].length);
       var tempPixeldata = new Uint8ClampedArray(pixelData.length * 8);
-      var tempi = 0;
-      var tempnum = 0;
+      var tempi = 0, tempnum = 0;
       for (var num of pixelData) {
         tempnum = num;
-        if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 0] = 1;
-        else tempPixeldata[num * 8 + 0] = 0;
-        tempnum /= 2;
-        if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 1] = 1;
-        else tempPixeldata[num * 8 + 1] = 0;
-        tempnum /= 2;
-        if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 2] = 1;
-        else tempPixeldata[num * 8 + 2] = 0;
-        tempnum /= 2;
-        if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 3] = 1;
-        else tempPixeldata[num * 8 + 3] = 0;
-        tempnum /= 2;
-        if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 4] = 1;
-        else tempPixeldata[num * 8 + 4] = 0;
-        tempnum /= 2;
-        if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 5] = 1;
-        else tempPixeldata[num * 8 + 5] = 0;
-        tempnum /= 2;
-        if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 6] = 1;
-        else tempPixeldata[num * 8 + 6] = 0;
-        tempnum /= 2;
-        if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + 7] = 1;
-        else tempPixeldata[num * 8 + 7] = 0;
-        tempi += 8;
+        for (var i = 0; i <= 7; i++) {
+          if (parseInt((tempnum) % 2) == 1) tempPixeldata[tempi + i] = 1;
+          else tempPixeldata[num * 8 + i] = 0;
+          if (i != 7) tempnum /= 2;
+          else tempi += 8;
+        }
       }
 
       var OverlayMark = new BlueLightMark();
@@ -46,14 +27,11 @@ function readDicomOverlay(dataSet) {
       OverlayMark.height = dataSet.uint16('x600' + ov + '0010');
       OverlayMark.width = dataSet.uint16('x600' + ov + '0011');
 
-      OverlayMark.showName = 'Overlay';
-      OverlayMark.type = "Overlay";
+      OverlayMark.type = OverlayMark.showName = 'Overlay';
       OverlayMark.hideName = OverlayMark.showName + 'x60' + ov_str + '1500';
 
-      if (dataSet.string('x60' + ov_str + '1500')) {
+      if (dataSet.string('x60' + ov_str + '1500'))
         OverlayMark.showName = dataSet.string('x60' + ov_str + '1500');
-      }
-
 
       OverlayMark.pixelData = tempPixeldata.slice(0);
       OverlayMark.canvas = document.createElement("CANVAS");
@@ -79,14 +57,11 @@ function readDicomRTSS(dataSet) {
   if (dataSet.string(Tag.ROIContourSequence)) {
     var referenceSeries = null;
     for (var i in dataSet.elements.x30060039.items) {
-      var colorStr = ("" + dataSet.elements.x30060039.items[i].dataSet.string(Tag.ROIDisplayColor)).split("\\");
-      var color;
+      var color, colorStr = ("" + dataSet.elements.x30060039.items[i].dataSet.string(Tag.ROIDisplayColor)).split("\\");
       if (colorStr) color = "rgb(" + parseInt(colorStr[0]) + ", " + parseInt(colorStr[1]) + ", " + parseInt(colorStr[2]) + ")";
 
-
-      if (!Object.prototype.hasOwnProperty.call(dataSet.elements.x30060039.items[i].dataSet.elements, Tag.ContourSequence)) {
+      if (!Object.prototype.hasOwnProperty.call(dataSet.elements.x30060039.items[i].dataSet.elements, Tag.ContourSequence))
         continue;
-      }
 
       for (var j in dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items) {
         var ContourData = ("" + dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.string(Tag.ContourData)).split("\\");
@@ -102,7 +77,6 @@ function readDicomRTSS(dataSet) {
           RtssMark.color = color;
           var ROIName = getROINameList(dataSet)[i];
           if (ROIName) RtssMark.hideName = RtssMark.showName = ROIName;
-          //dcm.SliceLocation=dataSet.string('x00201041');
           RtssMark.sop = dataSet.elements.x30060039.items[i].dataSet.elements.x30060040.items[j].dataSet.elements.x30060016.items[k].dataSet.string(Tag.ReferencedSOPInstanceUID);;
           RtssMark.type = "RTSS";
 
@@ -111,7 +85,6 @@ function readDicomRTSS(dataSet) {
             RtssMark.imagePositionZ = parseFloat(ContourData[k2 + 2]);
           }
           PatientMark.push(RtssMark);
-          //refreshMark(RtssMark);
         }
       }
     }
@@ -139,31 +112,18 @@ function readDicomMark(dataSet) {
     if (dataSet.string(Tag.ReferencedSeriesSequence)) {
       for (var ii2 in dataSet.elements.x00081115.items) {
         var x00081115DataSet = dataSet.elements.x00081115.items[ii2].dataSet.elements.x00081140.items;
-        //console.log(x00081115DataSet.length);
         for (var s = 0; s < x00081115DataSet.length; s++) {
-          //for (var ii3 in x00081115DataSet) {
           sop1 = x00081115DataSet[s].dataSet.string(Tag.ReferencedSOPInstanceUID);
-          //}
 
-          var tempsop = ""
-          var tempDataSet = "";
-          var GSPS_Text = "";
+          var tempsop = "", tempDataSet = "", GSPS_Text = "";
           function POLYLINE_Function(tempDataSet, GSPS_Text, g) {
-            if (tempDataSet == "") {
-              return;
-            };
-            // for (var j in tempDataSet) {
+            if (tempDataSet == "") return;
             if (g != undefined) var tempDataSetLengthList = [g];
-            else {
-              var tempDataSetLengthList = tempDataSet;
-              // console.log(tempDataSetLengthList.length);
-            }
+            else var tempDataSetLengthList = tempDataSet;
             for (var j1 = 0; j1 < tempDataSetLengthList.length; j1++) {
               var j = tempDataSetLengthList[j1];
               if (g != undefined) var j = tempDataSetLengthList[j1];
-              else {
-                var j = j1;
-              }
+              else var j = j1;
               if (tempDataSet[j].dataSet.string(Tag.GraphicType) == 'POLYLINE' ||
                 tempDataSet[j].dataSet.string(Tag.GraphicType) == 'INTERPOLATED') {
 
@@ -175,16 +135,11 @@ function readDicomMark(dataSet) {
                 if (tempDataSet[j].dataSet.elements.x00700232) {
                   var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
                   var color = ConvertGraphicColor(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2));
-                  if (color) {
-                    GspsMark.color = color[0];
-                    showname = color[1];
-                  }
+                  if (color) [GspsMark.color, showname] = [color[0], color[1]]
                 }
 
                 GspsMark.showName = showname;
-                if (GSPS_Text != "" && GSPS_Text != undefined) {
-                  GspsMark.showName = GSPS_Text;
-                };
+                if (GSPS_Text != "" && GSPS_Text != undefined) GspsMark.showName = GSPS_Text;
                 GspsMark.hideName = GspsMark.showName;
 
                 GspsMark.type = tempDataSet[j].dataSet.string(Tag.GraphicType);//"POLYLINE";
@@ -208,8 +163,7 @@ function readDicomMark(dataSet) {
                 var rect = parseInt(tempDataSet[j].dataSet.int16(Tag.GraphicDimensions)) * parseInt(tempDataSet[j].dataSet.int16(Tag.NumberOfGraphicPoints));
                 for (var r = 0; r < rect; r += 2) {
                   var GraphicData = getTag(Tag.GraphicData);
-                  var numX = 0,
-                    numY = 0;
+                  var numX = 0, numY = 0;
                   if (GraphicData.vr == 'US') {
                     numX = tempDataSet[j].dataSet.uint16(Tag.GraphicData, r);
                     numY = tempDataSet[j].dataSet.uint16(Tag.GraphicData, r + 1);
@@ -232,9 +186,8 @@ function readDicomMark(dataSet) {
                     numX = tempDataSet[j].dataSet.float(Tag.GraphicData, r);
                     numY = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 1);
                   }
-                  if (GspsMark.RotationAngle && GspsMark.RotationPoint) {
+                  if (GspsMark.RotationAngle && GspsMark.RotationPoint) 
                     [numX, numY] = rotatePoint([numX, numY], -GspsMark.RotationAngle, GspsMark.RotationPoint);
-                  }
 
                   GspsMark.setPoint2D(parseFloat(numX), parseFloat(numY));
                 }
@@ -264,17 +217,11 @@ function readDicomMark(dataSet) {
                 var xTemp16 = tempDataSet[j].dataSet.string(Tag.GraphicData);;
                 var rect = parseInt(tempDataSet[j].dataSet.int16(Tag.GraphicDimensions)) * parseInt(tempDataSet[j].dataSet.int16(Tag.NumberOfGraphicPoints));
                 for (var r = 0; r < rect; r += 4) {
-                  var numX = 0,
-                    numY = 0,
-                    numX2 = 0,
-                    numY2 = 0;
-                  numX = tempDataSet[j].dataSet.float(Tag.GraphicData, r);
-                  numY = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 1);
-                  numX2 = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 2);
-                  numY2 = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 3);
-                  /*if (dcm.mark[DcmMarkLength].RotationAngle && dcm.mark[DcmMarkLength].RotationPoint) {
-                    [numX, numY] = rotatePoint([numX, numY], -dcm.mark[DcmMarkLength].RotationAngle, dcm.mark[DcmMarkLength].RotationPoint);
-                  }*/
+                  var numX = tempDataSet[j].dataSet.float(Tag.GraphicData, r),
+                    numY = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 1),
+                    numX2 = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 2),
+                    numY2 = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 3);
+
                   GspsMark.setPoint2D(parseFloat(numX), parseFloat(numY));
                   GspsMark.setPoint2D(parseFloat(numX2), parseFloat(numY2));
                 }
@@ -297,9 +244,7 @@ function readDicomMark(dataSet) {
                 }
 
                 GspsMark.showName = showname;
-                if (GSPS_Text != "" && GSPS_Text != undefined) {
-                  GspsMark.showName = GSPS_Text;
-                };
+                if (GSPS_Text != "" && GSPS_Text != undefined) GspsMark.showName = GSPS_Text;
                 GspsMark.hideName = GspsMark.showName;
                 GspsMark.type = "POLYLINE";
                 GspsMark.setPoint2D(tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 1));
@@ -309,19 +254,13 @@ function readDicomMark(dataSet) {
               }
 
               if (!tempDataSet[j].dataSet.string(Tag.GraphicType) && GSPS_Text == "") {
-                //var xTemp10 = [tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxTopLeftHandCorner, 1)];
-                //var yTemp10 = [tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 0), tempDataSet[j].dataSet.float(Tag.BoundingBoxBottomRightHandCorner, 1)];
                 GSPS_Text = tempDataSet[j].dataSet.string(Tag.UnformattedTextValue);
-                //console.log(j+"   "+GSPS_Text);
                 if (GSPS_Text != "") {
-                  //console.log(xTemp10+"  "+yTemp10+"   "+GSPS_Text);
                   var GspsMark = new BlueLightMark();
                   GspsMark.sop = sop1;
                   GspsMark.pointArray = [];
 
-                  var showname = 'TEXT';
-                  GspsMark.showName = GspsMark.hideName = showname;
-                  GspsMark.type = "TEXT";
+                  GspsMark.showName = GspsMark.hideName = GspsMark.type = "TEXT";
 
                   if (GSPS_Text != "" && GSPS_Text != undefined) {
                     GSPS_Text = ("" + GSPS_Text).replace('\r\n', '\n');
@@ -338,10 +277,8 @@ function readDicomMark(dataSet) {
                 var GspsMark = new BlueLightMark();
                 GspsMark.sop = sop1;
                 GspsMark.pointArray = [];
-                var showname = 'ELLIPSE';
 
-                GspsMark.showName = GspsMark.hideName = showname;
-                GspsMark.type = "ELLIPSE";
+                GspsMark.showName = GspsMark.hideName = GspsMark.type = "ELLIPSE";
                 GspsMark.GraphicFilled = tempDataSet[j].dataSet.string(Tag.GraphicFilled);
                 var xTemp16 = tempDataSet[j].dataSet.string(Tag.GraphicData);;
                 var ablecheck = false;
@@ -359,16 +296,13 @@ function readDicomMark(dataSet) {
                     view.setUint8(i, b, true);
                   });
                   var num = view.getFloat32(0, true);
-                  if (ablecheck == false) {
-                    mark_X.push(num);
-                  } else {
-                    mark_Y.push(num);
-                  }
+                  if (ablecheck == false) mark_X.push(num);
+                  else mark_Y.push(num);
+
                   ablecheck = !ablecheck;
                 }
-                for (var xy_mark = 0; xy_mark < mark_X.length; xy_mark++) {
+                for (var xy_mark = 0; xy_mark < mark_X.length; xy_mark++)
                   GspsMark.setPoint2D(mark_X[xy_mark], mark_Y[xy_mark]);
-                }
                 PatientMark.push(GspsMark);
                 refreshMark(GspsMark, false);
               }
@@ -381,9 +315,7 @@ function readDicomMark(dataSet) {
                 var tempsop = dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items[d1].dataSet.string(Tag.ReferencedSOPInstanceUID)
                 if (tempsop == sop1) {
                   tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
-                  // for (var g = 0; g < dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items.length; g++) {
                   try {
-                    //GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[g].dataSet.string(Tag.UnformattedTextValue);
                     POLYLINE_Function(tempDataSet, "", undefined);
                   } catch (ex) { }
                   try {
@@ -395,8 +327,6 @@ function readDicomMark(dataSet) {
                       } catch (ex) { }
                     }
                   } catch (ex) { }
-
-                  //break;
                 };
 
                 if (tempsop != sop1) continue;
@@ -439,8 +369,6 @@ function loadDicomSeg(image) {
             usePDFJS: false
           }).pixelData;
           var showname = 'SEG';
-
-
           var SegMark = new BlueLightMark();
 
           SegMark.study = image.data.string(Tag.StudyInstanceUID);
@@ -449,7 +377,8 @@ function loadDicomSeg(image) {
             SegMark.sop = x52009230.items[i].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string(Tag.ReferencedSOPInstanceUID);
           } catch (ex) {
             SegMark.sop = x52009229.items[i].dataSet.elements.x00089124.items[0].dataSet.elements.x00082112.items[0].dataSet.string(Tag.ReferencedSOPInstanceUID);
-          } try {
+          }
+          try {
             SegMark.ImagePositionPatient = x52009230.items[i].dataSet.elements.x00209113.items[0].dataSet.string(Tag.ImagePositionPatient);
           } catch (ex) {
             SegMark.ImagePositionPatient = x52009229.items[i].dataSet.elements.x00209113.items[0].dataSet.string(Tag.ImagePositionPatient);

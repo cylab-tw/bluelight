@@ -25,16 +25,16 @@ function loadCalibration() {
     getByid("CalibrationDiv").style.display = "none";
 
     getByid("CalibrationButton").onclick = function () {
+        var viewport = GetViewport();
         if (Calibration_previous_choose && !isNaN(Calibration_previous_choose.value) && !isNaN(CalibrationValue.value)) {
-            GetViewport().PixelSpacing[0] = 1.0 / (Calibration_previous_choose.value / CalibrationValue.value);
-            GetViewport().PixelSpacing[1] = 1.0 / (Calibration_previous_choose.value / CalibrationValue.value);
+            viewport.PixelSpacing[0] = 1.0 / (Calibration_previous_choose.value / CalibrationValue.value);
+            viewport.PixelSpacing[1] = 1.0 / (Calibration_previous_choose.value / CalibrationValue.value);
 
             for (var mark of PatientMark) {
                 if (mark.type == 'CalibrationRuler') {
-                    mark.Text = parseInt(Math.sqrt(
-                        Math.pow(mark.Calibration_Point2[0] * GetViewport().PixelSpacing[0] - mark.Calibration_Point1[0] * GetViewport().PixelSpacing[0], 2) +
-                        Math.pow(mark.Calibration_Point2[1] * GetViewport().PixelSpacing[1] - mark.Calibration_Point1[1] * GetViewport().PixelSpacing[1], 2), 2)) +
-                        "mm";
+                    mark.Text = parseInt(
+                        getDistance(mark.Calibration_Point2[0] * viewport.PixelSpacing[0] - mark.Calibration_Point1[0] * viewport.PixelSpacing[0],
+                            mark.Calibration_Point2[1] * viewport.PixelSpacing[1] - mark.Calibration_Point1[1] * viewport.PixelSpacing[1])) + "mm";
                 }
             }
             displayAllRuler();
@@ -141,9 +141,8 @@ class CalibrationTool extends ToolEvt {
             MeasureMark.Text = getCalibrationValue(e);
             MeasureMark.Calibration_Point2 = Calibration_Point2;
             MeasureMark.Calibration_Point1 = Calibration_Point1;
-            MeasureMark.value = parseInt(Math.sqrt(
-                Math.pow(Calibration_Point2[0] - Calibration_Point1[0], 2) +
-                Math.pow(Calibration_Point2[1] - Calibration_Point1[1], 2), 2));
+            MeasureMark.value =
+                parseInt(getDistance(Calibration_Point2[0] - Calibration_Point1[0], Calibration_Point2[1] - Calibration_Point1[1]));
 
             refreshMark(MeasureMark);
             getByid("CalibrationValue").style.display = "";
@@ -173,17 +172,12 @@ function write_calibration() {
 
 function getCalibrationValue(e) {
     if (GetViewport().PixelSpacing) {
-        var value = parseInt(Math.sqrt(
-            Math.pow(Calibration_Point2[0] * GetViewport().PixelSpacing[0] - Calibration_Point1[0] * GetViewport().PixelSpacing[0], 2) +
-            Math.pow(Calibration_Point2[1] * GetViewport().PixelSpacing[1] - Calibration_Point1[1] * GetViewport().PixelSpacing[1], 2), 2)) +
-            "mm";
-        return value;
+        var value = parseInt(getDistance(Calibration_Point2[0] * GetViewport().PixelSpacing[0] - Calibration_Point1[0] * GetViewport().PixelSpacing[0],
+            Calibration_Point2[1] * GetViewport().PixelSpacing[1] - Calibration_Point1[1] * GetViewport().PixelSpacing[1]));
+        return value + "mm";
     } else {
-        var value = parseInt(Math.sqrt(
-            Math.pow(Calibration_Point2[0] - Calibration_Point1[0], 2) +
-            Math.pow(Calibration_Point2[1] - Calibration_Point1[1], 2), 2)) +
-            "px";
-        return value;
+        var value = parseInt(getDistance(Calibration_Point2[0] - Calibration_Point1[0], Calibration_Point2[1] - Calibration_Point1[1]));
+        return value + "px";
     }
 }
 

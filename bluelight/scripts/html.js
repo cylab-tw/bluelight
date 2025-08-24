@@ -75,7 +75,6 @@ function html_onload() {
     }
     function addFile(item) {
       item.file(function (file) {
-        //resetViewport();
         var url = URL.createObjectURL(file);
 
         function basename(path) {
@@ -94,7 +93,6 @@ function html_onload() {
 
           ImageManager.NumOfPreLoadSops += 1;
           reader.onloadend = function () {
-            //resetViewport();
             var Sop = loadDicomDataSet(reader.result, false, url, true);
             if (Sop) {
               Sop.Image.url = url;
@@ -114,11 +112,8 @@ function html_onload() {
     if (e.dataTransfer && e.dataTransfer.items) {
       var items = e.dataTransfer.items;
       for (var i = 0; i < items.length; i++) {
-
         var item = items[i].webkitGetAsEntry();
-        if (item) {
-          addDirectory(item);
-        }
+        if (item) addDirectory(item);
       }
     }
   }
@@ -142,7 +137,6 @@ function html_onload() {
       link.download = GetViewport().content.image.url.replace(/^.*(\\|\/|\:)/, '');
 
       link.href = GetViewport().content.image.url;
-      //console.log(link.download);
       if (GetViewport().content.image.fileExtension == 'mht' && link.download.includes(".mht") == false) return downloadFile(link.href, link.download + ".mht");
       else if (GetViewport().content.image.fileExtension == 'image') return;
       else if (link.download.includes(".dcm") == false) link.download = link.download + ".dcm";
