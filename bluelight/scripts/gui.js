@@ -159,7 +159,7 @@ class LeftLayout {
 
         var series_div = document.createElement("DIV");
         series_div.className = "LeftImgAndMark";
-        
+
         series_div.series = QRLevel.series;
         if (QRLevel.frames) series_div.sop = QRLevel.sop;
         series_div.style.touchAction = 'none';
@@ -192,7 +192,6 @@ class LeftLayout {
     }
 
     appendCanvasBySeries(series, image, pixelData) {
-        var series_div = this.findSeries(series);
         var series_div = this.findSeries(series);
         if (!series_div) return;
         var ImgDiv = series_div.ImgDiv;
@@ -241,13 +240,9 @@ class LeftLayout {
     refleshMarkWithSeries(series) {
         var series_div = this.findSeries(series);
         if (!series_div) return;
-        if (getByid("menu" + series)) {
-            getByid("menu" + series).innerHTML = "";
-        }
+        if (getByid("menu" + series)) getByid("menu" + series).innerHTML = "";
 
-        var showNameList = [];
-        var colorList = [];
-        var hideNameList = [];
+        var showNameList = [], colorList = [], hideNameList = [];
         var Series = ImageManager.findSeries(series);
         for (var k = 0; k < Series.Sop.length; k++) {
             for (var n = 0; n < PatientMark.length; n++) {
@@ -257,13 +252,7 @@ class LeftLayout {
                         colorList.push(PatientMark[n].color);
                         hideNameList.push(PatientMark[n].hideName);
                     } else {
-                        var check = 0;
-                        for (var o = 0; o < showNameList.length; o++) {
-                            if (hideNameList[o] == PatientMark[n].hideName) {
-                                check = 1;
-                            }
-                        }
-                        if (check == 0) {
+                        if (!hideNameList.includes(PatientMark[n].hideName)) {
                             hideNameList.push(PatientMark[n].hideName);
                             showNameList.push(PatientMark[n].showName);
                             colorList.push(PatientMark[n].color);
@@ -274,7 +263,6 @@ class LeftLayout {
         }
 
         for (var o = 0; o < showNameList.length; o++) {
-            
             var label = document.createElement('LABEL');
             label.innerText = "" + showNameList[o];
             label.name = "" + hideNameList[o];
@@ -376,13 +364,9 @@ function SetTable(row0, col0) {
     getByid("container").style.height = `calc(100vh - ${getByid("container").offsetTop}px)`;
 
     //取得Viewport的row與col數量
-    let row = Viewport_row,
-        col = Viewport_col;
+    let row = Viewport_row, col = Viewport_col;
     //如果有傳入row與col的參數，則優先使用傳入的
-    if (row0 && col0) {
-        row = row0;
-        col = col0
-    }
+    if (row0 && col0) [row, col] = [row0, col0];
 
     if (VIEWPORT.fixRow) row = VIEWPORT.fixRow;
     if (VIEWPORT.fixCol) col = VIEWPORT.fixCol;
@@ -443,8 +427,5 @@ function SetTable(row0, col0) {
         }
     }
 
-    //if (viewportNumber >= row * col) viewportNumber = 0;
-
     refleshGUI();
-    // window.onresize();
 }

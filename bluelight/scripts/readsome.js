@@ -186,7 +186,7 @@ function readDicomMark(dataSet) {
                     numX = tempDataSet[j].dataSet.float(Tag.GraphicData, r);
                     numY = tempDataSet[j].dataSet.float(Tag.GraphicData, r + 1);
                   }
-                  if (GspsMark.RotationAngle && GspsMark.RotationPoint) 
+                  if (GspsMark.RotationAngle && GspsMark.RotationPoint)
                     [numX, numY] = rotatePoint([numX, numY], -GspsMark.RotationAngle, GspsMark.RotationPoint);
 
                   GspsMark.setPoint2D(parseFloat(numX), parseFloat(numY));
@@ -280,29 +280,14 @@ function readDicomMark(dataSet) {
 
                 GspsMark.showName = GspsMark.hideName = GspsMark.type = "ELLIPSE";
                 GspsMark.GraphicFilled = tempDataSet[j].dataSet.string(Tag.GraphicFilled);
-                var xTemp16 = tempDataSet[j].dataSet.string(Tag.GraphicData);;
-                var ablecheck = false;
-                var mark_X = [], mark_Y = [];
-                for (var k2 = 0; k2 < xTemp16.length; k2 += 4) {
 
-                  var output1 = xTemp16[k2].charCodeAt(0).toString(2) + "";
-                  var output2 = xTemp16[k2 + 1].charCodeAt(0).toString(2) + "";
-                  var output3 = xTemp16[k2 + 2].charCodeAt(0).toString(2) + "";
-                  var output4 = xTemp16[k2 + 3].charCodeAt(0).toString(2) + "";
-                  var data = [parseInt(output1, 2), parseInt(output2, 2), parseInt(output3, 2), parseInt(output4, 2)];
-                  var buf = new ArrayBuffer(4 /* * 4*/);
-                  var view = new DataView(buf);
-                  data.forEach(function (b, i) {
-                    view.setUint8(i, b, true);
-                  });
-                  var num = view.getFloat32(0, true);
-                  if (ablecheck == false) mark_X.push(num);
-                  else mark_Y.push(num);
-
-                  ablecheck = !ablecheck;
+                var offset = tempDataSet[j].dataSet.elements[Tag.GraphicData].dataOffset;
+                var len = tempDataSet[j].dataSet.elements[Tag.GraphicData].length;
+                if (len == 64) var typedArray = new Float64Array(tempDataSet[j].dataSet.byteArray.buffer.slice(offset, offset + len))
+                else var typedArray = new Float32Array(tempDataSet[j].dataSet.byteArray.buffer.slice(offset, offset + len))
+                for (var p = 0; p < typedArray.length; p += 2) {
+                  GspsMark.setPoint2D(typedArray[p], typedArray[p + 1]);
                 }
-                for (var xy_mark = 0; xy_mark < mark_X.length; xy_mark++)
-                  GspsMark.setPoint2D(mark_X[xy_mark], mark_Y[xy_mark]);
                 PatientMark.push(GspsMark);
                 refreshMark(GspsMark, false);
               }
@@ -341,7 +326,7 @@ function readDicomMark(dataSet) {
                 POLYLINE_Function(tempDataSet, GSPS_Text);
 
               } catch (ex) {
-                console.log(GSPS_Text);
+                console.log(ex);
                 continue;
               }
             }

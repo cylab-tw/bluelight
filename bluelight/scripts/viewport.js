@@ -103,9 +103,9 @@ class BlueLightViewPort {
     get enable() { return this.div.enable };
     get width() { return this.content.image ? this.content.image.width : undefined };
     get height() { return this.content.image ? this.content.image.height : undefined };
-    get PixelSpacing() { return this.content.image? this.content.image.PixelSpacing : undefined };
-    get Orientation() { return this.content.image? this.content.image.Orientation : undefined };
-    get imagePosition() { return this.content.image? this.content.image.imagePosition : undefined };
+    get PixelSpacing() { return this.content.image ? this.content.image.PixelSpacing : undefined };
+    get Orientation() { return this.content.image ? this.content.image.Orientation : undefined };
+    get imagePosition() { return this.content.image ? this.content.image.imagePosition : undefined };
     set enable(v) { this.div.enable = v };
 
     get study() { if (this.tags) return this.tags.StudyInstanceUID };
@@ -164,45 +164,13 @@ class BlueLightViewPort {
     }
 
     initLabel(div, index) {
-        var labelLT = document.createElement("LABEL");
-        labelLT.className = "labelLT innerLabel";
-        this.labelLT = div.labelLT = labelLT;
-        div.appendChild(labelLT);
-
-        var labelRT = document.createElement("LABEL");
-        labelRT.className = "labelRT innerLabel";
-        this.labelRT = div.labelRT = labelRT;
-        div.appendChild(labelRT);
-
-        var labelLB = document.createElement("LABEL");
-        labelLB.className = "labelLB innerLabel";
-        this.labelLB = div.labelLB = labelLB;
-        div.appendChild(labelLB);
-
-        var labelRB = document.createElement("LABEL");
-        labelRB.className = "labelRB innerLabel";
-        this.labelRB = div.labelRB = labelRB;
-        div.appendChild(labelRB);
-
-        var labelMT = document.createElement("LABEL");
-        labelMT.className = "labelMT innerLabel";
-        this.labelMT = div.labelMT = labelMT;
-        div.appendChild(labelMT);
-
-        var labelMB = document.createElement("LABEL");
-        labelMB.className = "labelMB innerLabel";
-        this.labelMB = div.labelMB = labelMB;
-        div.appendChild(labelMB);
-
-        var labelLM = document.createElement("LABEL");
-        labelLM.className = "labelLM innerLabel";
-        this.labelLM = div.labelLM = labelLM;
-        div.appendChild(labelLM);
-
-        var labelRM = document.createElement("LABEL");
-        labelRM.className = "labelRM innerLabel";
-        this.labelRM = div.labelRM = labelRM;
-        div.appendChild(labelRM);
+        var labels = ['labelLT', 'labelRT', 'labelLB', 'labelRB', 'labelMT', 'labelMB', 'labelLM', 'labelRM'];
+        for (var label of labels) {
+            var elem = document.createElement("LABEL");
+            elem.className = `${label} innerLabel`;
+            this[label] = div[label] = elem;
+            div.appendChild(elem);
+        }
     }
     setLabel(key, value) {
         this.labelDict[key] = value;
@@ -329,7 +297,7 @@ class BlueLightViewPort {
         if (Sop.constructor.name == 'String') Sop = ImageManager.findSop(Sop);
 
         this.Sop = Sop;
-        requestAnimationFrame(() => {
+        //requestAnimationFrame(() => {
             if (Sop.type == 'sop') DcmLoader(Sop.Image, this);
             else if (Sop.type == 'frame') {
                 this.framesNumber = 0;
@@ -338,7 +306,7 @@ class BlueLightViewPort {
             else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, Sop);
             else if (Sop.type == 'ecg' && openECG) EcgLoader(Sop);
             else if (Sop.type == 'img') DcmLoader(Sop.Image, this);
-        });
+        //});
     }
 
     reload() {
@@ -498,7 +466,7 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     var ctx = canvas.getContext("2d");
     var imgData = ctx.createImageData(image.width, image.height);
     //預先填充不透明度為255
-    new Uint32Array(imgData.data.buffer).fill(0xFF000000);
+    let Uint32Data = new Uint32Array(imgData.data.buffer).fill(0xFF000000);
 
     var windowCenter = info.windowCenter ? info.windowCenter : image.windowCenter;
     var windowWidth = info.windowWidth ? info.windowWidth : image.windowWidth;
@@ -526,9 +494,11 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     const multiplication = 255 / ((high - low)) * slope;
     const addition = (- low + intercept) / (high - low) * 255;
     const data = imgData.data;
+    const dataLength = data.length;
+    const data32Length = Uint32Data.length;
     if (image.RedLutArray && image.GreenLutArray && image.BlueLutArray &&
         image.RedLutArray.length == 256 && image.GreenLutArray.length == 256 && image.BlueLutArray.length == 256) {
-        for (var i = 0, j = 0; i < data.length; i += 4, j += 1) {
+        for (var i = 0, j = 0; i < dataLength; i += 4, j += 1) {
             data[i + 0] = image.RedLutArray[pixelData[j + 0]];
             data[i + 1] = image.GreenLutArray[pixelData[j + 1]];
             data[i + 2] = image.BlueLutArray[pixelData[j + 2]];
@@ -537,22 +507,27 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     else {
         if (image.color == true) {
             if (("" + image.PhotometricInterpretation).includes("YBR") || ("" + image.PhotometricInterpretation).includes("RGB")) {
-                for (var i = 0, j = 0; i < data.length; i += 4, j += 3) {
+                for (var i = 0, j = 0; i < dataLength; i += 4, j += 3) {
                     data[i + 0] = pixelData[j] * multiplication + addition;
                     data[i + 1] = pixelData[j + 1] * multiplication + addition;
                     data[i + 2] = pixelData[j + 2] * multiplication + addition;
                 }
             } else {
-                for (var i = 0; i < data.length; i += 4) {
+                for (var i = 0; i < dataLength; i += 4) {
                     data[i + 0] = pixelData[i] * multiplication + addition;
                     data[i + 1] = pixelData[i + 1] * multiplication + addition;
                     data[i + 2] = pixelData[i + 2] * multiplication + addition;
                 }
             }
         } else {
-            for (var i = 0, j = 0; i < data.length; i += 4, j++) {
-                data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
+            const clampedData = new Uint8ClampedArray(1);
+            for (var i = 0; i < data32Length; i++) {
+                clampedData[0] = (pixelData[i] * multiplication + addition)
+                Uint32Data[i] += clampedData[0] * 65793;
             }
+            /*for (var i = 0, j = 0; i < dataLength; i += 4, j++) {
+                data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
+            };*/
         }
     }
 
@@ -589,7 +564,11 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     ctx.restore();
 }
 
-//function refleshCanvas(DicomCanvas, image, viewport, pixelData) {
+function refleshAllCanvas() {
+    for (var z = 0; z < Viewport_Total; z++)
+        refleshCanvas(GetViewport(z));
+}
+
 function refleshCanvas(viewport) {
     var canvas = viewport.canvas;
     var image = viewport.content.image, pixelData;

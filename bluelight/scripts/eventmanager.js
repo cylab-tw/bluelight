@@ -87,9 +87,7 @@ var SwitchViewport = function () {
     viewportNumber = isNaN(this.viewportNum) ? viewportNumber : this.viewportNum;
     if (GetViewport().Sop) leftLayout.setAccent(GetViewport().Sop.parent.SeriesInstanceUID);
 
-    if (GetViewport().cine) getByid('playvideo').src = '../image/icon/lite/b_CinePause.png';
-    else getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
-
+    changeCineImg();
     changeMarkImg();
     for (var z = 0; z < Viewport_Total; z++) {
         GetViewport(z).setLabel("PixelValue", "");

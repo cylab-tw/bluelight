@@ -184,10 +184,10 @@ class BlueLightImageManager {
                 leftLayout.refleshMarkWithSeries(sop.dataSet.string(Tag.SeriesInstanceUID));
             }
             if (LoadImgSop) {
-                requestAnimationFrame(() => {
+                //requestAnimationFrame(() => {
                     resetViewport();
                     GetViewport().loadImgBySop(LoadImgSop);
-                });
+                //});
             }
         }
     }

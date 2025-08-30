@@ -13,7 +13,7 @@ function html_onload() {
 
         function basename(path) { return path.split('.').reverse()[0]; }
 
-        var fileExtension = basename(this.files[k].name);
+        var fileExtension = ("" + basename(this.files[k].name)).toLowerCase();
         if (fileExtension == "mht") wadorsLoader2(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "jpg") loadPicture(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "jpeg") loadPicture(URL.createObjectURL(this.files[k]));
@@ -80,7 +80,7 @@ function html_onload() {
         function basename(path) {
           return path.split('.').reverse()[0];
         }
-        var fileExtension = basename(file.name);
+        var fileExtension = ("" + basename(file.name)).toLowerCase();
         if (fileExtension == "mht") wadorsLoader2(url);
         else if (fileExtension == "jpg") loadPicture(url);
         else if (fileExtension == "jpeg") loadPicture(url);
@@ -209,27 +209,6 @@ function html_onload() {
       setTransformAll();
     }
   }
-  /*getByid("Rotate_180").onclick = function () {
-    GetViewport().rotate = 180;
-    setTransform();
-    if (openLink == true) {
-      for (var z = 0; z < Viewport_Total; z++) {
-        GetViewport(z).rotate = GetViewport().rotate;
-        setTransform(z);
-      }
-    }
-  }
-  
-  getByid("Rotate_270").onclick = function () {
-    GetViewport().rotate = 270;
-    setTransform();
-    if (openLink == true) {
-      for (var z = 0; z < Viewport_Total; z++) {
-        GetViewport(z).rotate = GetViewport().rotate;
-        setTransform(z);
-      }
-    }
-  }*/
 
   getByid("WindowRevision").onclick = function () {
     if (this.enable == false) return;
@@ -241,17 +220,15 @@ function html_onload() {
   }
 
   getByid("TrueSizeImg").onclick = function () {
-    //if (!(location.search.includes("TrueSizeTest=true"))) return;
     ScaleToTrueSize();
   }
-  //if (!(location.search.includes("TrueSizeTest=true"))) getByid("TrueSize_span").style.display = "none";
 
   getByid("clearviewportImg").onclick = function () {
     var clearviewportWindow = document.createElement("DIV");
     clearviewportWindow.style.width = "40vw";
     clearviewportWindow.style.height = "40vh";
     clearviewportWindow.style.position = "absolute";
-    //clearviewportWindow.style.margin = "25vh 0 0 25vw";
+
     clearviewportWindow.style.zIndex = "105";
     clearviewportWindow.style.left = "0";
     clearviewportWindow.style.right = "0";
@@ -294,7 +271,7 @@ function html_onload() {
       getClass("labelRB")[viewportNumber].innerText = "";
       PatientMark = [];
       ImageManager = new BlueLightImageManager()
-      getByid("LeftPicture").innerHTML = ""; //leftLayout = new LeftLayout();
+      getByid("LeftPicture").innerHTML = "";
 
       for (var i = 0; i < Viewport_Total; i++) {
         GetViewport(i).clear();
@@ -550,12 +527,8 @@ function html_onload() {
       }
       PatientMark = PatientMark.filter(m => m.type != "delete");
       for (var n in PatientMark) { refreshMark(PatientMark[n]); }
-      //for (var s = 0; s < sopList.length; s++)
-      //   refreshMarkFromSop(sopList[s]);
       for (var i = 0; i < Viewport_Total; i++)
         if (GetViewport(i).series) leftLayout.refleshMarkWithSeries(GetViewport(i).series);
-
-      //getByid("openMeasureImg").click();
 
       Angle_now_choose = null;
       Angle_previous_choose = null;
@@ -629,9 +602,9 @@ function html_onload() {
     for (var z = 0; z < Viewport_Total; z++) GetViewport(z).ScrollBar.reflesh();
   }
 
-  getByid("rwdImgTag").onclick = function () {
+  /*getByid("rwdImgTag").onclick = function () {
     EnterRWD();
-  }
+  }*/
 
   getByid("markFillCheck").onclick = function () {
     displayAllMark()
@@ -711,6 +684,11 @@ function changeMarkImg() {
 function changeLinkImg() {
   if (openLink == true) getByid("unlink").src = "../image/icon/lite/b_Link.png";
   else getByid("unlink").src = "../image/icon/lite/b_unlink translation synchronization.png";
+}
+
+function changeCineImg() {
+  if (GetViewport().cine) getByid('playvideo').src = '../image/icon/lite/b_CinePause.png';
+  else getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
 }
 
 function drawBorder(element) {

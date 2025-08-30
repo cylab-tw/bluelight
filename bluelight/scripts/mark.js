@@ -351,19 +351,23 @@ function drawINTERPOLATED(canvas, Mark, viewport) {
 function drawELLIPSE(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-    for (var o = 0; o < Mark.pointArray.length; o += 1) {
-        ctx.beginPath();
 
-        var x1 = Mark.pointArray[o].x * 1;
-        var y2 = Mark.pointArray[o + 1].y * 1;
-        var x3 = Mark.pointArray[o + 2].x * 1;
-        var y4 = Mark.pointArray[o + 3].y * 1;
+    var [majorP1, majorP2, minorP1, minorP2] = Mark.pointArray;
 
-        ctx.ellipse((x1 + x3) / 2, (y2 + y4) / 2, Math.abs(x1 - x3), Math.abs(y2 - y4), 0 * Math.PI / 180, 0, 2 * Math.PI);
-        ctx.stroke();
-        if (getByid("markFillCheck").checked) ctx.fill();
-        ctx.closePath();
-    }
+    var centerX = (majorP1.x + majorP2.x) / 2, centerY = (majorP1.y + majorP2.y) / 2;
+
+    var dxMajor = majorP2.x - majorP1.x, dyMajor = majorP2.y - majorP1.y;
+    var radiusMajor = Math.sqrt(dxMajor * dxMajor + dyMajor * dyMajor) / 2;
+
+    var dxMinor = minorP2.x - minorP1.x, dyMinor = minorP2.y - minorP1.y;
+    var radiusMinor = Math.sqrt(dxMinor * dxMinor + dyMinor * dyMinor) / 2;
+    var rotation = Math.atan2(dyMajor, dxMajor);
+
+    ctx.beginPath();
+    ctx.ellipse(centerX, centerY, radiusMajor, radiusMinor, rotation, 0, 2 * Math.PI);
+    ctx.stroke();
+    if (getByid("markFillCheck").checked) ctx.fill();
+    ctx.closePath();
 }
 
 function drawCIRCLE(canvas, Mark, viewport) {

@@ -167,7 +167,7 @@ function getPolylineGraphicObject(mark) {
     return graphicObject;
 }
 
-function getCircleGraphicObject() {
+function getCircleGraphicObject(mark) {
     let graphicObject = {
         GraphicAnnotationUnits: "PIXEL",
         GraphicDimensions: 2,

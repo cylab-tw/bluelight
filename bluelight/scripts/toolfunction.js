@@ -90,10 +90,6 @@ function getCurrPoint(e) {
     return [currX, currY];
 }
 
-function Fpx(value) {
-    return parseFloat(value) + "px";
-}
-
 function getByid(str) {
     return document.getElementById(str);
 }
@@ -213,7 +209,7 @@ function rotateCalculation(e, flip = false) {
     let cx = (GetViewport().width / 2);
     let cy = (GetViewport().height / 2);
     var element = GetViewport();
-    canvas.style.transform = "translate(" + "calc(-50% + " + Fpx(element.translate.x) + ")" + "," + "calc(-50% + " + Fpx(element.translate.y) + ")" + ")scale(" + element.scale + ")";
+    canvas.style.transform = "translate(" + "calc(-50% + " + parseFloat(element.translate.x) + "px)" + "," + "calc(-50% + " + parseFloat(element.translate.y) + "px)" + ")scale(" + element.scale + ")";
     //BlueLight2
     /*let currX11 = (e.pageX - canvas.getBoundingClientRect().left - 0) *
         (GetViewport().width / parseFloat(canvas.style.width));
@@ -223,7 +219,7 @@ function rotateCalculation(e, flip = false) {
         (1.0 / element.scale);
     let currY11 = (e.pageY - canvas.getBoundingClientRect().top - 0) *
         (1.0 / element.scale);
-    canvas.style.transform = "translate(" + "calc(-50% + " + Fpx(element.translate.x) + ")" + "," + "calc(-50% + " + Fpx(element.translate.y) + ")" + ")scale(" + element.scale + ")" + "rotate(" + element.rotate + "deg)";
+    canvas.style.transform = "translate(" + "calc(-50% + " + parseFloat(element.translate.x) + "px)" + "," + "calc(-50% + " + parseFloat(element.translate.y) + "px)" + ")scale(" + element.scale + ")" + "rotate(" + element.rotate + "deg)";
     let radians = element.rotate * (Math.PI / 180),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
@@ -313,7 +309,8 @@ function refreshMarkFromSeries(series) {
 }
 
 function refreshMarkFromSop(sop) {
-    leftLayout.refleshMarkWithSeries(ImageManager.findSop(sop).parent.SeriesInstanceUID);
+    var Sop = ImageManager.findSop(sop);
+    if (Sop) leftLayout.refleshMarkWithSeries(Sop.parent.SeriesInstanceUID);
     displayAllMark();
 }
 

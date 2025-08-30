@@ -3,7 +3,6 @@ function cancelTools() {
     HideElemByID(["textWC", "textWW", "WindowLevelDiv",
         "labelZoom", "labelPlay", "textZoom", "textPlay"]);
 
-    getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
     getByid("WindowDefault").selected = true;
 
     setWindowLevel();
@@ -18,7 +17,8 @@ function displayAllRuler() {
 }
 
 function displayRuler(viewportNum = viewportNumber) {
-    if (!openAnnotation || !GetViewport(viewportNum) || !GetViewport(viewportNum).content || !GetViewport(viewportNum).content.image) {
+    var viewport = GetViewport(viewportNum);
+    if (!openAnnotation || !viewport || !viewport.content || !viewport.content.image) {
         getClass("downRule")[viewportNum].style.display = "none";
         getClass("leftRule")[viewportNum].style.display = "none";
         return;
@@ -26,7 +26,7 @@ function displayRuler(viewportNum = viewportNumber) {
     try {
         var downRule = getClass("downRule")[viewportNum];
 
-        const offsetWidth = GetViewport(viewportNum).div.offsetWidth;
+        const offsetWidth = viewport.div.offsetWidth;
         if (downRule.width != offsetWidth) downRule.width = offsetWidth;
 
         downRule.style.display = "";
@@ -38,37 +38,37 @@ function displayRuler(viewportNum = viewportNumber) {
         var x1 = 0, y1 = 0;
 
         tempctx.beginPath();
-        var PixelSpacingX = 1.0 / GetViewport(viewportNum).PixelSpacing[0];
+        var PixelSpacingX = 1.0 / viewport.PixelSpacing[0];
         if (PixelSpacingX) {
-            tempctx.moveTo(0 + (offsetWidth / 2) - (50 * PixelSpacingX) * (GetViewport(viewportNum).scale), 10 + 10);
-            tempctx.lineTo((90 * PixelSpacingX) * (GetViewport(viewportNum).scale) + (offsetWidth / 2) - (40 * PixelSpacingX) * (GetViewport(viewportNum).scale), 10 + 10);
+            tempctx.moveTo(0 + (offsetWidth / 2) - (50 * PixelSpacingX) * (viewport.scale), 10 + 10);
+            tempctx.lineTo((90 * PixelSpacingX) * (viewport.scale) + (offsetWidth / 2) - (40 * PixelSpacingX) * (viewport.scale), 10 + 10);
             for (var i = 0; i <= 10; i++) {
-                tempctx.moveTo(x1 + (offsetWidth / 2) - (50 * PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 10);
-                tempctx.lineTo(x1 + (offsetWidth / 2) - (50 * PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 10 + 10);
+                tempctx.moveTo(x1 + (offsetWidth / 2) - (50 * PixelSpacingX) * (viewport.scale), y1 + 10);
+                tempctx.lineTo(x1 + (offsetWidth / 2) - (50 * PixelSpacingX) * (viewport.scale), y1 + 10 + 10);
                 tempctx.stroke();
-                x1 += (10 * PixelSpacingX) * (GetViewport(viewportNum).scale);
+                x1 += (10 * PixelSpacingX) * (viewport.scale);
             }
             tempctx.closePath();
-            x1 -= (10 * PixelSpacingX) * (GetViewport(viewportNum).scale);
+            x1 -= (10 * PixelSpacingX) * (viewport.scale);
 
             tempctx.font = "" + (12) + "px Arial";
-            tempctx.fillText("100 mm", 2 + x1 + (offsetWidth / 2) - (50 * PixelSpacingX) * (GetViewport(viewportNum).scale), y1 + 3 + 10 + 5)
+            tempctx.fillText("100 mm", 2 + x1 + (offsetWidth / 2) - (50 * PixelSpacingX) * (viewport.scale), y1 + 3 + 10 + 5)
         } else {
             tempctx.strokeStyle = "#4855FF";
             var PX = 1, PY = 1;
-            tempctx.moveTo(0 + (offsetWidth / 2) - (50 * PX) * (GetViewport(viewportNum).scale), 10 + 10);
-            tempctx.lineTo((90 * PX) * (GetViewport(viewportNum).scale) + (offsetWidth / 2) - (40 * PX) * (GetViewport(viewportNum).scale), 10 + 10);
+            tempctx.moveTo(0 + (offsetWidth / 2) - (50 * PX) * (viewport.scale), 10 + 10);
+            tempctx.lineTo((90 * PX) * (viewport.scale) + (offsetWidth / 2) - (40 * PX) * (viewport.scale), 10 + 10);
             for (var i = 0; i <= 10; i++) {
-                tempctx.moveTo(x1 + (offsetWidth / 2) - (50 * PX) * (GetViewport(viewportNum).scale), y1 + 10);
-                tempctx.lineTo(x1 + (offsetWidth / 2) - (50 * PX) * (GetViewport(viewportNum).scale), y1 + 10 + 10);
+                tempctx.moveTo(x1 + (offsetWidth / 2) - (50 * PX) * (viewport.scale), y1 + 10);
+                tempctx.lineTo(x1 + (offsetWidth / 2) - (50 * PX) * (viewport.scale), y1 + 10 + 10);
                 tempctx.stroke();
-                x1 += (10 * PX) * (GetViewport(viewportNum).scale);
+                x1 += (10 * PX) * (viewport.scale);
             }
             tempctx.closePath();
-            x1 -= (10 * PX) * (GetViewport(viewportNum).scale);
+            x1 -= (10 * PX) * (viewport.scale);
 
             tempctx.font = "" + (12) + "px Arial";
-            tempctx.fillText("100 pix", 2 + x1 + (offsetWidth / 2) - (50 * PX) * (GetViewport(viewportNum).scale), y1 + 3 + 10 + 5)
+            tempctx.fillText("100 pix", 2 + x1 + (offsetWidth / 2) - (50 * PX) * (viewport.scale), y1 + 3 + 10 + 5)
         }
 
     } catch (ex) { }
@@ -76,10 +76,10 @@ function displayRuler(viewportNum = viewportNumber) {
 }
 
 function displayRuler2(viewportNum = viewportNumber) {
-    if (!GetViewport() || !GetViewport().content || !GetViewport().content.image) return;
+    var viewport = GetViewport(viewportNum);
     try {
         var leftRule = getClass("leftRule")[viewportNum];
-        var offsetHeight = GetViewport(viewportNum).div.offsetHeight;
+        var offsetHeight = viewport.div.offsetHeight;
         leftRule.height = offsetHeight;
         leftRule.style.display = "";
 
@@ -91,35 +91,35 @@ function displayRuler2(viewportNum = viewportNumber) {
         tempctx.beginPath();
         var x1 = 0, y1 = 0;
 
-        var PixelSpacingY = 1.0 / GetViewport(viewportNum).PixelSpacing[1];
+        var PixelSpacingY = 1.0 / viewport.PixelSpacing[1];
         if (PixelSpacingY) {
             tempctx.font = "12px Arial";
-            tempctx.fillText("100 mm", 0, -5 + (offsetHeight / 2) - (50 * PixelSpacingY) * (GetViewport(viewportNum).scale))
+            tempctx.fillText("100 mm", 0, -5 + (offsetHeight / 2) - (50 * PixelSpacingY) * (viewport.scale))
 
-            tempctx.moveTo(0, 0 + (offsetHeight / 2) - (50 * PixelSpacingY) * (GetViewport(viewportNum).scale));
-            tempctx.lineTo(0, (90 * PixelSpacingY) * (GetViewport(viewportNum).scale) - (40 * PixelSpacingY) * (GetViewport(viewportNum).scale) + (offsetHeight / 2));
+            tempctx.moveTo(0, 0 + (offsetHeight / 2) - (50 * PixelSpacingY) * (viewport.scale));
+            tempctx.lineTo(0, (90 * PixelSpacingY) * (viewport.scale) - (40 * PixelSpacingY) * (viewport.scale) + (offsetHeight / 2));
             tempctx.stroke();
             for (var i = 0; i <= 10; i++) {
-                tempctx.moveTo(x1, y1 + (offsetHeight / 2) - (50 * PixelSpacingY) * (GetViewport(viewportNum).scale));
-                tempctx.lineTo(x1 + 10, y1 + (offsetHeight / 2) - (50 * PixelSpacingY) * (GetViewport(viewportNum).scale));
+                tempctx.moveTo(x1, y1 + (offsetHeight / 2) - (50 * PixelSpacingY) * (viewport.scale));
+                tempctx.lineTo(x1 + 10, y1 + (offsetHeight / 2) - (50 * PixelSpacingY) * (viewport.scale));
                 tempctx.stroke();
-                y1 += (10 * PixelSpacingY) * (GetViewport(viewportNum).scale);
+                y1 += (10 * PixelSpacingY) * (viewport.scale);
             }
             tempctx.closePath();
         } else {
             tempctx.strokeStyle = "#4855FF";
             var PX = 1, PY = 1;
             tempctx.font = "12px Arial";
-            tempctx.fillText("100 pix", 0, -5 + (offsetHeight / 2) - (50 * PY) * (GetViewport(viewportNum).scale))
+            tempctx.fillText("100 pix", 0, -5 + (offsetHeight / 2) - (50 * PY) * (viewport.scale))
 
-            tempctx.moveTo(0, 0 + (offsetHeight / 2) - (50 * PY) * (GetViewport(viewportNum).scale));
-            tempctx.lineTo(0, (90 * PY) * (GetViewport(viewportNum).scale) - (40 * PY) * (GetViewport(viewportNum).scale) + (offsetHeight / 2));
+            tempctx.moveTo(0, 0 + (offsetHeight / 2) - (50 * PY) * (viewport.scale));
+            tempctx.lineTo(0, (90 * PY) * (viewport.scale) - (40 * PY) * (viewport.scale) + (offsetHeight / 2));
             tempctx.stroke();
             for (var i = 0; i <= 10; i++) {
-                tempctx.moveTo(x1, y1 + (offsetHeight / 2) - (50 * PY) * (GetViewport(viewportNum).scale));
-                tempctx.lineTo(x1 + 10, y1 + (offsetHeight / 2) - (50 * PY) * (GetViewport(viewportNum).scale));
+                tempctx.moveTo(x1, y1 + (offsetHeight / 2) - (50 * PY) * (viewport.scale));
+                tempctx.lineTo(x1 + 10, y1 + (offsetHeight / 2) - (50 * PY) * (viewport.scale));
                 tempctx.stroke();
-                y1 += (10 * PY) * (GetViewport(viewportNum).scale);
+                y1 += (10 * PY) * (viewport.scale);
             }
             tempctx.closePath();
         }
@@ -133,9 +133,8 @@ function setTransformAll() {
 function setTransform(viewportnum = viewportNumber) {
     var element = GetViewport(viewportnum);
     var scale = element.scale ? element.scale : 1;
-    GetViewportMark(viewportnum).style.transform = `translate(calc(-50% + ${Fpx(element.translate.x)}) , calc(-50% + ${Fpx(element.translate.y)})) scale( ${scale} ) rotate( ${element.rotate}deg)`;
-    element.canvas.style.transform = `translate(calc(-50% + ${Fpx(element.translate.x)}) , calc(-50% + ${Fpx(element.translate.y)})) scale( ${scale} ) rotate( ${element.rotate}deg)`;
-    //element.canvas.style.transform=" translate(-50%,-50%)"
+    GetViewportMark(viewportnum).style.transform = `translate(calc(-50% + ${parseFloat(element.translate.x)}px) , calc(-50% + ${parseFloat(element.translate.y)}px)) scale( ${scale} ) rotate( ${element.rotate}deg)`;
+    element.canvas.style.transform = `translate(calc(-50% + ${parseFloat(element.translate.x)}px) , calc(-50% + ${parseFloat(element.translate.y)}px)) scale( ${scale} ) rotate( ${element.rotate}deg)`;
     element.canvas.style.position = "absolute";
     GetViewportMark(viewportnum).style.position = "absolute";
     element.setLabel("scale", "" + (100 * element.scale).toFixed(1) + "%");
@@ -167,10 +166,8 @@ function resetAndLoadImg() {
 
 function refleshViewport() {
     if (openLink == true) {
-        for (var z = 0; z < Viewport_Total; z++) {
-            refleshCanvas(GetViewport(z));
-            displayMark(z);
-        }
+        refleshAllCanvas()
+        displayAllMark();
     } else {
         refleshCanvas(GetViewport());
         displayMark();

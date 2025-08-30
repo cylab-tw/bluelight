@@ -470,7 +470,7 @@ function loadDicomDataSet(fileData) {
     try {
         var dataSet = dicomParser.parseDicom(byteArray);
     } catch (ex) {
-        if (loadimage && ImageManager.NumOfPreLoadSops >= 1) ImageManager.NumOfPreLoadSops -= 1;
+        if (ImageManager.NumOfPreLoadSops >= 1) ImageManager.NumOfPreLoadSops -= 1;
         console.log(ex);
         return;
     }

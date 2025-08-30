@@ -2,8 +2,7 @@
 var PlayCine = function () {
     //播放動畫用的計時器
     let CineTimer = CineEnd = null;
-    if (GetViewport().cine) getByid('playvideo').src = '../image/icon/lite/b_CinePause.png';
-    else getByid('playvideo').src = '../image/icon/lite/b_CinePlay.png';
+    changeCineImg();
 
     if (openLink || !GetViewport().cine) SetAllViewport("cine", GetViewport().cine);
 
