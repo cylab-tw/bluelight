@@ -346,6 +346,8 @@ class VRCube {
         this.RightMouseDownCheck = false;
         this.shadow = true;
         this.smooth = false;
+        this.invertColor = false;
+        this.displayMark = false;
         this.reduceSlices = false;
         this.filter = null;
         if (this.sopList.length >= 50) this.reduceSlices = true;
@@ -875,7 +877,7 @@ class VRCube {
         sliceLable.innerText = "Number of both sections";
 
         var sliceText = document.createElement("input");
-        sliceText.type = sliceText.className = "text";
+        sliceText.type = sliceText.className = "number";
         sliceText.value = this.slice ? this.slice : "";
         sliceText.className = "VR2_Text";
 
@@ -909,7 +911,7 @@ class VRCube {
 
         var WCText = document.createElement("input");
         var WWText = document.createElement("input");
-        WCText.type = WCText.className = WWText.type = WWText.className = "text";
+        WCText.type = WCText.className = WWText.type = WWText.className = "number";
         WCText.value = this.windowCenter ? this.windowCenter : "";
         WWText.value = this.windowWidth ? this.windowWidth : "";
         WCText.className = WWText.className = "VR2_Text";
@@ -1109,6 +1111,62 @@ class VRCube {
         span.appendChild(SmoothLable);
         userDIV.appendChild(span);
 
+        //////////Invert Color//////////
+        var span = document.createElement("span");
+        span.style['zIndex'] = "490";
+        span.style['float'] = "right";
+        var DisplayMarkLable = document.createElement("LABEL");
+        DisplayMarkLable.innerText = "Display Mark";
+        DisplayMarkLable.className = "VR2_Label";
+        DisplayMarkLable.style.float = "left";
+
+        var DisplayMarkCheck = document.createElement("input");
+        DisplayMarkCheck.style = "z-index: 490;float:left";
+        DisplayMarkCheck.type = "checkbox";
+        DisplayMarkCheck.id = "VR2_DisplayMarkCheck";
+
+        this.DisplayMarkCheck = DisplayMarkCheck;
+        function ChangeDisplayMark() {
+            if (this.DisplayMarkCheck.checked) this.cube.displayMark = true;
+            else this.cube.displayMark = false;
+            this.cube.resetZXY();
+            this.cube.reflesh();
+        }
+        ChangeDisplayMark = ChangeDisplayMark.bind({ cube: this, DisplayMarkCheck: DisplayMarkCheck });
+        DisplayMarkCheck.addEventListener("change", ChangeDisplayMark, false);
+
+        span.appendChild(DisplayMarkCheck);
+        span.appendChild(DisplayMarkLable);
+        userDIV.appendChild(span);
+
+        //////////Display Mark//////////
+        var span = document.createElement("span");
+        span.style['zIndex'] = "490";
+        span.style['float'] = "right";
+        var InvertColorLable = document.createElement("LABEL");
+        InvertColorLable.innerText = "Invert Color";
+        InvertColorLable.className = "VR2_Label";
+        InvertColorLable.style.float = "left";
+
+        var InvertColorCheck = document.createElement("input");
+        InvertColorCheck.style = "z-index: 490;float:left";
+        InvertColorCheck.type = "checkbox";
+        InvertColorCheck.id = "VR2_InvertColorLableCheck";
+
+        this.InvertColorCheck = InvertColorCheck;
+        function ChangeInvertColor() {
+            if (this.InvertColorCheck.checked) this.cube.invertColor = true;
+            else this.cube.invertColor = false;
+            this.cube.resetZXY();
+            this.cube.reflesh();
+        }
+        ChangeInvertColor = ChangeInvertColor.bind({ cube: this, InvertColorCheck: InvertColorCheck });
+        InvertColorCheck.addEventListener("change", ChangeInvertColor, false);
+
+        span.appendChild(InvertColorCheck);
+        span.appendChild(InvertColorLable);
+        userDIV.appendChild(span);
+
         //////////Reduce Slices//////////
 
         var span = document.createElement("span");
@@ -1294,25 +1352,52 @@ class VRCube {
         }
         else {
             if (color == true) {
-                for (var i = data.length - 4; i >= 0; i -= 4) {
-                    data[i + 0] = pixelData[i] * multiplication + addition;
-                    data[i + 1] = pixelData[i + 1] * multiplication + addition;
-                    data[i + 2] = pixelData[i + 2] * multiplication + addition;
-                }
-            } else {
-                //沒壓縮
-                if (step == 1) {
-                    for (var i = 0, j = 0; i < data.length, j < pixelData.length; i += 4, j++) {
-                        data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
-                        if (data[i + 0] == 0) data[i + 3] = 0;
+                if (this.invertColor) {
+                    for (var i = 0; i < data.length; i += 4) {
+                        data[i + 0] = 255 - pixelData[i] * multiplication + addition;
+                        data[i + 1] = 255 - pixelData[i + 1] * multiplication + addition;
+                        data[i + 2] = 255 - pixelData[i + 2] * multiplication + addition;
+                    }
+                } else {
+                    for (var i = 0; i < data.length; i += 4) {
+                        data[i + 0] = pixelData[i] * multiplication + addition;
+                        data[i + 1] = pixelData[i + 1] * multiplication + addition;
+                        data[i + 2] = pixelData[i + 2] * multiplication + addition;
                     }
                 }
-                //有壓縮
+            } else {
+                if (this.invertColor) {
+                    //沒壓縮
+                    if (step == 1) {
+                        for (var i = 0, j = 0; i < data.length, j < pixelData.length; i += 4, j++) {
+                            data[i + 0] = data[i + 1] = data[i + 2] = 255 - (pixelData[j] * multiplication + addition);
+                            if (data[i + 0] == 0) data[i + 3] = 0;
+                        }
+                    }
+                    //有壓縮
+                    else {
+                        for (var i = 0, j = 0; i < data.length, j < pixelData.length; i += 4, j += step) {
+                            data[i + 0] = data[i + 1] = data[i + 2] = 255 - (pixelData[j] * multiplication + addition);
+                            if (data[i + 0] == 0) data[i + 3] = 0;
+                            if (j % (canvas.width * step) == 0) j += (step - 1) * canvas.width * step;
+                        }
+                    }
+                }
                 else {
-                    for (var i = 0, j = 0; i < data.length, j < pixelData.length; i += 4, j += step) {
-                        data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
-                        if (data[i + 0] == 0) data[i + 3] = 0;
-                        if (j % (canvas.width * step) == 0) j += (step - 1) * canvas.width * step;
+                    //沒壓縮
+                    if (step == 1) {
+                        for (var i = 0, j = 0; i < data.length, j < pixelData.length; i += 4, j++) {
+                            data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
+                            if (data[i + 0] == 0) data[i + 3] = 0;
+                        }
+                    }
+                    //有壓縮
+                    else {
+                        for (var i = 0, j = 0; i < data.length, j < pixelData.length; i += 4, j += step) {
+                            data[i + 0] = data[i + 1] = data[i + 2] = pixelData[j] * multiplication + addition;
+                            if (data[i + 0] == 0) data[i + 3] = 0;
+                            if (j % (canvas.width * step) == 0) j += (step - 1) * canvas.width * step;
+                        }
                     }
                 }
             }
@@ -1339,6 +1424,21 @@ class VRCube {
         }
 
         ctx.putImageData(imgData, 0, 0);
+
+        var SOP = canvas.SOP;
+        if (SOP.Image.Orientation && SOP.Image.Orientation.length) {
+            ctx.setTransform(new DOMMatrix(
+                [SOP.Image.Orientation[0], -SOP.Image.Orientation[3], 0, SOP.Image.imagePosition[0] * SOP.Image.PixelSpacing[0],
+                -SOP.Image.Orientation[1], SOP.Image.Orientation[4], 0, SOP.Image.imagePosition[1] * SOP.Image.PixelSpacing[1],
+                SOP.Image.Orientation[2], SOP.Image.Orientation[5], 0, SOP.Image.imagePosition[2],
+                    0, 0, 0, 1
+                ]
+            ));
+            var cloneCanvas_ = cloneCanvas(canvas);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(cloneCanvas_, 0, 0);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+        }
     }
 
     buildZ() {
@@ -1367,10 +1467,13 @@ class VRCube {
                 }//else[NewCanvas.width, NewCanvas.height] = [SOP.Image.width / step, SOP.Image.height / step];
 
                 NewCanvas.pixelData = SOP.Image.pixelData;
+                NewCanvas.SOPInstanceUID = SOP.SOPInstanceUID;
+                NewCanvas.SOP = SOP;
                 NewCanvas.windowCenter = this.windowCenter;
                 NewCanvas.windowWidth = this.windowWidth;
 
                 this.Render2Canvas(NewCanvas, SOP.Image.intercept, SOP.Image.slope, SOP.Image.color, step);
+                if (this.displayMark) drawRTSSForVR2(NewCanvas);
 
                 NewCanvas.position = new Point3D(0, 0, 0);
                 NewCanvas.position.z = parseFloat(SOP.Image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1 / (parseFloat(SOP.Image.rowPixelSpacing)));
@@ -1592,6 +1695,42 @@ class VRCube {
     }
 }
 
+
+function drawRTSSForVR2(canvas) {
+    if (!canvas.SOPInstanceUID) return;
+    var marks = PatientMark.filter(M => M.sop == canvas.SOPInstanceUID);
+
+    var ctx = canvas.getContext("2d");
+    for (var mark of marks) {
+        if (mark.type != "RTSS") continue;
+        if (mark.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.color;
+
+        ctx.beginPath();
+        for (var o = 0; o < mark.pointArray.length; o++) {
+            var PixelSpacing = (1.0 / canvas.SOP.Image.rowPixelSpacing);
+            var imagePositionX = parseFloat(canvas.SOP.Image.data.string(Tag.ImagePositionPatient).split("\\")[0]);
+            var imagePositionY = parseFloat(canvas.SOP.Image.data.string(Tag.ImagePositionPatient).split("\\")[1]);
+            var x1 = Math.ceil((mark.pointArray[o].x - imagePositionX) * PixelSpacing);
+            var y1 = Math.ceil((mark.pointArray[o].y - imagePositionY) * PixelSpacing);
+            var o2 = o == mark.pointArray.length - 1 ? 0 : o + 1;
+            var x2 = Math.ceil((mark.pointArray[o2].x - imagePositionX) * PixelSpacing);
+            var y2 = Math.ceil((mark.pointArray[o2].y - imagePositionY) * PixelSpacing);
+            if (o == 0) { ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); }
+            else { ctx.lineTo(x1, y1); ctx.lineTo(x2, y2); }
+        }
+        ctx.closePath();
+        ctx.globalAlpha = 1.0;
+        ctx.stroke();
+        ctx.globalAlpha = 0.4;
+        ctx.fill();
+    }
+    for (var mark of marks) {
+        if (mark.type != "Overlay") continue;
+        ctx.globalAlpha = 0.4;
+        ctx.drawImage(mark.canvas, 0, 0);
+        ctx.globalAlpha = 1.0;
+    }
+}
 
 function initVR2() {
     openLeftImgClick = false;
