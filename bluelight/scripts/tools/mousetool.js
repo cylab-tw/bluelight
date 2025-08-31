@@ -1,30 +1,17 @@
 
 function scale_size(e, currX, currY) {
-    var viewport = GetViewport(), canvas = GetViewport().canvas;
-    if (openLink == true) {
-        for (var i = 0; i < Viewport_Total; i++) {
-            if (i == viewportNumber) continue;
-            try {
-                GetViewport(i).scale = viewport.scale;
-                setTransform(i);
-            } catch (ex) { }
-        }
-    }
-    if (windowMouseDiffY < -2) {
-        if (viewport.scale < 10) viewport.scale += viewport.scale * 0.05;
-        setTransform();
-    } else if (windowMouseDiffY > 2) {
-        if (viewport.scale > 0.1) viewport.scale -= viewport.scale * 0.05;
-        setTransform();
-    }
+    var viewport = GetViewport();
+
+    if (windowMouseDiffY < 0 && viewport.scale < 10)
+        viewport.scale += viewport.scale * 0.05;
+    else if (windowMouseDiffY > 0 && viewport.scale > 0.1)
+        viewport.scale -= viewport.scale * 0.05;
 
     if (openLink == true) {
-        for (var i = 0; i < Viewport_Total; i++) {
-            if (i == viewportNumber) continue;
-            GetViewport(i).scale = viewport.scale;
-            setTransform(i);
-        }
+        SetAllViewport("scale", GetViewport().scale);
+        setTransformAll();
     }
+    else setTransform();
 }
 class MoveTool extends ToolEvt {
     onMouseMove(e) {
@@ -63,25 +50,17 @@ class MoveTool extends ToolEvt {
     onTouchMove(e, e2) {
         var viewport = GetViewport(), canvas = GetViewport().canvas;
 
-        if (getByid("DICOMTagsSelect").selected) return;
-
         if (rightTouchDown == true && e2) {
-            if (windowTouchDistDiffY > + 2 || windowTouchDistDiffX > 2) {
-                if (viewport.scale < 10) viewport.scale += viewport.scale * 0.05;
-                setTransform();
-
-            } else if (windowTouchDistDiffY < - 2 || windowTouchDistDiffX < - 2) {
-                if (viewport.scale > 0.1) viewport.scale -= viewport.scale * 0.05;
-                setTransform();
-            }
+            if (windowMouseDiffY < 0 && viewport.scale < 10)
+                viewport.scale += viewport.scale * 0.05;
+            else if (windowMouseDiffY > 0 && viewport.scale > 0.1)
+                viewport.scale -= viewport.scale * 0.05;
 
             if (openLink == true) {
-                for (var i = 0; i < Viewport_Total; i++) {
-                    if (i == viewportNumber) continue;
-                    GetViewport(i).scale = viewport.scale;
-                    setTransform(i);
-                }
+                SetAllViewport("scale", GetViewport().scale);
+                setTransformAll();
             }
+            else setTransform();
         }
 
         if (TouchDownCheck == true && rightTouchDown == false) {

@@ -1,22 +1,23 @@
 
-var PlayCine = function () {
+function PlayCine() {
+    clearInterval(PlayCine.CineTimer);
+
     //播放動畫用的計時器
-    let CineTimer = CineEnd = null;
+    PlayCine.CineTimer = PlayCine.CineEnd = null;
     changeCineImg();
 
     if (openLink || !GetViewport().cine) SetAllViewport("cine", GetViewport().cine);
 
-    clearInterval(CineTimer);
     if (!GetViewport().cine) return;
     var fps = parseInt((1 / parseFloat(getByid("textPlay").value) * 1000));
-    CineEnd = true;
+    PlayCine.CineEnd = true;
 
-    CineTimer = setInterval(function () {
-        if (!CineEnd) return;
-        CineEnd = false;
+    PlayCine.CineTimer = setInterval(function () {
+        if (!PlayCine.CineEnd) return;
+        PlayCine.CineEnd = false;
         for (var i = 0; i < Viewport_Total; i++)
             if (GetViewport(i).cine) GetViewport(i).nextFrame(false);
-        CineEnd = true;
+        PlayCine.CineEnd = true;
     }, fps);
 }
 
@@ -36,7 +37,7 @@ onloadFunction.push(
             PlayCine();
         }
 
-        getByid("textPlay").onchange = function () {
+        getByid("textPlay").oninput = function () {
             if ((parseInt(getByid('textPlay').value) <= 1)) getByid('textPlay').value = 1;
             else if (parseInt(getByid('textPlay').value) >= 60) getByid('textPlay').value = 60;
             else if (!(parseInt(getByid('textPlay').value) >= 1)) getByid('textPlay').value = 10;

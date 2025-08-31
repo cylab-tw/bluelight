@@ -25,7 +25,6 @@ class ScrollTool extends ToolEvt {
     }
 
     onTouchMove(e, e2) {
-        if (getByid("DICOMTagsSelect").selected) return;
 
         if (TouchDownCheck == true && rightTouchDown == false) {
             if (Math.abs(windowMouseDiffY) < Math.abs(windowMouseDiffX)) {

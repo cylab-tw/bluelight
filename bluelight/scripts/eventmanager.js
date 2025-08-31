@@ -250,7 +250,6 @@ let BlueLightMouseenter = function () {
 function BlueLightWheel(e) {
     if (!ToolEvt.enable) return;
     if (viewportNumber != this.viewportNum) return;
-    if (getByid("DICOMTagsSelect").selected) return;
 
     if (openLink == false) {
         if (e.deltaY < 0) GetViewport().nextFrame(true);

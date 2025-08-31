@@ -4,17 +4,9 @@ class WLevelTool extends ToolEvt {
         if (rightMouseDown) scale_size(e, originalPoint_X, originalPoint_Y);
         if (MouseDownCheck) {
             getByid("WindowCustom").selected = true;
-            if (Math.abs(windowMouseDiffY) > Math.abs(windowMouseDiffX)) {
-                if (windowMouseDiffY < - 3)
-                    GetViewport().windowCenter = (parseInt(GetViewport().windowCenter) + Math.abs(windowMouseDiffY));
-                else if (windowMouseDiffY > 3)
-                    GetViewport().windowCenter = (parseInt(GetViewport().windowCenter) - Math.abs(windowMouseDiffY));
-            } else {
-                if (windowMouseDiffX < - 3)
-                    GetViewport().windowWidth = (parseInt(GetViewport().windowWidth) - Math.abs(windowMouseDiffX));
-                else if (windowMouseDiffX > 3)
-                    GetViewport().windowWidth = (parseInt(GetViewport().windowWidth) + Math.abs(windowMouseDiffX));
-            }
+            GetViewport().windowCenter = (parseInt(GetViewport().windowCenter) - (windowMouseDiffY));
+            GetViewport().windowWidth = (parseInt(GetViewport().windowWidth) + (windowMouseDiffX));
+
             if (GetViewport().windowWidth < 1) GetViewport().windowWidth = 1;
             getByid("textWC").value = "" + parseInt(GetViewport().windowCenter);
             getByid("textWW").value = "" + parseInt(GetViewport().windowWidth);
@@ -34,31 +26,20 @@ class WLevelTool extends ToolEvt {
         HideElemByID("WindowLevelDiv");
     }
     onTouchMove(e, e2) {
-        if (getByid("DICOMTagsSelect").selected) return;
+        if (!TouchDownCheck) return;
+        getByid("WindowCustom").selected = true;
+        GetViewport().windowCenter = (parseInt(GetViewport().windowCenter) - (windowMouseDiffY));
+        GetViewport().windowWidth = (parseInt(GetViewport().windowWidth) + (windowMouseDiffX));
 
-        if (TouchDownCheck) {
-            getByid("WindowCustom").selected = true;
-            if (Math.abs(windowMouseDiffY) > Math.abs(windowMouseDiffX)) {
-                if (windowMouseDiffY < - 3)
-                    GetViewport().windowCenter = (parseInt(GetViewport().windowCenter) + Math.abs(windowMouseDiffY));
-                else if (windowMouseDiffY > 3)
-                    GetViewport().windowCenter = (parseInt(GetViewport().windowCenter) - Math.abs(windowMouseDiffY));
-            } else {
-                if (windowMouseDiffX < - 3)
-                    GetViewport().windowWidth = (parseInt(GetViewport().windowWidth) - Math.abs(windowMouseDiffX));
-                else if (windowMouseDiffX > 3)
-                    GetViewport().windowWidth = (parseInt(GetViewport().windowWidth) + Math.abs(windowMouseDiffX));
-            }
-            if (GetViewport().windowWidth < 1) GetViewport().windowWidth = 1;
-            getByid("textWC").value = "" + parseInt(GetViewport().windowCenter);
-            getByid("textWW").value = "" + parseInt(GetViewport().windowWidth);
-            if (openLink == true) {
-                SetAllViewport("windowWidth", GetViewport().windowWidth);
-                SetAllViewport("windowCenter", GetViewport().windowCenter);
-            }
-            setWindowLevel();
-            refleshViewport();
+        if (GetViewport().windowWidth < 1) GetViewport().windowWidth = 1;
+        getByid("textWC").value = "" + parseInt(GetViewport().windowCenter);
+        getByid("textWW").value = "" + parseInt(GetViewport().windowWidth);
+        if (openLink == true) {
+            SetAllViewport("windowWidth", GetViewport().windowWidth);
+            SetAllViewport("windowCenter", GetViewport().windowCenter);
         }
+        setWindowLevel();
+        refleshViewport();
     }
 }
 

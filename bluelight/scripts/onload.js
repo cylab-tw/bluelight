@@ -8,8 +8,6 @@ var configOnload = false;
 window.onload = function () {
   //執行其他Script提供的高優先度onload函數
   onloadFunction.ExecuteFirst();
-  //執行RWD
-  //EnterRWD();
   //初始化參數
   loadLdcmview();
   //初始化HTML元素事件

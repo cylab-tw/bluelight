@@ -2,11 +2,8 @@
 class RotatelTool extends ToolEvt {
     onMouseMove(e) {
         if (rightMouseDown == true) {
-            if (Math.abs(windowMouseDiffY) > Math.abs(windowMouseDiffX)) {
-                if (windowMouseDiffY < - 3) GetViewport().rotate += 2;
-                else if (windowMouseDiffY > 3) GetViewport().rotate -= 2;
-            }
-            GetViewport().rotate = (GetViewport().rotate % 360 + 360) % 360;//有考慮負值
+            GetViewport().rotate += parseInt(windowMouseDiffY / 2);
+            GetViewport().rotate = (GetViewport().rotate % 360 + 360) % 360; //有考慮負值
             setTransform();
             if (openLink == true) {
                 SetAllViewport("rotate", GetViewport().rotate);
@@ -27,11 +24,8 @@ class RotatelTool extends ToolEvt {
 
     onTouchMove(e, e2) {
         if (rightTouchDown) {
-            if (Math.abs(windowMouseDiffY) > Math.abs(windowMouseDiffX)) {
-                if (windowMouseDiffY < - 3) GetViewport().rotate += 2;
-                else if (windowMouseDiffY > 3) GetViewport().rotate -= 2;
-            }
-            GetViewport().rotate = (GetViewport().rotate % 360 + 360) % 360;//有考慮負值
+            GetViewport().rotate += parseInt(windowMouseDiffY / 2);
+            GetViewport().rotate = (GetViewport().rotate % 360 + 360) % 360; //有考慮負值
             setTransform();
             if (openLink) {
                 SetAllViewport("rotate", GetViewport().rotate);

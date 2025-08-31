@@ -161,7 +161,7 @@ function resetAndLoadImg() {
     GetViewport().VerticalFlip = GetViewport().HorizontalFlip = GetViewport().invert = false;
     if (getByid("removeAllRuler")) getByid("removeAllRuler").onclick();
 
-    if (dontLoad == false) GetViewport().reloadImg();
+    // if (dontLoad == false) GetViewport().reloadImg();
 }
 
 function refleshViewport() {

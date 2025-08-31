@@ -297,7 +297,7 @@ function drawPOLYLINE(canvas, Mark, viewport) {
         ctx.lineTo(x2, y2);
         ctx.stroke();
         ctx.globalAlpha = tempAlpha2;
-        if (Mark.GraphicFilled && Mark.GraphicFilled == 'Y') {
+        if (Mark.GraphicFilled == 'Y') {
             ctx.fillStyle = "#FFFF88";
             ctx.fill();
             console.log(x1, y1, x2, y2)
@@ -366,7 +366,7 @@ function drawELLIPSE(canvas, Mark, viewport) {
     ctx.beginPath();
     ctx.ellipse(centerX, centerY, radiusMajor, radiusMinor, rotation, 0, 2 * Math.PI);
     ctx.stroke();
-    if (getByid("markFillCheck").checked) ctx.fill();
+    if (Mark.GraphicFilled == 'Y') ctx.fill();
     ctx.closePath();
 }
 

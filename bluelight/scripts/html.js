@@ -180,6 +180,13 @@ function html_onload() {
     rotate();
     drawBorder(this);
   }
+  
+  getByid("zoom").onclick = function () {
+    if (this.enable == false) return;
+    hideAllDrawer();
+    zoom();
+    drawBorder(this);
+  }
 
   getByid("Rotate_90").onclick = function () {
     GetViewport().rotate += 90;

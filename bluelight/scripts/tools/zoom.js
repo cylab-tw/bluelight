@@ -1,16 +1,4 @@
 
-onloadFunction.push(
-    function () {
-        zoomTool.magnifierDiv = getByid("magnifierDiv");
-
-        getByid("zoom").onclick = function () {
-            if (this.enable == false) return;
-            hideAllDrawer();
-            zoom();
-            drawBorder(this);
-        }
-    });
-
 function initMagnifier() {
     var magnifierDiv = document.createElement("DIV");
     var magnifierCanvas = document.createElement("Canvas");
@@ -106,7 +94,6 @@ class zoomTool extends ToolEvt {
         magnifierIng(angle2point[0], angle2point[1]);
     }
     onTouchMove(e, e2) {
-        if (getByid("DICOMTagsSelect").selected) return;
         if (TouchDownCheck == true && rightTouchDown == false) {
             var dbst, dbsl, dgs = document.getElementById("magnifierDiv").style;
             if (document.body.scrollTop && document.body.scrollTop != 0)

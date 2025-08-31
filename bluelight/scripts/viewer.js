@@ -413,7 +413,6 @@ function DcmLoader(image, viewport) {
     MarkCanvas.style.transform = MainCanvas.style.transform;
 
     //隱藏Table
-    getByid("TableSelectNone").selected = true;
     displayMark(viewport.index);//BlueLight2//
     displayRuler(viewport.index);
     //displayAnnotation();
