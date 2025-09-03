@@ -102,6 +102,13 @@ function getClass(str) {
     return document.getElementsByClassName(str);
 }
 
+function createElem(tagName = 'div', Id = null, className = null) {
+    var elem = document.createElement(tagName);
+    if (Id) elem.id = Id;
+    if (className) elem.className = className;
+    return elem;
+}
+
 function log(value) {
     console.log(value);
 }

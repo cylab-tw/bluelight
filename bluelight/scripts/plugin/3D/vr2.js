@@ -18,7 +18,6 @@ function load3DPlugin() {
         if (getByid("3DImgeDIv").style.display == "none") getByid("3DImgParent").style.position = "";
         else {
             getByid("3DImgParent").style.position = "relative";
-            //onElementLeave();
         }
     }
 }
@@ -353,250 +352,7 @@ class VRCube {
         if (this.sopList.length >= 50) this.reduceSlices = true;
         this.RotationMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; // 初始旋轉矩陣
         VRCube.cube = this;
-        getByid("saveVR2").onclick = this.saveVR2;
-    }
-
-    saveVR2() {
-
-        var outer = `solid name
-                facet normal 0 0 0
-                __intter__
-                endfacet
-            endsolid name`
-        var intter = `
-            outer loop
-                vertex v1x v1y v1z
-                vertex v2x v2y v2z
-                vertex v3x v3y v3z
-            endloop
-            `
-        var intters = "";
-
-        function pushIntters(v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z) {
-            var intter_ = intter;
-            intter_ = intter_.replace("v1x", "" + v1x); intter_ = intter_.replace("v1y", "" + v1y);
-            intter_ = intter_.replace("v1z", "" + v1z); intter_ = intter_.replace("v2x", "" + v2x);
-            intter_ = intter_.replace("v2y", "" + v2y); intter_ = intter_.replace("v2z", "" + v2z);
-            intter_ = intter_.replace("v3x", "" + v3x); intter_ = intter_.replace("v3y", "" + v3y);
-            intter_ = intter_.replace("v3z", "" + v3z);
-            intters += intter_;
-        }
-        var segList = [];
-        for (var obj of VRCube.cube.ElemZs) {
-            segList.push({
-                pixelData: obj.imgData,
-                PositionZ: parseInt(obj.originPositionZ)
-            });
-        }
-
-        segList = soryByKey(segList, "PositionZ");
-        var height = GetViewport().height, width = GetViewport().width;
-
-        if (segList.length <= 1) return;
-
-        function iterPointList(pointlist1, pointlist2) {
-            //開始遍歷pointlist1，並找出pointlist2距離最近的兩個，若未滿兩個則跳過
-            for (var p = 0; p < pointlist1.length - 1; p++) {
-                var point = pointlist1[p];
-                var dists = new Array(pointlist2.length);
-
-                //得到一張距離表
-                for (var p2 = 0; p2 < pointlist2.length; p2++) {
-                    dists[p2] = {
-                        index: p2,
-                        dist: (point[0] - pointlist2[p2][0]) ** 2 + (point[1] - pointlist2[p2][1]) ** 2
-                    }
-                }
-
-                //將距離由小到大排序
-                dists = soryByKey(dists, "dist");
-                if (dists[0] * 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
-                if (dists[1] * 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
-                if ((pointlist2[dists[0]['index']][0] - pointlist2[dists[1]['index']][0]) ** 2 + (pointlist2[dists[0]['index']][1] - pointlist2[dists[1]['index']][1]) ** 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
-                if ((pointlist1[p][0] - pointlist1[p + 1][0]) ** 2 + (pointlist1[p][1] - pointlist1[p + 1][1]) ** 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
-
-                pushIntters(
-                    pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ,
-                    pointlist2[dists[1]['index']][0], pointlist2[dists[1]['index']][1], seg2.PositionZ,
-                    pointlist1[p + 0][0], pointlist1[p + 0][1], seg1.PositionZ
-                );
-                pushIntters(
-                    pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ,
-                    pointlist2[dists[1]['index']][0], pointlist2[dists[1]['index']][1], seg2.PositionZ,
-                    pointlist1[p + 1][0], pointlist1[p + 1][1], seg1.PositionZ
-                );
-                pushIntters(
-                    pointlist1[p][0], pointlist1[p][1], seg1.PositionZ,
-                    pointlist1[p + 1][0], pointlist1[p + 1][1], seg1.PositionZ,
-                    pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ
-                );
-                pushIntters(
-                    pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ,
-                    pointlist2[dists[1]['index']][0], pointlist2[dists[1]['index']][1], seg2.PositionZ,
-                    pointlist1[p + 1][0], pointlist1[p + 1][1], seg1.PositionZ
-                );
-            }
-        }
-
-        //針對第一面和最後一面
-        for (var p0 = 0; p0 < segList.length; p0++) {
-
-            //如果選擇空心，非0層就直接跳最後一層
-            if (getByid("VR2_STLCheck").checked) {
-                if (p0 != 0) p0 = segList.length - 1;
-            }
-
-            var seg0 = segList[p0];
-            var pixel = seg0.pixelData;
-            //左到右
-            for (var h = 1; h < height - 1; h += 1) {
-                for (var w = 1; w < width; w++) {
-                    if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w - 1] <= 0xFF000000) {
-                        for (var w2 = w; w2 < width; w2++) {
-                            if (pixel[h * width + w2] <= 0xFF000000 && pixel[h * width + w2 - 1] > 0xFF000000) {
-                                pushIntters(h, w, seg0.PositionZ, h + 1, w, seg0.PositionZ, h, w2, seg0.PositionZ);
-                                pushIntters(h, w2, seg0.PositionZ, h + 1, w2, seg0.PositionZ, h, w, seg0.PositionZ);
-                                pushIntters(h, w, seg0.PositionZ, h - 1, w, seg0.PositionZ, h, w2, seg0.PositionZ);
-                                pushIntters(h, w2, seg0.PositionZ, h - 1, w2, seg0.PositionZ, h, w, seg0.PositionZ);
-                                break;
-                            }
-                        }
-                        continue;
-                    }
-                }
-            }
-            //上到下
-            for (var w = 1; w < width; w += 1) {
-                for (var h = 1; h < height; h++) {
-                    if (pixel[h * width + w] > 0xFF000000 && pixel[(h - 1) * width + w] <= 0xFF000000) {
-                        for (var h2 = h; h2 < height; h2++) {
-                            if (pixel[h2 * width + w] <= 0xFF000000 && pixel[(h2 - 1) * width + w] > 0xFF000000) {
-                                pushIntters(h, w, seg0.PositionZ, h, w + 1, seg0.PositionZ, h2, w, seg0.PositionZ);
-                                pushIntters(h2, w, seg0.PositionZ, h2, w + 1, seg0.PositionZ, h, w, seg0.PositionZ);
-                                pushIntters(h, w, seg0.PositionZ, h, w - 1, seg0.PositionZ, h2, w, seg0.PositionZ);
-                                pushIntters(h2, w, seg0.PositionZ, h2, w - 1, seg0.PositionZ, h, w, seg0.PositionZ);
-                                break;
-                            }
-                        }
-                        continue;
-                    }
-                }
-            }
-        }
-
-
-        //左到右
-        for (var s = 0; s < segList.length - 1; s++) {
-            var seg1 = segList[s], pointlist1 = [];
-            var pixel = seg1.pixelData;
-            for (var h = 0; h < height; h += 5) {
-                for (var w = 1; w < width; w++) {
-                    if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w - 1] <= 0xFF000000) {
-                        pointlist1.push([h, w]);
-                        break;
-                    }
-                }
-            }
-
-            var seg2 = segList[s + 1], pointlist2 = [];
-            var pixel = seg2.pixelData;
-            for (var h = 0; h < height; h += 5) {
-                for (var w = 1; w < width; w++) {
-                    if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w - 1] <= 0xFF000000) {
-                        pointlist2.push([h, w]);
-                        break;
-                    }
-                }
-            }
-
-            iterPointList(pointlist1, pointlist2);
-        }
-
-        //右到左
-        for (var s = 0; s < segList.length - 1; s++) {
-            var seg1 = segList[s], pointlist1 = [];
-            var pixel = seg1.pixelData;
-            for (var h = 0; h < height; h += 5) {
-                for (var w = width - 2; w > 0; w--) {
-                    if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w + 1] <= 0xFF000000) {
-                        pointlist1.push([h, w]);
-                        break;
-                    }
-                }
-            }
-
-            var seg2 = segList[s + 1], pointlist2 = [];
-            var pixel = seg2.pixelData;
-            for (var h = 0; h < height; h += 5) {
-                for (var w = width - 2; w > 0; w--) {
-                    if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w + 1] <= 0xFF000000) {
-                        pointlist2.push([h, w]);
-                        break;
-                    }
-                }
-            }
-
-            iterPointList(pointlist1, pointlist2);
-        }
-
-
-        //上到下
-        for (var s = 0; s < segList.length - 1; s++) {
-            var seg1 = segList[s], pointlist1 = [];
-            var pixel = seg1.pixelData;
-            for (var w = 0; w < width; w += 5) {
-                for (var h = 1; h < height; h++) {
-                    if (pixel[h * width + w] > 0xFF000000 && pixel[(h - 1) * width + w] <= 0xFF000000) {
-                        pointlist1.push([h, w]);
-                        break;
-                    }
-                }
-            }
-
-            var seg2 = segList[s + 1], pointlist2 = [];
-            var pixel = seg2.pixelData;
-            for (var w = 0; w < width; w += 5) {
-                for (var h = 1; h < height; h++) {
-                    if (pixel[h * width + w] > 0xFF000000 && pixel[(h - 1) * width + w] <= 0xFF000000) {
-                        pointlist2.push([h, w]);
-                        break;
-                    }
-                }
-            }
-
-            iterPointList(pointlist1, pointlist2);
-        }
-
-        //下到上
-        for (var s = 0; s < segList.length - 1; s++) {
-            var seg1 = segList[s], pointlist1 = [];
-            var pixel = seg1.pixelData;
-            for (var w = 0; w < width; w += 5) {
-                for (var h = height - 2; h > 0; h--) {
-                    if (pixel[h * width + w] > 0xFF000000 && pixel[(h + 1) * width + w] <= 0xFF000000) {
-                        pointlist1.push([h, w]);
-                        break;
-                    }
-                }
-            }
-
-            var seg2 = segList[s + 1], pointlist2 = [];
-            var pixel = seg2.pixelData;
-            for (var w = 0; w < width; w += 5) {
-                for (var h = height - 2; h > 0; h--) {
-                    if (pixel[h * width + w] > 0xFF000000 && pixel[(h + 1) * width + w] <= 0xFF000000) {
-                        pointlist2.push([h, w]);
-                        break;
-                    }
-                }
-            }
-
-            iterPointList(pointlist1, pointlist2);
-        }
-
-        var export_ = outer.replace("__intter__", intters);
-        saveStringToFile("seg.stl", export_);
-        return;
+        getByid("saveVR2").onclick = saveVR2;
     }
 
     resetZ() {
@@ -863,23 +619,18 @@ class VRCube {
     }
 
     buildInputer() {
-        var userDIV = document.createElement("DIV");
-        userDIV.style['flex-direction'] = "column";
-        userDIV.style['float'] = "right";
-        userDIV.style['display'] = "flex";
+        var userDIV = createElem("DIV", "userDIV_VR2");
         this.userDIV = userDIV;
         getByid("VR2_DIV").appendChild(userDIV);
 
         //////////Slice//////////
 
-        var sliceLable = document.createElement("LABEL");
-        sliceLable.className = "VR2_Label";
+        var sliceLable = createElem("LABEL", null, "VR2_Label");
         sliceLable.innerText = "Number of both sections";
 
-        var sliceText = document.createElement("input");
-        sliceText.type = sliceText.className = "number";
+        var sliceText = createElem("input", null, "VR2_Text");
+        sliceText.type = "number";
         sliceText.value = this.slice ? this.slice : "";
-        sliceText.className = "VR2_Text";
 
         function sliceTextKeyDown(e) {
             if (isNaN(this.sliceText.value)) this.sliceText.value = this.cube.slice;
@@ -888,7 +639,7 @@ class VRCube {
                 else if (this.sliceText.value < 0) this.sliceText.value = 0;
 
                 this.cube.slice = parseInt(Math.abs(this.sliceText.value));
-                this.sliceText.value = this.cube.slice; //abs and in
+                this.sliceText.value = this.cube.slice;
                 this.cube.resetX();
                 this.cube.resetY();
                 this.cube.reflesh();
@@ -903,20 +654,15 @@ class VRCube {
 
         //////////WindowLevel//////////
 
-        var WCLable = document.createElement("LABEL");
-        var WWLable = document.createElement("LABEL");
-        WCLable.innerText = "Windtow Center";
-        WWLable.innerText = "Window Width";
-        WCLable.className = WWLable.className = "VR2_Label";
+        this.WCLable = createElem("LABEL", null, "VR2_Label");
+        this.WWLable = createElem("LABEL", null, "VR2_Label");
+        this.WCLable.innerText = "Windtow Center", this.WWLable.innerText = "Window Width";
 
-        var WCText = document.createElement("input");
-        var WWText = document.createElement("input");
-        WCText.type = WCText.className = WWText.type = WWText.className = "number";
-        WCText.value = this.windowCenter ? this.windowCenter : "";
-        WWText.value = this.windowWidth ? this.windowWidth : "";
-        WCText.className = WWText.className = "VR2_Text";
-        this.WWText = WWText;
-        this.WCText = WCText;
+        this.WCText = createElem("input", null, "VR2_Text");
+        this.WWText = createElem("input", null, "VR2_Text");
+        this.WCText.type = this.WWText.type = "number";
+        this.WCText.value = this.windowCenter ? this.windowCenter : "";
+        this.WWText.value = this.windowWidth ? this.windowWidth : "";
 
         function WCTextKeyDown(e) {
             if (isNaN(this.WCText.value)) {
@@ -942,27 +688,25 @@ class VRCube {
             }
         }
 
-        WCTextKeyDown = WCTextKeyDown.bind({ cube: this, WCText: WCText });
-        WWTextKeyDown = WWTextKeyDown.bind({ cube: this, WWText: WWText });
-        WCText.addEventListener("change", WCTextKeyDown, false);
-        WWText.addEventListener("change", WWTextKeyDown, false);
+        WCTextKeyDown = WCTextKeyDown.bind({ cube: this, WCText: this.WCText });
+        WWTextKeyDown = WWTextKeyDown.bind({ cube: this, WWText: this.WWText });
+        this.WCText.addEventListener("change", WCTextKeyDown, false);
+        this.WWText.addEventListener("change", WWTextKeyDown, false);
 
-        userDIV.appendChild(WCLable);
-        userDIV.appendChild(WCText);
-        userDIV.appendChild(WWLable);
-        userDIV.appendChild(WWText);
+        userDIV.appendChild(this.WCLable);
+        userDIV.appendChild(this.WCText);
+        userDIV.appendChild(this.WWLable);
+        userDIV.appendChild(this.WWText);
 
         //////////opacity //////////
-        var opacityLable = document.createElement("LABEL");
+        var opacityLable = createElem("LABEL", null, "VR2_Label");
         opacityLable.innerText = "Opacity";
-        opacityLable.className = "VR2_Label";
 
-        var opacityText = document.createElement("input");
+        var opacityText = createElem("input", null, "VR2_Text");
         opacityText.type = "number";
         opacityText.value = "100";
         opacityText.setAttribute("max", 100);
         opacityText.setAttribute("min", 0);
-        opacityText.className = "VR2_Text";
         userDIV.appendChild(opacityLable);
         userDIV.appendChild(opacityText);
         document.documentElement.style.setProperty('--VrOpacity', `initial`);
@@ -971,21 +715,19 @@ class VRCube {
         };
         //////////Reduce resolution//////////
 
-        var resolutionLable = document.createElement("LABEL");
+        var resolutionLable = createElem("LABEL", null, "VR2_Label");
         resolutionLable.innerText = "Reduce resolution";
-        resolutionLable.className = "VR2_Label";
-
         userDIV.appendChild(resolutionLable);
-        var resolutionSelect = document.createElement("select");
-        resolutionSelect.style = "z-index: 490;font-weight:bold;font-size:16px";
-        var option = document.createElement("option");
+
+        var resolutionSelect = createElem("select", null, "userSelect_VR2");
+        var option = createElem("option");
         option.innerText = "1";
         option.setAttribute("value", 1);
         option.setAttribute("selected", "selected");
         resolutionSelect.appendChild(option);
         for (var i = 0; i < this.stepFactor.length; i++) {
             if (this.stepFactor[i] > 1 && this.stepFactor[i] <= this.width / 8) {
-                option = document.createElement("option");
+                var option = createElem("option");
                 option.innerText = this.stepFactor[i];
                 option.setAttribute("value", this.stepFactor[i]);
                 resolutionSelect.appendChild(option);
@@ -1002,20 +744,18 @@ class VRCube {
         resolutionSelect.addEventListener("change", ChangeResolution, false);
         //////////LUT//////////
 
-        var lutLable = document.createElement("LABEL");
+        var lutLable = createElem("LABEL", null, "VR2_Label");
         lutLable.innerText = "LUT";
-        lutLable.className = "VR2_Label";
         userDIV.appendChild(lutLable);
 
-        var lutSelect = document.createElement("select");
-        lutSelect.style = "z-index: 490;font-weight:bold;font-size:16px";
-        var option = document.createElement("option");
+        var lutSelect = createElem("select", null, "userSelect_VR2");
+        var option = createElem("option");
         option.innerText = "default";
         option.setAttribute("selected", "selected");
         option.setAttribute("value", "default");
         lutSelect.appendChild(option);
         for (var i = 0; i < VR2_LutArray.length; i++) {
-            option = document.createElement("option");
+            var option = createElem("option");
             option.innerText = VR2_LutArray[i].name;
             option.setAttribute("value", VR2_LutArray[i].name);
             option.setAttribute("filter", VR2_LutArray[i].filter);
@@ -1052,19 +792,15 @@ class VRCube {
 
 
         //////////Shadow//////////
-        var span = document.createElement("span");
-        span.style['zIndex'] = "490";
-        span.style['float'] = "right";
-        var ShadowLable = document.createElement("LABEL");
+        var span = createElem("span", null, "userSpan_VR2");
+
+        var ShadowLable = createElem("LABEL", null, "VR2_Label");
         ShadowLable.innerText = "Shadow";
-        ShadowLable.className = "VR2_Label";
         ShadowLable.style.float = "left";
 
-        var ShadowCheck = document.createElement("input");
-        ShadowCheck.style = "z-index: 490;float:left";
-        ShadowCheck.type = "checkbox";
-        ShadowCheck.setAttribute("checked", "checked");
-        this.ShadowCheck = ShadowCheck;
+        this.ShadowCheck = createElem("input", null, "userInput_VR2");
+        this.ShadowCheck.type = "checkbox";
+        this.ShadowCheck.setAttribute("checked", "checked");
 
         function ChangeShadow() {
             //this.ShadowCheck.setAttribute("disabled", "disabled");
@@ -1075,27 +811,21 @@ class VRCube {
             //requestAnimationFrame(() => { setTimeout(this.ShadowCheck.removeAttribute("disabled"), 500); });
         }
 
-        ChangeShadow = ChangeShadow.bind({ cube: this, ShadowCheck: ShadowCheck });
-        ShadowCheck.addEventListener("change", ChangeShadow, false);
+        ChangeShadow = ChangeShadow.bind({ cube: this, ShadowCheck: this.ShadowCheck });
+        this.ShadowCheck.addEventListener("change", ChangeShadow, false);
 
-        span.appendChild(ShadowCheck);
+        span.appendChild(this.ShadowCheck);
         span.appendChild(ShadowLable);
         userDIV.appendChild(span);
 
         //////////Smooth//////////
-        var span = document.createElement("span");
-        span.style['zIndex'] = "490";
-        span.style['float'] = "right";
-        var SmoothLable = document.createElement("LABEL");
+        var span = createElem("span", null, "userSpan_VR2");
+        var SmoothLable = createElem("LABEL", null, "VR2_Label");
         SmoothLable.innerText = "Smooth";
-        SmoothLable.className = "VR2_Label";
         SmoothLable.style.float = "left";
 
-        var SmoothCheck = document.createElement("input");
-        SmoothCheck.style = "z-index: 490;float:left";
+        var SmoothCheck = createElem("input", null, "userInput_VR2");
         SmoothCheck.type = "checkbox";
-        //SmoothCheck.setAttribute("checked", "checked");
-        this.SmoothCheck = SmoothCheck;
 
         function ChangeSmooth() {
             if (this.SmoothCheck.checked) this.cube.smooth = true;
@@ -1112,18 +842,13 @@ class VRCube {
         userDIV.appendChild(span);
 
         //////////Invert Color//////////
-        var span = document.createElement("span");
-        span.style['zIndex'] = "490";
-        span.style['float'] = "right";
-        var DisplayMarkLable = document.createElement("LABEL");
+        var span = createElem("span", null, "userSpan_VR2");
+        var DisplayMarkLable = createElem("LABEL", null, "VR2_Label");
         DisplayMarkLable.innerText = "Display Mark";
-        DisplayMarkLable.className = "VR2_Label";
         DisplayMarkLable.style.float = "left";
 
-        var DisplayMarkCheck = document.createElement("input");
-        DisplayMarkCheck.style = "z-index: 490;float:left";
+        var DisplayMarkCheck = createElem("input", "VR2_DisplayMarkCheck", "userInput_VR2");
         DisplayMarkCheck.type = "checkbox";
-        DisplayMarkCheck.id = "VR2_DisplayMarkCheck";
 
         this.DisplayMarkCheck = DisplayMarkCheck;
         function ChangeDisplayMark() {
@@ -1140,18 +865,13 @@ class VRCube {
         userDIV.appendChild(span);
 
         //////////Display Mark//////////
-        var span = document.createElement("span");
-        span.style['zIndex'] = "490";
-        span.style['float'] = "right";
-        var InvertColorLable = document.createElement("LABEL");
+        var span = createElem("span", null, "userSpan_VR2");
+        var InvertColorLable = createElem("LABEL", null, "VR2_Label");
         InvertColorLable.innerText = "Invert Color";
-        InvertColorLable.className = "VR2_Label";
         InvertColorLable.style.float = "left";
 
-        var InvertColorCheck = document.createElement("input");
-        InvertColorCheck.style = "z-index: 490;float:left";
+        var InvertColorCheck = createElem("input", "VR2_InvertColorLableCheck", "userInput_VR2");
         InvertColorCheck.type = "checkbox";
-        InvertColorCheck.id = "VR2_InvertColorLableCheck";
 
         this.InvertColorCheck = InvertColorCheck;
         function ChangeInvertColor() {
@@ -1169,29 +889,18 @@ class VRCube {
 
         //////////Reduce Slices//////////
 
-        var span = document.createElement("span");
-        span.style['zIndex'] = "490";
-        span.style['float'] = "right";
-        var ReduceSliceLable = document.createElement("LABEL");
+        var span = createElem("span", null, "userSpan_VR2");
+        var ReduceSliceLable = createElem("LABEL", null, "VR2_Label");
         ReduceSliceLable.innerText = "Reduce Slices";
-        ReduceSliceLable.className = "VR2_Label";
         ReduceSliceLable.style.float = "left";
 
-        var ReduceSlicesCheck = document.createElement("input");
-        ReduceSlicesCheck.style = "z-index: 490;float:left";
+        var ReduceSlicesCheck = createElem("input", "VR2_ReduceSlicesCheck", "userInput_VR2");
         ReduceSlicesCheck.type = "checkbox";
-        ReduceSlicesCheck.id = "VR2_ReduceSlicesCheck";
-        //PerspectiveCheck.setAttribute("checked", "checked");
         this.ReduceSlicesCheck = ReduceSlicesCheck;
         if (this.sopList.length >= 50) ReduceSlicesCheck.setAttribute("checked", "checked");
         function ChangeReduceSlices() {
             if (this.ReduceSlicesCheck.checked) this.cube.reduceSlices = true;
             else this.cube.reduceSlices = false;
-            /*
-            for (var ll = 0; ll < this.cube.ElemZs.length; ll++)
-                if (ll % 2 != 0 && ll != 0 && ll != this.cube.ElemZs.length - 1)
-                    this.cube.ElemZs[ll].style.display = this.cube.reduceSlices == true ? "none" : "";
-            this.cube.reflesh();*/
         }
         ChangeReduceSlices = ChangeReduceSlices.bind({ cube: this, ReduceSlicesCheck: ReduceSlicesCheck });
         ReduceSlicesCheck.addEventListener("change", ChangeReduceSlices, false);
@@ -1201,40 +910,30 @@ class VRCube {
         userDIV.appendChild(span);
 
         //////////STL//////////
-        var span = document.createElement("span");
-        span.style['zIndex'] = "490";
-        span.style['float'] = "right";
-        var STLLable = document.createElement("LABEL");
+        var span = createElem("span", null, "userSpan_VR2");
+        var STLLable = createElem("LABEL", null, "VR2_Label");
         STLLable.innerText = "Download as hollow STL model";
-        STLLable.className = "VR2_Label";
         STLLable.style.float = "left";
 
-        var STLCheck = document.createElement("input");
-        STLCheck.style = "z-index: 490;float:left";
+        var STLCheck = createElem("input", "VR2_STLCheck", "userInput_VR2");
         STLCheck.type = "checkbox";
-        STLCheck.id = "VR2_STLCheck";
         STLCheck.setAttribute("checked", "checked");
 
         span.appendChild(STLCheck);
         span.appendChild(STLLable);
         userDIV.appendChild(span);
         //////////Perspective//////////
-        var span = document.createElement("span");
-        span.style['zIndex'] = "490";
-        span.style['float'] = "right";
+        var span = createElem("span", null, "userSpan_VR2");
         var PerspectiveLable = document.createElement("LABEL");
         PerspectiveLable.innerText = "Perspective(disabled)";
         PerspectiveLable.className = "VR2_Label";
         PerspectiveLable.style.float = "left";
 
-        var PerspectiveCheck = document.createElement("input");
-        PerspectiveCheck.style = "z-index: 490;float:left";
+        var PerspectiveCheck = createElem("input", "VR2_PerspectiveCheck", "userInput_VR2");
         PerspectiveCheck.type = "checkbox";
-        PerspectiveCheck.id = "VR2_PerspectiveCheck";
-        //PerspectiveCheck.setAttribute("checked", "checked");
         this.PerspectiveCheck = PerspectiveCheck;
 
-        var PerspectiveRange = document.createElement("input");
+        var PerspectiveRange = createElem("input");
         PerspectiveRange.setAttribute("type", "range")
         PerspectiveRange.setAttribute("min", 1);
         PerspectiveRange.setAttribute("max", 512);
@@ -1270,10 +969,10 @@ class VRCube {
         ChangePerspective = ChangePerspective.bind({ cube: this, PerspectiveLable: PerspectiveLable, PerspectiveCheck: PerspectiveCheck, PerspectiveRange: PerspectiveRange });
         PerspectiveCheck.addEventListener("change", ChangePerspective, false);
         PerspectiveRange.addEventListener("change", ChangePerspective, false);
-        span.appendChild(document.createElement("BR"));
+        span.appendChild(createElem("BR"));
         span.appendChild(PerspectiveCheck);
         span.appendChild(PerspectiveLable);
-        span.appendChild(document.createElement("BR"));
+        span.appendChild(createElem("BR"));
         span.appendChild(PerspectiveRange);
         userDIV.appendChild(span);
     }
@@ -1458,13 +1157,9 @@ class VRCube {
                 else step = this.step;
 
                 NewCanvas.style.position = "absolute";
-                //[NewCanvas.style.width, NewCanvas.style.height] = [SOP.Image.width + "px", SOP.Image.height + "px"]
 
                 [NewCanvas.width, NewCanvas.height] = [SOP.Image.width, SOP.Image.height];
-                if (step != 1) {
-                    [NewCanvas.width, NewCanvas.height] = [SOP.Image.width / step, SOP.Image.height / step];
-                    /////[NewCanvas.style.width, NewCanvas.style.height] = [SOP.Image.width + "px", SOP.Image.height + "px"]
-                }//else[NewCanvas.width, NewCanvas.height] = [SOP.Image.width / step, SOP.Image.height / step];
+                if (step != 1) [NewCanvas.width, NewCanvas.height] = [SOP.Image.width / step, SOP.Image.height / step];
 
                 NewCanvas.pixelData = SOP.Image.pixelData;
                 NewCanvas.SOPInstanceUID = SOP.SOPInstanceUID;
@@ -1473,7 +1168,7 @@ class VRCube {
                 NewCanvas.windowWidth = this.windowWidth;
 
                 this.Render2Canvas(NewCanvas, SOP.Image.intercept, SOP.Image.slope, SOP.Image.color, step);
-                if (this.displayMark) drawRTSSForVR2(NewCanvas);
+                if (this.displayMark) drawMarkForVR2(NewCanvas);
 
                 NewCanvas.position = new Point3D(0, 0, 0);
                 NewCanvas.position.z = parseFloat(SOP.Image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1 / (parseFloat(SOP.Image.rowPixelSpacing)));
@@ -1549,36 +1244,23 @@ class VRCube {
                 NewCanvas.width = parseInt(this.deep);
                 NewCanvas.height = this.height;
 
-
-                if (this.step != 1) {
-                    NewCanvas.height = this.height / this.step;
-                    ////NewCanvas.style.height = this.height + "px";
-                    ////NewCanvas.style.width = parseInt(this.deep) + "px";
-                }
-                //NewCanvas.style.width = NewCanvas.width + "px";
-                //NewCanvas.style.height = NewCanvas.height + "px";
+                if (this.step != 1) NewCanvas.height = this.height / this.step;
 
                 var ctx = NewCanvas.getContext("2d");
                 var imgData = ctx.createImageData(NewCanvas.width, NewCanvas.height);
-                //new Uint32Array(imgData.data.buffer).fill(0x00000000);
-                //var data = imgData.data;
 
                 ctx.putImageData(imgData, 0, 0);
                 var pos_x = (0 + this.width * (i / this.slice));
                 const deep = parseInt(this.deep);
 
                 for (var d = 0; d < deep; d++) {
-                    //var originData = ctx.getImageData(d, 0, 1, NewCanvas.height);
                     var TwicheElemZ = this.getElemZByPosZ((deep - d) * this.step + this.GetMinByElemZ());
                     if (!TwicheElemZ.AfterElem) TwicheElemZ.AfterElem = TwicheElemZ.BeforeElem;
-                    //var TargetData = elemZ.getContext('2d').getImageData(parseInt(pos_x), 0, 1, elemZ.height)
-                    //for (var f = 0; f < originData.data.length; f++) originData.data[f] = TargetData.data[f];
                     ctx.globalAlpha = TwicheElemZ.AfterDistance;
                     ctx.drawImage(TwicheElemZ.BeforeElem, parseInt(pos_x / this.step), 0, 1, TwicheElemZ.BeforeElem.height, d, 0, 1, NewCanvas.height);
                     ctx.globalAlpha = TwicheElemZ.BeforeDistance;
                     ctx.drawImage(TwicheElemZ.AfterElem, parseInt(pos_x / this.step), 0, 1, TwicheElemZ.AfterElem.height, d, 0, 1, NewCanvas.height);
                     ctx.globalAlpha = 1;
-                    //ctx.putImageData(TargetData, d, 0);
                 }
 
                 NewCanvas.position = new Point3D(0, 0, 0);
@@ -1604,42 +1286,30 @@ class VRCube {
                 NewCanvas.className = "VrCanvas"; //"VrCanvas VRshadow"
 
                 NewCanvas.style.position = "absolute";
-
                 NewCanvas.width = this.width;
                 NewCanvas.height = parseInt(this.deep);
 
-                if (this.step != 1) {
-                    NewCanvas.width = this.width / this.step;
-                    /////NewCanvas.style.width = this.width + "px";
-                    /////NewCanvas.style.height = parseInt(this.deep) + "px";
-                }
+                if (this.step != 1) NewCanvas.width = this.width / this.step;
 
-                //NewCanvas.pixelData = this.ElemZs[0].pixelData;
                 var ctx = NewCanvas.getContext("2d");
                 var imgData = ctx.createImageData(NewCanvas.width, NewCanvas.height);
-                //new Uint32Array(imgData.data.buffer).fill(0x00000000);
-                //var data = imgData.data;
 
                 ctx.putImageData(imgData, 0, 0);
                 var pos_y = (0 + this.height * (i / this.slice));
                 const deep = parseInt(this.deep);
 
                 for (var d = 0; d < deep; d++) {
-                    //var originData = ctx.getImageData(0, d, NewCanvas.width, 1);
                     var TwicheElemZ = this.getElemZByPosZ(d * this.step + this.GetMinByElemZ());
                     if (!TwicheElemZ.AfterElem) TwicheElemZ.AfterElem = TwicheElemZ.BeforeElem;
-                    //var TargetData = elemZ.getContext('2d').getImageData(0, parseInt(pos_y), elemZ.width, 1);
-                    //for (var f = 0; f < originData.data.length; f++)  originData.data[f] = TargetData.data[f];;
                     ctx.globalAlpha = TwicheElemZ.AfterDistance;
                     ctx.drawImage(TwicheElemZ.BeforeElem, 0, parseInt(pos_y / this.step), TwicheElemZ.BeforeElem.width, 1, 0, d, NewCanvas.width, 1);
                     ctx.globalAlpha = TwicheElemZ.BeforeDistance;
                     ctx.drawImage(TwicheElemZ.AfterElem, 0, parseInt(pos_y / this.step), TwicheElemZ.AfterElem.width, 1, 0, d, NewCanvas.width, 1);
                     ctx.globalAlpha = 1;
-                    //ctx.putImageData(TargetData, 0, d);
                 }
 
                 NewCanvas.position = new Point3D(0, 0, 0);
-                NewCanvas.position.y = -pos_y;//+ offsety;
+                NewCanvas.position.y = -pos_y;
                 NewCanvas.direction = 'y';
 
                 var Matrix = multiplyMatrices(getRotationMatrix(Math.PI / 2, 0), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
@@ -1696,7 +1366,7 @@ class VRCube {
 }
 
 
-function drawRTSSForVR2(canvas) {
+function drawMarkForVR2(canvas) {
     if (!canvas.SOPInstanceUID) return;
     var marks = PatientMark.filter(M => M.sop == canvas.SOPInstanceUID);
 
@@ -1736,7 +1406,6 @@ function initVR2() {
     openLeftImgClick = false;
     toolEvt.onSwitch();
     toolEvt = new ToolEvt();
-    //displayVR2();
     VRCube.operate_mode = "move";
     drawBorder(getByid("moveVR2"));
 
@@ -1809,4 +1478,282 @@ function getScaleMatrix(scale) {
 
 function applyRotationMatrix(m) {
     return `matrix3d(${m[0]}, ${m[4]}, ${m[8]}, 0, ${m[1]}, ${m[5]}, ${m[9]}, 0, ${m[2]}, ${m[6]}, ${m[10]}, 0, ${m[3]}, ${m[7]}, ${m[11]}, 1)`;
+}
+
+function getFacingFaceFromMatrix(m) {
+    const dot = (v1, v2) => v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+    const normalize = (v) => {
+        const len = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        if (len === 0) return [0, 0, 0];
+        return [v[0] / len, v[1] / len, v[2] / len];
+    };
+
+    const worldAxisX = normalize([m[0], m[1], m[2]]);
+    const worldAxisY = normalize([m[4], m[5], m[6]]);
+    const worldAxisZ = normalize([m[8], m[9], m[10]]);
+    const targetDirection = [0, 0, -1];
+    let maxDot = -Infinity;
+    let facingFaceName = '未知';
+
+    const faces = [
+        { name: '右 (+X)', normal: worldAxisX },
+        { name: '左 (-X)', normal: [-worldAxisX[0], -worldAxisX[1], -worldAxisX[2]] },
+        { name: '上 (+Y)', normal: worldAxisY },
+        { name: '下 (-Y)', normal: [-worldAxisY[0], -worldAxisY[1], -worldAxisY[2]] },
+        { name: '前 (+Z)', normal: worldAxisZ },
+        { name: '後 (-Z)', normal: [-worldAxisZ[0], -worldAxisZ[1], -worldAxisZ[2]] }
+    ];
+
+    for (let i = 0; i < faces.length; i++) {
+        const currentFace = faces[i];
+        const dotProduct = dot(currentFace.normal, targetDirection);
+        if (dotProduct > maxDot) {
+            maxDot = dotProduct;
+            facingFaceName = currentFace.name;
+        }
+    }
+
+    return facingFaceName;
+}
+
+function saveVR2() {
+    var outer = `solid name
+                facet normal 0 0 0
+                __intter__
+                endfacet
+            endsolid name`
+    var intter = `
+            outer loop
+                vertex v1x v1y v1z
+                vertex v2x v2y v2z
+                vertex v3x v3y v3z
+            endloop
+            `
+    var intters = "";
+
+    function pushIntters(v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z) {
+        var intter_ = intter;
+        intter_ = intter_.replace("v1x", "" + v1x); intter_ = intter_.replace("v1y", "" + v1y);
+        intter_ = intter_.replace("v1z", "" + v1z); intter_ = intter_.replace("v2x", "" + v2x);
+        intter_ = intter_.replace("v2y", "" + v2y); intter_ = intter_.replace("v2z", "" + v2z);
+        intter_ = intter_.replace("v3x", "" + v3x); intter_ = intter_.replace("v3y", "" + v3y);
+        intter_ = intter_.replace("v3z", "" + v3z);
+        intters += intter_;
+    }
+    var segList = [];
+    for (var obj of VRCube.cube.ElemZs) {
+        segList.push({
+            pixelData: obj.imgData,
+            PositionZ: parseInt(obj.originPositionZ)
+        });
+    }
+
+    segList = soryByKey(segList, "PositionZ");
+    var height = GetViewport().height, width = GetViewport().width;
+
+    if (segList.length <= 1) return;
+
+    function iterPointList(pointlist1, pointlist2) {
+        //開始遍歷pointlist1，並找出pointlist2距離最近的兩個，若未滿兩個則跳過
+        for (var p = 0; p < pointlist1.length - 1; p++) {
+            var point = pointlist1[p];
+            var dists = new Array(pointlist2.length);
+
+            //得到一張距離表
+            for (var p2 = 0; p2 < pointlist2.length; p2++) {
+                dists[p2] = {
+                    index: p2,
+                    dist: (point[0] - pointlist2[p2][0]) ** 2 + (point[1] - pointlist2[p2][1]) ** 2
+                }
+            }
+
+            //將距離由小到大排序
+            dists = soryByKey(dists, "dist");
+            if (dists[0] * 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
+            if (dists[1] * 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
+            if ((pointlist2[dists[0]['index']][0] - pointlist2[dists[1]['index']][0]) ** 2 + (pointlist2[dists[0]['index']][1] - pointlist2[dists[1]['index']][1]) ** 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
+            if ((pointlist1[p][0] - pointlist1[p + 1][0]) ** 2 + (pointlist1[p][1] - pointlist1[p + 1][1]) ** 2 > parseInt(getByid("SegBrushSizeText").value) ** 2) continue;
+
+            pushIntters(
+                pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ,
+                pointlist2[dists[1]['index']][0], pointlist2[dists[1]['index']][1], seg2.PositionZ,
+                pointlist1[p + 0][0], pointlist1[p + 0][1], seg1.PositionZ
+            );
+            pushIntters(
+                pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ,
+                pointlist2[dists[1]['index']][0], pointlist2[dists[1]['index']][1], seg2.PositionZ,
+                pointlist1[p + 1][0], pointlist1[p + 1][1], seg1.PositionZ
+            );
+            pushIntters(
+                pointlist1[p][0], pointlist1[p][1], seg1.PositionZ,
+                pointlist1[p + 1][0], pointlist1[p + 1][1], seg1.PositionZ,
+                pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ
+            );
+            pushIntters(
+                pointlist2[dists[0]['index']][0], pointlist2[dists[0]['index']][1], seg2.PositionZ,
+                pointlist2[dists[1]['index']][0], pointlist2[dists[1]['index']][1], seg2.PositionZ,
+                pointlist1[p + 1][0], pointlist1[p + 1][1], seg1.PositionZ
+            );
+        }
+    }
+
+    //針對第一面和最後一面
+    for (var p0 = 0; p0 < segList.length; p0++) {
+
+        //如果選擇空心，非0層就直接跳最後一層
+        if (getByid("VR2_STLCheck").checked) {
+            if (p0 != 0) p0 = segList.length - 1;
+        }
+
+        var seg0 = segList[p0];
+        var pixel = seg0.pixelData;
+        //左到右
+        for (var h = 1; h < height - 1; h += 1) {
+            for (var w = 1; w < width; w++) {
+                if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w - 1] <= 0xFF000000) {
+                    for (var w2 = w; w2 < width; w2++) {
+                        if (pixel[h * width + w2] <= 0xFF000000 && pixel[h * width + w2 - 1] > 0xFF000000) {
+                            pushIntters(h, w, seg0.PositionZ, h + 1, w, seg0.PositionZ, h, w2, seg0.PositionZ);
+                            pushIntters(h, w2, seg0.PositionZ, h + 1, w2, seg0.PositionZ, h, w, seg0.PositionZ);
+                            pushIntters(h, w, seg0.PositionZ, h - 1, w, seg0.PositionZ, h, w2, seg0.PositionZ);
+                            pushIntters(h, w2, seg0.PositionZ, h - 1, w2, seg0.PositionZ, h, w, seg0.PositionZ);
+                            break;
+                        }
+                    }
+                    continue;
+                }
+            }
+        }
+        //上到下
+        for (var w = 1; w < width; w += 1) {
+            for (var h = 1; h < height; h++) {
+                if (pixel[h * width + w] > 0xFF000000 && pixel[(h - 1) * width + w] <= 0xFF000000) {
+                    for (var h2 = h; h2 < height; h2++) {
+                        if (pixel[h2 * width + w] <= 0xFF000000 && pixel[(h2 - 1) * width + w] > 0xFF000000) {
+                            pushIntters(h, w, seg0.PositionZ, h, w + 1, seg0.PositionZ, h2, w, seg0.PositionZ);
+                            pushIntters(h2, w, seg0.PositionZ, h2, w + 1, seg0.PositionZ, h, w, seg0.PositionZ);
+                            pushIntters(h, w, seg0.PositionZ, h, w - 1, seg0.PositionZ, h2, w, seg0.PositionZ);
+                            pushIntters(h2, w, seg0.PositionZ, h2, w - 1, seg0.PositionZ, h, w, seg0.PositionZ);
+                            break;
+                        }
+                    }
+                    continue;
+                }
+            }
+        }
+    }
+
+
+    //左到右
+    for (var s = 0; s < segList.length - 1; s++) {
+        var seg1 = segList[s], pointlist1 = [];
+        var pixel = seg1.pixelData;
+        for (var h = 0; h < height; h += 5) {
+            for (var w = 1; w < width; w++) {
+                if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w - 1] <= 0xFF000000) {
+                    pointlist1.push([h, w]);
+                    break;
+                }
+            }
+        }
+
+        var seg2 = segList[s + 1], pointlist2 = [];
+        var pixel = seg2.pixelData;
+        for (var h = 0; h < height; h += 5) {
+            for (var w = 1; w < width; w++) {
+                if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w - 1] <= 0xFF000000) {
+                    pointlist2.push([h, w]);
+                    break;
+                }
+            }
+        }
+
+        iterPointList(pointlist1, pointlist2);
+    }
+
+    //右到左
+    for (var s = 0; s < segList.length - 1; s++) {
+        var seg1 = segList[s], pointlist1 = [];
+        var pixel = seg1.pixelData;
+        for (var h = 0; h < height; h += 5) {
+            for (var w = width - 2; w > 0; w--) {
+                if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w + 1] <= 0xFF000000) {
+                    pointlist1.push([h, w]);
+                    break;
+                }
+            }
+        }
+
+        var seg2 = segList[s + 1], pointlist2 = [];
+        var pixel = seg2.pixelData;
+        for (var h = 0; h < height; h += 5) {
+            for (var w = width - 2; w > 0; w--) {
+                if (pixel[h * width + w] > 0xFF000000 && pixel[h * width + w + 1] <= 0xFF000000) {
+                    pointlist2.push([h, w]);
+                    break;
+                }
+            }
+        }
+
+        iterPointList(pointlist1, pointlist2);
+    }
+
+
+    //上到下
+    for (var s = 0; s < segList.length - 1; s++) {
+        var seg1 = segList[s], pointlist1 = [];
+        var pixel = seg1.pixelData;
+        for (var w = 0; w < width; w += 5) {
+            for (var h = 1; h < height; h++) {
+                if (pixel[h * width + w] > 0xFF000000 && pixel[(h - 1) * width + w] <= 0xFF000000) {
+                    pointlist1.push([h, w]);
+                    break;
+                }
+            }
+        }
+
+        var seg2 = segList[s + 1], pointlist2 = [];
+        var pixel = seg2.pixelData;
+        for (var w = 0; w < width; w += 5) {
+            for (var h = 1; h < height; h++) {
+                if (pixel[h * width + w] > 0xFF000000 && pixel[(h - 1) * width + w] <= 0xFF000000) {
+                    pointlist2.push([h, w]);
+                    break;
+                }
+            }
+        }
+
+        iterPointList(pointlist1, pointlist2);
+    }
+
+    //下到上
+    for (var s = 0; s < segList.length - 1; s++) {
+        var seg1 = segList[s], pointlist1 = [];
+        var pixel = seg1.pixelData;
+        for (var w = 0; w < width; w += 5) {
+            for (var h = height - 2; h > 0; h--) {
+                if (pixel[h * width + w] > 0xFF000000 && pixel[(h + 1) * width + w] <= 0xFF000000) {
+                    pointlist1.push([h, w]);
+                    break;
+                }
+            }
+        }
+
+        var seg2 = segList[s + 1], pointlist2 = [];
+        var pixel = seg2.pixelData;
+        for (var w = 0; w < width; w += 5) {
+            for (var h = height - 2; h > 0; h--) {
+                if (pixel[h * width + w] > 0xFF000000 && pixel[(h + 1) * width + w] <= 0xFF000000) {
+                    pointlist2.push([h, w]);
+                    break;
+                }
+            }
+        }
+
+        iterPointList(pointlist1, pointlist2);
+    }
+
+    var export_ = outer.replace("__intter__", intters);
+    saveStringToFile("seg.stl", export_);
+    return;
 }

@@ -258,15 +258,11 @@ class Matrix4x4 {
 function displayDicomTagsList(viewportNum = viewportNumber) {
     dropTable(viewportNum);
 
-    var TableDIV = document.createElement("DIV");
-    TableDIV.id = "DicomTableDIV" + (viewportNum + 1);
-    TableDIV.className = "DicomTableDIV";
+    var TableDIV = createElem("DIV", "DicomTableDIV" + (viewportNum + 1), "DicomTableDIV");
     TableDIV.onmousedown = stopPropagation;
     TableDIV.ondblclick = stopPropagation;
 
-    var Table = document.createElement("table");
-    Table.id = "DicomTagsTable" + (viewportNum + 1);
-    Table.className = "DicomTable";
+    var Table = createElem("table", "DicomTagsTable" + (viewportNum + 1), "DicomTable");
     Table.setAttribute("border", 2);
 
     var row0 = Table.insertRow(0);
