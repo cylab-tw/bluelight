@@ -349,7 +349,9 @@ class VRCube {
         this.displayMark = false;
         this.reduceSlices = false;
         this.filter = null;
+        this.PreviewWhileRotating = false;
         if (this.sopList.length >= 50) this.reduceSlices = true;
+        if (this.sopList.length >= 50) this.PreviewWhileRotating = true;
         this.RotationMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; // 初始旋轉矩陣
         VRCube.cube = this;
         getByid("saveVR2").onclick = saveVR2;
@@ -407,18 +409,7 @@ class VRCube {
         this.startRenderTime = performance.now();
         var offsety = (this.height / 1 / 2) - (this.height / this.step / 2);
         if (this.container) {
-            if (!this.filter) {
-                this.container.style.transformStyle = "";
-                if (this.PerspectiveCheck.checked) this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
-                else this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
-
-                var Matrix = multiplyMatrices(getScaleMatrix(this.scale * this.step), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
-                var Matrix = multiplyMatrices(this.RotationMatrix, Matrix);
-                var Matrix = multiplyMatrices(getTranslateMatrix(this.offset[0], this.offset[1] + (offsety), 0), Matrix);
-                this.container.style.transform = applyRotationMatrix(Matrix);
-                //this.container.style.transform =
-                //   `translate3d(${this.offset[0]}px,${(this.offset[1] + (offsety))}px,0) scale(${this.scale * this.step}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg) rotateZ(${this.VR2_RotateDeg[2]}deg) `
-            } else {
+            if (this.filter || (this.PreviewWhileRotating && (this.MouseDownCheck || this.MiddleDownCheck || this.RightMouseDownCheck))) {
                 this.container.style.transform = "";
                 this.container.style.transformStyle = "flat";
                 for (var obj of this.ElemZs) {
@@ -463,12 +454,49 @@ class VRCube {
                     obj.style.transform = applyRotationMatrix(Matrix);
                     obj.style.mixBlendMode = this.filter;
                 }
+                this.applyTransformToCube();
+            } else {
+                this.container.style.transformStyle = "";
+                if (this.PerspectiveCheck.checked) this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
+                else this.container.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
+
+                var Matrix = multiplyMatrices(getScaleMatrix(this.scale * this.step), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+                var Matrix = multiplyMatrices(this.RotationMatrix, Matrix);
+                var Matrix = multiplyMatrices(getTranslateMatrix(this.offset[0], this.offset[1] + (offsety), 0), Matrix);
+                this.container.style.transform = applyRotationMatrix(Matrix);
+
+                //this.container.style.transform =
+                //   `translate3d(${this.offset[0]}px,${(this.offset[1] + (offsety))}px,0) scale(${this.scale * this.step}) rotateX(${this.VR2_RotateDeg[0]}deg) rotateY(${this.VR2_RotateDeg[1]}deg) rotateZ(${this.VR2_RotateDeg[2]}deg) `
             }
         }
 
         requestAnimationFrame(this.calculating_time);
     }
-
+    applyTransformToCube() {
+        var AllElem = [...this.ElemZs, ...this.ElemXs, ...this.ElemYs];
+        var face = getFacingCubeFace(this.RotationMatrix), Len = AllElem.length + 32;
+        if (face.includes('Z')) {
+            var elems = (face == "-Z") ? this.ElemZs : this.ElemZs.slice().reverse();
+            for (var obj of elems)
+                obj.style.zIndex = "" + Len--;
+            for (var obj of [...this.ElemYs, ...this.ElemXs])
+                obj.style.zIndex = "" + Len--;
+        }
+        if (face.includes('X')) {
+            var elems = (face == "+X") ? this.ElemXs : this.ElemXs.slice().reverse();
+            for (var obj of elems)
+                obj.style.zIndex = "" + Len--;
+            for (var obj of [...this.ElemYs, ...this.ElemZs])
+                obj.style.zIndex = "" + Len--;
+        }
+        if (face.includes('Y')) {
+            var elems = (face == "+Y") ? this.ElemYs : this.ElemYs.slice().reverse();
+            for (var obj of elems)
+                obj.style.zIndex = "" + Len--;
+            for (var obj of [...this.ElemZs, ...this.ElemXs])
+                obj.style.zIndex = "" + Len--;
+        }
+    }
     buildContainer() {
         var DIV = getByid("VR2_DIV");
         var ContainerDIV = document.createElement("DIV");
@@ -567,6 +595,8 @@ class VRCube {
         }
 
         function VR2Mouseup(e) {
+            if (this.cube.PreviewWhileRotating && VRCube.operate_mode != "window" && (this.cube.MouseDownCheck || this.cube.MiddleDownCheck || this.cube.RightMouseDownCheck))
+                requestAnimationFrame(() => { this.cube.resetZXY(); this.cube.reflesh() });
             this.cube.MouseDownCheck = false;
             this.cube.MiddleDownCheck = false;
             this.cube.RightMouseDownCheck = false;
@@ -891,7 +921,7 @@ class VRCube {
 
         var span = createElem("span", null, "userSpan_VR2");
         var ReduceSliceLable = createElem("LABEL", null, "VR2_Label");
-        ReduceSliceLable.innerText = "Reduce Slices";
+        ReduceSliceLable.innerText = "Reduce Slices While Rotating";
         ReduceSliceLable.style.float = "left";
 
         var ReduceSlicesCheck = createElem("input", "VR2_ReduceSlicesCheck", "userInput_VR2");
@@ -907,6 +937,28 @@ class VRCube {
 
         span.appendChild(ReduceSlicesCheck);
         span.appendChild(ReduceSliceLable);
+        userDIV.appendChild(span);
+
+        //////////PreviewWhileRotating//////////
+
+        var span = createElem("span", null, "userSpan_VR2");
+        var PreviewLable = createElem("LABEL", null, "VR2_Label");
+        PreviewLable.innerText = "Preview While Rotating";
+        PreviewLable.style.float = "left";
+
+        var PreviewCheck = createElem("input", "VR2_PreviewCheck", "userInput_VR2");
+        PreviewCheck.type = "checkbox";
+        this.PreviewCheck = PreviewCheck;
+        if (this.sopList.length >= 50) PreviewCheck.setAttribute("checked", "checked");
+        function ChangePreview() {
+            if (this.PreviewCheck.checked) this.cube.PreviewWhileRotating = true;
+            else this.cube.PreviewWhileRotating = false;
+        }
+        ChangePreview = ChangePreview.bind({ cube: this, PreviewCheck: PreviewCheck });
+        PreviewCheck.addEventListener("change", ChangePreview, false);
+
+        span.appendChild(PreviewCheck);
+        span.appendChild(PreviewLable);
         userDIV.appendChild(span);
 
         //////////STL//////////
@@ -1480,40 +1532,76 @@ function applyRotationMatrix(m) {
     return `matrix3d(${m[0]}, ${m[4]}, ${m[8]}, 0, ${m[1]}, ${m[5]}, ${m[9]}, 0, ${m[2]}, ${m[6]}, ${m[10]}, 0, ${m[3]}, ${m[7]}, ${m[11]}, 1)`;
 }
 
-function getFacingFaceFromMatrix(m) {
-    const dot = (v1, v2) => v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
-    const normalize = (v) => {
-        const len = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-        if (len === 0) return [0, 0, 0];
-        return [v[0] / len, v[1] / len, v[2] / len];
-    };
+function getFacingCubeFace(matrix) {
 
-    const worldAxisX = normalize([m[0], m[1], m[2]]);
-    const worldAxisY = normalize([m[4], m[5], m[6]]);
-    const worldAxisZ = normalize([m[8], m[9], m[10]]);
-    const targetDirection = [0, 0, -1];
-    let maxDot = -Infinity;
-    let facingFaceName = '未知';
-
-    const faces = [
-        { name: '右 (+X)', normal: worldAxisX },
-        { name: '左 (-X)', normal: [-worldAxisX[0], -worldAxisX[1], -worldAxisX[2]] },
-        { name: '上 (+Y)', normal: worldAxisY },
-        { name: '下 (-Y)', normal: [-worldAxisY[0], -worldAxisY[1], -worldAxisY[2]] },
-        { name: '前 (+Z)', normal: worldAxisZ },
-        { name: '後 (-Z)', normal: [-worldAxisZ[0], -worldAxisZ[1], -worldAxisZ[2]] }
+    const normals = [
+        { name: "+X", vec: [1, 0, 0] }, { name: "-X", vec: [-1, 0, 0] },
+        { name: "+Y", vec: [0, 1, 0] }, { name: "-Y", vec: [0, -1, 0] },
+        { name: "+Z", vec: [0, 0, 1] }, { name: "-Z", vec: [0, 0, -1] },
     ];
 
-    for (let i = 0; i < faces.length; i++) {
-        const currentFace = faces[i];
-        const dotProduct = dot(currentFace.normal, targetDirection);
-        if (dotProduct > maxDot) {
-            maxDot = dotProduct;
-            facingFaceName = currentFace.name;
+    // 提取旋轉 (3x3)
+    function applyMat3(vec, m) {
+        const [x, y, z] = vec;
+        return [m[0] * x + m[4] * y + m[8] * z,
+        m[1] * x + m[5] * y + m[9] * z,
+        m[2] * x + m[6] * y + m[10] * z];
+    }
+
+    // 從 4x4 抓出旋轉部分
+    const rot = matrix;
+    const cameraDir = [0, 0, 1]
+    let bestFace = null, bestDot = -Infinity;
+
+    for (let n of normals) {
+        const worldN = applyMat3(n.vec, rot);
+        // 計算 dot product
+        const dot = worldN[0] * cameraDir[0] + worldN[1] * cameraDir[1] + worldN[2] * cameraDir[2];
+        if (dot > bestDot) {
+            bestDot = dot;
+            bestFace = n.name;
         }
     }
 
-    return facingFaceName;
+    //還是以Z為主，如果Z佔25%以上，便無視排序
+    if (bestFace.includes("X") || bestFace.includes("Y")) {
+        for (let n of normals) {
+            const worldN = applyMat3(n.vec, rot);
+            const dot = worldN[0] * cameraDir[0] + worldN[1] * cameraDir[1] + worldN[2] * cameraDir[2];
+            if (n.name.includes("Z") && Math.abs(dot) > 0.25 && (bestFace.includes("X") || bestFace.includes("Y"))) {
+                bestDot = dot;
+                bestFace = n.name;
+            }
+            if (!(bestFace.includes("X") || bestFace.includes("Y")) && dot > bestDot) {
+                bestDot = dot;
+                bestFace = n.name;
+            }
+        }
+    }
+
+    if (bestFace.includes("Y") && Math.abs(matrix[1]) > 0.5 && Math.abs(matrix[8]) > 0.5) {
+        if (bestFace == "+Y") bestFace = "-X";
+        else if (bestFace == "-Y") bestFace = "+X";
+        if (matrix[1] < 0) {
+            if (bestFace == "+X") bestFace = "-X";
+            else if (bestFace == "-X") bestFace = "+X";
+        }
+    }
+    else if (bestFace.includes("X") && Math.abs(matrix[2]) > 0.5 && Math.abs(matrix[9]) > 0.5) {
+        if (bestFace == "+X") bestFace = "-Y";
+        else if (bestFace == "-X") bestFace = "+Y";
+        if (matrix[4] < 0) {
+            if (bestFace == "+Y") bestFace = "-Y";
+            else if (bestFace == "-Y") bestFace = "+Y";
+        }
+    } else if (bestFace.includes("Y") && matrix[0] < 0) {
+        if (bestFace == "+Y") bestFace = "-Y";
+        else if (bestFace == "-Y") bestFace = "+Y";
+    } else if (bestFace.includes("X") && matrix[5] < 0) {
+        if (bestFace == "+X") bestFace = "-X";
+        else if (bestFace == "-X") bestFace = "+X";
+    }
+    return bestFace;
 }
 
 function saveVR2() {
