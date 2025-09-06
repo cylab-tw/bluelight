@@ -198,7 +198,7 @@ function getCircleGraphicObject(mark) {
         markXy.push(tempX, tempY);
 
         graphicObject.GraphicData = markXy;
-        graphicObject.LineStyleSequence.PatternOnColorCIELabValue = "" + SetGraphicColor(mark.color);
+        graphicObject.LineStyleSequence.PatternOnColorCIELabValue =  ("" + SetGraphicColor(mark.color)).split("\\").map(v => parseInt(v));
         graphicObject.GraphicType = "CIRCLE";
         graphicObject.NumberOfGraphicPoints = (tempMark.length + tempMark.length) / 2;
     }
