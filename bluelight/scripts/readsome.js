@@ -35,17 +35,14 @@ function readDicomOverlay(dataSet) {
 
       OverlayMark.pixelData = tempPixeldata.slice(0);
       OverlayMark.canvas = document.createElement("CANVAS");
+      OverlayMark.ctx = OverlayMark.canvas.getContext('2d');
       OverlayMark.canvas.width = OverlayMark.width;
       OverlayMark.canvas.height = OverlayMark.height;
-      OverlayMark.ctx = OverlayMark.canvas.getContext('2d');
       var pixelData = OverlayMark.ctx.getImageData(0, 0, OverlayMark.width, OverlayMark.height);
-      for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
-        if (OverlayMark.pixelData[j] == 1) {
-          pixelData.data[i] = 0;
-          pixelData.data[i + 1] = 0;
-          pixelData.data[i + 2] = 255;
-          pixelData.data[i + 3] = 255;
-        }
+      var pixel32Data = new Uint32Array(pixelData.data.buffer);
+      for (var i = 0; i < pixel32Data.length; i++) {
+        if (OverlayMark.pixelData[i] == 1) pixel32Data[i] = 4294901760; //(0,0,255,255)
+      }
       OverlayMark.ctx.putImageData(pixelData, 0, 0);
       PatientMark.push(OverlayMark);
       refreshMark(OverlayMark);
@@ -132,11 +129,6 @@ function readDicomMark(dataSet) {
                 GspsMark.pointArray = [];
 
                 var showname = "" + tempDataSet[j].dataSet.string(Tag.GraphicType);
-                if (tempDataSet[j].dataSet.elements.x00700232) {
-                  var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
-                  var color = ConvertGraphicColor(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2));
-                  if (color) [GspsMark.color, showname] = [color[0], color[1]]
-                }
 
                 GspsMark.showName = showname;
                 if (GSPS_Text != "" && GSPS_Text != undefined) GspsMark.showName = GSPS_Text;
@@ -151,7 +143,6 @@ function readDicomMark(dataSet) {
                 if (GSPS_Text != "" && GSPS_Text != undefined) {
                   GspsMark.GSPS_Text = GSPS_Text;
                 };
-                var xTemp16 = tempDataSet[j].dataSet.string(Tag.GraphicData);
 
                 function getTag(tag) {
                   var group = tag.substring(1, 5);
@@ -201,20 +192,11 @@ function readDicomMark(dataSet) {
                 GspsMark.pointArray = [];
 
                 var showname = 'CIRCLE';
-                if (tempDataSet[j].dataSet.elements.x00700232) {
-                  var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
-                  var color = ConvertGraphicColor(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2));
-                  if (color) {
-                    GspsMark.color = color[0];
-                    showname = color[1];
-                  }
-                }
 
                 GspsMark.hideName = GspsMark.showName = showname;
 
                 GspsMark.type = "CIRCLE";
                 GspsMark.GraphicFilled = tempDataSet[j].dataSet.string(Tag.GraphicFilled);
-                var xTemp16 = tempDataSet[j].dataSet.string(Tag.GraphicData);;
                 var rect = parseInt(tempDataSet[j].dataSet.int16(Tag.GraphicDimensions)) * parseInt(tempDataSet[j].dataSet.int16(Tag.NumberOfGraphicPoints));
                 for (var r = 0; r < rect; r += 4) {
                   var numX = tempDataSet[j].dataSet.float(Tag.GraphicData, r),
@@ -234,15 +216,6 @@ function readDicomMark(dataSet) {
                 GspsMark.pointArray = [];
 
                 var showname = 'Anchor';
-                if (tempDataSet[j].dataSet.elements.x00700232) {
-                  var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
-                  var color = ConvertGraphicColor(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2));
-                  if (color) {
-                    GspsMark.color = color[0];
-                    showname = color[1];
-                  }
-                }
-
                 GspsMark.showName = showname;
                 if (GSPS_Text != "" && GSPS_Text != undefined) GspsMark.showName = GSPS_Text;
                 GspsMark.hideName = GspsMark.showName;
@@ -380,13 +353,10 @@ function loadDicomSeg(image) {
           SegMark.canvas.height = image.rows;
           SegMark.ctx = SegMark.canvas.getContext('2d');
           var pixelData = SegMark.ctx.getImageData(0, 0, image.columns, image.rows);
-          for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
-            if (SegMark.pixelData[j] != 0) {
-              pixelData.data[i] = 0;
-              pixelData.data[i + 1] = 0;
-              pixelData.data[i + 2] = 255;
-              pixelData.data[i + 3] = 255;
-            }
+          var pixel32Data = new Uint32Array(pixelData.data.buffer);
+          for (var i = 0; i < pixel32Data.length; i++) {
+            if (SegMark.pixelData[i] != 0) pixel32Data[i] = 4294901760; //(0,0,255,255)
+          }
           SegMark.ctx.putImageData(pixelData, 0, 0);
 
           PatientMark.push(SegMark);
@@ -435,13 +405,10 @@ function loadDicomSeg(image) {
           SegMark.canvas.height = image.rows;
           SegMark.ctx = SegMark.canvas.getContext('2d');
           var pixelData = SegMark.ctx.getImageData(0, 0, image.columns, image.rows);
-          for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++)
-            if (SegMark.pixelData[j] != 0) {
-              pixelData.data[i] = 0;
-              pixelData.data[i + 1] = 0;
-              pixelData.data[i + 2] = 255;
-              pixelData.data[i + 3] = 255;
-            }
+          var pixel32Data = new Uint32Array(pixelData.data.buffer);
+          for (var i = 0; i < pixel32Data.length; i++) {
+            if (SegMark.pixelData[i] != 0) pixel32Data[i] = 4294901760; //(0,0,255,255)
+          }
           SegMark.ctx.putImageData(pixelData, 0, 0);
           PatientMark.push(SegMark);
           refreshMark(SegMark);

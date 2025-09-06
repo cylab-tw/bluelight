@@ -5,7 +5,7 @@
         {"path":"../scripts/plugin/3D/vr.js", "name": "VR", "disableCatch": "true"},
         {"path":"../scripts/plugin/3D/vr2.js", "name": "VR2", "disableCatch": "true"},
         {"path":"../scripts/plugin/Markup/xml_format.js", "name": "xml_format", "disableCatch": "true"},
-        {"path":"../scripts/plugin/Markup/graphic_annotation.js", "name": "graphic_annotation", "disableCatch": "true"},
+        {"path":"../scripts/plugin/Markup/gsps.js", "name": "graphic_annotation", "disableCatch": "true"},
         {"path":"../scripts/plugin/Markup/rtss.js", "name": "rtss", "disableCatch": "true"},
         {"path":"../scripts/plugin/Markup/seg.js", "name": "seg", "disableCatch": "true"},
         {"path":"../scripts/plugin/Markup/tag.js", "name": "tag", "disableCatch": "true"},

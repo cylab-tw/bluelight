@@ -14,7 +14,7 @@ function html_onload() {
         function basename(path) { return path.split('.').reverse()[0]; }
 
         var fileExtension = ("" + basename(this.files[k].name)).toLowerCase();
-        if (fileExtension == "mht") wadorsLoader2(URL.createObjectURL(this.files[k]));
+        if (fileExtension == "mht") wadorsLoader(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "jpg") loadPicture(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "jpeg") loadPicture(URL.createObjectURL(this.files[k]));
         else if (fileExtension == "png") loadPicture(URL.createObjectURL(this.files[k]));
@@ -29,7 +29,7 @@ function html_onload() {
             var Sop = loadDicomDataSet(reader.result);
             if (Sop) {
               Sop.Image.url = this.url;
-              for (var z = 0; z < Viewport_Total; z++) setSeriesCount(z);
+              setAllSeriesCount();
               ImageManager.preLoadSops.push({
                 dataSet: Sop.dataSet, image: Sop.Image, Sop: Sop, SeriesInstanceUID: Sop.Image.SeriesInstanceUID,
                 Index: Sop.Image.NumberOfFrames | Sop.Image.InstanceNumber
@@ -81,7 +81,7 @@ function html_onload() {
           return path.split('.').reverse()[0];
         }
         var fileExtension = ("" + basename(file.name)).toLowerCase();
-        if (fileExtension == "mht") wadorsLoader2(url);
+        if (fileExtension == "mht") wadorsLoader(url);
         else if (fileExtension == "jpg") loadPicture(url);
         else if (fileExtension == "jpeg") loadPicture(url);
         else if (fileExtension == "png") loadPicture(url);
@@ -96,7 +96,7 @@ function html_onload() {
             var Sop = loadDicomDataSet(reader.result, false, url, true);
             if (Sop) {
               Sop.Image.url = url;
-              for (var z = 0; z < Viewport_Total; z++) setSeriesCount(z);
+              setAllSeriesCount();
               ImageManager.preLoadSops.push({
                 dataSet: Sop.dataSet, image: Sop.Image, Sop: Sop, SeriesInstanceUID: Sop.Image.SeriesInstanceUID,
                 Index: Sop.Image.NumberOfFrames | Sop.Image.InstanceNumber

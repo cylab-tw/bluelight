@@ -38,7 +38,7 @@ class LoadFileInBatches {
         } else {
             LoadFileInBatches.NumOfFetchs++;
             if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(url, onlyload);
-            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader2(url, onlyload);
+            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(url, onlyload);
         }
     }
 
@@ -52,7 +52,7 @@ class LoadFileInBatches {
                         LoadFileInBatches.NumOfFetchs += list.length;
                         for (var i = 0; i < list.length; i++) {
                             if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(list[i].url, list[i].onlyload);
-                            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader2(list[i].url, list[i].onlyload);
+                            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(list[i].url, list[i].onlyload);
                         }
                     } else {
                         LoadFileInBatches.lock = false;
@@ -60,7 +60,7 @@ class LoadFileInBatches {
                         LoadFileInBatches.NumOfFetchs += list.length;
                         for (var i = 0; i < list.length; i++) {
                             if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(list[i].url, list[i].onlyload);
-                            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader2(list[i].url, list[i].onlyload);
+                            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(list[i].url, list[i].onlyload);
                         }
                         clearInterval(LoadFileInBatches.timer);
                         LoadFileInBatches.timer = null;
@@ -80,7 +80,7 @@ class LoadFileInBatches {
     }
 }
 
-function wadorsLoader2(url, onlyload) {
+function wadorsLoader(url, onlyload) {
     // Show loading status
     showDicomStatus("Loading images...");
 
@@ -300,24 +300,9 @@ function multipartDecode(response) {
  */
 function guid() {
     function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
-            .substring(1);
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
     }
-    return (
-        s4() +
-        s4() +
-        "-" +
-        s4() +
-        "-" +
-        s4() +
-        "-" +
-        s4() +
-        "-" +
-        s4() +
-        s4() +
-        s4()
-    );
+    return (s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4());
 }
 
 function PdfLoader(pdf, Sop) {
@@ -415,8 +400,7 @@ function DcmLoader(image, viewport) {
     //隱藏Table
     displayMark(viewport.index);//BlueLight2//
     displayRuler(viewport.index);
-    //displayAnnotation();
-    //displayAllRuler();
+
     viewport.refleshScrollBar();
     refleshGUI();
 }

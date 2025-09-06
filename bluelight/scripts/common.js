@@ -1,7 +1,6 @@
 function cancelTools() {
 
-    HideElemByID(["textWC", "textWW", "WindowLevelDiv",
-        "labelZoom", "labelPlay", "textZoom", "textPlay"]);
+    HideElemByID(["textWC", "textWW", "WindowLevelDiv", "labelZoom", "labelPlay", "textZoom", "textPlay"]);
 
     getByid("WindowDefault").selected = true;
 

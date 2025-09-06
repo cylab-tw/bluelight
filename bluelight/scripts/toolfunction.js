@@ -342,22 +342,6 @@ function getRotationPoint(Mark, middle) {
     return [Max_X, Min_X, Max_Y, Min_Y];
 }
 
-function ConvertGraphicColor(r, g, b) {
-    var str = "" + r + "\\" + g + "\\" + b;
-    if (str == "0\\32896\\32896") return ["#000000", "T7"];
-    else if (str == "0\\32896\\33153") return ["#0000FF", "T8"];
-    else if (str == "393\\32998\\32947") return ["#844200", "T9"];
-    else if (str == "0\\33153\\33153") return ["#00FFFF", "T10"];
-    else if (str == "0\\33153\\32896") return ["#00FF00", "T11"];
-    else if (str == "655\\32896\\33153") return ["#FF00FF", "T12"];
-    else if (str == "655\\33025\\32896") return ["#FFA500", "L1"];
-    else if (str == "328\\32896\\33025") return ["#663399", "L2"];
-    else if (str == "655\\32896\\32896") return ["#FF0000", "L3"];
-    else if (str == "655\\33153\\32896") return ["#FFFF00", "L4"];
-    else if (str == "655\\33153\\33153") return ["#FFFFFF", "L5"];
-    else return undefined;
-}
-
 function SetGraphicColor(str) {
     if (str == "#000000") return "0\\32896\\32896";
     else if (str == "#0000FF") return "0\\32896\\33153";

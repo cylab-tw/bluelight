@@ -752,8 +752,7 @@ class writeGSPSTool extends ToolEvt {
                 if (!Gsps_previous_choose) PatientMark.push(GspsMark);
                 GspsMark.setQRLevels(GetViewport().QRLevels);
                 //GspsMark.color = GetGraphicColor();//舊時的
-                if (getByid("GspsPOLYLINE").selected == true) GspsMark.color = GetGSPSColor();
-                else GspsMark.color = GetGSPSColor();//改成無條件
+                GspsMark.color = GetGSPSColor();
 
                 //舊時的
                 //GspsMark.showName = GetGraphicName(); //"" + getByid("xmlMarkNameText").value;

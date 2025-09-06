@@ -940,14 +940,9 @@ class fillSEGTool extends ToolEvt {
                 SegMark.ctx = SegMark.canvas.getContext('2d');
 
                 var pixelData = SegMark.ctx.getImageData(0, 0, SegMark.canvas.width, SegMark.canvas.height);
-
-                for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
-                    if (SegMark.pixelData[j] != 0) {
-                        pixelData.data[i] = 0;
-                        pixelData.data[i + 1] = 0;
-                        pixelData.data[i + 2] = 255;
-                        pixelData.data[i + 3] = 255;
-                    }
+                var pixel32Data = new Uint32Array(pixelData.data.buffer);
+                for (var i = 0; i < pixel32Data.length; i++) {
+                    if (SegMark.pixelData[i] != 0) pixel32Data[i] = 4294901760; //(0,0,255,255)
                 }
                 SegMark.ctx.putImageData(pixelData, 0, 0);
             }
@@ -1014,14 +1009,9 @@ class writeSegTool extends ToolEvt {
                 SegMark.ctx = SegMark.canvas.getContext('2d');
 
                 var pixelData = SegMark.ctx.getImageData(0, 0, SegMark.canvas.width, SegMark.canvas.height);
-
-                for (var i = 0, j = 0; i < pixelData.data.length; i += 4, j++) {
-                    if (SegMark.pixelData[j] != 0) {
-                        pixelData.data[i] = 0;
-                        pixelData.data[i + 1] = 0;
-                        pixelData.data[i + 2] = 255;
-                        pixelData.data[i + 3] = 255;
-                    }
+                var pixel32Data = new Uint32Array(pixelData.data.buffer);
+                for (var i = 0; i < pixel32Data.length; i++) {
+                    if (SegMark.pixelData[i] != 0) pixel32Data[i] = 4294901760; //(0,0,255,255)
                 }
                 SegMark.ctx.putImageData(pixelData, 0, 0);
             }

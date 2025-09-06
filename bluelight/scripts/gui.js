@@ -144,8 +144,7 @@ class LeftLayout {
 
     setImg2Left(QRLevel, patientID) {
         var pic = getByid("LeftPicture");
-        var Patient_div = document.createElement("DIV");
-        Patient_div.className = "OutLeftImg";
+        var Patient_div = createElem("DIV", null, "OutLeftImg");
         //Patient_div.id = "OutLeftImg" + patientID;
         Patient_div.PatientId = patientID;
         if (!this.findPatienID(patientID)) pic.appendChild(Patient_div);
@@ -157,15 +156,13 @@ class LeftLayout {
         if (!QRLevel.frames && this.findSeries(QRLevel.series)) return;
         if (QRLevel.frames && this.findSop(QRLevel.sop)) return;
 
-        var series_div = document.createElement("DIV");
-        series_div.className = "LeftImgAndMark";
+        var series_div = createElem("DIV", null, "LeftImgAndMark");
 
         series_div.series = QRLevel.series;
         if (QRLevel.frames) series_div.sop = QRLevel.sop;
         series_div.style.touchAction = 'none';
 
-        var ImgDiv = document.createElement("DIV");
-        ImgDiv.className = "LeftImgDiv";
+        var ImgDiv = createElem("DIV", null, "LeftImgDiv");
         ImgDiv.series = QRLevel.series;
         if (QRLevel.frames) ImgDiv.series = QRLevel.sop;
         ImgDiv.draggable = "true";
@@ -215,12 +212,10 @@ class LeftLayout {
         var ImgDiv = sop_div.ImgDiv;
 
         if (!ImgDiv.canvas()) {
-            var leftCanvas = document.createElement("CANVAS");
-            leftCanvas.className = "LeftCanvas";
+            var leftCanvas = createElem("CANVAS", null, "LeftCanvas");
             ImgDiv.appendChild(leftCanvas);
             displayLeftCanvas(leftCanvas, image, pixelData);
-            var label = document.createElement("label");
-            label.className = "LeftImgCountLabel";
+            var label = createElem("label", null, "LeftImgCountLabel");
             sop_div.series_label = label;
             ImgDiv.appendChild(label);
         }
