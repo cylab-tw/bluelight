@@ -105,15 +105,16 @@ function getGspsDicomInstance() {
         ContentCreatorName: "BlueLight",
     };
 
+    dataset.GraphicAnnotationSequence[0].GraphicObjectSequence = [];
     for (let i = 0 ; i < PatientMark.length ; i++) {
         let curMark = PatientMark[i];
         if (curMark.sop === GetViewport().sop) {
             if (curMark.type === "POLYLINE") {
                 let graphicObject = getPolylineGraphicObject(curMark);
-                dataset.GraphicAnnotationSequence[0].GraphicObjectSequence = graphicObject;
+                dataset.GraphicAnnotationSequence[0].GraphicObjectSequence.push(graphicObject);
             } else if (curMark.type === "CIRCLE") {
                 let graphicObject = getCircleGraphicObject(curMark);
-                dataset.GraphicAnnotationSequence[0].GraphicObjectSequence = graphicObject;
+                dataset.GraphicAnnotationSequence[0].GraphicObjectSequence.push(graphicObject);
             }
         }
     }
