@@ -194,7 +194,7 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
         }
     }
     function YBR(imageObj, dataSet, pixelData) {
-        if ((dataSet.string('x00280004') === 'YBR_FULL_422' || dataSet.string('x00280004') === 'YBR_FULL') && imageObj.color) {
+        if ((imageObj.isYCbCr || dataSet.string('x00280004') === 'YBR_FULL_422' || dataSet.string('x00280004') === 'YBR_FULL') && imageObj.color) {
             for (var i = 0; i < pixelData.length; i += 3) {
                 var R = pixelData[i] + 1.402 * (pixelData[i + 2] - 128);
                 var G = pixelData[i] - 0.344136 * (pixelData[i + 1] - 128) - 0.714136 * (pixelData[i + 2] - 128);

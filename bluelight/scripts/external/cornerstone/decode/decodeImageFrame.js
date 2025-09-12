@@ -75,6 +75,7 @@ export function decodeImageFrame(
     // JPEG Lossless, Nonhierarchical (Processes 14 [Selection 1])
     imageFrame = decodeJPEGLossless(imageFrame, pixelData);
     if (detectJPEGColorSpace(pixelData) == "assuming RGB") imageFrame.AssumingRGB = true;
+    if (detectJPEGColorSpace(pixelData) == "YCbCr") imageFrame.isYCbCr = true;
   } else if (transferSyntax === '1.2.840.10008.1.2.4.80') {
     // JPEG-LS Lossless Image Compression
     imageFrame = decodeJPEGLS(imageFrame, pixelData);
