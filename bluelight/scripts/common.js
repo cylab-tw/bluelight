@@ -291,7 +291,8 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
         else
             cells.innerHTML = "" + GetViewport().tags[i][2];
 
-        if (GetViewport().tags[i][1] == "PatientName" && GetViewport().content.image) cells.innerHTML = "" + GetViewport().content.image.PatientName;
+        // 如果看起來像亂碼的比率過高，改用UTF-8
+        if (looksLikeMojibake(cells.innerHTML)) cells.innerHTML = "" + (fixMojibake(cells.innerHTML));
 
         rowCount++;
     }

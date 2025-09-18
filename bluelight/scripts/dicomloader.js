@@ -32,9 +32,10 @@ function getDefaultImageObj(dataSet, type) {
     imageObj.PatientAge = dataSet.string('x00101010');
     imageObj.PatientID = dataSet.string('x00100020');
 
-    //imageObj.PatientName = dataSet.string('x00100010');
-    if (dataSet.elements[Tag.PatientName])
-        imageObj.PatientName = (new TextDecoder('utf-8')).decode(new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length));
+    
+    imageObj.PatientName = dataSet.string('x00100010');
+    // 不再使用此方法處理亂碼問題，改在顯示時處理
+    // if (dataSet.elements[Tag.PatientName]) imageObj.PatientName = (new TextDecoder('utf-8')).decode(new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length));
 
     imageObj.patentSex = dataSet.string('x00100040');
     imageObj.pixelRepresentation = dataSet.int16('x00280103');

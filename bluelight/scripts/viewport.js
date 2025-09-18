@@ -208,6 +208,9 @@ class BlueLightViewPort {
                 for (var j = 0; j < vals.length; j++)if ('' == this.getLabel(vals[j])) emptyCount++;
                 if (emptyCount == tags.length + vals.length && emptyCount > 0) continue;
 
+                // 如果看起來像亂碼的比率過高，改用UTF-8
+                if (looksLikeMojibake(str)) str = "" + (fixMojibake(str));
+
                 if (labels == DicomTags.LT) this.labelLT.innerHTML += " " + str + "<br/>";
                 if (labels == DicomTags.LB) this.labelLB.innerHTML += " " + str + "<br/>";
                 if (labels == DicomTags.RT) this.labelRT.innerHTML += " " + str + "<br/>";
