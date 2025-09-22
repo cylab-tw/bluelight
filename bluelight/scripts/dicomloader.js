@@ -180,8 +180,7 @@ function getPixelDataFromColorLookupTable(imageObj, dataSet) {
 
 function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
     function IfNoWL(imageObj, dataSet, pixelData) {
-        if (imageObj.windowCenter == undefined || imageObj.windowWidth == undefined ||
-            imageObj.windowCenter == null || imageObj.windowWidth == null) {
+        if (isNaN(imageObj.windowCenter) || isNaN(imageObj.windowWidth) ) {
             var max = Number.MIN_VALUE, min = Number.MAX_VALUE;
             for (var i = 0; i < pixelData.length; i++) {
                 if (pixelData[i] > max) max = pixelData[i];

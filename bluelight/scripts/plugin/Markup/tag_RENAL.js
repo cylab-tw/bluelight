@@ -30,7 +30,11 @@ function loadWriteTAG_RENAL() {
     getByid("MarkupDIv").appendChild(span);
 
     var span = document.createElement("SPAN");
-    span.innerHTML = `<img class="img TAG" alt="saveTAG_RENAL" id="saveTAG_RENAL" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/tag_RENAL.png" width="50" height="50" style="display:none;" >`;
+    span.innerHTML = `<img class="img TAG" alt="exitTAG_RENAL" id="exitTAG_RENAL" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >`;
+    addIconSpan(span);
+
+    var span = document.createElement("SPAN");
+    span.innerHTML = `<img class="img TAG" alt="saveTAG_RENAL" id="saveTAG_RENAL" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >`;
     addIconSpan(span);
 
     var span = document.createElement("SPAN");
@@ -163,13 +167,18 @@ getByid("medicalSpecialtyTag_RENAL").onchange = function () {
     });
 };
 
-getByid("saveTAG_RENAL").onclick = function () {
+getByid("exitTAG_RENAL").onclick = function () {
     getByid("saveTAG_RENAL").style.display = "none";
+    getByid("exitTAG_RENAL").style.display = "none";
     img2darkByClass("TAG", true);
     getByid("TagStyleDiv_RENAL").style.display = "none";
     SetTable();
     displayMark();
+    
+    getByid("MouseOperation").click();
+}
 
+getByid("saveTAG_RENAL").onclick = function () {
     if (getByid("medicalSpecialtyTag_RENAL").value === "R.E.N.A.L.") {
         // 跳轉到 handleRENALTag_RENAL 處理
         handleRENALTag_RENAL();
@@ -227,8 +236,6 @@ getByid("saveTAG_RENAL").onclick = function () {
             sopUID + ".xml",
             "text/plain"
         );
-
-    getByid("MouseOperation").click();
 };
 
 getByid("writeTAG_RENAL").onclick = function () {
@@ -239,6 +246,7 @@ getByid("writeTAG_RENAL").onclick = function () {
     //this.src = '../image/icon/lite/tag_on.png';
     if (true) {
         getByid("saveTAG_RENAL").style.display = "";
+        getByid("exitTAG_RENAL").style.display = "";
         getByid("TagStyleDiv_RENAL").style.display = "";
     }
     SetTable();
