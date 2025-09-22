@@ -1,0 +1,33 @@
+{
+  "medicalSpecialty": [
+    {
+      "name": "R.E.N.A.L.",
+      "diseases": {
+        "E": {
+          "name": "E(Exophytic/endophytic)",
+          "tags": [
+            "(1pt)≥50% exophytic",
+            "(2pt)<50% exophytic",
+            "(3pt)Entirely endophytic"
+          ]
+        },
+        "N": {
+          "name": "N(Nearness to collecting system or sinus (mm))",
+          "tags": [
+            "(1pt)≥7mm",
+            "(2pt)>4 and <7mm",
+            "(3pt)≤4 mm"
+          ]
+        },
+        "L": {
+          "name": "L(Location relative to polar lines)",
+          "tags": [
+            "(1pt)entirely below the inferior pole or above the superior pole",
+            "(2pt)mass crosses the polar line",
+            "(3pt)>50% of mass lies across the polar line，or is entirely between the polar lines，or crosses the axial midline"
+          ]
+        }
+      }
+    }
+  ]
+}
