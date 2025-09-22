@@ -24,7 +24,7 @@ function loadMarkupPlugin_RENAL() {
 function loadWriteTAG_RENAL() {
     loadMarkupPlugin_RENAL();
     var span = document.createElement("SPAN");
-    span.innerHTML = `<img class="innerimg TAG" alt="writeTAG_RENAL" id="writeTAG_RENAL" src="../image/icon/lite/tag_RENAL.png" width="50" height="50">`;
+    span.innerHTML = `<img class="innerimg TAG" alt="writeTAG_RENAL" id="writeTAG_RENAL" src="../image/icon/lite/tag_renal.png" width="50" height="50">`;
     if (getByid("MarkupDIv").childNodes.length > 0)
         getByid("MarkupDIv").appendChild(document.createElement("BR"));
     getByid("MarkupDIv").appendChild(span);
