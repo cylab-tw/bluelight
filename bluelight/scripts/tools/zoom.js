@@ -83,8 +83,7 @@ class zoomTool extends ToolEvt {
         if (openLink) displayAllRuler();
     }
     onSwitch() {
-        getByid('labelZoom').style.display = 'none';
-        getByid('textZoom').style.display = 'none';
+        hideAllDrawer();
         getByid("magnifierDiv").removeChild(getByid("magnifierCanvas"));
         document.body.removeChild(getByid("magnifierDiv"));
     }
@@ -128,13 +127,9 @@ class zoomTool extends ToolEvt {
 }
 
 function zoom() {
+    if(toolEvt.constructor.name == "zoomTool") return;
 
     initMagnifier();
-    refleshViewport();
-    getByid('labelZoom').style.display = '';
-    getByid('textZoom').style.display = '';
-    SetTable();
-
     toolEvt.onSwitch();
     toolEvt = new zoomTool();
 }

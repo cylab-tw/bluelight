@@ -405,6 +405,25 @@ button:hover {
   overflow-y: scroll;
 }
 
+#playvideolDiv, #WindowLevelDiv,#openTransformationsDiv,#othereDIv,#openMeasureDIv,#openSplitWindowDiv, #openWindowRevisionDiv, #annotationDiv, #zoomDiv{
+  position:absolute;left: 0;white-space:nowrap;z-index: 120; /*display: none;*/
+  background-color: rgb(55, 55, 55);
+}
+#zoomDiv{
+  background-color: rgb(55, 55, 55);
+}
+#openTransformationsDiv,#othereDIv,#openMeasureDIv{
+  background-color: black;
+}
+#labelZoom,#textZoom,#labelWC,#textWC,#labelWW,#textWW,#labelPlay,#textPlay{
+  margin: 6px;
+}
+#WindowLevelDiv{
+  left: -48px;
+}
+#zoomDiv,#playvideolDiv{
+  left: -54px;
+}
 #EcgCanvas {
   /*object-fit: scale-down;
   height: 100%;

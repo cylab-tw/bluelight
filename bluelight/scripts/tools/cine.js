@@ -25,15 +25,17 @@ onloadFunction.push(
     function () {
         getByid("playvideo").onclick = function () {
             if (this.enable == false) return;
+            
+            hideAllDrawer("playvideolDiv");
+            invertDisplayById('playvideolDiv');
+            if (getByid("playvideolDiv").style.display == "none") getByid("playvideoDiv_span").style.position = "";
+            else {
+                getByid("playvideoDiv_span").style.position = "relative";
+                onElementLeave();
+            }
+            
             drawBorder(this);
-            hideAllDrawer();
             GetViewport().cine = !GetViewport().cine;
-            if (GetViewport().cine)
-                getByid('textPlay').style.display = getByid('labelPlay').style.display = '';
-            else
-                getByid('textPlay').style.display = getByid('labelPlay').style.display = 'none';
-
-            SetTable();
             PlayCine();
         }
 

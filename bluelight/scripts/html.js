@@ -183,8 +183,16 @@ function html_onload() {
   
   getByid("zoom").onclick = function () {
     if (this.enable == false) return;
-    hideAllDrawer();
     zoom();
+
+    hideAllDrawer("zoomDiv");
+    invertDisplayById('zoomDiv');
+    if (getByid("zoomDiv").style.display == "none") getByid("zoomParent").style.position = "";
+    else {
+        getByid("zoomParent").style.position = "relative";
+        onElementLeave();
+    }
+
     drawBorder(this);
   }
 
@@ -219,8 +227,16 @@ function html_onload() {
 
   getByid("WindowRevision").onclick = function () {
     if (this.enable == false) return;
-    hideAllDrawer("windowlevel");
     windowlevel();
+    //hideAllDrawer("windowlevel");
+    hideAllDrawer("WindowLevelDiv");
+    invertDisplayById('WindowLevelDiv');
+    if (getByid("WindowLevelDiv").style.display == "none") getByid("WindowLevelDiv_span").style.position = "";
+    else {
+        getByid("WindowLevelDiv_span").style.position = "relative";
+        onElementLeave();
+    }
+
     drawBorder(this);
     getByid("textWC").value = GetViewport().windowCenter;
     getByid("textWW").value = GetViewport().windowWidth;

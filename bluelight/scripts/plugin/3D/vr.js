@@ -123,8 +123,8 @@ function loadVR() {
     var span = document.createElement("SPAN");
     span.innerHTML =
         `<div id="WindowLevelDiv_VR" class="VR_div" style="background-color:#33666644;">
-    <font color="white" id="myWC_VR">WC：</font><input type="text" id="textWC_VR" value="520" />
-    <font color="white" id="myWW_VR">WW：</font><input type="text" id="textWW_VR" value="50" />
+    <font color="white" id="labelWC_VR">WC：</font><input type="text" id="textWC_VR" value="520" />
+    <font color="white" id="labelWW_VR">WW：</font><input type="text" id="textWW_VR" value="50" />
     <select id="WindowLevelSelect_VR">
       <option id="WindowDefault_VR" selected="selected">Default</option>
       <option id="WindowCustom_VR">Custom</option>

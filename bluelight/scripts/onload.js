@@ -52,15 +52,13 @@ var onloadFunction = new OnloadFunction();
 function loadLdcmview() {
 
   //隱藏一開始不需要的元素
-  HideElemByID(["WindowLevelDiv", "labelZoom", "labelPlay", "textPlay", "textZoom", "MarkStyleDiv"/*, "GraphicStyleDiv"*/]);
+  HideElemByID(["MarkStyleDiv"/*, "GraphicStyleDiv"*/]);
 
   //初始化每一個Viewport的參數
   for (var i = 0; i < Viewport_Total; i++) {
     ViewPortList.push(new BlueLightViewPort(i));
   }
   initNewCanvas2();
-
-  HideElemByID(["textWC", "textWW"]);
 
   //載入config檔的設定
   readDicomTags("../data/dicomTags.json", setLabelPadding);

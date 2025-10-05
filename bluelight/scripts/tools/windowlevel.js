@@ -44,8 +44,7 @@ class WLevelTool extends ToolEvt {
 }
 
 function windowlevel() {
-    ShowElemByID(["textWC", "textWW", "WindowLevelDiv"]);
-    SetTable();
+    if(toolEvt.constructor.name == "WLevelTool") return;
     toolEvt.onSwitch();
     toolEvt = new WLevelTool();
 }

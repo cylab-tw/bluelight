@@ -71,14 +71,12 @@
       <span id="SplitParent">
         <img class="img" alt="Split Screen" altzhtw="分隔" id="SplitWindow"
           src="../image/icon/lite/b_LayoutWithinViewport.png" width="50" height="50">
-        <div id="openSplitWindowDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
-              width: 500; display: none;"></div>
+        <div id="openSplitWindowDiv" class="drawer"></div>
       </span>
       <span id="TransformationsImgParent">
         <img class="img" id="openTransformationsImg" altzhtw="Transformations" alt="Transformations"
           src="../image/icon/lite/b_Transformations.png" width="50" height="50">
-        <div id="openTransformationsDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
-          width: 500; display: none;background-color: black;">
+        <div id="openTransformationsDiv" class="drawer">
           <span id="horizontal_flip_span"><img alt="Horizontal Flip" class="innerimg" loading="lazy" altzhtw="水平翻轉"
               id="horizontal_flip" src="../image/icon/lite/b_FlipHorizontally.png" width="50" height="50"></span>
           <span id="vertical_flip_span"><img altzhtw="垂直翻轉" class="innerimg" loading="lazy" alt="Vertical Flip"
@@ -97,11 +95,17 @@
       <span id="WindowRevisionParent">
         <span id="WindowRevision_span"><img class="cropimg VR MPR SEG" alt="Window Level" altzhtw="Window Level"
             id="WindowRevision" src="../image/icon/lite/b_Window_Presets_left.png" width="38" height="50"></span>
+        <span id="WindowLevelDiv_span">
+          <div id="WindowLevelDiv" class="drawer">
+            <font color="white" id="labelWC">WC：</font><input type="number" id="textWC" value="520" />
+            <font color="white" id="labelWW">WW：</font><input type="number" id="textWW" value="50" />
+          </div>
+        </span>
+
         <span id="WindowRevisionOption_span">
           <img class="cropimg VR MPR SEG" alt="Window Level" altzhtw="Window Level" id="WindowRevisionOption"
             src="../image/icon/lite/b_Window_Presets_right.png" width="12" height="50"></span>
-        <div id="openWindowRevisionDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
-              width: 500; display: none;">
+        <div id="openWindowRevisionDiv" class="drawer">
           <div class="WindowSelect" id="WindowDefault">Default</div>
           <div class="WindowSelect" id="WindowCustom">Custom</div>
           <div class="WindowSelect" id="WindowAbdomen" wc="60" ww="400">Abdomen(60,400)</div>
@@ -114,6 +118,11 @@
       </span>
       <span id="zoom_span"><img class="img" altzhtw="放大鏡" alt="Zoom" id="zoom" src="../image/icon/lite/b_Zoom.png"
           width="50" height="50"></span>
+      <span id="zoomParent">
+        <div id="zoomDiv" class="drawer">
+          <font color="white" id="labelZoom">Zoom：</font><input type="number" id="textZoom" value="200" />
+        </div>
+      </span>
 
       <span id="color_invert_span"><img class="img" altzhtw="色彩反轉" alt="Color Invert" id="color_invert"
           src="../image/icon/lite/b_InvertGrayscale.png" width="50" height="50"></span>
@@ -124,8 +133,7 @@
       <span id="MeasureImgParent">
         <img class="img" id="openMeasureImg" altzhtw="測量" alt="Measure" src="../image/icon/lite/M.png" width="50"
           height="50">
-        <div id="openMeasureDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
-        width: 500; display: none;background-color: black;">
+        <div id="openMeasureDIv" class="drawer">
           <span id="removeAllRuler_span">
             <img alt="remove all" altzhtw="清除所有測量" class="innerimg" loading="lazy" id="removeAllRuler"
               src="../image/icon/lite/b_trashcan.png" width="50" height="50">
@@ -175,8 +183,17 @@
         </div>
       </span>
 
-      <span id="playvideo_span"><img class="img" loading="lazy" altzhtw="播放" alt="Cine" id="playvideo"
-          src="../image/icon/lite/b_CinePlay.png" width="50" height="50"></span>
+      <span id="playvideoParent">
+        <span id="playvideo_span"><img class="img" loading="lazy" altzhtw="播放" alt="Cine" id="playvideo"
+            src="../image/icon/lite/b_CinePlay.png" width="50" height="50"></span>
+        <span id="playvideoDiv_span">
+          <div id="playvideolDiv" class="drawer">
+            <font color="white" id="labelPlay">fps：</font>
+            <input type="number" id="textPlay" value="15" />
+          </div>
+        </span>
+      </span>
+
       <span id="MarkButton_span"><img class="img VR MPR" loading="lazy" altzhtw="標記" alt="Display Mark" id="MarkButton"
           src="../image/icon/lite/fist0.png" width="50" height="50"></span>
 
@@ -188,8 +205,7 @@
         <span id="annotationOption_span">
           <img class="cropimg" alt="annotation options" id="annotationOption"
             src="../image/icon/lite/b_Window_Presets_right.png" width="12" height="50">
-          <div id="annotationDiv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
-              width: 500; display: none;">
+          <div id="annotationDiv" class="drawer">
             <div class="AnnotationSelect" id="ShowDicomTag">Show Dicom Tag</div>
             <div class="AnnotationSelect" id="ShowScrollBar">Show/Hide ScrollBar</div>
           </div>
@@ -199,8 +215,7 @@
       <span id="OtherImgParent">
         <img class="img" loading="lazy" altzhtw="其他" alt="other" id="OtherImg" src="../image/icon/lite/b_CineTools.png"
           width="50" height="50">
-        <div id="othereDIv" class="drawer" style="position:absolute;left: 0;white-space:nowrap;z-index: 120;
-           width: 500; display: none;background-color: black;">
+        <div id="othereDIv" class="drawer">
           <span id="clearViewport_span">
             <img altzhtw="清除視窗" alt="clear viewport" class="innerimg" loading="lazy" id="clearviewportImg"
               src="../image/icon/lite/b_trashcan.png" width="50" height="50">
@@ -259,16 +274,6 @@
       </select>
     </div>
 
-    <span id="WindowLevelDiv_span">
-      <div id="WindowLevelDiv" style="background-color:#33666644;" class="drawer">
-        <font color="white" id="myWC">WC：</font><input type="number" id="textWC" value="520" />
-        <font color="white" id="myWW">WW：</font><input type="number" id="textWW" value="50" />
-      </div>
-    </span>
-    <font color="white" class="drawer" id="labelZoom">Zoom：</font><input type="number" class="drawer" id="textZoom"
-      value="200" />
-    <font color="white" class="drawer" id="labelPlay">fps：</font><input type="number" class="drawer" id="textPlay"
-      value="15" />
     <span id="span_TextAnnotation" style="display: none;">
       <font color="white" id="label_TextAnnotation">Text：</font><input type="text" id="text_TextAnnotation"
         value="text" />
