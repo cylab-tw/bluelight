@@ -21,11 +21,21 @@ function PlayCine() {
     }, fps);
 }
 
+function stopAllCine() {
+    SetAllViewport("cine", false);
+    clearInterval(PlayCine.CineTimer);
+    PlayCine.CineTimer = PlayCine.CineEnd = null;
+    changeCineImg();
+}
+
 onloadFunction.push(
     function () {
         getByid("playvideo").onclick = function () {
             if (this.enable == false) return;
-            
+            GetViewport().cine = !GetViewport().cine;
+            PlayCine();
+            if (!GetViewport().cine && getByid("playvideolDiv").style.display == "none") return;
+
             hideAllDrawer("playvideolDiv");
             invertDisplayById('playvideolDiv');
             if (getByid("playvideolDiv").style.display == "none") getByid("playvideoDiv_span").style.position = "";
@@ -33,10 +43,6 @@ onloadFunction.push(
                 getByid("playvideoDiv_span").style.position = "relative";
                 onElementLeave();
             }
-            
-            drawBorder(this);
-            GetViewport().cine = !GetViewport().cine;
-            PlayCine();
         }
 
         getByid("textPlay").oninput = function () {

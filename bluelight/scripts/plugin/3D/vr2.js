@@ -1463,7 +1463,9 @@ function initVR2() {
 
     var cube = new VRCube(GetViewport().sop);
     Pages.displayPage("VRPage");
+    cube.offset = new Vector3(-getByid("VR2_DIV").getBoundingClientRect().x, getByid("VR2_DIV").getBoundingClientRect().y, 0);
     cube.build();
+    cube.reflesh();
 }
 
 function multiplyMatrices(a, b) {

@@ -1,10 +1,6 @@
 function cancelTools() {
-    getByid("WindowDefault").selected = true;
-
-    setWindowLevel();
     displayMark();
-    SetAllViewport("cine", false);
-    PlayCine();
+    stopAllCine();
 }
 
 function displayAllRuler() {

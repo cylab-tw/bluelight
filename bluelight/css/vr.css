@@ -2,6 +2,11 @@
   --VrOpacity: initial;
 }
 
+#VRPage{
+  width: unset;
+  left: unset;
+}
+
 .o3DDiv {
   position: absolute;
   transform-style: preserve-3d;
