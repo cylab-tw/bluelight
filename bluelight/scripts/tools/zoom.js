@@ -26,13 +26,19 @@ function initMagnifier() {
 
 function magnifierIng(currX, currY) {
     var canvas = GetViewport().canvas;
-    var zoom = parseFloat(getByid('textZoom').value);
-    if ((zoom <= 25)) getByid('textZoom').value = zoom = 25;
+    var zoom = parseFloat(getByid('textZoom').value), size = parseFloat(getByid('textZoomSize').value);
+    if (zoom <= 25) getByid('textZoom').value = zoom = 25;
     if (zoom >= 400) getByid('textZoom').value = zoom = 400;
+    if (size <= 25) getByid('textZoomSize').value = size = 25;
+    if (size >= 400) getByid('textZoomSize').value = size = 400;
+
     zoom /= 100;
-    zoomTool.magnifierWidth = parseFloat(1.0 / GetViewport().scale) * (zoomTool.magnifierDefaultWidth / zoom);
-    zoomTool.magnifierHeight = parseFloat(1.0 / GetViewport().scale) * (zoomTool.magnifierDefaultHeight / zoom);
-    var magnifierCanvas = document.getElementById("magnifierCanvas");
+    zoomTool.magnifierDefaultWidth = zoomTool.magnifierDefaultHeight = size;
+    var sizeW = zoomTool.magnifierDefaultWidth, sizeH = zoomTool.magnifierDefaultHeight;
+    zoomTool.magnifierWidth = parseFloat(1.0 / GetViewport().scale) * (sizeW / zoom);
+    zoomTool.magnifierHeight = parseFloat(1.0 / GetViewport().scale) * (sizeH / zoom);
+
+    var magnifierCanvas = getByid("magnifierCanvas");
     var magnifierCtx = magnifierCanvas.getContext("2d");
     magnifierCanvas.width = zoomTool.magnifierWidth;
     magnifierCanvas.height = zoomTool.magnifierHeight;
@@ -45,6 +51,9 @@ function magnifierIng(currX, currY) {
     var currY02 = Math.floor(currY) - zoomTool.magnifierHeight / 2;
     magnifierCtx.drawImage(canvas, currX02, currY02, zoomTool.magnifierWidth, zoomTool.magnifierHeight, 0, 0, zoomTool.magnifierWidth, zoomTool.magnifierHeight);
     magnifierCtx.drawImage(GetViewportMark(), currX02, currY02, zoomTool.magnifierWidth, zoomTool.magnifierHeight, 0, 0, zoomTool.magnifierWidth, zoomTool.magnifierHeight);
+
+    if (getByid('checkZoomAntiAliasing').checked) getByid("magnifierCanvas").style["image-rendering"] = "";
+    else getByid("magnifierCanvas").style["image-rendering"] = "pixelated";
 }
 
 class zoomTool extends ToolEvt {
@@ -127,7 +136,7 @@ class zoomTool extends ToolEvt {
 }
 
 function zoom() {
-    if(toolEvt.constructor.name == "zoomTool") return;
+    if (toolEvt.constructor.name == "zoomTool") return;
 
     initMagnifier();
     toolEvt.onSwitch();

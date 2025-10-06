@@ -7,7 +7,6 @@ let GridMode = "default";
 
 //表示Viewport為連接狀態
 var openLink = false;
-var openECG = false;
 
 //目前選取的Viewport是第幾個Viewport
 var viewportNumber = 0;
@@ -286,7 +285,7 @@ class BlueLightViewPort {
         if (this.study == undefined) return;
         var Sop = ImageManager.getSopByQRLevels(this.QRLevels);
         if (Sop.pdf) PdfLoader(Sop.pdf);
-        else if (Sop.ecg && openECG) EcgLoader(Sop);
+        else if (Sop.ecg) EcgLoader(Sop);
         else this.loadImgBySop(Sop);
     }
 
@@ -307,7 +306,7 @@ class BlueLightViewPort {
                 DcmLoader(Sop.Image, this);
             }
             else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, Sop);
-            else if (Sop.type == 'ecg' && openECG) EcgLoader(Sop);
+            else if (Sop.type == 'ecg') EcgLoader(Sop);
             else if (Sop.type == 'img') DcmLoader(Sop.Image, this);
         //});
     }

@@ -37,14 +37,13 @@
   <script src="../scripts/viewer.js"></script>
   <script src="../scripts/common.js"></script>
 
-  <script src="../scripts/readsome.js"></script>
+  <script src="../scripts/readmark.js"></script>
   <!--onload-->
   <script src="../scripts/label.js"></script>
   <!--<script src="../scripts/mtss.js"></script>-->
   <script src="../scripts/html.js"></script>
   <script src="../scripts/tools/mousetool.js"></script>
   <script src="../scripts/plugin/plugin.js"></script>
-  <script src="../scripts/plugin/ecg.js"></script>
   <script src="../scripts/tools/zoom.js" async></script>
   <script src="../scripts/tools/cine.js" async></script>
   <script src="../scripts/tools/scroll.js" async></script>
@@ -120,7 +119,9 @@
           width="50" height="50"></span>
       <span id="zoomParent">
         <div id="zoomDiv" class="drawer">
-          <font color="white" id="labelZoom">Zoom：</font><input type="number" id="textZoom" value="200" />
+          <font color="white" id="labelZoom">ratio：</font><input type="number" id="textZoom" value="200" /><br>
+          <font color="white" id="labelZoomSize">&nbsp;size：</font><input type="number" id="textZoomSize" value="200" /> <br>
+          <font color="white" id="labelZoomAntiAliasing">Anti-aliasing：</font><input type="checkbox"  checked="true" id="checkZoomAntiAliasing"/>
         </div>
       </span>
 
@@ -293,7 +294,20 @@
       <div id="pages">
         <div class="page" id="DicomPage"></div>
         <div class="page" id="PdfPage" style='display:none'></div>
-        <div class="page" id="EcgPage" style='display:none'></div>
+        <div class="page" id="EcgPage" style='display:none'>
+          <div id="ECGOptionsDIV">
+            <span>
+              <label>Zoom：</label>
+              <select id="ECGSpeedSelect">
+                <option>12.5 mm/s</option><option>25 mm/s</option><option>50 mm/s</option><option>100 mm/s</option>
+              </select>
+              <select id="ECGVoltageSelect">
+                <option>3 mm/mV</option><option>5 mm/mV</option><option >10 mm/mV</option>
+                <option>15 mm/mV</option><option>20 mm/mV</option><option>30 mm/mV</option>
+              </select>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
 </body>

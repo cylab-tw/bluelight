@@ -2,7 +2,7 @@
 function loadSopFromDataSet(dataSet, type) {
     var imageObj = getDefaultImageObj(dataSet, type);
     if (type == 'pdf') setPDF(imageObj);
-    if (type == 'ecg' && openECG) setECG(imageObj);
+    if (type == 'ecg') setECG(imageObj);
 
     var Sop = ImageManager.pushStudy(imageObj); //註冊此Image至Viewer
     if (!Sop) return;

@@ -129,6 +129,12 @@ function readDicomMark(dataSet) {
                 GspsMark.pointArray = [];
 
                 var showname = "" + tempDataSet[j].dataSet.string(Tag.GraphicType);
+                
+                var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
+                var color = getColorFrom16(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2), 16);
+                if (color) GspsMark.color = color;
+                console.log([ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0),ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1),ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2)]);
+
 
                 GspsMark.showName = showname;
                 if (GSPS_Text != "" && GSPS_Text != undefined) GspsMark.showName = GSPS_Text;
@@ -194,6 +200,11 @@ function readDicomMark(dataSet) {
                 var showname = 'CIRCLE';
 
                 GspsMark.hideName = GspsMark.showName = showname;
+                var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
+                var color = getColorFrom16(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2), 16);
+                if (color) GspsMark.color = color;
+                console.log([ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0),ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1),ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2)]);
+
 
                 GspsMark.type = "CIRCLE";
                 GspsMark.GraphicFilled = tempDataSet[j].dataSet.string(Tag.GraphicFilled);
@@ -216,6 +227,12 @@ function readDicomMark(dataSet) {
                 GspsMark.pointArray = [];
 
                 var showname = 'Anchor';
+
+                var ColorSequence = tempDataSet[j].dataSet.elements.x00700232.items[0].dataSet;
+                var color = getColorFrom16(ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1), ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2), 16);
+                if (color) GspsMark.color = color;
+                console.log([ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 0),ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 1),ColorSequence.uint16(Tag.PatternOnColorCIELabValue, 2)]);
+
                 GspsMark.showName = showname;
                 if (GSPS_Text != "" && GSPS_Text != undefined) GspsMark.showName = GSPS_Text;
                 GspsMark.hideName = GspsMark.showName;

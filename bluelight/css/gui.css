@@ -415,7 +415,7 @@ button:hover {
 #openTransformationsDiv,#othereDIv,#openMeasureDIv{
   background-color: black;
 }
-#labelZoom,#textZoom,#labelWC,#textWC,#labelWW,#textWW,#labelPlay,#textPlay{
+#checkZoomAntiAliasing,#labelZoomAntiAliasing,#labelZoomSize,#textZoomSize,#labelZoom,#textZoom,#labelWC,#textWC,#labelWW,#textWW,#labelPlay,#textPlay{
   margin: 6px;
 }
 #WindowLevelDiv{
@@ -424,6 +424,7 @@ button:hover {
 #zoomDiv,#playvideolDiv{
   left: -54px;
 }
+
 #EcgCanvas {
   /*object-fit: scale-down;
   height: 100%;
