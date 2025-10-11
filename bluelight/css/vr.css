@@ -49,7 +49,7 @@
   background-Color: rgba(0, 0, 0, 0.04);
 }
 
-#VR2_DIV {
+#VR2_DIV, #MPR3_DIV{
   border-collapse: collapse;
   position: absolute;
   background-color: black;
@@ -62,6 +62,26 @@
   overflow: hidden;
 }
 
+#MPR3_DIV{
+  display: flex;
+  justify-content: space-between; /* 平均分佈 */
+}
+
+.MPR3Box {
+  flex: 1; /* 三等分 */
+  margin: 1px;
+  border: 5px groove rgb(211, 217, 255);
+  padding: 5px;
+  position: relative;
+  overflow: hidden;
+  background-color: rgb(45, 16, 16);
+}
+.MPR3Canvas {
+  background: wheat;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
 #VR2_TestLabel {
   z-index: 500;
   color: white;
