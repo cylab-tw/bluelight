@@ -58,31 +58,37 @@ function createMPRCameraZ(width, height, centerX, centerY, centerZ, PixelSpacing
         for (var w = parseInt(-width / 2); w < parseInt(width / 2) + (width % 2); w++)
             Points[count++] = new Point3D(centerX + w * PixelSpacing, centerY + h * PixelSpacing, centerZ);
     Camera.Points = Points;
-    Camera.Center = new Point3D(centerX, centerY, centerZ);
-    return Points;
+    Camera.originPoints = structuredClone(Points);
+    return Camera;
 }
 function createMPRCameraX(width, height, centerX, centerY, centerZ, PixelSpacing) {
+    var Camera = {};
     var Points = new Array(width * height), count = 0;
     for (var h = parseInt(height / 2) + (height % 2) - 1; h >= parseInt(-height / 2); h--)
         for (var w = parseInt(-width / 2); w < parseInt(width / 2) + (width % 2); w++)
             Points[count++] = new Point3D(centerX, centerY + w * PixelSpacing, centerZ + h);
-    return Points;
+    Camera.Points = Points;
+    Camera.originPoints = structuredClone(Points);
+    return Camera;
 }
 function createMPRCameraY(width, height, centerX, centerY, centerZ, PixelSpacing) {
+    var Camera = {};
     var Points = new Array(width * height), count = 0;
     for (var h = parseInt(height / 2) + (height % 2) - 1; h >= parseInt(-height / 2); h--)
         for (var w = parseInt(-width / 2); w < parseInt(width / 2) + (width % 2); w++)
             Points[count++] = new Point3D(centerX + w * PixelSpacing, centerY, centerZ + h);
-    return Points;
+    Camera.Points = Points;
+    Camera.originPoints = structuredClone(Points);
+    return Camera;
 }
 
-function displayImageWithMPRCamera(canvas, MprObject, camera, centerX, centerY, centerZ) {
+function displayImageWithMPRCamera(canvas, MprObject, camera, cameraGroup) {
     var ctx = canvas.getContext("2d"), pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     var count = 0;
     for (var h = 0; h < canvas.height; h++) {
         for (var w = 0; w < canvas.width * 4; w += 4) {
-            var targetPoint = { y: camera[count].x, x: camera[count].y, z: camera[count].z };
-            count++;
+            var targetPoint = { y: camera.Points[count].x, x: camera.Points[count].y, z: camera.Points[count].z }; count++;
             var target = findClosestPixelInSeries(targetPoint, MprObject);
             if (!target) continue;
             var obj = MprObject[target.sliceIndex];     //[h * canvas.width * 1 + w/4 + 0];
@@ -93,6 +99,52 @@ function displayImageWithMPRCamera(canvas, MprObject, camera, centerX, centerY, 
         }
     }
     ctx.putImageData(pixels, 0, 0);
+}
+
+function drawLineForMPR(MprObject, canvasGroup, cameraGroup) {
+    //var [camera1, camera2, camera3] = cameraGroup.cameras;
+    var [canvas1, canvas2, canvas3] = canvasGroup;
+    var PixelSpacing = cameraGroup.PixelSpacing;
+    var newCenter = findClosestPixelInSeries({ y: cameraGroup.center.x + cameraGroup.add.x, x: cameraGroup.center.y + cameraGroup.add.y, z: cameraGroup.center.z + cameraGroup.add.z }, MprObject);
+    // 畫第一張圖
+    var ctx = canvas1.getContext("2d");
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "yellow";
+    ctx.beginPath();
+    ctx.moveTo(0, cameraGroup.center.x + cameraGroup.add.x);
+    ctx.lineTo(canvas1.width, (cameraGroup.center.x + cameraGroup.add.x));
+    ctx.stroke();
+    ctx.strokeStyle = "pink";
+    ctx.beginPath();
+    ctx.moveTo(cameraGroup.center.x + canvas1.width / 2 * PixelSpacing, 0);
+    ctx.lineTo(cameraGroup.center.x + canvas1.width / 2 * PixelSpacing, canvas1.height);
+    ctx.stroke();
+
+    // 畫第二張圖
+    var ctx = canvas2.getContext("2d");
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "yellow";
+    ctx.beginPath();
+    ctx.moveTo(0, newCenter.distance / PixelSpacing);
+    ctx.lineTo(canvas2.width, newCenter.distance / PixelSpacing);
+    ctx.stroke();
+    ctx.strokeStyle = "blue";
+    ctx.beginPath();
+    ctx.moveTo(cameraGroup.center.y, 0); ctx.lineTo(cameraGroup.center.y, canvas2.width);
+    ctx.stroke();
+
+    // 畫第三張圖
+    var ctx = canvas3.getContext("2d");
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "pink";
+    ctx.beginPath();
+    ctx.moveTo(0, cameraGroup.center.x); ctx.lineTo(canvas3.width, cameraGroup.center.x);
+    ctx.stroke();
+    ctx.strokeStyle = "blue";
+    ctx.beginPath();
+    ctx.moveTo(cameraGroup.center.y + canvas3.width / 2 * PixelSpacing, 0); ctx.lineTo(cameraGroup.center.y + canvas3.width / 2 * PixelSpacing, canvas3.width);
+    ctx.stroke();
+    console.log(cameraGroup)
 }
 
 function create8BitImageData(image) {
@@ -120,9 +172,8 @@ getByid("ImgMPR3").onclick = function () {
 
     // 建立用於方便運算座標的物件
     var MprObject = new Array(Sops.length);
-    var minX = Number.MAX_VALUE, maxX = Number.MIN_VALUE;
-    var minY = Number.MAX_VALUE, maxY = Number.MIN_VALUE;
-    var minZ = Number.MAX_VALUE, maxZ = Number.MIN_VALUE;
+    var minX = minY = minZ = Number.MAX_VALUE
+    var maxX = maxY = maxZ = Number.MIN_VALUE;
     for (var i in Sops) {
         if (Sops[i].Image.imageDataLoaded == false && Sops[i].Image.loadImageData) Sops[i].Image.loadImageData();
         MprObject[i] = {};
@@ -145,34 +196,70 @@ getByid("ImgMPR3").onclick = function () {
     var centerX = minX + Width / 2 * PixelSpacing, centerY = minY + Height / 2 * PixelSpacing, centerZ = (maxZ + minZ) / 2;
 
     // 第一個畫面
-    var canvas = createElem("Canvas", "MPR3Canvas1", "MPR3Canvas");
+    var canvas1 = canvas = createElem("Canvas", "MPR3Canvas1", "MPR3Canvas");
     canvas.width = Width; canvas.height = Deep;
     canvas.style.translate = `${-canvas.width / 2}px ${-canvas.height / 2}px`;
-    //canvas.style.scale = `${1 / MprObject[0].pixelSpacing[0]}`;
+    canvas.style.scale = `1 ${1 / PixelSpacing}`;
+    canvas1.camera = createMPRCameraX(canvas.width, canvas.height, centerX, centerY, centerZ, PixelSpacing);
     getByid("MPR3box1").appendChild(canvas);
-    var camera = createMPRCameraX(canvas.width, canvas.height, centerX, centerY, centerZ, PixelSpacing);
-    displayImageWithMPRCamera(canvas, MprObject, camera);
 
     // 第二個畫面
-    var canvas = createElem("Canvas", "MPR3Canvas2", "MPR3Canvas");
+    var canvas2 = canvas = createElem("Canvas", "MPR3Canvas2", "MPR3Canvas");
     canvas.width = Width; canvas.height = Deep;
     canvas.style.translate = `${-canvas.width / 2}px ${-canvas.height / 2}px`;
-    //canvas.style.scale = `${1 / MprObject[0].pixelSpacing[0]}`;
+    canvas.style.scale = `1 ${1 / PixelSpacing}`;
+    canvas2.camera = createMPRCameraY(canvas.width, canvas.height, centerX, centerY, centerZ, PixelSpacing);
     getByid("MPR3box2").appendChild(canvas);
-    var camera = createMPRCameraY(canvas.width, canvas.height, centerX, centerY, centerZ, PixelSpacing);
-    displayImageWithMPRCamera(canvas, MprObject, camera);
 
     // 第三個畫面
-    var canvas = createElem("Canvas", "MPR3Canvas3", "MPR3Canvas");
+    var canvas3 = canvas = createElem("Canvas", "MPR3Canvas3", "MPR3Canvas");
     canvas.width = Width; canvas.height = Height;
     canvas.style.translate = `${-canvas.width / 2}px ${-canvas.height / 2}px`;
-    //canvas.style.scale = `${1 / MprObject[0].pixelSpacing[0]}`;
+    canvas3.camera = createMPRCameraZ(canvas.width, canvas.height, centerX, centerY, centerZ, PixelSpacing);
     getByid("MPR3box3").appendChild(canvas);
-    var camera = createMPRCameraZ(canvas.width, canvas.height, centerX, centerY, centerZ, PixelSpacing);
-    displayImageWithMPRCamera(canvas, MprObject, camera);
 
+    // 建立相機群組
+    var CameraGroup = {};
+    CameraGroup.cameras = [canvas1.camera, canvas2.camera, canvas3.camera];
+    CameraGroup.center = new Point3D(centerX, centerY, centerZ);
+    CameraGroup.add = new Point3D(0, 0, 0);
+    CameraGroup.PixelSpacing = PixelSpacing;
+
+    // 註冊事件
+    canvas1.MprObject = canvas2.MprObject = canvas3.MprObject = MprObject;
+    canvas1.canvasGroup = canvas2.canvasGroup = canvas3.canvasGroup = [canvas1, canvas2, canvas3];
+    canvas1.cameraGroup = canvas2.cameraGroup = canvas3.cameraGroup = CameraGroup;
+    canvas1.onmousemove = canvas2.onmousemove = canvas3.onmousemove = MouseMoveMPR;
+    // 畫線
+    drawLineForMPR(MprObject, [canvas1, canvas2, canvas3], CameraGroup);
     // 顯示MPR
+    displayImageWithMPRCamera(canvas1, MprObject, canvas1.camera, canvas1.cameraGroup);
+    displayImageWithMPRCamera(canvas2, MprObject, canvas2.camera, canvas2.cameraGroup);
+    displayImageWithMPRCamera(canvas3, MprObject, canvas3.camera, canvas3.cameraGroup);
     Pages.displayPage("MPRPage");
+
+    MprObject2 = MprObject;
+    canvasGroup2 = [canvas1, canvas2, canvas3];
+    cameraGroup2 = CameraGroup;
+}
+
+function getMousePos(canvas, e) {
+    const rect = canvas.getBoundingClientRect();
+    return { x: e.pageX - rect.left, y: e.pageY - rect.top };
+}
+
+function MouseMoveMPR(e) {
+    var canvas = e.target, MprObject = canvas.MprObject, camera = canvas.camera;
+    var pos = getMousePos(canvas, e);
+    if (canvas == canvas.canvasGroup[0]) {
+        canvas.cameraGroup.add.z = pos.y;
+        for (var i = 0; i < canvas.cameraGroup.cameras[2].Points.length; i++)
+            canvas.cameraGroup.cameras[2].Points[i].z = canvas.cameraGroup.cameras[2].originPoints[i].z - canvas.cameraGroup.add.z + canvas.height / 2;//canvas.cameraGroup.add.z;
+        displayImageWithMPRCamera(canvas, MprObject, canvas.camera, canvas.cameraGroup);
+        displayImageWithMPRCamera(canvas.canvasGroup[1], MprObject, canvas.canvasGroup[1].camera, canvas.cameraGroup);
+        displayImageWithMPRCamera(canvas.canvasGroup[2], MprObject, canvas.canvasGroup[2].camera, canvas.cameraGroup);
+        drawLineForMPR(MprObject, canvas.canvasGroup, canvas.cameraGroup);
+    }
 }
 
 // 一個包含最近像素資訊的物件，或在找不到時回傳 null。
