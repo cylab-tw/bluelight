@@ -208,7 +208,12 @@ class BlueLightViewPort {
                 if (emptyCount == tags.length + vals.length && emptyCount > 0) continue;
 
                 // 如果看起來像亂碼的比率過高，改用UTF-8
-                if (looksLikeMojibake(str)) str = "" + (fixMojibake(str));
+                //if (looksLikeMojibake(str)) str = "" + (fixMojibake(str));
+                if (looksLikeMojibake(str) && this.content.image.SpecificCharacterSet) {
+                    try {
+                        str = window['dicom-character-set'].convertBytes(this.content.image.SpecificCharacterSet, new Uint8Array(str.split('').map(ch => ch.charCodeAt(0))), { vr: 'LT' });
+                    } catch (ex) { console.log(ex); }
+                }
 
                 if (labels == DicomTags.LT) this.labelLT.innerHTML += " " + str + "<br/>";
                 if (labels == DicomTags.LB) this.labelLB.innerHTML += " " + str + "<br/>";
@@ -300,14 +305,14 @@ class BlueLightViewPort {
 
         this.Sop = Sop;
         //requestAnimationFrame(() => {
-            if (Sop.type == 'sop') DcmLoader(Sop.Image, this);
-            else if (Sop.type == 'frame') {
-                this.framesNumber = 0;
-                DcmLoader(Sop.Image, this);
-            }
-            else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, Sop);
-            else if (Sop.type == 'ecg') EcgLoader(Sop);
-            else if (Sop.type == 'img') DcmLoader(Sop.Image, this);
+        if (Sop.type == 'sop') DcmLoader(Sop.Image, this);
+        else if (Sop.type == 'frame') {
+            this.framesNumber = 0;
+            DcmLoader(Sop.Image, this);
+        }
+        else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, Sop);
+        else if (Sop.type == 'ecg') EcgLoader(Sop);
+        else if (Sop.type == 'img') DcmLoader(Sop.Image, this);
         //});
     }
 

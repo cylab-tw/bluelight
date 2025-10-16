@@ -507,9 +507,9 @@ function html_onload() {
     Mark_previous_choose = null;
   }
 
-  getByid("settingImg").onclick = function () {
+  /*getByid("settingImg").onclick = function () {
 
-  }
+  }*/
 
   getByid("removeAllRuler").onclick = function () {
     var removeRulerWindow = document.createElement("DIV");

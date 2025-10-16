@@ -779,8 +779,25 @@ function createDicomTagsList2Viewport(viewport) {
             el1.tag = "" + el;
             var content = dicomParser.explicitElementToString(viewport.content.image.data, el1);
             if (content) {
-                viewport.DicomTagsList.push([tag, el1.name, content]);
-                viewport.DicomTagsList[el1.name] = content;
+                if (viewport.content?.image?.SpecificCharacterSet &&
+                    (el1.vr === 'PN' || el1.vr === 'LO' || el1.vr === 'SH'
+                        || el1.vr === 'ST' || el1.vr === 'LT' || el1.vr === 'UT')) {
+                    try {
+                        var dataSet = viewport.content.image.data, name = ("" + el1.name).toLowerCase();
+                        var str = window['dicom-character-set'].convertBytes(viewport.content?.image?.SpecificCharacterSet, new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[el].dataOffset, dataSet.elements[el].length), { vr: 'LT' });
+                        if (str) {
+                            viewport.DicomTagsList.push([tag, el1.name, str]);
+                            viewport.DicomTagsList[el1.name] = str;
+                        } else {
+                            viewport.DicomTagsList.push([tag, el1.name, content]);
+                            viewport.DicomTagsList[el1.name] = content;
+                        }
+                    } catch (ex) { console.log(ex); }
+                }
+                else {
+                    viewport.DicomTagsList.push([tag, el1.name, content]);
+                    viewport.DicomTagsList[el1.name] = content;
+                }
             } else {
                 var name = ("" + el1.name).toLowerCase();
                 if (!viewport.content.image[name]) {
@@ -802,7 +819,14 @@ function createDicomTagsList2Viewport(viewport) {
                     } else if (el1.vr === 'FL') {
                         viewport.DicomTagsList.push([tag, el1.name, viewport.content.image.data.float(el)]);
                         viewport.DicomTagsList[el1.name] = image.data.float(el);
-                    } else {
+                    } /*else if (viewport.content?.image?.SpecificCharacterSet &&
+                        (el1.vr === 'PN' || el1.vr === 'LO' || el1.vr === 'SH'
+                            || el1.vr === 'ST' || el1.vr === 'LT' || el1.vr === 'UT')) {
+                        var dataSet = viewport.content.image.data;
+                        var str = window['dicom-character-set'].convertBytes(viewport.content?.image?.SpecificCharacterSet, new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[el1.name].dataOffset, dataSet.elements[el1.name].length), { vr: 'LT' });
+                        viewport.DicomTagsList.push([tag, el1.name, str]);
+                        viewport.DicomTagsList[el1.name] = "";
+                    }*/ else {
                         viewport.DicomTagsList.push([tag, el1.name, ""]);
                         viewport.DicomTagsList[el1.name] = "";
                     }

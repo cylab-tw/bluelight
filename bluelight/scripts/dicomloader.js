@@ -34,6 +34,7 @@ function getDefaultImageObj(dataSet, type) {
 
     
     imageObj.PatientName = dataSet.string('x00100010');
+    imageObj.SpecificCharacterSet = dataSet.string('x00080005');
     // 不再使用此方法處理亂碼問題，改在顯示時處理
     // if (dataSet.elements[Tag.PatientName]) imageObj.PatientName = (new TextDecoder('utf-8')).decode(new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length));
 

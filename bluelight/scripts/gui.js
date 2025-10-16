@@ -454,8 +454,15 @@ function setCommonLabel(viewportNum = viewportNumber) {
     return;
   }
 
-  if (viewport.tags.PatientName) 
-    viewport.setLabel("PatientName", "" + viewport.content.image.PatientName);
+  if (viewport.tags.PatientName) {
+    // var decoder = DetectSpecificCharacterSet(viewport.content?.image?.SpecificCharacterSet);
+    // var str = decoder.decode(new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length)).trim().replace(/\0/g, '');
+    if (viewport.content?.image?.SpecificCharacterSet){
+        var dataSet = viewport.content?.image?.data;
+        var str = window['dicom-character-set'].convertBytes(viewport.content?.image?.SpecificCharacterSet, new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length), { vr: 'LT' });
+    } else str = viewport.content.image.PatientName;
+    viewport.setLabel("PatientName", "" + str /*viewport.content.image.PatientName*/);
+  }
 
   if (viewport.content.image.Orientation) {
     var orien = viewport.content.image.Orientation;
