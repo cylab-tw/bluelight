@@ -286,26 +286,27 @@ function readDicomMark(dataSet) {
           }
 
           try {
-            for (var i in dataSet.elements.x00700001.items) {
-              for (var d1 = 0; d1 < dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items.length; d1++) {
-                var tempsop = dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items[d1].dataSet.string(Tag.ReferencedSOPInstanceUID)
-                if (tempsop == sop1) {
-                  tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
-                  try {
-                    POLYLINE_Function(tempDataSet, "", undefined);
-                  } catch (ex) { }
-                  try {
-                    for (var g = 0; g < dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items.length; g++) {
-                      try {
-                        GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[g].dataSet.string(Tag.UnformattedTextValue);
-                        tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items;
-                        POLYLINE_Function(tempDataSet, "", g);
-                      } catch (ex) { }
-                    }
-                  } catch (ex) { }
-                };
-
-                if (tempsop != sop1) continue;
+            if (dataSet.elements.x00700001) {
+              for (var i in dataSet.elements.x00700001.items) {
+                for (var d1 = 0; d1 < dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items.length; d1++) {
+                  var tempsop = dataSet.elements.x00700001.items[i].dataSet.elements.x00081140.items[d1].dataSet.string(Tag.ReferencedSOPInstanceUID)
+                  if (tempsop == sop1 && dataSet.elements.x00700001.items[i].dataSet.elements.x00700009) {
+                    tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700009.items;
+                    try {
+                      POLYLINE_Function(tempDataSet, "", undefined);
+                    } catch (ex) { }
+                    try {
+                      for (var g = 0; g < dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items.length; g++) {
+                        try {
+                          GSPS_Text = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items[g].dataSet.string(Tag.UnformattedTextValue);
+                          tempDataSet = dataSet.elements.x00700001.items[i].dataSet.elements.x00700008.items;
+                          POLYLINE_Function(tempDataSet, "", g);
+                        } catch (ex) { }
+                      }
+                    } catch (ex) { }
+                  };
+                  if (tempsop != sop1) continue;
+                }
               }
             }
             if (sop1) refreshMarkFromSop(sop1);
