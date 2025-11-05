@@ -290,6 +290,7 @@ class BlueLightViewPort {
         if (this.study == undefined) return;
         var Sop = ImageManager.getSopByQRLevels(this.QRLevels);
         if (Sop.pdf) PdfLoader(Sop.pdf);
+        else if (Sop.sr) SrLoader(Sop);
         else if (Sop.ecg) EcgLoader(Sop);
         else this.loadImgBySop(Sop);
     }
@@ -311,6 +312,7 @@ class BlueLightViewPort {
             DcmLoader(Sop.Image, this);
         }
         else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, Sop);
+        else if (Sop.type == 'sr') SrLoader(Sop);
         else if (Sop.type == 'ecg') EcgLoader(Sop);
         else if (Sop.type == 'img') DcmLoader(Sop.Image, this);
         //});

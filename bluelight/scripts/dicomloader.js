@@ -3,6 +3,7 @@ function loadSopFromDataSet(dataSet, type) {
     var imageObj = getDefaultImageObj(dataSet, type);
     if (type == 'pdf') setPDF(imageObj);
     if (type == 'ecg') setECG(imageObj);
+    if (type == 'sr') imageObj.sr = {/*setSR*/}; 
 
     var Sop = ImageManager.pushStudy(imageObj); //註冊此Image至Viewer
     if (!Sop) return;
@@ -32,7 +33,7 @@ function getDefaultImageObj(dataSet, type) {
     imageObj.PatientAge = dataSet.string('x00101010');
     imageObj.PatientID = dataSet.string('x00100020');
 
-    
+
     imageObj.PatientName = dataSet.string('x00100010');
     imageObj.SpecificCharacterSet = dataSet.string('x00080005');
     // 不再使用此方法處理亂碼問題，改在顯示時處理
@@ -181,7 +182,7 @@ function getPixelDataFromColorLookupTable(imageObj, dataSet) {
 
 function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
     function IfNoWL(imageObj, dataSet, pixelData) {
-        if (isNaN(imageObj.windowCenter) || isNaN(imageObj.windowWidth) ) {
+        if (isNaN(imageObj.windowCenter) || isNaN(imageObj.windowWidth)) {
             var max = Number.MIN_VALUE, min = Number.MAX_VALUE;
             for (var i = 0; i < pixelData.length; i++) {
                 if (pixelData[i] > max) max = pixelData[i];

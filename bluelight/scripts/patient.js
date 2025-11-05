@@ -291,6 +291,7 @@ class BlueLightImageManager {
             Sop.Image = imageObj;
             Sop.InstanceNumber = Sop.Image.InstanceNumber;
             Sop.pdf = Sop.Image.pdf;
+            Sop.sr = Sop.Image.sr;
             Sop.dataSet = imageObj.data;
             Sop.parent = parent;
             this.SopMap[Sop.SOPInstanceUID] = Sop;

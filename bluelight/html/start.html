@@ -60,7 +60,7 @@
 <body style="background-color:#000000;" onmousewheel="/*return false;*/">
   <header class="page-header" id="page-header">
     <span id="icon-list">
-      <span id="openFile_span"><img class="img pdf ecg" type="file" alt="Open File" altzhtw="開啟檔案" id="openFile"
+      <span id="openFile_span"><img class="img pdf ecg sr" type="file" alt="Open File" altzhtw="開啟檔案" id="openFile"
           src="../image/icon/lite/openfile.png" width="50" height="50"></span>
       <span id="MouseOperation_span"><img class="img VR MPR SEG" alt="Move & Zoom" altzhtw="平移與縮放" id="MouseOperation"
           src="../image/icon/lite/b_Pan.png" width="50" height="50"></span>
@@ -232,7 +232,7 @@
           <span id="downloadDcm_span">
             <img altzhtw="下載DICOM" alt="download DICOM" class="innerimg" loading="lazy" id="downloadDcm"
               src="../image/icon/lite/download_dcm.png" width="50" height="50">
-          </span> <br>
+          </span>  <br>
           <!--<span id="Setting_span">
             <img altzhtw="設定" alt="setting" class="innerimg" loading="lazy" id="settingImg"
               src="../image/icon/lite/b_Setting.png" width="50" height="50">
@@ -294,6 +294,7 @@
       <div id="pages">
         <div class="page" id="DicomPage"></div>
         <div class="page" id="PdfPage" style='display:none'></div>
+        <div class="page" id="SrPage" style='display:none'></div>
         <div class="page" id="EcgPage" style='display:none'>
           <div id="ECGOptionsDIV">
             <span>

@@ -305,6 +305,135 @@ function guid() {
     return (s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4());
 }
 
+function SrLoader(Sop) {
+    Pages.displayPage("SrPage");
+    img2darkByClass("sr", false);
+    leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
+    var iFrame = document.createElement("iframe");
+    iFrame.className = "SRView";
+    iFrame.id = "SRView";
+    const dateString = Sop.dataSet.string(Tag.ContentDate) + Sop.dataSet.string(Tag.ContentTime);
+
+    // 1. 將字串轉換為 JavaScript Date 物件
+    // 格式化為 ISO 8601 標準格式 (YYYY-MM-DDTHH:mm:ss)，這樣 new Date() 才能正確解析
+    const isoString =
+        dateString.substring(0, 4) + '-' +  // 年 (2025)
+        dateString.substring(4, 6) + '-' +  // 月 (10)
+        dateString.substring(6, 8) + 'T' +  // 日 (19)
+        dateString.substring(8, 10) + ':' + // 時 (01)
+        dateString.substring(10, 12) + ':' +// 分 (13)
+        dateString.substring(12, 14);     // 秒 (27)
+
+    // 預設它是一個本地時間，但最好的做法是明確指定時區， 如果不指定時區，new Date(isoString) 會被解析為執行環境的本地時間
+    const date = new Date(isoString);
+
+    // 2. 使用 Intl.DateTimeFormat 進行格式化
+    const options = {
+        year: 'numeric',
+        month: 'short', // 'Oct'
+        day: 'numeric', // '19'
+        hour: 'numeric',  // 12小時制
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true, // 顯示 AM/PM
+    };
+
+    // 'en-US' (美式英文) 語言環境最接近您要的格式
+    const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
+
+    var PersonObserverInformation = "";
+    var ContentSequence = Sop.dataSet.elements[Tag.ContentSequence];
+    function dumpContentSequence(ContentSequence, level) {
+        for (var i = 0; i < ContentSequence.items.length; i++) {
+            var ValueType = ContentSequence.items[i].dataSet.string(Tag.ValueType);
+            if (ValueType == "CONTAINER") {
+                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
+                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
+                PersonObserverInformation += "<br>";
+                dumpContentSequence(ContentSequence.items[i].dataSet.elements[Tag.ContentSequence], level + 1);
+                PersonObserverInformation += "<br>";
+            }
+            else if (ValueType == "TEXT") {
+                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
+                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
+                PersonObserverInformation += ":";
+                PersonObserverInformation += ContentSequence.items[i].dataSet.string(Tag.TextValue);
+                PersonObserverInformation += "<br>";
+            }
+            else if (ValueType == "CODE") {
+                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
+                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
+                PersonObserverInformation += ":";
+                PersonObserverInformation += ContentSequence.items[i].dataSet.string(Tag.TextValue);
+                PersonObserverInformation += "<br>";
+            }
+            else if (ValueType == "NUM") {
+                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
+                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
+                PersonObserverInformation += ":";
+                PersonObserverInformation += ContentSequence.items[i].dataSet.string(Tag.TextValue);
+                PersonObserverInformation += "<br>";
+            }
+            else if (ValueType == "IMAGE") {
+                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
+               PersonObserverInformation += '<font color="blue">Image</font>'
+                PersonObserverInformation += "<br>";
+            }
+        }
+    }
+    dumpContentSequence(ContentSequence, 0);
+    iFrame.srcdoc = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Embedded Content</title>
+            <style>
+            .SRTable{
+                border-collapse: separate;
+                border-spacing: 20px 0;
+            }
+            </style>
+        </head>
+        <body style="background:white">
+            <h1>Image Measurement Report</h1>
+            <p>${"" + formattedDate}</p>
+            <table class="SRTable">
+                <thead>
+                    <tr>
+                    <th>Patient</th>
+                    <th>Study</th>
+                    <th>ReportStatus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                           PatientName:${Sop.dataSet.string(Tag.PatientName)}<br>
+                           PatientID:${Sop.dataSet.string(Tag.PatientID)}<br>
+                           PatientBirthDate:${Sop.dataSet.string(Tag.PatientBirthDate)}<br>
+                           PatiePatientSexntName: ${Sop.dataSet.string(Tag.PatientSex)}
+                        </td>
+                        <td>
+                            StudyDate:${Sop.dataSet.string(Tag.StudyDate)}<br>
+                            StudyID:${Sop.dataSet.string(Tag.StudyID)}<br>
+                            AccessioNumber:${Sop.dataSet.string(Tag.AccessioNumber)}<br>
+                            Referring Physician's Name:${Sop.dataSet.string(Tag.ReferringPhysicianName)}
+                        </td>
+                        <td>
+                            Completion Flag:${Sop.dataSet.string(Tag.CompletionFlag)}<br>
+                            Verification Flag:${Sop.dataSet.string(Tag.VerificationFlag)}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr>
+            <p>${PersonObserverInformation}</p>
+        </body>
+        </html>
+        `;
+    getByid("SrPage").appendChild(iFrame);
+}
+
 function PdfLoader(pdf, Sop) {
     Pages.displayPage("PdfPage");
     img2darkByClass("pdf", false);
@@ -651,6 +780,9 @@ function loadDicomDataSet(fileData) {
     //ECG
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID._12_leadECGWaveformStorage)
         Sop = loadSopFromDataSet(dataSet, 'ecg');
+
+    else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.ComprehensiveSR)
+        Sop = loadSopFromDataSet(dataSet, 'sr');
 
     //CAD 
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.MammographyCADSR) { }
