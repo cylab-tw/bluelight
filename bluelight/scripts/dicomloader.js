@@ -3,7 +3,7 @@ function loadSopFromDataSet(dataSet, type) {
     var imageObj = getDefaultImageObj(dataSet, type);
     if (type == 'pdf') setPDF(imageObj);
     if (type == 'ecg') setECG(imageObj);
-    if (type == 'sr') imageObj.sr = {/*setSR*/}; 
+    if (type == 'sr') imageObj.sr = {/*setSR*/ };
 
     var Sop = ImageManager.pushStudy(imageObj); //註冊此Image至Viewer
     if (!Sop) return;
@@ -104,6 +104,8 @@ function getDefaultImageObj(dataSet, type) {
     imageObj.data = dataSet;
 
     //////////
+
+    imageObj.isBigEndian = dataSet.string(Tag.TransferSyntaxUID) == "1.2.840.10008.1.2.2";
 
     imageObj.imageDataLoaded = false;
     if (type == "sop") {
@@ -238,6 +240,46 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
         pixelData = outputArray;
         return pixelData;
     }
+    function parsePixelData(buffer, pixelRepresentation, bitsStored, bitsAllocated, isBigEndian) {
+        const length = buffer.byteLength;
+        const srcBytes = new Uint8Array(buffer);
+
+        // 8-bit 資料不受 Endian 影響 (因為只有一個 byte)，直接回傳
+        if (bitsAllocated === 8) return pixelRepresentation === 1 ? new Int8Array(buffer) : new Uint8Array(buffer);
+
+        // 16 Bits Allocated (最常見)
+        if (bitsAllocated === 16) {
+            const numPixels = length / 2;
+            const destArray = pixelRepresentation === 1 ? new Int16Array(numPixels) : new Uint16Array(numPixels);
+
+            // 計算出遮罩: 例如 10 bits -> 0000 0011 1111 1111 (0x03FF)
+            const mask = (1 << bitsStored) - 1; // 如果 bitsStored 等於 16，mask 就是 0xFFFF，相當於不做遮罩
+            const signBit = 1 << (bitsStored - 1); // 計算符號位: 例如 10 bits -> 第 10 位 (index 9) 是 1
+
+            // 預先計算符號擴充用的補碼遮罩 (避免在迴圈中重複計算)
+            // ~mask 在 16-bit 下的結果。例如 mask=0x03FF, antiMask=0xFC00
+            const signExtensionMask = ~mask;
+
+            for (let i = 0; i < numPixels; i++) {
+                const byteA = srcBytes[i * 2]; const byteB = srcBytes[i * 2 + 1];
+                let rawValue;
+
+                // 1. 處理 Endian (Byte Swapping)
+                if (isBigEndian) rawValue = (byteA << 8) | byteB; // Big Endian: 高位在前 (byteA), 低位在後 (byteB)
+                else rawValue = byteA | (byteB << 8); // Little Endian: 低位在前 (byteA), 高位在後 (byteB)
+
+                // 2. 套用遮罩 (Masking)，如果 bitsStored 是 16，這步其實是多餘的但沒差；如果不是便會影響
+                let maskedValue = rawValue & mask;
+
+                // 3. 處理有號數的符號擴充 (Sign Extension)
+                // 只有當是有號數 且 該數值在 bitsStored 定義的符號位上是 1 時才執行， 將高位補滿 1，使其成為正確的負數
+                if (pixelRepresentation === 1 && (maskedValue & signBit)) maskedValue = maskedValue | signExtensionMask;
+                destArray[i] = maskedValue;
+            }
+
+            return destArray;
+        }
+    }
     function PixelProcessing(imageObj, dataSet, pixelData) {
         pixelData = dealAssumingRGB(imageObj, dataSet, pixelData);
         pixelData = YBR(imageObj, dataSet, pixelData);
@@ -293,20 +335,15 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
         if (frameOffset >= dataSet.byteArray.length) throw new Error('frame exceeds size of pixelData');
 
         //PixelRepresentation = 0 -> unsigned, PixelRepresentation = 1 -> signed
-        if (dataSet.uint16('x00280103') == 1) {
-            switch (dataSet.uint16('x00280100')) {
-                case 8: return PixelProcessing(imageObj, dataSet, new Int8Array(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame)));
-                case 16: return PixelProcessing(imageObj, dataSet, new Int16Array(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 2)));
-                case 32: return PixelProcessing(imageObj, dataSet, new Int32Array(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 4)));
-                case 1: return PixelProcessing(imageObj, dataSet, unpackBinaryFrame(dataSet.byteArray, frameOffset * 0.125, new Int8Array(pixelsPerFrame)));
-            }
-        } else {
-            switch (dataSet.uint16('x00280100')) {
-                case 8: return PixelProcessing(imageObj, dataSet, new Uint8Array(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame)));
-                case 16: return PixelProcessing(imageObj, dataSet, new Uint16Array(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 2)));
-                case 32: return PixelProcessing(imageObj, dataSet, new Uint32Array(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 4)));
-                case 1: return PixelProcessing(imageObj, dataSet, unpackBinaryFrame(dataSet.byteArray, frameOffset * 0.125, new Uint8Array(pixelsPerFrame)));
-            }
+        if (dataSet.uint16('x00280100') == 8) return PixelProcessing(imageObj, dataSet, parsePixelData(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame), dataSet.uint16('x00280103'), imageObj.bitsStored, imageObj.bitsAllocated, imageObj.isBigEndian));
+        if (dataSet.uint16('x00280100') == 16) return PixelProcessing(imageObj, dataSet, parsePixelData(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 2), dataSet.uint16('x00280103'), imageObj.bitsStored, imageObj.bitsAllocated, imageObj.isBigEndian));
+        if (dataSet.uint16('x00280100') == 32) {
+            if (dataSet.uint16('x00280103') == 1) return PixelProcessing(imageObj, dataSet, new Int32Array(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 4)));
+            else return PixelProcessing(imageObj, dataSet, new Uint32Array(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 4)));
+        }
+        if (dataSet.uint16('x00280100') == 1) {
+            if (dataSet.uint16('x00280103') == 1) return PixelProcessing(imageObj, dataSet, unpackBinaryFrame(dataSet.byteArray, frameOffset * 0.125, new Int8Array(pixelsPerFrame)));
+            else return PixelProcessing(imageObj, dataSet, unpackBinaryFrame(dataSet.byteArray, frameOffset * 0.125, new Uint8Array(pixelsPerFrame)));
         }
         /*see 364*/
         throw new Error('unsupported pixel format');
