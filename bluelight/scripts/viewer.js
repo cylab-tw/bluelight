@@ -772,6 +772,8 @@ function loadDicomDataSet(fileData) {
     //Mark
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.RTStructureSetStorage)//RTSS
         readDicomMark(dataSet);
+    else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.KeyObjectSelection)//KO
+        loadDicomKO(dataSet);
     else if (dataSet.string(Tag.SOPClassUID) == SOPClassUID.SegmentationStorage)
         loadDicomSeg(getDefaultImageObj(dataSet, 'seg'))
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.GrayscaleSoftcopyPresentationStateStorage)

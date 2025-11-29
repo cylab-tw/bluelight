@@ -331,6 +331,22 @@ function readDicomMark(dataSet) {
   readDicomRTSS(dataSet);
 }
 
+function loadDicomKO(dataSet) {
+  if (dataSet.elements[Tag.ContentSequence] && Array.isArray(dataSet.elements[Tag.ContentSequence].items)) {
+    for (var item of dataSet.elements[Tag.ContentSequence].items) {
+      if (item.dataSet.string(Tag.ValueType) === 'IMAGE') {
+        var KoMark = new BlueLightMark();
+        KoMark.sop = item.dataSet.elements[Tag.ReferencedSOPSequence].items[0].dataSet.string(Tag.ReferencedSOPInstanceUID);
+        KoMark.showName = KoMark.hideName = "KeyObject";
+        KoMark.type = "KO";
+        PatientMark.push(KoMark);
+        refreshMark(KoMark);
+        refreshMarkFromSop(KoMark.sop);
+      }
+    }
+  }
+}
+
 function loadDicomSeg(image) {
   var dataSet = image.data;
 

@@ -464,6 +464,14 @@ function drawTwoDimensionEllipse(canvas, mark, viewport) {
     }
 }
 
+function drawKO(canvas, Mark, viewport) {
+    var ctx = canvas.getContext("2d");
+    ctx.strokeStyle = ctx.fillStyle = "rgba(255, 191, 0, 1)";
+    ctx.font = "" + (32) + "px Arial";
+    ctx.globalAlpha = 1.0;
+    ctx.fillText("★KO", 5, 32);
+}
+
 function drawRTSS(canvas, Mark, viewport) {
     try {
         var ctx = canvas.getContext("2d");
@@ -744,6 +752,9 @@ function displayMark(viewportNum = viewportNumber) {
 
     for (var Mark of patientMark_enable) {
         if (Mark.type == "RTSS") drawRTSS(MarkCanvas, Mark, viewport);
+    }
+    for (var Mark of patientMark_enable) {
+        if (Mark.type == "KO") drawKO(MarkCanvas, Mark, viewport);
     }
 
     for (var Mark of patientMark_enable) {
