@@ -58,5 +58,6 @@
     "//_thumnail_witdth": "縮圖寬度",
     "thumnail_witdth": 70,
     "//_study_comparison": "進片模式",
-    "study_comparison": false
+    "study_comparison": false,
+    "AdvanceMode": true
 }

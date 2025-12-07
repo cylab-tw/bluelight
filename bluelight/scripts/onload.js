@@ -218,6 +218,7 @@ function readConfigJson(url, readAllJson, readJson) {
   request.send();
   request.onload = function () {
     var DicomResponse = JSON.parse(request.responseText);
+    if (DicomResponse["AdvanceMode"] == true) AddAdvanceFunction();
     var QIDOResponse = DicomResponse["DICOMWebServersConfig"][0]; //取第一個
     var WADOResponse = DicomResponse["DICOMWebServersConfig"][0]; //取第一個
     var tempResponse = DicomResponse["DICOMWebServersConfig"][0]; //取第一個
@@ -232,8 +233,8 @@ function readConfigJson(url, readAllJson, readJson) {
           if (AETitle.includes(",")) {
             for (var i = 0; i < ServersConfig.length; i++) {
               var [AETitle1, AETitle2] = AETitle.split(",");
-              if (ServersConfig[i]["AETitle"] == AETitle1) QIDOResponse  = ServersConfig[i];
-              if (ServersConfig[i]["AETitle"] == AETitle2) WADOResponse  = ServersConfig[i];
+              if (ServersConfig[i]["AETitle"] == AETitle1) QIDOResponse = ServersConfig[i];
+              if (ServersConfig[i]["AETitle"] == AETitle2) WADOResponse = ServersConfig[i];
             }
           }
           // 僅一個AETitle的情況
@@ -527,5 +528,67 @@ function readJson(url) {
       console.error("Error processing series data:", error);
       showDicomStatus("Error processing series data: " + error.message, true);
     }
+  }
+}
+
+function AddAdvanceFunction() {
+  var Elem = getByid("othereDIv");
+  Elem.innerHTML += `<span id="downloadImg_span">
+            <img altzhtw="下載圖片" alt="download image" class="innerimg" loading="lazy" id="downloadImg"
+              src="../image/icon/lite/download_img.png" width="50" height="50">
+          </span> <br>
+          <span id="downloadDcm_span">
+            <img altzhtw="下載DICOM" alt="download DICOM" class="innerimg" loading="lazy" id="downloadDcm"
+              src="../image/icon/lite/download_dcm.png" width="50" height="50">
+          </span>  <br>`;
+
+  getByid("downloadDcm").onclick = function () {
+    async function downloadFile(url, filename) {
+      const response = await fetch(url);
+      const blob = await response.blob(); // 取得 Blob 物件
+
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); // 產生可下載的物件 URL
+      a.download = filename; // 強制指定下載的檔案名稱與副檔名
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href); // 釋放 URL
+    }
+
+    var Export2dcm = function () {
+      var link = document.createElement('a');
+      link.download = GetViewport().content.image.url.replace(/^.*(\\|\/|\:)/, '');
+
+      link.href = GetViewport().content.image.url;
+      if (GetViewport().content.image.fileExtension == 'mht' && link.download.includes(".mht") == false) return downloadFile(link.href, link.download + ".mht");
+      else if (GetViewport().content.image.fileExtension == 'image') return;
+      else if (link.download.includes(".dcm") == false) link.download = link.download + ".dcm";
+      link.click();
+    }
+    Export2dcm();
+  }
+
+  getByid("downloadImg").onclick = function () {
+    var Export2png = function () {
+      var link = document.createElement('a');
+      link.download = 'dicom.png';
+
+      function BuildCanvas(oldCanvas) {
+        var newCanvas = document.createElement('canvas');
+        newCanvas.width = oldCanvas.width;
+        newCanvas.height = oldCanvas.height;
+        return newCanvas;
+      }
+      var newCanvas = BuildCanvas(GetViewport().canvas);
+      var context = newCanvas.getContext('2d');
+      context.translate(newCanvas.width / 2, newCanvas.height / 2);
+      context.rotate((GetViewport().rotate * Math.PI) / 180);
+      context.drawImage(GetViewport().canvas, -newCanvas.width / 2, -newCanvas.height / 2);
+      context.drawImage(GetViewportMark(), -newCanvas.width / 2, -newCanvas.height / 2);
+      link.href = newCanvas.toDataURL()
+      link.click();
+    }
+    Export2png();
   }
 }

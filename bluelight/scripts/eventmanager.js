@@ -39,11 +39,11 @@ var windowTouchDistX = 0, windowTouchDistY = 0;
 
 //代表按下ctrl
 let KeyCode_ctrl = false;
-//代表Debug模式
-let Develop_Mode = false;
+//切換右鍵模式
+let RightClick_Mode = true;
 
 var contextmenuF = function (e) {
-    if (!Develop_Mode) e.preventDefault();
+    if (!RightClick_Mode) e.preventDefault();
 };
 
 var stopPropagation = function (e) {

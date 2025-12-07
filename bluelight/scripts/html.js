@@ -118,56 +118,6 @@ function html_onload() {
     }
   }
 
-  getByid("downloadDcm").onclick = function () {
-    async function downloadFile(url, filename) {
-      const response = await fetch(url);
-      const blob = await response.blob(); // 取得 Blob 物件
-
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob); // 產生可下載的物件 URL
-      a.download = filename; // 強制指定下載的檔案名稱與副檔名
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(a.href); // 釋放 URL
-    }
-
-    var Export2dcm = function () {
-      var link = document.createElement('a');
-      link.download = GetViewport().content.image.url.replace(/^.*(\\|\/|\:)/, '');
-
-      link.href = GetViewport().content.image.url;
-      if (GetViewport().content.image.fileExtension == 'mht' && link.download.includes(".mht") == false) return downloadFile(link.href, link.download + ".mht");
-      else if (GetViewport().content.image.fileExtension == 'image') return;
-      else if (link.download.includes(".dcm") == false) link.download = link.download + ".dcm";
-      link.click();
-    }
-    Export2dcm();
-  }
-
-  getByid("downloadImg").onclick = function () {
-    var Export2png = function () {
-      var link = document.createElement('a');
-      link.download = 'dicom.png';
-
-      function BuildCanvas(oldCanvas) {
-        var newCanvas = document.createElement('canvas');
-        newCanvas.width = oldCanvas.width;
-        newCanvas.height = oldCanvas.height;
-        return newCanvas;
-      }
-      var newCanvas = BuildCanvas(GetViewport().canvas);
-      var context = newCanvas.getContext('2d');
-      context.translate(newCanvas.width / 2, newCanvas.height / 2);
-      context.rotate((GetViewport().rotate * Math.PI) / 180);
-      context.drawImage(GetViewport().canvas, -newCanvas.width / 2, -newCanvas.height / 2);
-      context.drawImage(GetViewportMark(), -newCanvas.width / 2, -newCanvas.height / 2);
-      link.href = newCanvas.toDataURL()
-      link.click();
-    }
-    Export2png();
-  }
-
   getByid("MouseOperation").onclick = function () {
     if (this.enable == false) return;
     hideAllDrawer();
