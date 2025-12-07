@@ -218,41 +218,69 @@ function readConfigJson(url, readAllJson, readJson) {
   request.send();
   request.onload = function () {
     var DicomResponse = JSON.parse(request.responseText);
-    var tempResponse = DicomResponse["DICOMWebServersConfig"][0];
+    var QIDOResponse = DicomResponse["DICOMWebServersConfig"][0]; //取第一個
+    var WADOResponse = DicomResponse["DICOMWebServersConfig"][0]; //取第一個
+    var tempResponse = DicomResponse["DICOMWebServersConfig"][0]; //取第一個
+    // 若有指定Site，則更改指定目標
+    if (location.search.includes("Site=")) {
+      var vars = location.search.substring(1).split("&");
+      var ServersConfig = DicomResponse["DICOMWebServersConfig"];
+      for (var parm of vars) {
+        if (parm.includes("Site=")) {
+          var AETitle = parm.replace("Site=", "");
+          // 指定兩個AETitle的情況
+          if (AETitle.includes(",")) {
+            for (var i = 0; i < ServersConfig.length; i++) {
+              var [AETitle1, AETitle2] = AETitle.split(",");
+              if (ServersConfig[i]["AETitle"] == AETitle1) QIDOResponse  = ServersConfig[i];
+              if (ServersConfig[i]["AETitle"] == AETitle2) WADOResponse  = ServersConfig[i];
+            }
+          }
+          // 僅一個AETitle的情況
+          else {
+            for (var i = 0; i < ServersConfig.length; i++) {
+              if (ServersConfig[i]["AETitle"] == AETitle)
+                QIDOResponse = WADOResponse = ServersConfig[i];
+            }
+          }
+        }
+      }
+    }
+
     config.QIDO = {};
     config.WADO = {};
     config.STOW = {};
     config.Xml2Dcm = {};
 
-    config.QIDO .hostname = tempResponse["QIDO-hostname"];
-    config.QIDO .https = tempResponse["QIDO-enableHTTPS"] == true ? "https" : "http";
-    config.QIDO .PORT = tempResponse["QIDO-PORT"];
-    config.QIDO .service = tempResponse["QIDO"];
-    config.QIDO .limit = tempResponse["limit"] ? tempResponse["limit"] : null;
-    config.QIDO .contentType = tempResponse["contentType"];
-    config.QIDO .timeout = tempResponse["timeout"];
-    config.QIDO .charset = tempResponse["charset"];
-    config.QIDO .includefield = tempResponse["includefield"];
-    config.QIDO .token = tempResponse["token"];
-    config.QIDO .enableRetrieveURI = tempResponse["enableRetrieveURI"];
-    //config.QIDO .enableXml2Dcm=tempResponse["enableXml2Dcm"];
-    //config.QIDO .Xml2DcmUrl=tempResponse["Xml2DcmUrl"];
+    config.QIDO.hostname = QIDOResponse["QIDO-hostname"];
+    config.QIDO.https = QIDOResponse["QIDO-enableHTTPS"] == true ? "https" : "http";
+    config.QIDO.PORT = QIDOResponse["QIDO-PORT"];
+    config.QIDO.service = QIDOResponse["QIDO"];
+    config.QIDO.limit = QIDOResponse["limit"] ? QIDOResponse["limit"] : null;
+    config.QIDO.contentType = QIDOResponse["contentType"];
+    config.QIDO.timeout = QIDOResponse["timeout"];
+    config.QIDO.charset = QIDOResponse["charset"];
+    config.QIDO.includefield = QIDOResponse["includefield"];
+    config.QIDO.token = QIDOResponse["token"];
+    config.QIDO.enableRetrieveURI = QIDOResponse["enableRetrieveURI"];
+    //config.QIDO .enableXml2Dcm=QIDOResponse["enableXml2Dcm"];
+    //config.QIDO .Xml2DcmUrl=QIDOResponse["Xml2DcmUrl"];
 
-    config.WADO.hostname = tempResponse["WADO-hostname"];
-    config.WADO.https = tempResponse["WADO-enableHTTPS"] == true ? "https" : "http";
-    config.WADO.PORT = tempResponse["WADO-PORT"];
-    config.WADO.WADOType = tempResponse["WADO-RS/URI"];
-    if (config.WADO.WADOType == "URI") config.WADO.service = tempResponse["WADO-URI"];
-    else if (config.WADO.WADOType == "RS") config.WADO.service = tempResponse["WADO-RS"];
-    else config.WADO.service = tempResponse["WADO-URI"];
-    config.WADO.contentType = tempResponse["contentType"];
-    config.WADO.timeout = tempResponse["timeout"];
-    config.WADO.includefield = tempResponse["includefield"];
-    config.WADO.token = tempResponse["token"];
-    config.WADO.enableRetrieveURI = tempResponse["enableRetrieveURI"];
+    config.WADO.hostname = WADOResponse["WADO-hostname"];
+    config.WADO.https = WADOResponse["WADO-enableHTTPS"] == true ? "https" : "http";
+    config.WADO.PORT = WADOResponse["WADO-PORT"];
+    config.WADO.WADOType = WADOResponse["WADO-RS/URI"];
+    if (config.WADO.WADOType == "URI") config.WADO.service = WADOResponse["WADO-URI"];
+    else if (config.WADO.WADOType == "RS") config.WADO.service = WADOResponse["WADO-RS"];
+    else config.WADO.service = WADOResponse["WADO-URI"];
+    config.WADO.contentType = WADOResponse["contentType"];
+    config.WADO.timeout = WADOResponse["timeout"];
+    config.WADO.includefield = WADOResponse["includefield"];
+    config.WADO.token = WADOResponse["token"];
+    config.WADO.enableRetrieveURI = WADOResponse["enableRetrieveURI"];
 
-    //config.WADO.enableXml2Dcm=tempResponse["enableXml2Dcm"];
-    //config.WADO.Xml2DcmUrl=tempResponse["Xml2DcmUrl"];
+    //config.WADO.enableXml2Dcm=WADOResponse["enableXml2Dcm"];
+    //config.WADO.Xml2DcmUrl=WADOResponse["Xml2DcmUrl"];
 
     config.STOW.hostname = tempResponse["STOW-hostname"];
     config.STOW.https = tempResponse["enableHTTPS"] == true ? "https" : "http";
