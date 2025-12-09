@@ -309,13 +309,16 @@ function SrLoader(Sop) {
     Pages.displayPage("SrPage");
     img2darkByClass("sr", false);
     leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
+
+    // Create iframe that will contain the secure document
     var iFrame = document.createElement("iframe");
     iFrame.className = "SRView";
     iFrame.id = "SRView";
+    iFrame.sandbox = "allow-same-origin"; // Prevent script execution in iframe
+
     const dateString = Sop.dataSet.string(Tag.ContentDate) + Sop.dataSet.string(Tag.ContentTime);
 
-    // 1. 將字串轉換為 JavaScript Date 物件
-    // 格式化為 ISO 8601 標準格式 (YYYY-MM-DDTHH:mm:ss)，這樣 new Date() 才能正確解析
+    // Format date safely
     const isoString =
         dateString.substring(0, 4) + '-' +  // 年 (2025)
         dateString.substring(4, 6) + '-' +  // 月 (10)
@@ -324,114 +327,157 @@ function SrLoader(Sop) {
         dateString.substring(10, 12) + ':' +// 分 (13)
         dateString.substring(12, 14);     // 秒 (27)
 
-    // 預設它是一個本地時間，但最好的做法是明確指定時區， 如果不指定時區，new Date(isoString) 會被解析為執行環境的本地時間
     const date = new Date(isoString);
-
-    // 2. 使用 Intl.DateTimeFormat 進行格式化
     const options = {
         year: 'numeric',
-        month: 'short', // 'Oct'
-        day: 'numeric', // '19'
-        hour: 'numeric',  // 12小時制
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
         minute: '2-digit',
         second: '2-digit',
-        hour12: true, // 顯示 AM/PM
+        hour12: true,
     };
-
-    // 'en-US' (美式英文) 語言環境最接近您要的格式
     const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
 
-    var PersonObserverInformation = "";
+    // Helper function to safely create DOM elements from ContentSequence
+    // Returns a DOM element instead of HTML string
     var ContentSequence = Sop.dataSet.elements[Tag.ContentSequence];
-    function dumpContentSequence(ContentSequence, level) {
+    function buildContentSequenceDOM(ContentSequence, level) {
+        var container = document.createElement('div');
+
         for (var i = 0; i < ContentSequence.items.length; i++) {
             var ValueType = ContentSequence.items[i].dataSet.string(Tag.ValueType);
+            var lineDiv = document.createElement('div');
+            lineDiv.style.marginLeft = (level * 4 * 6) + 'px'; // 4 spaces per level, 6px per space
+
             if (ValueType == "CONTAINER") {
-                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
-                PersonObserverInformation += "<br>";
-                dumpContentSequence(ContentSequence.items[i].dataSet.elements[Tag.ContentSequence], level + 1);
-                PersonObserverInformation += "<br>";
+                var codeMeaning = ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
+                lineDiv.textContent = codeMeaning;
+                container.appendChild(lineDiv);
+
+                var childContent = buildContentSequenceDOM(ContentSequence.items[i].dataSet.elements[Tag.ContentSequence], level + 1);
+                container.appendChild(childContent);
+
+                var spacer = document.createElement('br');
+                container.appendChild(spacer);
             }
-            else if (ValueType == "TEXT") {
-                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
-                PersonObserverInformation += ":";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.string(Tag.TextValue);
-                PersonObserverInformation += "<br>";
-            }
-            else if (ValueType == "CODE") {
-                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
-                PersonObserverInformation += ":";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.string(Tag.TextValue);
-                PersonObserverInformation += "<br>";
-            }
-            else if (ValueType == "NUM") {
-                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
-                PersonObserverInformation += ":";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.string(Tag.TextValue);
-                PersonObserverInformation += "<br>";
+            else if (ValueType == "TEXT" || ValueType == "CODE" || ValueType == "NUM") {
+                var codeMeaning = ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
+                var textValue = ContentSequence.items[i].dataSet.string(Tag.TextValue);
+                lineDiv.textContent = codeMeaning + ": " + textValue;
+                container.appendChild(lineDiv);
             }
             else if (ValueType == "IMAGE") {
-                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-               PersonObserverInformation += '<font color="blue">Image</font>'
-                PersonObserverInformation += "<br>";
+                var imageSpan = document.createElement('span');
+                imageSpan.style.color = "blue";
+                imageSpan.textContent = "Image";
+                lineDiv.appendChild(imageSpan);
+                container.appendChild(lineDiv);
             }
         }
+        return container;
     }
-    dumpContentSequence(ContentSequence, 0);
-    iFrame.srcdoc = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Embedded Content</title>
-            <style>
-            .SRTable{
-                border-collapse: separate;
-                border-spacing: 20px 0;
-            }
-            </style>
-        </head>
-        <body style="background:white">
-            <h1>Image Measurement Report</h1>
-            <p>${"" + formattedDate}</p>
-            <table class="SRTable">
-                <thead>
-                    <tr>
-                    <th>Patient</th>
-                    <th>Study</th>
-                    <th>ReportStatus</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                           PatientName:${Sop.dataSet.string(Tag.PatientName)}<br>
-                           PatientID:${Sop.dataSet.string(Tag.PatientID)}<br>
-                           PatientBirthDate:${Sop.dataSet.string(Tag.PatientBirthDate)}<br>
-                           PatiePatientSexntName: ${Sop.dataSet.string(Tag.PatientSex)}
-                        </td>
-                        <td>
-                            StudyDate:${Sop.dataSet.string(Tag.StudyDate)}<br>
-                            StudyID:${Sop.dataSet.string(Tag.StudyID)}<br>
-                            AccessioNumber:${Sop.dataSet.string(Tag.AccessioNumber)}<br>
-                            Referring Physician's Name:${Sop.dataSet.string(Tag.ReferringPhysicianName)}
-                        </td>
-                        <td>
-                            Completion Flag:${Sop.dataSet.string(Tag.CompletionFlag)}<br>
-                            Verification Flag:${Sop.dataSet.string(Tag.VerificationFlag)}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <hr>
-            <p>${PersonObserverInformation}</p>
-        </body>
-        </html>
-        `;
+
+    // Build DOM structure instead of HTML string
+    var contentDOM = buildContentSequenceDOM(ContentSequence, 0);
+
+    // Append iframe first, then build document inside it using DOM methods
     getByid("SrPage").appendChild(iFrame);
+
+    // Access iframe's document and build content using DOM
+    var iframeDoc = iFrame.contentDocument || iFrame.contentWindow.document;
+    iframeDoc.open();
+    iframeDoc.write('<!DOCTYPE html><html><head><title>Embedded Content</title></head><body style="background:white"></body></html>');
+    iframeDoc.close();
+
+    var body = iframeDoc.body;
+
+    // Add style
+    var style = iframeDoc.createElement('style');
+    style.textContent = '.SRTable{border-collapse: separate;border-spacing: 20px 0;}';
+    iframeDoc.head.appendChild(style);
+
+    // Build content using DOM methods (XSS-safe)
+    var h1 = iframeDoc.createElement('h1');
+    h1.textContent = 'Image Measurement Report';
+    body.appendChild(h1);
+
+    var dateP = iframeDoc.createElement('p');
+    dateP.textContent = formattedDate;
+    body.appendChild(dateP);
+
+    // Create table
+    var table = iframeDoc.createElement('table');
+    table.className = 'SRTable';
+
+    var thead = iframeDoc.createElement('thead');
+    var headerRow = iframeDoc.createElement('tr');
+    ['Patient', 'Study', 'ReportStatus'].forEach(function(header) {
+        var th = iframeDoc.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    var tbody = iframeDoc.createElement('tbody');
+    var dataRow = iframeDoc.createElement('tr');
+
+    // Patient column
+    var patientTd = iframeDoc.createElement('td');
+    patientTd.appendChild(iframeDoc.createTextNode('PatientName: ' + Sop.dataSet.string(Tag.PatientName)));
+    patientTd.appendChild(iframeDoc.createElement('br'));
+    patientTd.appendChild(iframeDoc.createTextNode('PatientID: ' + Sop.dataSet.string(Tag.PatientID)));
+    patientTd.appendChild(iframeDoc.createElement('br'));
+    patientTd.appendChild(iframeDoc.createTextNode('PatientBirthDate: ' + Sop.dataSet.string(Tag.PatientBirthDate)));
+    patientTd.appendChild(iframeDoc.createElement('br'));
+    patientTd.appendChild(iframeDoc.createTextNode('PatientSex: ' + Sop.dataSet.string(Tag.PatientSex)));
+    dataRow.appendChild(patientTd);
+
+    // Study column
+    var studyTd = iframeDoc.createElement('td');
+    studyTd.appendChild(iframeDoc.createTextNode('StudyDate: ' + Sop.dataSet.string(Tag.StudyDate)));
+    studyTd.appendChild(iframeDoc.createElement('br'));
+    studyTd.appendChild(iframeDoc.createTextNode('StudyID: ' + Sop.dataSet.string(Tag.StudyID)));
+    studyTd.appendChild(iframeDoc.createElement('br'));
+    studyTd.appendChild(iframeDoc.createTextNode('AccessioNumber: ' + Sop.dataSet.string(Tag.AccessioNumber)));
+    studyTd.appendChild(iframeDoc.createElement('br'));
+    studyTd.appendChild(iframeDoc.createTextNode('Referring Physician\'s Name: ' + Sop.dataSet.string(Tag.ReferringPhysicianName)));
+    dataRow.appendChild(studyTd);
+
+    // ReportStatus column
+    var statusTd = iframeDoc.createElement('td');
+    statusTd.appendChild(iframeDoc.createTextNode('Completion Flag: ' + Sop.dataSet.string(Tag.CompletionFlag)));
+    statusTd.appendChild(iframeDoc.createElement('br'));
+    statusTd.appendChild(iframeDoc.createTextNode('Verification Flag: ' + Sop.dataSet.string(Tag.VerificationFlag)));
+    dataRow.appendChild(statusTd);
+
+    tbody.appendChild(dataRow);
+    table.appendChild(tbody);
+    body.appendChild(table);
+
+    // Add horizontal rule
+    body.appendChild(iframeDoc.createElement('hr'));
+
+    // Clone and append the content DOM (from different document context)
+    function cloneToIframeDoc(node, targetDoc) {
+        if (node.nodeType === 3) { // Text node
+            return targetDoc.createTextNode(node.textContent);
+        }
+        var cloned = targetDoc.createElement(node.tagName);
+        if (node.style && node.style.cssText) {
+            cloned.style.cssText = node.style.cssText;
+        }
+        if (node.className) {
+            cloned.className = node.className;
+        }
+        for (var i = 0; i < node.childNodes.length; i++) {
+            cloned.appendChild(cloneToIframeDoc(node.childNodes[i], targetDoc));
+        }
+        return cloned;
+    }
+
+    body.appendChild(cloneToIframeDoc(contentDOM, iframeDoc));
 }
 
 function PdfLoader(pdf, Sop) {
@@ -868,13 +914,38 @@ function showDicomStatus(message, isError = false) {
     console.log("Status update:", message, "isError:", isError);
     var statusDiv = document.getElementById('dicomStatusIndicator');
     if (statusDiv) {
+        // Clear existing content
+        while (statusDiv.firstChild) {
+            statusDiv.removeChild(statusDiv.firstChild);
+        }
+
+        // Create span element using DOM methods (XSS-safe)
+        var span = document.createElement('span');
+
         if (isError) {
-            statusDiv.innerHTML = '<span style="color:#ff3333;font-weight:bold;">⚠️ ' + message + '</span>';
+            span.style.color = '#ff3333';
+            span.style.fontWeight = 'bold';
+            span.textContent = '⚠️ ' + message; // textContent auto-escapes HTML
             statusDiv.style.backgroundColor = 'rgba(50,0,0,0.85)';
         } else {
-            statusDiv.innerHTML = '<span style="display:inline-block;width:12px;height:12px;border:2px solid #fff;border-radius:50%;border-top-color:transparent;animation:spin 1s linear infinite;margin-right:5px;"></span>' + message;
+            // Create spinner element
+            var spinner = document.createElement('span');
+            spinner.style.display = 'inline-block';
+            spinner.style.width = '12px';
+            spinner.style.height = '12px';
+            spinner.style.border = '2px solid #fff';
+            spinner.style.borderRadius = '50%';
+            spinner.style.borderTopColor = 'transparent';
+            spinner.style.animation = 'spin 1s linear infinite';
+            spinner.style.marginRight = '5px';
+
+            statusDiv.appendChild(spinner);
+            span.textContent = message; // textContent auto-escapes HTML
             statusDiv.style.backgroundColor = 'rgba(0,0,0,0.85)';
         }
+
+        statusDiv.appendChild(span);
+
         if (!document.getElementById('spinner-style')) {
             var s = document.createElement('style');
             s.id = 'spinner-style';
