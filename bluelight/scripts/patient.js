@@ -185,8 +185,8 @@ class BlueLightImageManager {
             }
             if (LoadImgSop) {
                 //requestAnimationFrame(() => {
-                    resetViewport();
-                    GetViewport().loadImgBySop(LoadImgSop);
+                resetViewport();
+                GetViewport().loadImgBySop(LoadImgSop);
                 //});
             }
         }
@@ -234,7 +234,28 @@ class BlueLightImageManager {
         }
         //return this.Study[QRLevel.study].Series[QRLevel.series].Sop[QRLevel.sop];
     }
-    
+
+    getNextSopByQRLevelsAndInstanceNumberAndKO(QRLevel, InstanceNumber, invert = false) {
+        var SopList = this.findSeries(QRLevel.series).Sop;
+
+        SopList = SortArrayByElem(SopList, "InstanceNumber");
+
+        // 包含了KO的判斷
+        SopList = SopList.filter(function (S) {
+            var containKO = PatientMark.filter(M => S.SOPInstanceUID == M.sop && M.type == "KO");
+            return containKO.length != 0;
+        });
+
+        var index = SopList.findIndex((S) => S.InstanceNumber == InstanceNumber);
+        if (invert == false) {
+            if (index >= SopList.length - 1) return SopList[0];
+            else return SopList[index + 1];
+        } else {
+            if (index <= 0) return SopList[SopList.length - 1];
+            else return SopList[index - 1];
+        }
+    }
+
     getNextSopByQRLevelsAndInstanceNumber(QRLevel, InstanceNumber, invert = false) {
         var SopList = this.findSeries(QRLevel.series).Sop; //this.Study[QRLevel.study].Series[QRLevel.series].Sop;
 

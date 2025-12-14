@@ -58,6 +58,7 @@
     "//_thumnail_witdth": "縮圖寬度",
     "thumnail_witdth": 70,
     "//_study_comparison": "進片模式",
+    "TitleTag": "BlueLight Viewer",
     "study_comparison": false,
     "AdvanceMode": true
 }

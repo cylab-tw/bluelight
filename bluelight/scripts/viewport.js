@@ -88,6 +88,7 @@ class BlueLightViewPort {
         this.transform = {};
         this.drawMark = true;
         this.play = false;
+        this.KO = false;
 
         this.enable = true;
         this.cine = false;
@@ -261,8 +262,13 @@ class BlueLightViewPort {
     nextFrame(invert = false) {
         if (this.enable == false) return;
         if (this.QRLevel == "series" && this.tags && this.tags.length) {
-            var Sop = ImageManager.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.tags.InstanceNumber, invert);
-            if (Sop != undefined) this.loadImgBySop(Sop);
+            if (this.KO == true) {
+                var Sop = ImageManager.getNextSopByQRLevelsAndInstanceNumberAndKO(this.QRLevels, this.tags.InstanceNumber, invert);
+                if (Sop != undefined) this.loadImgBySop(Sop);
+            } else {
+                var Sop = ImageManager.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.tags.InstanceNumber, invert);
+                if (Sop != undefined) this.loadImgBySop(Sop);
+            }
         }
         else if (this.QRLevel == "sop") {
             var SopList = ImageManager.findSeries(this.QRLevels.series).Sop;
@@ -543,11 +549,11 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     ctx.putImageData(imgData, 0, 0);
     var shouldReDraw = false;
     ctx.save();
-    /*if (viewport.Orientation&&viewport.Orientation.length) {
+    /*/if (info.Orientation&&info.Orientation.length) {
         ctx.setTransform(new DOMMatrix(
-            [viewport.Orientation[0], -viewport.Orientation[3], 0, viewport.imagePosition[0] * viewport.PixelSpacing[0],
-            -viewport.Orientation[1], viewport.Orientation[4], 0, viewport.imagePosition[1] * viewport.PixelSpacing[1],
-            viewport.Orientation[2], viewport.Orientation[5], 0, viewport.imagePosition[2],
+            [info.Orientation[0], -info.Orientation[3], 0, info.imagePosition[0] * info.PixelSpacing[0],
+            -info.Orientation[1], info.Orientation[4], 0, info.imagePosition[1] * info.PixelSpacing[1],
+            info.Orientation[2], info.Orientation[5], 0, info.imagePosition[2],
                 0, 0, 0, 1
             ]
         ));

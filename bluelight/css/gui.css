@@ -405,14 +405,14 @@ button:hover {
   overflow-y: scroll;
 }
 
-#playvideolDiv, #WindowLevelDiv,#openTransformationsDiv,#othereDIv,#openMeasureDIv,#openSplitWindowDiv, #openWindowRevisionDiv, #annotationDiv, #zoomDiv{
+#playvideolDiv, #WindowLevelDiv,#openTransformationsDiv,#KoDrawerDIv,#othereDIv,#openMeasureDIv,#openSplitWindowDiv, #openWindowRevisionDiv, #annotationDiv, #zoomDiv{
   position:absolute;left: 0;white-space:nowrap;z-index: 120; /*display: none;*/
   background-color: rgb(55, 55, 55);
 }
 #zoomDiv{
   background-color: rgb(55, 55, 55);
 }
-#openTransformationsDiv,#othereDIv,#openMeasureDIv{
+#openTransformationsDiv,#othereDIv,#openMeasureDIv,#KoDrawerDIv{
   background-color: black;
 }
 #checkZoomAntiAliasing,#labelZoomAntiAliasing,#labelZoomSize,#textZoomSize,#labelZoom,#textZoom,#labelWC,#textWC,#labelWW,#textWW,#labelPlay,#textPlay{

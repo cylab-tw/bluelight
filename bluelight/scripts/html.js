@@ -130,7 +130,7 @@ function html_onload() {
     rotate();
     drawBorder(this);
   }
-  
+
   getByid("zoom").onclick = function () {
     if (this.enable == false) return;
     zoom();
@@ -139,8 +139,8 @@ function html_onload() {
     invertDisplayById('zoomDiv');
     if (getByid("zoomDiv").style.display == "none") getByid("zoomParent").style.position = "";
     else {
-        getByid("zoomParent").style.position = "relative";
-        onElementLeave();
+      getByid("zoomParent").style.position = "relative";
+      onElementLeave();
     }
 
     drawBorder(this);
@@ -183,8 +183,8 @@ function html_onload() {
     invertDisplayById('WindowLevelDiv');
     if (getByid("WindowLevelDiv").style.display == "none") getByid("WindowLevelDiv_span").style.position = "";
     else {
-        getByid("WindowLevelDiv_span").style.position = "relative";
-        onElementLeave();
+      getByid("WindowLevelDiv_span").style.position = "relative";
+      onElementLeave();
     }
 
     drawBorder(this);
@@ -266,6 +266,23 @@ function html_onload() {
     else {
       getByid("OtherImgParent").style.position = "relative";
       //onElementLeave();
+    }
+  }
+  getByid("KOimg").onclick = function () {
+    if (this.enable == false) return;
+    hideAllDrawer("KoDrawerDIv");
+    invertDisplayById('KoDrawerDIv');
+    if (getByid("KoDrawerDIv").style.display == "none") getByid("KOImgParent").style.position = "";
+    else {
+      getByid("KOImgParent").style.position = "relative";
+      //onElementLeave();
+    }
+  }
+  getByid("OnlyShowKOImg").onclick = function () {
+    GetViewport().KO = !GetViewport().KO;
+    invertDisplayById('KoDrawerDIv');
+    if (PatientMark.filter(M => GetViewport().Sop.SOPInstanceUID == M.sop && M.type == "KO").length == 0) {
+      GetViewport().nextFrame();
     }
   }
 
