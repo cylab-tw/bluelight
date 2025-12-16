@@ -408,3 +408,13 @@ function saveStringToFile(filename, content) {
     link.click();
     URL.revokeObjectURL(link.href); // 釋放 URL 物件
 }
+
+function getMarkFromKoStudy(study) {
+    var MarkList = [];
+    for (var M of PatientMark) {
+        if (M.study == study && M.type == "KO") {
+            MarkList.push(M);
+        }
+    }
+    return MarkList;
+}

@@ -89,6 +89,7 @@ class BlueLightViewPort {
         this.drawMark = true;
         this.play = false;
         this.KO = false;
+        this.KO_SeriesDescription = null;
 
         this.enable = true;
         this.cine = false;
@@ -263,7 +264,7 @@ class BlueLightViewPort {
         if (this.enable == false) return;
         if (this.QRLevel == "series" && this.tags && this.tags.length) {
             if (this.KO == true) {
-                var Sop = ImageManager.getNextSopByQRLevelsAndInstanceNumberAndKO(this.QRLevels, this.tags.InstanceNumber, invert);
+                var Sop = ImageManager.getNextSopByQRLevelsAndInstanceNumberAndKO(this.QRLevels, this.tags.InstanceNumber, invert, this.KO_SeriesDescription);
                 if (Sop != undefined) this.loadImgBySop(Sop);
             } else {
                 var Sop = ImageManager.getNextSopByQRLevelsAndInstanceNumber(this.QRLevels, this.tags.InstanceNumber, invert);

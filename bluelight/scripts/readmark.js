@@ -333,9 +333,13 @@ function readDicomMark(dataSet) {
 
 function loadDicomKO(dataSet) {
   if (dataSet.elements[Tag.ContentSequence] && Array.isArray(dataSet.elements[Tag.ContentSequence].items)) {
+    var StudyInstanceUID = dataSet.string(Tag.StudyInstanceUID);
+    var SeriesDescription = dataSet.string(Tag.SeriesDescription);
     for (var item of dataSet.elements[Tag.ContentSequence].items) {
       if (item.dataSet.string(Tag.ValueType) === 'IMAGE') {
         var KoMark = new BlueLightMark();
+        KoMark.study = StudyInstanceUID;
+        KoMark.SeriesDescription = SeriesDescription;
         KoMark.sop = item.dataSet.elements[Tag.ReferencedSOPSequence].items[0].dataSet.string(Tag.ReferencedSOPInstanceUID);
         KoMark.showName = KoMark.hideName = "KeyObject";
         KoMark.type = "KO";

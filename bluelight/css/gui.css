@@ -437,3 +437,15 @@ button:hover {
   color: #ffffff;
   height: 25px;
 }
+
+#KoSelectDrawer {
+  background-color: rgb(105, 105, 105);
+  position: absolute;
+  font-size: 14pt;
+  left: 50px;
+  top: 60px;
+}
+
+.KoSelect:hover {
+  filter: invert(80%);
+}

@@ -285,6 +285,21 @@ function html_onload() {
       GetViewport().nextFrame();
     }
   }
+  getByid("LockKOImg").onclick = function () {
+    var div = createElem('div', 'KoSelectDrawer', 'drawer');
+    getByid("LockKO_span").appendChild(div);
+    var SeriesDescriptionList = [];
+    for (var M of getMarkFromKoStudy(GetViewport().study)) {
+      if (SeriesDescriptionList.includes(M.SeriesDescription)) continue; //防止重複
+
+      var innerDiv = createElem('div', undefined, 'KoSelect');
+      innerDiv.innerHTML = innerDiv.SeriesDescription = M.SeriesDescription;
+      innerDiv.style.color = "white";
+      div.appendChild(innerDiv);
+      innerDiv.onclick = function () { GetViewport().KO_SeriesDescription = this.SeriesDescription; }
+      SeriesDescriptionList.push(M.SeriesDescription);
+    }
+  }
 
   getByid("openMeasureImg").onclick = function () {
     if (this.enable == false) return;

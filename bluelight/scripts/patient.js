@@ -235,14 +235,14 @@ class BlueLightImageManager {
         //return this.Study[QRLevel.study].Series[QRLevel.series].Sop[QRLevel.sop];
     }
 
-    getNextSopByQRLevelsAndInstanceNumberAndKO(QRLevel, InstanceNumber, invert = false) {
+    getNextSopByQRLevelsAndInstanceNumberAndKO(QRLevel, InstanceNumber, invert = false, SeriesDescription) {
         var SopList = this.findSeries(QRLevel.series).Sop;
 
         SopList = SortArrayByElem(SopList, "InstanceNumber");
 
         // 包含了KO的判斷
         SopList = SopList.filter(function (S) {
-            var containKO = PatientMark.filter(M => S.SOPInstanceUID == M.sop && M.type == "KO");
+            var containKO = PatientMark.filter(M => S.SOPInstanceUID == M.sop && M.type == "KO" && M.SeriesDescription == SeriesDescription);
             return containKO.length != 0;
         });
 
