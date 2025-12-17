@@ -261,13 +261,22 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
     row0.setAttribute("border", 2);
     row0.style.backgroundColor = "#555555";
     var cells0 = row0.insertCell(0);
-    cells0.innerHTML = "Tag";
+    cells0.textContent = "Tag";
     var cells0 = row0.insertCell(1);
-    cells0.innerHTML = "Name";
+    cells0.textContent = "Name";
     var cells0 = row0.insertCell(2);
-    cells0.innerHTML = "Value";
+    cells0.textContent = "Value";
     cells0.style.position = "relative";
-    cells0.innerHTML = `Value<img class="closeBtn" onclick="dropTable(${viewportNum})" style='right:3px;position:absolute;height:100%' src='../image/icon/lite/X.png'>`;
+    // Create close button using DOM methods (XSS-safe)
+    cells0.textContent = "Value";
+    var closeImg = document.createElement('img');
+    closeImg.className = "closeBtn";
+    closeImg.onclick = function() { dropTable(viewportNum); };
+    closeImg.style.right = '3px';
+    closeImg.style.position = 'absolute';
+    closeImg.style.height = '100%';
+    closeImg.src = '../image/icon/lite/X.png';
+    cells0.appendChild(closeImg);
 
     var rowCount = 1;
     for (var i = 0; i < GetViewport().tags.length; i++) {
@@ -275,17 +284,20 @@ function displayDicomTagsList(viewportNum = viewportNumber) {
         row.setAttribute("border", 2);
         row.style.backgroundColor = "#151515";
         var cells = row.insertCell(0);
-        cells.innerHTML = "" + GetViewport().tags[i][0];
+        cells.textContent = "" + GetViewport().tags[i][0];
         cells = row.insertCell(1);
-        cells.innerHTML = "" + GetViewport().tags[i][1];
+        cells.textContent = "" + GetViewport().tags[i][1];
         cells = row.insertCell(2);
+
+        var tagValue = "" + GetViewport().tags[i][2];
         if (GetViewport().tags[i][2] && GetViewport().tags[i][2].length > 100)
-            cells.innerHTML = ("" + GetViewport().tags[i][2]).substring(0, 99) + "...";
-        else
-            cells.innerHTML = "" + GetViewport().tags[i][2];
+            tagValue = tagValue.substring(0, 99) + "...";
 
         // 如果看起來像亂碼的比率過高，改用UTF-8
-        if (looksLikeMojibake(cells.innerHTML)) cells.innerHTML = "" + (fixMojibake(cells.innerHTML));
+        if (looksLikeMojibake(tagValue))
+            tagValue = "" + (fixMojibake(tagValue));
+
+        cells.textContent = tagValue; // XSS-safe: textContent auto-escapes
 
         rowCount++;
     }
