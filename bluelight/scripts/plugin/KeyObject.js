@@ -41,18 +41,42 @@ function loadKeyObjecyPlugin() {
     if (getByid("MarkupDIv").childNodes.length > 0) getByid("MarkupDIv").appendChild(document.createElement("BR"));
     getByid("MarkupDIv").appendChild(span);
 
+    var span = document.createElement("SPAN")
+    span.innerHTML =
+        `<img class="img KO" alt="exitKO" id="exitKO" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
+    <img class="img KO" alt="saveKO" id="saveKO" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >
+    <img class="img KO" alt="uploadKO" id="uploadKO" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="scale: 1 -1;display:none;" >
+    <img class="img KO" alt="addAndDelKO" id="addAndDelKO" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_ko_addAndDel.png" width="50" height="50" style="display:none;">;
+    `;
+    addIconSpan(span);
+
+    getByid("addAndDelKO").onclick = function () {
+        KeyObjecyList = [];
+        VIEWPORT.loadViewportList.push('SelectKeyObejctIcon');
+        VIEWPORT.SelectKeyObejctIcon();
+        getByid("KOSelectImg").style.display = "";
+    }
+
     getByid("KeyObjecyImg").onclick = function () {
         getByid("MarkupDIv").style.display = "none";
-        if (getByid("KOSelectImg").style.display == "none") {
-            getByid("KOSelectImg").style.display = "";
-            KeyObjecyList = [];
-            VIEWPORT.loadViewportList.push('SelectKeyObejctIcon');
-            VIEWPORT.SelectKeyObejctIcon();
-            return;
-        }
-        VIEWPORT.loadViewportList = VIEWPORT.loadViewportList.filter(function (item) { return item !== "SelectKeyObejctIcon"; });
+        getByid("exitKO").style.display = "";
+        getByid("saveKO").style.display = "";
+        getByid("uploadKO").style.display = "";
+        getByid("addAndDelKO").style.display = "";
+        img2darkByClass("KO", false);
+    }
 
+    getByid("exitKO").onclick = function () {
+        getByid("exitKO").style.display = "none";
+        getByid("saveKO").style.display = "none";
+        getByid("uploadKO").style.display = "none";
         getByid("KOSelectImg").style.display = "none";
+        getByid("addAndDelKO").style.display = "none";
+        img2darkByClass("KO", true);
+    }
+
+    getByid("saveKO").onclick = function () {
+        VIEWPORT.loadViewportList = VIEWPORT.loadViewportList.filter(function (item) { return item !== "SelectKeyObejctIcon"; });
         try {
             const mockStudyInfo = {
                 PatientName: GetViewport().content.image.PatientName,
@@ -87,12 +111,20 @@ function loadKeyObjecyPlugin() {
             console.error(e);
         }
     }
+
     var img = createElem("IMG", "KOSelectImg")
     img.src = "../image/icon/lite/b_ko.png"; img.className = "closeBtn";
     img.style.position = "absolute"; img.style.zIndex = "80";
     img.style.top = "var(--leftLabelPadding)"; img.style.right = "var(--rightLabelPadding)";
     getByid("DicomPage").appendChild(img);
     img.onclick = function () {
+        for (var obj of KeyObjecyList) {
+            if (obj.sopInstanceUid == GetViewport().content.image.SOPInstanceUID && obj.seriesInstanceUid == GetViewport().content.image.SeriesInstanceUID) {
+                KeyObjecyList = KeyObjecyList.filter(item => item != obj);
+                VIEWPORT.SelectKeyObejctIcon();
+                return;
+            }
+        }
         KeyObjecyList.push(
             {
                 sopClassUid: '1.2.840.10008.5.1.4.1.1.2', // CT Image Storage
