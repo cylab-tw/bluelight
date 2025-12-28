@@ -285,12 +285,10 @@ function jump2Mark(showName) {
     for (var n = 0; n < PatientMark.length; n++) {
         if (PatientMark[n].series == GetViewport().series) {
             if (PatientMark[n].showName == showName) {
-                for (var m = 0; m < PatientMark[n].mark.length; m++) {
-                    if (checkMarkEnabled(GetViewport().series, PatientMark[n]) == 0) continue;
-                    else {
-                        GetViewport().loadImgBySop(PatientMark[n].sop);
-                        return;
-                    }
+                if (checkMarkEnabled(GetViewport().series, PatientMark[n]) == 0) continue;
+                else {
+                    GetViewport().loadImgBySop(PatientMark[n].sop);
+                    return;
                 }
             }
         }
