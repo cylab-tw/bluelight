@@ -296,7 +296,10 @@ function html_onload() {
       innerDiv.innerHTML = innerDiv.SeriesDescription = M.SeriesDescription;
       innerDiv.style.color = "white";
       div.appendChild(innerDiv);
-      innerDiv.onclick = function () { GetViewport().KO_SeriesDescription = this.SeriesDescription; }
+      innerDiv.onclick = function () {
+        GetViewport().KO_SeriesDescription = this.SeriesDescription;
+        invertDisplayById('KoDrawerDIv');
+      }
       SeriesDescriptionList.push(M.SeriesDescription);
     }
   }

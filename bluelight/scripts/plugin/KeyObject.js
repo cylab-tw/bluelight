@@ -1,6 +1,9 @@
 
 
-var KeyObjecyList = [];
+var KeyObjectList = [];
+var KeyObjecNames = ['Example KOS'];
+KeyObjecNames.selected = 'Example KOS';
+
 function loadMarkupPlugin() {
     if (getByid("MarkupImgParent")) return;
     var span = document.createElement("SPAN");
@@ -25,8 +28,8 @@ function loadMarkupPlugin() {
 
 VIEWPORT.SelectKeyObejctIcon = function (element, image, viewportNum) {
     var inKO = false;
-    for (var KO of KeyObjecyList) {
-        if (KO.sopInstanceUid == GetViewport().content.image.SOPInstanceUID) {
+    for (var KO of KeyObjectList) {
+        if (KO.name == KeyObjecNames.selected && KO.sopInstanceUid == GetViewport().content.image.SOPInstanceUID) {
             inKO = true;
         }
     }
@@ -46,15 +49,94 @@ function loadKeyObjecyPlugin() {
         `<img class="img KO" alt="exitKO" id="exitKO" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/exit.png" width="50" height="50" style="display:none;" >
     <img class="img KO" alt="saveKO" id="saveKO" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="display:none;" >
     <img class="img KO" alt="uploadKO" id="uploadKO" onmouseover="onElementOver(this);" onmouseleave="onElementLeave();" src="../image/icon/lite/download.png" width="50" height="50" style="scale: 1 -1;display:none;" >
-    <img class="img KO" alt="addAndDelKO" id="addAndDelKO" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_ko_addAndDel.png" width="50" height="50" style="display:none;">;
+    <span style="position:relative">
+    <img class="img KO" alt="addAndDelKO" id="addAndDelKO" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/b_ko_addAndDel.png" width="50" height="50" style="display:none;">
+    <div id="addAndDelKODiv" class="drawer" style="display:none;color:white;z-index: 120;position:absolute;left:0;width:170px;background-color: rgb(55, 55, 55);"></div>
+    </span>
     `;
     addIconSpan(span);
 
     getByid("addAndDelKO").onclick = function () {
-        KeyObjecyList = [];
+        //KeyObjectList = [];
         VIEWPORT.loadViewportList.push('SelectKeyObejctIcon');
         VIEWPORT.SelectKeyObejctIcon();
         getByid("KOSelectImg").style.display = "";
+
+        var outerDiv = getByid("addAndDelKODiv");
+        if (outerDiv.style.display == "") {
+            outerDiv.style.display = "none"; return;
+        }
+        outerDiv.style.display = "";
+        outerDiv.innerHTML = "";
+        var radio = document.createElement('input');
+        radio.type = "radio";
+        radio.name = "KO_AddAndDel";
+        var input = document.createElement('input');
+        input.type = "text"; input.style.width = "70%";
+        radio.value = input.value = "";
+        input.radio = radio;
+        outerDiv.appendChild(radio);
+        outerDiv.appendChild(input);
+        input.onchange = function () {
+            this.radio.value = this.value;
+        }
+
+        for (var name of KeyObjecNames) {
+            outerDiv.appendChild(document.createElement('br'));
+            var radio = document.createElement('input');
+            radio.type = "radio";
+            radio.name = "KO_AddAndDel";
+            var label = document.createElement('label');
+            radio.value = label.innerText = "" + name;
+            outerDiv.appendChild(radio);
+            outerDiv.appendChild(label);
+            if (name == KeyObjecNames.selected) radio.checked = true;
+        }
+        outerDiv.appendChild(createElem("HR"));
+        var label = document.createElement('label');
+        label.innerText = "add or select(click):";
+
+        var button = document.createElement('button');
+        button.innerText = "apply";
+        button.style.display = "grid";
+        button.style.margin = "5px";
+        outerDiv.appendChild(label);
+        outerDiv.appendChild(button);
+        button.onclick = function () {
+            KeyObjecNames.selected = document.querySelector('input[name="KO_AddAndDel"]:checked')?.value;
+            if (!KeyObjecNames.includes(KeyObjecNames.selected)) KeyObjecNames.push(KeyObjecNames.selected);
+            getByid("addAndDelKODiv").style.display = "none";
+            VIEWPORT.SelectKeyObejctIcon();
+        }
+        outerDiv.appendChild(createElem("HR"));
+
+        var label = document.createElement('label');
+        label.innerText = "delete(slide to right):";
+        var delImg = document.createElement('img');
+        delImg.src = "../image/icon/lite/b_trashcan.png"; delImg.width = "25";
+        delImg.style.filter = "sepia(0.4) hue-rotate(-50deg) saturate(5)";
+        delImg.style["padding-right"] = "5px";
+
+        var delSlider = document.createElement('input');
+        delSlider.type = "range"; delSlider.style['accent-color'] = "red"; delSlider.style.width = "100px";
+        delSlider.min = "0"; delSlider.max = "100"; delSlider.value = "0";
+        outerDiv.appendChild(label);
+        outerDiv.appendChild(createElem("BR"));
+        outerDiv.appendChild(delImg);
+        outerDiv.appendChild(delSlider);
+        delSlider.onchange = function () {
+            if (this.value == 100) {
+                var target = document.querySelector('input[name="KO_AddAndDel"]:checked')?.value, selected = KeyObjecNames.selected;
+                KeyObjecNames = KeyObjecNames.filter(item => item !== target); KeyObjecNames.selected = selected;
+                if (KeyObjecNames.selected == target) {
+                    if (!KeyObjecNames.includes("Example KOS")) KeyObjecNames.push("Example KOS");
+                    KeyObjecNames.selected = "Example KOS";
+                }
+                getByid("addAndDelKODiv").style.display = "none";
+                VIEWPORT.SelectKeyObejctIcon();
+            }
+            this.value = 0;
+        }
     }
 
     getByid("KeyObjecyImg").onclick = function () {
@@ -72,6 +154,7 @@ function loadKeyObjecyPlugin() {
         getByid("uploadKO").style.display = "none";
         getByid("KOSelectImg").style.display = "none";
         getByid("addAndDelKO").style.display = "none";
+        getByid("addAndDelKODiv").style.display = "none";
         img2darkByClass("KO", true);
     }
 
@@ -91,7 +174,7 @@ function loadKeyObjecyPlugin() {
             };
 
             // 產生 KOS
-            const buffer = generateKOS(mockStudyInfo, KeyObjecyList, 'Browser Generated KOS');
+            const buffer = generateKOS(mockStudyInfo, KeyObjectList, KeyObjecNames.selected);
 
             // 觸發瀏覽器下載
             const blob = new Blob([buffer], { type: 'application/dicom' });
@@ -118,15 +201,18 @@ function loadKeyObjecyPlugin() {
     img.style.top = "var(--leftLabelPadding)"; img.style.right = "var(--rightLabelPadding)";
     getByid("DicomPage").appendChild(img);
     img.onclick = function () {
-        for (var obj of KeyObjecyList) {
-            if (obj.sopInstanceUid == GetViewport().content.image.SOPInstanceUID && obj.seriesInstanceUid == GetViewport().content.image.SeriesInstanceUID) {
-                KeyObjecyList = KeyObjecyList.filter(item => item != obj);
-                VIEWPORT.SelectKeyObejctIcon();
-                return;
+        for (var obj of KeyObjectList) {
+            if (obj.name == KeyObjecNames.selected) {
+                if (obj.sopInstanceUid == GetViewport().content.image.SOPInstanceUID && obj.seriesInstanceUid == GetViewport().content.image.SeriesInstanceUID) {
+                    KeyObjectList = KeyObjectList.filter(item => item != obj);
+                    VIEWPORT.SelectKeyObejctIcon();
+                    return;
+                }
             }
         }
-        KeyObjecyList.push(
+        KeyObjectList.push(
             {
+                name: KeyObjecNames.selected,
                 sopClassUid: '1.2.840.10008.5.1.4.1.1.2', // CT Image Storage
                 sopInstanceUid: GetViewport().content.image.SOPInstanceUID,
                 seriesInstanceUid: GetViewport().content.image.SeriesInstanceUID
