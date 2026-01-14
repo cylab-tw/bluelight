@@ -18,6 +18,7 @@
         {"path": "../scripts/plugin/Markup/gspsDicomSaver.js", "name": "gspsDicomSaver", "disableCatch": "true"},
         {"path": "../scripts/plugin/Markup/rtssDicomSaver.js", "name": "rtssDicomSaver", "disableCatch": "true"},
         {"path": "../scripts/plugin/Markup/segDicomSaver.js", "name": "segDicomSaver", "disableCatch": "true"}, 
-        {"path": "../scripts/plugin/KeyObject.js", "name": "KeyObject", "disableCatch": "true"}           
+        {"path": "../scripts/plugin/KeyObject.js", "name": "KeyObject", "disableCatch": "true"},
+        {"path": "../scripts/plugin/Markup/vhs.js", "name": "vhs", "disableCatch": "true"}          
     ]
 }
