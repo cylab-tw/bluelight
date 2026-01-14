@@ -25,7 +25,7 @@ function loadWriteVHS() {
     loadMarkupPlugin();
 
     var span = document.createElement("SPAN")
-    span.innerHTML = `<img class="innerimg VHS" alt="writeVHS" id="writeVHS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/vhs.png" width="50" height="50">`;
+    span.innerHTML = `<img class="innerimg VHS" alt="writeVHS" id="writeVHS" onmouseover = "onElementOver(this);" onmouseleave = "onElementLeave();" src="../image/icon/lite/VHS.png" width="50" height="50">`;
     if (getByid("MarkupDIv").childNodes.length > 0) getByid("MarkupDIv").appendChild(document.createElement("BR"));
     getByid("MarkupDIv").appendChild(span);
 }
