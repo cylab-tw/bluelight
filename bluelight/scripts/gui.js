@@ -324,6 +324,16 @@ function displayLeftCanvas(DicomCanvas, image, pixelData) {
     DicomCanvas.width = image.width;
     DicomCanvas.height = image.height
     if (pixelData) renderPixelData2Cnavas(image, pixelData, DicomCanvas);
+    else if (image.sr) {
+        var SR_img = new Image();
+        SR_img.onload = function () {
+            DicomCanvas.width = SR_img.width;
+            DicomCanvas.height = SR_img.height
+            var ctx = DicomCanvas.getContext("2d");
+            ctx.drawImage(SR_img, 0, 0, DicomCanvas.width, DicomCanvas.height);
+        }
+        SR_img.src = "../image/icon/black/b_sr.png";
+    }
     else {
         var ctx = DicomCanvas.getContext("2d");
         var imgData = ctx.createImageData(66, 66);
