@@ -332,7 +332,7 @@ function displayLeftCanvas(DicomCanvas, image, pixelData) {
             var ctx = DicomCanvas.getContext("2d");
             ctx.drawImage(SR_img, 0, 0, DicomCanvas.width, DicomCanvas.height);
         }
-        SR_img.src = "../image/icon/black/b_sr.png";
+        SR_img.src = "../image/icon/black/b_SR.png";
     }
     else {
         var ctx = DicomCanvas.getContext("2d");
