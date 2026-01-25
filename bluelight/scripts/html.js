@@ -281,6 +281,9 @@ function html_onload() {
   getByid("OnlyShowKOImg").onclick = function () {
     GetViewport().KO = !GetViewport().KO;
     invertDisplayById('KoDrawerDIv');
+    if (GetViewport().KO_SeriesDescription == null) {
+      GetViewport().KO_SeriesDescription = getMarkFromKoStudy(GetViewport().study)[0].SeriesDescription;
+    }
     if (PatientMark.filter(M => GetViewport().Sop.SOPInstanceUID == M.sop && M.type == "KO").length == 0) {
       GetViewport().nextFrame();
     }
