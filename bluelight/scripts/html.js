@@ -196,6 +196,10 @@ function html_onload() {
     ScaleToTrueSize();
   }
 
+  getByid("AboutImg").onclick = function () {
+    alert("The current version is: " + version);
+  }
+
   getByid("clearviewportImg").onclick = function () {
     var clearviewportWindow = document.createElement("DIV");
     clearviewportWindow.style.width = "40vw";

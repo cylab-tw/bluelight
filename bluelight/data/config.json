@@ -60,5 +60,6 @@
     "//_study_comparison": "進片模式",
     "TitleTag": "BlueLight Viewer",
     "study_comparison": false,
-    "AdvanceMode": true
+    "AdvanceMode": true,
+    "version": "v?"
 }

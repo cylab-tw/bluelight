@@ -5,6 +5,8 @@ let Viewport_row = 1;
 let Viewport_col = 1;
 let GridMode = "default";
 
+let version = "v?";
+
 //表示Viewport為連接狀態
 var openLink = false;
 

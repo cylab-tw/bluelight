@@ -219,6 +219,7 @@ function readConfigJson(url, readAllJson, readJson) {
   request.onload = function () {
     var DicomResponse = JSON.parse(request.responseText);
     if (DicomResponse["AdvanceMode"] == true) AddAdvanceFunction();
+    if (DicomResponse["version"]) version = DicomResponse["version"];
     if (DicomResponse["TitleTag"]) document.title = DicomResponse["TitleTag"];
     var QIDOResponse = DicomResponse["DICOMWebServersConfig"][0]; //取第一個
     var WADOResponse = DicomResponse["DICOMWebServersConfig"][0]; //取第一個
