@@ -198,7 +198,11 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
         }
     }
     function YBR(imageObj, dataSet, pixelData) {
-        if ((imageObj.isYCbCr || dataSet.string('x00280004') === 'YBR_FULL_422' || dataSet.string('x00280004') === 'YBR_FULL') && imageObj.color) {
+        var photometric = dataSet.string('x00280004');
+        // PhotometricInterpretation=RGB 時，即使 JPEG 解碼器標記了 isYCbCr，也不應再做轉換
+        // 因為 JPEG codec 解碼時已將 YCbCr 轉回 RGB，isYCbCr 此時為誤判
+        if ((imageObj.isYCbCr && photometric !== 'RGB') || photometric === 'YBR_FULL_422' || photometric === 'YBR_FULL') {
+            if (!imageObj.color) return pixelData;
             for (var i = 0; i < pixelData.length; i += 3) {
                 var R = pixelData[i] + 1.402 * (pixelData[i + 2] - 128);
                 var G = pixelData[i] - 0.344136 * (pixelData[i + 1] - 128) - 0.714136 * (pixelData[i + 2] - 128);
