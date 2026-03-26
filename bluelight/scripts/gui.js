@@ -237,7 +237,7 @@ class LeftLayout {
         if (!series_div) return;
 
         if (image.NumberOfFrames > 1) series_div.series_label.innerText = htmlEntities("" + image.NumberOfFrames);
-        else if (image.haveSameInstanceNumber) series_div.series_label.innerText = "";
+        else if (image.pdf || image.haveSameInstanceNumber) series_div.series_label.innerText = "";
         else series_div.series_label.innerText = "" + htmlEntities(ImageManager.findSeries(image.SeriesInstanceUID).Sop.length);
     }
 
