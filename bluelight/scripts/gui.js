@@ -334,6 +334,17 @@ function displayLeftCanvas(DicomCanvas, image, pixelData) {
         }
         SR_img.src = "../image/icon/black/b_SR.png";
     }
+    else if (image.pdf) {
+        var PDF_img = new Image();
+        PDF_img.onload = function () {
+            DicomCanvas.width = PDF_img.width;
+            DicomCanvas.height = PDF_img.height
+            DicomCanvas.style.width = DicomCanvas.style.height = "100%";
+            var ctx = DicomCanvas.getContext("2d");
+            ctx.drawImage(PDF_img, 0, 0, DicomCanvas.width, DicomCanvas.height);
+        }
+        PDF_img.src = "../image/icon/black/pdf.png";
+    }
     else {
         var ctx = DicomCanvas.getContext("2d");
         var imgData = ctx.createImageData(66, 66);
