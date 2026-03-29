@@ -305,7 +305,7 @@ function guid() {
     return (s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4());
 }
 
-function SrLoader(Sop) 
+function SrLoader(Sop) {
     Pages.displayPage("SrPage");
     getByid("SrPage").innerHTML = ""; // 清空，避免顯示到錯誤影像。
     img2darkByClass("sr", false);
