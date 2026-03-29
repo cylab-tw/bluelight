@@ -305,8 +305,9 @@ function guid() {
     return (s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4());
 }
 
-function SrLoader(Sop) {
+function SrLoader(Sop) 
     Pages.displayPage("SrPage");
+    getByid("SrPage").innerHTML = ""; // 清空，避免顯示到錯誤影像。
     img2darkByClass("sr", false);
     leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
     var iFrame = document.createElement("iframe");
@@ -348,40 +349,53 @@ function SrLoader(Sop) {
             var ValueType = ContentSequence.items[i].dataSet.string(Tag.ValueType);
             if (ValueType == "CONTAINER") {
                 for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
+                if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
+                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
                 PersonObserverInformation += "<br>";
                 dumpContentSequence(ContentSequence.items[i].dataSet.elements[Tag.ContentSequence], level + 1);
                 PersonObserverInformation += "<br>";
             }
             else if (ValueType == "TEXT") {
                 for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
+                if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
+                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
                 PersonObserverInformation += ":";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.string(Tag.TextValue);
+                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.string(Tag.TextValue));
                 PersonObserverInformation += "<br>";
             }
             else if (ValueType == "CODE") {
                 for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
+                if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
+                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
                 PersonObserverInformation += ":";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.string(Tag.TextValue);
+                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.string(Tag.TextValue));
                 PersonObserverInformation += "<br>";
             }
             else if (ValueType == "NUM") {
                 for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning);
+                if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
+                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
                 PersonObserverInformation += ":";
-                PersonObserverInformation += ContentSequence.items[i].dataSet.string(Tag.TextValue);
+                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.string(Tag.TextValue));
                 PersonObserverInformation += "<br>";
             }
             else if (ValueType == "IMAGE") {
                 for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-               PersonObserverInformation += '<font color="blue">Image</font>'
+                PersonObserverInformation += '<font color="blue">Image</font>'
                 PersonObserverInformation += "<br>";
             }
         }
     }
     dumpContentSequence(ContentSequence, 0);
+    function StringProcessing(str) {
+        str = htmlEntities("" + str);
+        if (looksLikeMojibake(str) && Sop.dataSet.string('x00080005')) {
+            try {
+                str = window['dicom-character-set'].convertBytes(Sop.dataSet.string('x00080005'), new Uint8Array(str.split('').map(ch => ch.charCodeAt(0))), { vr: 'LT' });
+            } catch (ex) { console.log(ex); }
+        }
+        return str;
+    }
     iFrame.srcdoc = `
         <!DOCTYPE html>
         <html>
@@ -408,20 +422,20 @@ function SrLoader(Sop) {
                 <tbody>
                     <tr>
                         <td>
-                           PatientName:${Sop.dataSet.string(Tag.PatientName)}<br>
-                           PatientID:${Sop.dataSet.string(Tag.PatientID)}<br>
-                           PatientBirthDate:${Sop.dataSet.string(Tag.PatientBirthDate)}<br>
-                           PatiePatientSexntName: ${Sop.dataSet.string(Tag.PatientSex)}
+                           PatientName:${StringProcessing(Sop.dataSet.string(Tag.PatientName))}<br>
+                           PatientID:${StringProcessing(Sop.dataSet.string(Tag.PatientID))}<br>
+                           PatientBirthDate:${StringProcessing(Sop.dataSet.string(Tag.PatientBirthDate))}<br>
+                           PatiePatientSexntName: ${StringProcessing(Sop.dataSet.string(Tag.PatientSex))}
                         </td>
                         <td>
-                            StudyDate:${Sop.dataSet.string(Tag.StudyDate)}<br>
-                            StudyID:${Sop.dataSet.string(Tag.StudyID)}<br>
-                            AccessioNumber:${Sop.dataSet.string(Tag.AccessioNumber)}<br>
-                            Referring Physician's Name:${Sop.dataSet.string(Tag.ReferringPhysicianName)}
+                            StudyDate:${StringProcessing(Sop.dataSet.string(Tag.StudyDate))}<br>
+                            StudyID:${StringProcessing(Sop.dataSet.string(Tag.StudyID))}<br>
+                            AccessioNumber:${StringProcessing(Sop.dataSet.string(Tag.AccessioNumber))}<br>
+                            Referring Physician's Name:${StringProcessing(Sop.dataSet.string(Tag.ReferringPhysicianName))}
                         </td>
                         <td>
-                            Completion Flag:${Sop.dataSet.string(Tag.CompletionFlag)}<br>
-                            Verification Flag:${Sop.dataSet.string(Tag.VerificationFlag)}
+                            Completion Flag:${StringProcessing(Sop.dataSet.string(Tag.CompletionFlag))}<br>
+                            Verification Flag:${StringProcessing(Sop.dataSet.string(Tag.VerificationFlag))}
                         </td>
                     </tr>
                 </tbody>
@@ -789,8 +803,6 @@ function loadDicomDataSet(fileData) {
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EnhancedSR)
         Sop = loadSopFromDataSet(dataSet, 'sr');
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.X_RayRadiationDoseSR)
-        Sop = loadSopFromDataSet(dataSet, 'sr');
-    else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.ComputedRadiographyImageStorage)
         Sop = loadSopFromDataSet(dataSet, 'sr');
 
     //CAD 
