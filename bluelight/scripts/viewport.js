@@ -482,6 +482,7 @@ function GetViewportMark(num) {
 
 function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     var ctx = canvas.getContext("2d");
+    if (!image.width || !image.height) return;
     var imgData = ctx.createImageData(image.width, image.height);
     //預先填充不透明度為255
     let Uint32Data = new Uint32Array(imgData.data.buffer).fill(0xFF000000);
