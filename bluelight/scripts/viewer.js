@@ -783,7 +783,14 @@ function loadDicomDataSet(fileData) {
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID._12_leadECGWaveformStorage)
         Sop = loadSopFromDataSet(dataSet, 'ecg');
 
+    //SR
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.ComprehensiveSR)
+        Sop = loadSopFromDataSet(dataSet, 'sr');
+    else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EnhancedSR)
+        Sop = loadSopFromDataSet(dataSet, 'sr');
+    else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.X_RayRadiationDoseSR)
+        Sop = loadSopFromDataSet(dataSet, 'sr');
+    else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.ComputedRadiographyImageStorage)
         Sop = loadSopFromDataSet(dataSet, 'sr');
 
     //CAD 
