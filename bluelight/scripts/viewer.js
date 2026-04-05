@@ -773,6 +773,7 @@ function EcgLoader(Sop) {
 function setECG(imageObj) {
     if (!imageObj.data.elements[Tag.WaveformSequence]) throw "WaveformSequence not found";
     var WaveformSequence = imageObj.data.elements[Tag.WaveformSequence];
+    imageObj.ecg = true;
     for (var i = 0; i < WaveformSequence.items.length; i++) {
         if (WaveformSequence.items[i].dataSet.string(Tag.WaveformOriginality) == 'ORIGINAL') {
             //Samples
