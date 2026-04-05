@@ -602,6 +602,9 @@ function EcgLoader(Sop) {
         EcgLabel.style.position = "absolute";
         EcgLabel.style.fontSize = "48px";
         EcgLabel.style.zIndex = "10";
+        EcgLabel.style.left = "25px";
+        EcgLabel.style.marginTop = "6px";
+        EcgLabel.style.border = "2px solid black";
         EcgLabel.style.backgroundColor = "white";
         EcgLabel.innerText = "This is a test version.";
         getByid("EcgPage").appendChild(EcgLabel);
@@ -622,105 +625,149 @@ function EcgLoader(Sop) {
     ECGSpeedSelect.onchange = function () { EcgLoader(GetViewport().Sop); }
     ECGVoltageSelect.onchange = function () { EcgLoader(GetViewport().Sop); }
 
+    //////////////////////////////////////////////////
 
+    // 紙張大小
+    const A4Width = 3508, A4Height = 2480;
+    // 準備畫布
+    var EcgCanvas = getByid("EcgCanvas"), ctx = EcgCanvas.getContext("2d");
+    EcgCanvas.width = A4Width, EcgCanvas.height = A4Height;
+    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, A4Width, A4Height);
+
+    //////////////////////////////////////////////////
+
+    // 標準參數
     const speed = parseFloat(ECGSpeedSelect.options[ECGSpeedSelect.selectedIndex].text);
     const voltage = parseFloat(ECGVoltageSelect.options[ECGVoltageSelect.selectedIndex].text);
+    // 有幾個導程
     var Channels12 = Sop.Image.NumberOfWaveformChannels;
+    if (Channels12 != 12) return;
+
+    // 一個導程有幾個Samples
     var NumberOfWaveformSamples = Sop.Image.NumberOfWaveformSamples;
+    // 十二個導程有幾個Samples
     var WaveformData = Sop.Image.ReconstructionWaveformData;
+    // 總共幾秒
+    const totalSecnods = NumberOfWaveformSamples / Sop.Image.SamplingFrequency;
 
-    const totalSecnods = NumberOfWaveformSamples / Sop.Image.SamplingFrequency; //總共幾秒
-    const NumberOfbigBlock = totalSecnods / ((1 / speed) * 5); //總共要有幾個大方塊
-    const NumberOfsmallBlock = totalSecnods / (1 / speed); //總共要有幾個小方塊
-    const bigBlockSize = 6 * 5;//橫向每隔多遠畫一條大方塊線
-    const smallBlockSize = 6;//橫向每隔多遠畫一條小方塊線
+    //////////////////////////////////////////////////
 
-    const VBigLineGap = voltage * 6 * smallBlockSize; //v*6小格的距離作分隔線，一格smallBlockSize(6px)大小
-    const A4Width = totalSecnods * (speed) * 6, //總秒數*(幾格1秒)*(1格6像素)
-        A4Height = voltage * 6 * 6 * Channels12; //一小格6像素，共6格，分12導程高度要多高
+    // 解析度：1 mm 等於幾個 pixel(給4x4用)
+    var px_per_mm = A4Width / (10 * speed);
+    // 解析度：1 mm 等於幾個 pixel(給&1用)
+    var px_per_mm_Rhythm = A4Width / (totalSecnods * speed);
 
-    var EcgCanvas = getByid("EcgCanvas");
-    EcgCanvas.width = A4Width, EcgCanvas.height = A4Height;
-    var ctx = EcgCanvas.getContext("2d");
-    var imgData = ctx.createImageData(EcgCanvas.width, EcgCanvas.height);
-    new Uint32Array(imgData.data.buffer).fill(0xFFFFFFFF);
-    ctx.putImageData(imgData, 0, 0);
+    // 佈局參數 (4x4&1)
+    var Rows = 4, Cols = 4;
+    var Row_height = A4Height / Rows, Col_width = A4Width / Cols;
+    // 12導程分別位於的位置
+    var layout = [
+        { name: 'I', row: 0, col: 0 }, { name: 'aVR', row: 0, col: 1 }, { name: 'V1', row: 0, col: 2 }, { name: 'V4', row: 0, col: 3 },
+        { name: 'II', row: 1, col: 0 }, { name: 'aVL', row: 1, col: 1 }, { name: 'V2', row: 1, col: 2 }, { name: 'V5', row: 1, col: 3 },
+        { name: 'III', row: 2, col: 0 }, { name: 'aVF', row: 2, col: 1 }, { name: 'V3', row: 2, col: 2 }, { name: 'V6', row: 2, col: 3 },
+        { name: 'II', row: 3, col: 0, isRhythm: true } // 長節律導程
+    ];
 
-    //////////////////
+    //////////////////////////////////////////////////
 
-    //粗線
-    ctx.strokeStyle = ctx.fillStyle = "rgb(222,113,104)";
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    //橫向
-    for (var i = 0; i < A4Height; i += VBigLineGap) {
-        ctx.moveTo(0, i);
-        ctx.lineTo(A4Width, i);
-    }
-    ctx.stroke();
-    ctx.closePath();
-
-    //開始畫大方塊
-    ctx.strokeStyle = ctx.fillStyle = "rgb(222,113,104)";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    //橫向
-    for (var i = 0; i < NumberOfbigBlock; i++) {
-        ctx.moveTo(i * bigBlockSize, 0);
-        ctx.lineTo(i * bigBlockSize, A4Height);
-    }
-    ctx.stroke();
-    ctx.closePath();
-
-    ctx.beginPath();
-    //縱向
-    for (var i = 0; i < A4Height / bigBlockSize; i++) {
-        ctx.moveTo(0, i * bigBlockSize);
-        ctx.lineTo(A4Width, i * bigBlockSize);
-    }
-    ctx.stroke();
-    ctx.closePath();
-
-    ///////////////////////
-
-    //開始畫小方塊
-    ctx.strokeStyle = ctx.fillStyle = "rgb(222,113,104)";
-    ctx.lineWidth = 0.5;
-    ctx.beginPath();
-    //橫向
-    for (var i = 0; i < NumberOfsmallBlock; i++) {
-        ctx.moveTo(i * smallBlockSize, 0);
-        ctx.lineTo(i * smallBlockSize, A4Height);
-    }
-    ctx.stroke();
-    ctx.closePath();
-
-    ctx.beginPath();
-    //縱向
-    for (var i = 0; i < A4Height / smallBlockSize; i++) {
-        ctx.moveTo(0, i * smallBlockSize);
-        ctx.lineTo(A4Width, i * smallBlockSize);
-    }
-    ctx.stroke();
-    ctx.closePath();
-
-    ///////////////////////////
-    //畫心電圖
-    ctx.strokeStyle = ctx.fillStyle = "rgb(0,0,0)";
-    ctx.lineWidth = 1;
-    var start = VBigLineGap / 2;
-
-    for (var i = 0; i < Channels12; i++) {
+    // 畫底框框
+    function creatEcgBackground() {
+        const w = A4Width, h = A4Height;
+        // 畫 1mm 小網格 (淺色)
         ctx.beginPath();
-        ctx.moveTo(0, start + i * VBigLineGap);
-        for (var j = i, s = 0; j < NumberOfWaveformSamples * Channels12; j += Channels12, s++) {
-            ctx.lineTo((s / NumberOfWaveformSamples) * speed * totalSecnods * 6,
-                start + i * VBigLineGap - ((WaveformData[j] * 6 * voltage)));
-        }
-
+        ctx.strokeStyle = 'rgba(255, 180, 180, 0.5)', ctx.lineWidth = 1;
+        for (let x = 0; x <= w; x += px_per_mm) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+        for (let y = 0; y <= h; y += px_per_mm) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
         ctx.stroke();
-        ctx.closePath();
+
+        // 畫 5mm 大網格 (深色)
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255, 100, 100, 0.8)', ctx.lineWidth = 1.5;
+        for (let x = 0; x <= w; x += px_per_mm * 5) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+        for (let y = 0; y <= h; y += px_per_mm * 5) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+        ctx.stroke();
     }
+    creatEcgBackground();
+
+    // 準備好波型資料
+    function parseDICOMWaveformData(waveData, numChannels, numSamples, samplingRate) {
+
+        const signals = {};
+        const leadNames = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6'];
+
+        // 只打算畫 10 秒，超過的不用畫
+        const targetSeconds = 11;
+        const targetSamples = targetSeconds * samplingRate;
+
+        // 如果原始資料超過 10 秒，得計算要「跳過」前面幾個點(例如 5500 - 5000 = 500點)
+        const skipSamples = numSamples > targetSamples ? numSamples - targetSamples : 0;
+
+        // 陣列長度固定給要畫的長度
+        for (var name of leadNames) signals[name] = new Float32Array(targetSamples);
+
+        // 從 skipSamples 開始讀取，只抓後面10秒的點
+        for (let i = 0; i < targetSamples; i++) {
+            // 原始資料的實際索引 (要加上跳過的那些點)
+            const originalIndex = i + skipSamples;
+            if (originalIndex >= numSamples) break;
+            // 對應到指定的點
+            for (let ch = 0; ch < numChannels; ch++) {
+                const index = (originalIndex * numChannels) + ch;
+                const leadName = leadNames[ch] || `CH${ch + 1}`;
+                signals[leadName][i] = waveData[index];
+            }
+        }
+        return signals;
+    }
+    var ecgData = parseDICOMWaveformData(WaveformData, Channels12, NumberOfWaveformSamples, Sop.Image.SamplingFrequency)
+
+    // 實際開始畫波形資料
+    function drawWaveforms(ecgData) {
+        const sr = Sop.Image.SamplingFrequency;
+        for (var l = 0; l < layout.length; l++) {
+            var block = layout[l];
+            const signal = ecgData[block.name];
+            if (!signal) return;
+
+            // 計算繪圖區塊範圍
+            const startX = block.col * Col_width;
+            const startY = block.row * Row_height;
+            const width = block.isRhythm ? A4Width : Col_width;
+            const height = Row_height;
+            const baselineY = startY + (height / 2); // 0 mV 在區塊正中間
+
+            // 計算這個區塊要畫幾秒的資料(最後一個是畫全部，其他是2.5秒)
+            const durationSec = block.isRhythm ? totalSecnods : 2.5;
+            const numSamples = durationSec * sr;
+
+            // 短導程需要偏移起始點 (例如 aVR 是從 2.5秒 開始)
+            const sampleOffset = block.isRhythm ? 0 : (block.col * 2.5 * sr);
+            // 由於長導程不一定等於10秒，所以短導程和長導程的(1 mm 等於幾個 pixel)，並不相同
+            const Px_per_mm = block.isRhythm ? px_per_mm_Rhythm : px_per_mm;
+
+            ctx.save();
+            // 設定剪裁區域，避免畫到其他的格子
+            ctx.beginPath(); ctx.rect(startX, startY, width, height); ctx.clip();
+            // 繪製導程名稱
+            ctx.fillStyle = 'black'; ctx.font = 'bold 16px sans-serif'; ctx.fillText(block.name, startX + 10, startY + 25);
+
+            // 繪製波型
+            ctx.beginPath();
+            ctx.strokeStyle = 'black'; ctx.lineJoin = 'round'; ctx.lineWidth = 1.5;
+            for (let i = 0; i < numSamples; i++) {
+                const index = sampleOffset + i;
+                if (index >= signal.length) break;
+
+                const x = (i / sr) * speed * Px_per_mm;
+                const y = (signal[index] * voltage * Px_per_mm);
+                if (i === 0) ctx.moveTo(startX + x, baselineY - y);
+                else ctx.lineTo(startX + x, baselineY - y);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+    drawWaveforms(ecgData);
 }
 
 function setECG(imageObj) {
