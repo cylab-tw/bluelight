@@ -686,6 +686,13 @@ function EcgLoader(Sop) {
         for (let x = 0; x <= w; x += px_per_mm * 5) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
         for (let y = 0; y <= h; y += px_per_mm * 5) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
         ctx.stroke();
+
+        // 畫區分12格的最大網格 (粗線)
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255, 80, 80, 0.9)', ctx.lineWidth = 5;
+        for (let x = 0; x <= w; x += Col_width) { ctx.moveTo(x, 0); ctx.lineTo(x, h - Row_height); }
+        for (let y = 0; y <= h; y += Row_height) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+        ctx.stroke();
     }
     creatEcgBackground();
 
@@ -843,6 +850,8 @@ function loadDicomDataSet(fileData) {
 
     //ECG
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID._12_leadECGWaveformStorage)
+        Sop = loadSopFromDataSet(dataSet, 'ecg');
+    else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.GeneralECGWaveformStorage)
         Sop = loadSopFromDataSet(dataSet, 'ecg');
 
     //SR
