@@ -603,7 +603,8 @@ function EcgLoader(Sop) {
         EcgLabel.style.position = "absolute";
         EcgLabel.style.fontSize = "48px";
         EcgLabel.style.zIndex = "10";
-        EcgLabel.style.left = "25px";
+        EcgLabel.style.right = "5px";
+        EcgLabel.style.bottom = "5px";
         EcgLabel.style.marginTop = "6px";
         EcgLabel.style.border = "2px solid black";
         EcgLabel.style.backgroundColor = "white";
