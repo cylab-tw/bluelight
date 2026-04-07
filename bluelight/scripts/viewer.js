@@ -345,6 +345,7 @@ function SrLoader(Sop) {
     var PersonObserverInformation = "";
     var ContentSequence = Sop.dataSet.elements[Tag.ContentSequence];
     function dumpContentSequence(ContentSequence, level) {
+        if (!ContentSequence) return;
         for (var i = 0; i < ContentSequence.items.length; i++) {
             var ValueType = ContentSequence.items[i].dataSet.string(Tag.ValueType);
             if (ValueType == "CONTAINER") {
