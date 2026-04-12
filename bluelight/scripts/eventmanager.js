@@ -40,7 +40,7 @@ var windowTouchDistX = 0, windowTouchDistY = 0;
 //代表按下ctrl
 let KeyCode_ctrl = false;
 //切換右鍵模式
-let RightClick_Mode = true;
+let RightClick_Mode = false;
 
 var contextmenuF = function (e) {
     if (!RightClick_Mode) e.preventDefault();
