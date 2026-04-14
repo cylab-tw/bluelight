@@ -1,15 +1,31 @@
 
 function loadSopFromDataSet(dataSet, type) {
-    var imageObj = getDefaultImageObj(dataSet, type);
-    if (type == 'pdf') setPDF(imageObj);
-    if (type == 'ecg') setECG(imageObj);
-    if (type == 'sr') imageObj.sr = {/*setSR*/ };
+    try {
+        var ErrorStudy = dataSet.string(Tag.StudyInstanceUID);
+        var ErrorSeries = dataSet.string(Tag.SeriesInstanceUID);
+        var ErrorSop = dataSet.string(Tag.SOPInstanceUID);
+        if (!ErrorSop || !ErrorSeries || !ErrorStudy) {
+            ErrorMessage.pushErrorMessage(410);
+            throw "!ErrorSop || !ErrorSeries || !ErrorStudy";
+        }
+    } catch (ex) {
+        ErrorMessage.pushErrorMessage(411)
+    }
+    try {
+        var imageObj = getDefaultImageObj(dataSet, type);
+        if (type == 'pdf') setPDF(imageObj);
+        if (type == 'ecg') setECG(imageObj);
+        if (type == 'sr') imageObj.sr = {/*setSR*/ };
 
-    var Sop = ImageManager.pushStudy(imageObj); //註冊此Image至Viewer
-    if (!Sop) return;
-    Sop.type = type;
-    readDicomOverlay(dataSet, PatientMark);
-    return Sop;
+        var Sop = ImageManager.pushStudy(imageObj); //註冊此Image至Viewer
+        if (!Sop) return;
+        Sop.type = type;
+        readDicomOverlay(dataSet, PatientMark);
+        return Sop;
+    } catch (ex) {
+        if (!imageObj) ErrorMessage.pushErrorMessage(420, sop = ErrorSop, series = ErrorSeries, study = ErrorStudy);
+        else ErrorMessage.pushErrorMessage(450, sop, series, study);
+    }
 }
 
 function setPDF(imageObj) {

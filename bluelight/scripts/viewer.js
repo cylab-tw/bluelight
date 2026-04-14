@@ -306,98 +306,99 @@ function guid() {
 }
 
 function SrLoader(Sop) {
-    Pages.displayPage("SrPage");
-    getByid("SrPage").innerHTML = ""; // 清空，避免顯示到錯誤影像。
-    img2darkByClass("sr", false);
-    leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
-    var iFrame = document.createElement("iframe");
-    iFrame.className = "SRView";
-    iFrame.id = "SRView";
-    const dateString = Sop.dataSet.string(Tag.ContentDate) + Sop.dataSet.string(Tag.ContentTime);
+    try {
+        Pages.displayPage("SrPage");
+        getByid("SrPage").innerHTML = ""; // 清空，避免顯示到錯誤影像。
+        img2darkByClass("sr", false);
+        leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
+        var iFrame = document.createElement("iframe");
+        iFrame.className = "SRView";
+        iFrame.id = "SRView";
+        const dateString = Sop.dataSet.string(Tag.ContentDate) + Sop.dataSet.string(Tag.ContentTime);
 
-    // 1. 將字串轉換為 JavaScript Date 物件
-    // 格式化為 ISO 8601 標準格式 (YYYY-MM-DDTHH:mm:ss)，這樣 new Date() 才能正確解析
-    const isoString =
-        dateString.substring(0, 4) + '-' +  // 年 (2025)
-        dateString.substring(4, 6) + '-' +  // 月 (10)
-        dateString.substring(6, 8) + 'T' +  // 日 (19)
-        dateString.substring(8, 10) + ':' + // 時 (01)
-        dateString.substring(10, 12) + ':' +// 分 (13)
-        dateString.substring(12, 14);     // 秒 (27)
+        // 1. 將字串轉換為 JavaScript Date 物件
+        // 格式化為 ISO 8601 標準格式 (YYYY-MM-DDTHH:mm:ss)，這樣 new Date() 才能正確解析
+        const isoString =
+            dateString.substring(0, 4) + '-' +  // 年 (2025)
+            dateString.substring(4, 6) + '-' +  // 月 (10)
+            dateString.substring(6, 8) + 'T' +  // 日 (19)
+            dateString.substring(8, 10) + ':' + // 時 (01)
+            dateString.substring(10, 12) + ':' +// 分 (13)
+            dateString.substring(12, 14);     // 秒 (27)
 
-    // 預設它是一個本地時間，但最好的做法是明確指定時區， 如果不指定時區，new Date(isoString) 會被解析為執行環境的本地時間
-    const date = new Date(isoString);
+        // 預設它是一個本地時間，但最好的做法是明確指定時區， 如果不指定時區，new Date(isoString) 會被解析為執行環境的本地時間
+        const date = new Date(isoString);
 
-    // 2. 使用 Intl.DateTimeFormat 進行格式化
-    const options = {
-        year: 'numeric',
-        month: 'short', // 'Oct'
-        day: 'numeric', // '19'
-        hour: 'numeric',  // 12小時制
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true, // 顯示 AM/PM
-    };
+        // 2. 使用 Intl.DateTimeFormat 進行格式化
+        const options = {
+            year: 'numeric',
+            month: 'short', // 'Oct'
+            day: 'numeric', // '19'
+            hour: 'numeric',  // 12小時制
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true, // 顯示 AM/PM
+        };
 
-    // 'en-US' (美式英文) 語言環境最接近您要的格式
-    const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
+        // 'en-US' (美式英文) 語言環境最接近您要的格式
+        const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
 
-    var PersonObserverInformation = "";
-    var ContentSequence = Sop.dataSet.elements[Tag.ContentSequence];
-    function dumpContentSequence(ContentSequence, level) {
-        if (!ContentSequence) return;
-        for (var i = 0; i < ContentSequence.items.length; i++) {
-            var ValueType = ContentSequence.items[i].dataSet.string(Tag.ValueType);
-            if (ValueType == "CONTAINER") {
-                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
-                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
-                PersonObserverInformation += "<br>";
-                dumpContentSequence(ContentSequence.items[i].dataSet.elements[Tag.ContentSequence], level + 1);
-                PersonObserverInformation += "<br>";
-            }
-            else if (ValueType == "TEXT") {
-                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
-                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
-                PersonObserverInformation += ":";
-                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.string(Tag.TextValue));
-                PersonObserverInformation += "<br>";
-            }
-            else if (ValueType == "CODE") {
-                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
-                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
-                PersonObserverInformation += ":";
-                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.string(Tag.TextValue));
-                PersonObserverInformation += "<br>";
-            }
-            else if (ValueType == "NUM") {
-                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
-                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
-                PersonObserverInformation += ":";
-                PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.string(Tag.TextValue));
-                PersonObserverInformation += "<br>";
-            }
-            else if (ValueType == "IMAGE") {
-                for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
-                PersonObserverInformation += '<font color="blue">Image</font>'
-                PersonObserverInformation += "<br>";
+        var PersonObserverInformation = "";
+        var ContentSequence = Sop.dataSet.elements[Tag.ContentSequence];
+        function dumpContentSequence(ContentSequence, level) {
+            if (!ContentSequence) return;
+            for (var i = 0; i < ContentSequence.items.length; i++) {
+                var ValueType = ContentSequence.items[i].dataSet.string(Tag.ValueType);
+                if (ValueType == "CONTAINER") {
+                    for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
+                    if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
+                    PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
+                    PersonObserverInformation += "<br>";
+                    dumpContentSequence(ContentSequence.items[i].dataSet.elements[Tag.ContentSequence], level + 1);
+                    PersonObserverInformation += "<br>";
+                }
+                else if (ValueType == "TEXT") {
+                    for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
+                    if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
+                    PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
+                    PersonObserverInformation += ":";
+                    PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.string(Tag.TextValue));
+                    PersonObserverInformation += "<br>";
+                }
+                else if (ValueType == "CODE") {
+                    for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
+                    if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
+                    PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
+                    PersonObserverInformation += ":";
+                    PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.string(Tag.TextValue));
+                    PersonObserverInformation += "<br>";
+                }
+                else if (ValueType == "NUM") {
+                    for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
+                    if (!ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items.length) continue;
+                    PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.elements[Tag.ConceptNameCodeSequence].items[0].dataSet.string(Tag.CodeMeaning));
+                    PersonObserverInformation += ":";
+                    PersonObserverInformation += htmlEntities(ContentSequence.items[i].dataSet.string(Tag.TextValue));
+                    PersonObserverInformation += "<br>";
+                }
+                else if (ValueType == "IMAGE") {
+                    for (var l = 0; l < level * 4; l++)PersonObserverInformation += "&nbsp;";
+                    PersonObserverInformation += '<font color="blue">Image</font>'
+                    PersonObserverInformation += "<br>";
+                }
             }
         }
-    }
-    dumpContentSequence(ContentSequence, 0);
-    function StringProcessing(str) {
-        str = htmlEntities("" + str);
-        if (looksLikeMojibake(str) && Sop.dataSet.string('x00080005')) {
-            try {
-                str = window['dicom-character-set'].convertBytes(Sop.dataSet.string('x00080005'), new Uint8Array(str.split('').map(ch => ch.charCodeAt(0))), { vr: 'LT' });
-            } catch (ex) { console.log(ex); }
+        dumpContentSequence(ContentSequence, 0);
+        function StringProcessing(str) {
+            str = htmlEntities("" + str);
+            if (looksLikeMojibake(str) && Sop.dataSet.string('x00080005')) {
+                try {
+                    str = window['dicom-character-set'].convertBytes(Sop.dataSet.string('x00080005'), new Uint8Array(str.split('').map(ch => ch.charCodeAt(0))), { vr: 'LT' });
+                } catch (ex) { console.log(ex); }
+            }
+            return str;
         }
-        return str;
-    }
-    iFrame.srcdoc = `
+        iFrame.srcdoc = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -446,383 +447,483 @@ function SrLoader(Sop) {
         </body>
         </html>
         `;
-    getByid("SrPage").appendChild(iFrame);
+        getByid("SrPage").appendChild(iFrame);
+    } catch (ex) {
+        ErrorMessage.pushErrorMessage(515);
+    }
 }
 
 function PdfLoader(pdf, Sop) {
-    Pages.displayPage("PdfPage");
-    img2darkByClass("pdf", false);
-    leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
+    try {
+        Pages.displayPage("PdfPage");
+        img2darkByClass("pdf", false);
+        leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
 
-    //如果瀏覽器支援顯示pdf
-    if ('PDF Viewer' in navigator.plugins) {
-        if (getByid("PDFView")) {
-            if (getByid("PDFView").src != pdf)
-                getByid("PDFView").src = pdf;
-        }
-        else {
-            var iFrame = document.createElement("iframe");
-            iFrame.className = "PDFView";
-            iFrame.id = "PDFView";
-            iFrame.src = pdf;
-            getByid("PdfPage").appendChild(iFrame);
-        }
-    } else {
-        if (getByid("PDFDownloadImg")) {
-            if (getByid("PDFDownloadImg").pdf != pdf)
-                getByid("PDFDownloadImg").pdf = pdf;
-        } else {
-            var img = new Image();
-            img.id = "PDFDownloadImg";
-            img.width = 100, img.height = 100;
-            img.src = "../image/icon/lite/download_pdf.png";
-            img.pdf = pdf;
-            img.onclick = function () {
-                var link = document.createElement('a');
-                link.href = this.pdf;
-                link.download = 'file.pdf';
-                link.dispatchEvent(new MouseEvent('click'));
+        //如果瀏覽器支援顯示pdf
+        if ('PDF Viewer' in navigator.plugins) {
+            if (getByid("PDFView")) {
+                if (getByid("PDFView").src != pdf)
+                    getByid("PDFView").src = pdf;
             }
-            getByid("PdfPage").appendChild(img);
+            else {
+                var iFrame = document.createElement("iframe");
+                iFrame.className = "PDFView";
+                iFrame.id = "PDFView";
+                iFrame.src = pdf;
+                getByid("PdfPage").appendChild(iFrame);
+            }
+        } else {
+            if (getByid("PDFDownloadImg")) {
+                if (getByid("PDFDownloadImg").pdf != pdf)
+                    getByid("PDFDownloadImg").pdf = pdf;
+            } else {
+                var img = new Image();
+                img.id = "PDFDownloadImg";
+                img.width = 100, img.height = 100;
+                img.src = "../image/icon/lite/download_pdf.png";
+                img.pdf = pdf;
+                img.onclick = function () {
+                    var link = document.createElement('a');
+                    link.href = this.pdf;
+                    link.download = 'file.pdf';
+                    link.dispatchEvent(new MouseEvent('click'));
+                }
+                getByid("PdfPage").appendChild(img);
+            }
         }
+    } catch (ex) {
+        ErrorMessage.pushErrorMessage(514);
     }
 }
 
 function DcmLoader(image, viewport) {
-    if (Pages.type != "DicomPage") {
-        Pages.displayPage("DicomPage");
-        img2darkByClass("dcm", true);
+    try {
+        if (Pages.type != "DicomPage") {
+            Pages.displayPage("DicomPage");
+            img2darkByClass("dcm", true);
+        }
+
+        var MarkCanvas = viewport.MarkCanvas, MainCanvas = viewport.canvas;
+
+        if (image.NumberOfFrames > 1) viewport.QRLevel = "frames";
+        else if (image.haveSameInstanceNumber) viewport.QRLevel = "sop";
+        else viewport.QRLevel = "series";
+
+        if (viewport.content.image) {
+            if (viewport.content.image.windowCenter != image.windowCenter) viewport.windowCenter = null;
+            if (viewport.content.image.windowWidth != image.windowWidth) viewport.windowWidth = null;
+        }
+
+        viewport.content.image = image;
+
+        if (image.imageDataLoaded == false && image.loadImageData) image.loadImageData();
+        viewport.content.pixelData = image.pixelData;
+        //需要setimage到element
+        createDicomTagsList2Viewport(viewport);
+
+        refleshCanvas(viewport);
+
+        //StudyUID:x0020000d,Series UID:x0020000e,SOP UID:x00080018,
+        //Instance Number:x00200013,影像檔編碼資料:imageId,PatientId:x00100020
+        VIEWPORT.loadViewport(viewport, image, viewport.index);
+
+        //渲染影像到viewport和原始影像
+        // showTheImage(element, image, 'normal', ifNowSeries, viewportNum);
+        // showTheImage(originelement, image, 'origin', null, viewportNum);
+
+        //紀錄Window Level
+        if (!viewport.windowCenter) viewport.windowCenter = image.windowCenter;
+        if (!viewport.windowWidth) viewport.windowWidth = image.windowWidth;
+
+        //顯示資訊到label
+        setSeriesCount(viewport.index);
+        setWindowLevel(viewport.index);
+
+        //渲染上去後畫布應該從原始大小縮小為適當大小
+        if (!viewport.scale)
+            viewport.scale = Math.min(viewport.div.clientWidth / viewport.width, viewport.div.clientHeight / viewport.height);
+
+        MarkCanvas.width = MainCanvas.width, MarkCanvas.height = MainCanvas.height;
+
+        MarkCanvas.getContext("2d").save();
+
+        setTransform(viewport.index);
+        MarkCanvas.style.transform = MainCanvas.style.transform;
+
+        //隱藏Table
+        displayMark(viewport.index);//BlueLight2//
+        displayRuler(viewport.index);
+
+        viewport.refleshScrollBar();
+        refleshGUI();
+    } catch (ex) {
+        ErrorMessage.pushErrorMessage(510, viewport.sop, viewport.series, viewport.study);
     }
-
-    var MarkCanvas = viewport.MarkCanvas, MainCanvas = viewport.canvas;
-
-    if (image.NumberOfFrames > 1) viewport.QRLevel = "frames";
-    else if (image.haveSameInstanceNumber) viewport.QRLevel = "sop";
-    else viewport.QRLevel = "series";
-
-    if (viewport.content.image) {
-        if (viewport.content.image.windowCenter != image.windowCenter) viewport.windowCenter = null;
-        if (viewport.content.image.windowWidth != image.windowWidth) viewport.windowWidth = null;
-    }
-
-    viewport.content.image = image;
-
-    if (image.imageDataLoaded == false && image.loadImageData) image.loadImageData();
-    viewport.content.pixelData = image.pixelData;
-    //需要setimage到element
-    createDicomTagsList2Viewport(viewport);
-
-    refleshCanvas(viewport);
-
-    //StudyUID:x0020000d,Series UID:x0020000e,SOP UID:x00080018,
-    //Instance Number:x00200013,影像檔編碼資料:imageId,PatientId:x00100020
-    VIEWPORT.loadViewport(viewport, image, viewport.index);
-
-    //渲染影像到viewport和原始影像
-    // showTheImage(element, image, 'normal', ifNowSeries, viewportNum);
-    // showTheImage(originelement, image, 'origin', null, viewportNum);
-
-    //紀錄Window Level
-    if (!viewport.windowCenter) viewport.windowCenter = image.windowCenter;
-    if (!viewport.windowWidth) viewport.windowWidth = image.windowWidth;
-
-    //顯示資訊到label
-    setSeriesCount(viewport.index);
-    setWindowLevel(viewport.index);
-
-    //渲染上去後畫布應該從原始大小縮小為適當大小
-    if (!viewport.scale)
-        viewport.scale = Math.min(viewport.div.clientWidth / viewport.width, viewport.div.clientHeight / viewport.height);
-
-    MarkCanvas.width = MainCanvas.width, MarkCanvas.height = MainCanvas.height;
-
-    MarkCanvas.getContext("2d").save();
-
-    setTransform(viewport.index);
-    MarkCanvas.style.transform = MainCanvas.style.transform;
-
-    //隱藏Table
-    displayMark(viewport.index);//BlueLight2//
-    displayRuler(viewport.index);
-
-    viewport.refleshScrollBar();
-    refleshGUI();
 }
 
 function loadPicture(url) {
-    var img = new Image();
-    img.onload = function () {
-        var imageObj = {};
-        imageObj.StudyInstanceUID = CreateUid("study");
-        imageObj.SeriesInstanceUID = CreateUid("series");
-        imageObj.SOPInstanceUID = CreateUid("sop");
-        imageObj.DicomTagsList
-        imageObj.data = {};
-        imageObj.data.string = function () { return ""; };
-        imageObj.color = true;
-        imageObj.windowCenter = 127.5;
-        imageObj.windowWidth = 255;
-        imageObj.data.elements = [];
+    try {
+        var img = new Image();
+        img.onload = function () {
+            var imageObj = {};
+            imageObj.StudyInstanceUID = CreateUid("study");
+            imageObj.SeriesInstanceUID = CreateUid("series");
+            imageObj.SOPInstanceUID = CreateUid("sop");
+            imageObj.DicomTagsList
+            imageObj.data = {};
+            imageObj.data.string = function () { return ""; };
+            imageObj.color = true;
+            imageObj.windowCenter = 127.5;
+            imageObj.windowWidth = 255;
+            imageObj.data.elements = [];
 
-        imageObj.width = img.width;
-        imageObj.height = img.height;
-        imageObj.instance = 0;
-        imageObj.patientId = "patientID:" + securePassword(0, 99999, 1);
-        imageObj.url = img.src;
+            imageObj.width = img.width;
+            imageObj.height = img.height;
+            imageObj.instance = 0;
+            imageObj.patientId = "patientID:" + securePassword(0, 99999, 1);
+            imageObj.url = img.src;
 
-        var Sop = ImageManager.pushStudy(imageObj);
-        Sop.type = 'img';
+            var Sop = ImageManager.pushStudy(imageObj);
+            Sop.type = 'img';
 
-        var canvas = document.createElement("CANVAS");
-        canvas.width = img.width, canvas.height = img.height;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0);
-        imageObj.pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-        imageObj.getPixelData = function () { return this.pixelData; };
-        //改成無論是否曾出現在左側面板，都嘗試加到左側面板
-        var qrLv = new QRLv({});
-        qrLv.study = imageObj.StudyInstanceUID, qrLv.series = imageObj.SeriesInstanceUID, qrLv.sop = imageObj.SOPInstanceUID;
-        leftLayout.setImg2Left(qrLv, imageObj.patientId);
-        leftLayout.appendCanvasBySeries(imageObj.SeriesInstanceUID, imageObj, imageObj.pixelData);
-        leftLayout.refleshMarkWithSeries(imageObj.SeriesInstanceUID);
-        resetViewport();
-        GetViewport().loadImgBySop(Sop);
+            var canvas = document.createElement("CANVAS");
+            canvas.width = img.width, canvas.height = img.height;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+            imageObj.pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            imageObj.getPixelData = function () { return this.pixelData; };
+            //改成無論是否曾出現在左側面板，都嘗試加到左側面板
+            var qrLv = new QRLv({});
+            qrLv.study = imageObj.StudyInstanceUID, qrLv.series = imageObj.SeriesInstanceUID, qrLv.sop = imageObj.SOPInstanceUID;
+            leftLayout.setImg2Left(qrLv, imageObj.patientId);
+            leftLayout.appendCanvasBySeries(imageObj.SeriesInstanceUID, imageObj, imageObj.pixelData);
+            leftLayout.refleshMarkWithSeries(imageObj.SeriesInstanceUID);
+            resetViewport();
+            GetViewport().loadImgBySop(Sop);
+        }
+        img.src = url;
+    } catch (ex) {
+        ErrorMessage.pushErrorMessage(511);
     }
-    img.src = url;
 }
 
 function EcgLoader(Sop) {
-    Pages.displayPage("EcgPage");
-    img2darkByClass("ecg", false);
-    leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
-    if (!getByid("EcgView")) {
-        var EcgView = document.createElement("div");
-        EcgView.id = "EcgView";
-        getByid("EcgPage").appendChild(EcgView);
-        var EcgLabel = document.createElement("label");
-        EcgLabel.style.position = "absolute";
-        EcgLabel.style.fontSize = "48px";
-        EcgLabel.style.zIndex = "10";
-        EcgLabel.style.right = "5px";
-        EcgLabel.style.bottom = "5px";
-        EcgLabel.style.marginTop = "6px";
-        EcgLabel.style.border = "2px solid black";
-        EcgLabel.style.backgroundColor = "white";
-        EcgLabel.innerText = "This is a test version.";
-        getByid("EcgPage").appendChild(EcgLabel);
-    }
-    if (!getByid("EcgCanvas")) {
-        var EcgCanvas = document.createElement("CANVAS");
-        EcgCanvas.id = "EcgCanvas";
-
-        getByid("EcgView").appendChild(EcgCanvas);
-    }
-
-    var ECGSpeedSelect = getByid("ECGSpeedSelect"), ECGVoltageSelect = getByid("ECGVoltageSelect");
-    for (var opt of ECGSpeedSelect.options)
-        if (parseFloat(opt.text) == 25) opt.setAttribute("selected", "selected");
-    for (var opt of ECGVoltageSelect.options)
-        if (parseFloat(opt.text) == 10) opt.setAttribute("selected", "selected");
-
-    ECGSpeedSelect.onchange = function () { EcgLoader(GetViewport().Sop); }
-    ECGVoltageSelect.onchange = function () { EcgLoader(GetViewport().Sop); }
-
-    //////////////////////////////////////////////////
-
-    // 紙張大小
-    const A4Width = 3508, A4Height = 2480;
-    // 準備畫布
-    var EcgCanvas = getByid("EcgCanvas"), ctx = EcgCanvas.getContext("2d");
-    EcgCanvas.width = A4Width, EcgCanvas.height = A4Height;
-    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, A4Width, A4Height);
-
-    //////////////////////////////////////////////////
-
-    // 標準參數
-    const speed = parseFloat(ECGSpeedSelect.options[ECGSpeedSelect.selectedIndex].text);
-    const voltage = parseFloat(ECGVoltageSelect.options[ECGVoltageSelect.selectedIndex].text);
-    // 有幾個導程
-    var Channels12 = Sop.Image.NumberOfWaveformChannels;
-    if (Channels12 != 12) return;
-
-    // 一個導程有幾個Samples
-    var NumberOfWaveformSamples = Sop.Image.NumberOfWaveformSamples;
-    // 十二個導程有幾個Samples
-    var WaveformData = Sop.Image.ReconstructionWaveformData;
-    // 總共幾秒
-    const totalSecnods = NumberOfWaveformSamples / Sop.Image.SamplingFrequency;
-
-    //////////////////////////////////////////////////
-
-    // 解析度：1 mm 等於幾個 pixel(給4x4用)
-    var px_per_mm = A4Width / (10 * speed);
-    // 解析度：1 mm 等於幾個 pixel(給&1用)
-    var px_per_mm_Rhythm = A4Width / (totalSecnods * speed);
-
-    // 佈局參數 (4x4&1)
-    var Rows = 4, Cols = 4;
-    var Row_height = A4Height / Rows, Col_width = A4Width / Cols;
-    // 12導程分別位於的位置
-    var layout = [
-        { name: 'I', row: 0, col: 0 }, { name: 'aVR', row: 0, col: 1 }, { name: 'V1', row: 0, col: 2 }, { name: 'V4', row: 0, col: 3 },
-        { name: 'II', row: 1, col: 0 }, { name: 'aVL', row: 1, col: 1 }, { name: 'V2', row: 1, col: 2 }, { name: 'V5', row: 1, col: 3 },
-        { name: 'III', row: 2, col: 0 }, { name: 'aVF', row: 2, col: 1 }, { name: 'V3', row: 2, col: 2 }, { name: 'V6', row: 2, col: 3 },
-        { name: 'II', row: 3, col: 0, isRhythm: true } // 長節律導程
-    ];
-
-    //////////////////////////////////////////////////
-
-    // 畫底框框
-    function creatEcgBackground() {
-        const w = A4Width, h = A4Height;
-        // 畫 1mm 小網格 (淺色)
-        ctx.beginPath();
-        ctx.strokeStyle = 'rgba(255, 180, 180, 0.5)', ctx.lineWidth = 1;
-        for (let x = 0; x <= w; x += px_per_mm) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
-        for (let y = 0; y <= h; y += px_per_mm) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
-        ctx.stroke();
-
-        // 畫 5mm 大網格 (深色)
-        ctx.beginPath();
-        ctx.strokeStyle = 'rgba(255, 100, 100, 0.8)', ctx.lineWidth = 1.5;
-        for (let x = 0; x <= w; x += px_per_mm * 5) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
-        for (let y = 0; y <= h; y += px_per_mm * 5) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
-        ctx.stroke();
-
-        // 畫區分12格的最大網格 (粗線)
-        ctx.beginPath();
-        ctx.strokeStyle = 'rgba(255, 80, 80, 0.9)', ctx.lineWidth = 5;
-        for (let x = 0; x <= w; x += Col_width) { ctx.moveTo(x, 0); ctx.lineTo(x, h - Row_height); }
-        for (let y = 0; y <= h; y += Row_height) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
-        ctx.stroke();
-    }
-    creatEcgBackground();
-
-    // 準備好波型資料
-    function parseDICOMWaveformData(waveData, numChannels, numSamples, samplingRate) {
-
-        const signals = {};
-        const leadNames = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6'];
-
-        // 只打算畫 10 秒，超過的不用畫
-        const targetSeconds = 11;
-        const targetSamples = targetSeconds * samplingRate;
-
-        // 如果原始資料超過 10 秒，得計算要「跳過」前面幾個點(例如 5500 - 5000 = 500點)
-        const skipSamples = numSamples > targetSamples ? numSamples - targetSamples : 0;
-
-        // 陣列長度固定給要畫的長度
-        for (var name of leadNames) signals[name] = new Float32Array(targetSamples);
-
-        // 從 skipSamples 開始讀取，只抓後面10秒的點
-        for (let i = 0; i < targetSamples; i++) {
-            // 原始資料的實際索引 (要加上跳過的那些點)
-            const originalIndex = i + skipSamples;
-            if (originalIndex >= numSamples) break;
-            // 對應到指定的點
-            for (let ch = 0; ch < numChannels; ch++) {
-                const index = (originalIndex * numChannels) + ch;
-                const leadName = leadNames[ch] || `CH${ch + 1}`;
-                signals[leadName][i] = waveData[index];
-            }
+    try {
+        Pages.displayPage("EcgPage");
+        img2darkByClass("ecg", false);
+        leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
+        if (!getByid("EcgView")) {
+            var EcgView = document.createElement("div");
+            EcgView.id = "EcgView";
+            getByid("EcgPage").appendChild(EcgView);
+            var EcgLabel = document.createElement("label");
+            EcgLabel.style.position = "absolute";
+            EcgLabel.style.fontSize = "48px";
+            EcgLabel.style.zIndex = "10";
+            EcgLabel.style.right = "5px";
+            EcgLabel.style.bottom = "5px";
+            EcgLabel.style.marginTop = "6px";
+            EcgLabel.style.border = "2px solid black";
+            EcgLabel.style.backgroundColor = "white";
+            EcgLabel.innerText = "This is a test version.";
+            getByid("EcgPage").appendChild(EcgLabel);
         }
-        return signals;
-    }
-    var ecgData = parseDICOMWaveformData(WaveformData, Channels12, NumberOfWaveformSamples, Sop.Image.SamplingFrequency)
+        if (!getByid("EcgCanvas")) {
+            var EcgCanvas = document.createElement("CANVAS");
+            EcgCanvas.id = "EcgCanvas";
 
-    // 實際開始畫波形資料
-    function drawWaveforms(ecgData) {
-        const sr = Sop.Image.SamplingFrequency;
-        for (var l = 0; l < layout.length; l++) {
-            var block = layout[l];
-            const signal = ecgData[block.name];
-            if (!signal) return;
+            getByid("EcgView").appendChild(EcgCanvas);
+        }
 
-            // 計算繪圖區塊範圍
-            const startX = block.col * Col_width;
-            const startY = block.row * Row_height;
-            const width = block.isRhythm ? A4Width : Col_width;
-            const height = Row_height;
-            const baselineY = startY + (height / 2); // 0 mV 在區塊正中間
+        var ECGSpeedSelect = getByid("ECGSpeedSelect"), ECGVoltageSelect = getByid("ECGVoltageSelect");
+        for (var opt of ECGSpeedSelect.options)
+            if (parseFloat(opt.text) == 25) opt.setAttribute("selected", "selected");
+        for (var opt of ECGVoltageSelect.options)
+            if (parseFloat(opt.text) == 10) opt.setAttribute("selected", "selected");
 
-            // 計算這個區塊要畫幾秒的資料(最後一個是畫全部，其他是2.5秒)
-            const durationSec = block.isRhythm ? totalSecnods : 2.5;
-            const numSamples = durationSec * sr;
+        ECGSpeedSelect.onchange = function () { EcgLoader(GetViewport().Sop); }
+        ECGVoltageSelect.onchange = function () { EcgLoader(GetViewport().Sop); }
 
-            // 短導程需要偏移起始點 (例如 aVR 是從 2.5秒 開始)
-            const sampleOffset = block.isRhythm ? 0 : (block.col * 2.5 * sr);
-            // 由於長導程不一定等於10秒，所以短導程和長導程的(1 mm 等於幾個 pixel)，並不相同
-            const Px_per_mm = block.isRhythm ? px_per_mm_Rhythm : px_per_mm;
+        //////////////////////////////////////////////////
 
-            ctx.save();
-            // 設定剪裁區域，避免畫到其他的格子
-            ctx.beginPath(); ctx.rect(startX, startY, width, height); ctx.clip();
-            // 繪製導程名稱
-            ctx.fillStyle = 'black'; ctx.font = 'bold 16px sans-serif'; ctx.fillText(block.name, startX + 10, startY + 25);
+        // 紙張大小
+        const A4Width = 3508, A4Height = 2480;
+        // 準備畫布
+        var EcgCanvas = getByid("EcgCanvas"), ctx = EcgCanvas.getContext("2d");
+        EcgCanvas.width = A4Width, EcgCanvas.height = A4Height;
+        ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, A4Width, A4Height);
 
-            // 繪製波型
+        //////////////////////////////////////////////////
+
+        // 標準參數
+        const speed = parseFloat(ECGSpeedSelect.options[ECGSpeedSelect.selectedIndex].text);
+        const voltage = parseFloat(ECGVoltageSelect.options[ECGVoltageSelect.selectedIndex].text);
+        // 有幾個導程
+        var Channels12 = Sop.Image.NumberOfWaveformChannels;
+        if (Channels12 != 12) return;
+
+        // 一個導程有幾個Samples
+        var NumberOfWaveformSamples = Sop.Image.NumberOfWaveformSamples;
+        // 十二個導程有幾個Samples
+        var WaveformData = Sop.Image.ReconstructionWaveformData;
+        // 總共幾秒
+        const totalSecnods = NumberOfWaveformSamples / Sop.Image.SamplingFrequency;
+
+        //////////////////////////////////////////////////
+
+        // 解析度：1 mm 等於幾個 pixel(給4x4用)
+        var px_per_mm = A4Width / (10 * speed);
+        // 解析度：1 mm 等於幾個 pixel(給&1用)
+        var px_per_mm_Rhythm = A4Width / (totalSecnods * speed);
+
+        // 佈局參數 (4x4&1)
+        var Rows = 4, Cols = 4;
+        var Row_height = A4Height / Rows, Col_width = A4Width / Cols;
+        // 12導程分別位於的位置
+        var layout = [
+            { name: 'I', row: 0, col: 0 }, { name: 'aVR', row: 0, col: 1 }, { name: 'V1', row: 0, col: 2 }, { name: 'V4', row: 0, col: 3 },
+            { name: 'II', row: 1, col: 0 }, { name: 'aVL', row: 1, col: 1 }, { name: 'V2', row: 1, col: 2 }, { name: 'V5', row: 1, col: 3 },
+            { name: 'III', row: 2, col: 0 }, { name: 'aVF', row: 2, col: 1 }, { name: 'V3', row: 2, col: 2 }, { name: 'V6', row: 2, col: 3 },
+            { name: 'II', row: 3, col: 0, isRhythm: true } // 長節律導程
+        ];
+
+        //////////////////////////////////////////////////
+
+        // 畫底框框
+        function creatEcgBackground() {
+            const w = A4Width, h = A4Height;
+            // 畫 1mm 小網格 (淺色)
             ctx.beginPath();
-            ctx.strokeStyle = 'black'; ctx.lineJoin = 'round'; ctx.lineWidth = 1.5;
-            for (let i = 0; i < numSamples; i++) {
-                const index = sampleOffset + i;
-                if (index >= signal.length) break;
-
-                const x = (i / sr) * speed * Px_per_mm;
-                const y = (signal[index] * voltage * Px_per_mm);
-                if (i === 0) ctx.moveTo(startX + x, baselineY - y);
-                else ctx.lineTo(startX + x, baselineY - y);
-            }
+            ctx.strokeStyle = 'rgba(255, 180, 180, 0.5)', ctx.lineWidth = 1;
+            for (let x = 0; x <= w; x += px_per_mm) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+            for (let y = 0; y <= h; y += px_per_mm) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
             ctx.stroke();
-            ctx.restore();
+
+            // 畫 5mm 大網格 (深色)
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(255, 100, 100, 0.8)', ctx.lineWidth = 1.5;
+            for (let x = 0; x <= w; x += px_per_mm * 5) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+            for (let y = 0; y <= h; y += px_per_mm * 5) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+            ctx.stroke();
+
+            // 畫區分12格的最大網格 (粗線)
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(255, 80, 80, 0.9)', ctx.lineWidth = 5;
+            for (let x = 0; x <= w; x += Col_width) { ctx.moveTo(x, 0); ctx.lineTo(x, h - Row_height); }
+            for (let y = 0; y <= h; y += Row_height) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+            ctx.stroke();
         }
+        creatEcgBackground();
+
+        // 準備好波型資料
+        function parseDICOMWaveformData(waveData, numChannels, numSamples, samplingRate) {
+
+            const signals = {};
+            const leadNames = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6'];
+
+            // 只打算畫 10 秒，超過的不用畫
+            const targetSeconds = 11;
+            const targetSamples = targetSeconds * samplingRate;
+
+            // 如果原始資料超過 10 秒，得計算要「跳過」前面幾個點(例如 5500 - 5000 = 500點)
+            const skipSamples = numSamples > targetSamples ? numSamples - targetSamples : 0;
+
+            // 陣列長度固定給要畫的長度
+            for (var name of leadNames) signals[name] = new Float32Array(targetSamples);
+
+            // 從 skipSamples 開始讀取，只抓後面10秒的點
+            for (let i = 0; i < targetSamples; i++) {
+                // 原始資料的實際索引 (要加上跳過的那些點)
+                const originalIndex = i + skipSamples;
+                if (originalIndex >= numSamples) break;
+                // 對應到指定的點
+                for (let ch = 0; ch < numChannels; ch++) {
+                    const index = (originalIndex * numChannels) + ch;
+                    const leadName = leadNames[ch] || `CH${ch + 1}`;
+                    signals[leadName][i] = waveData[index];
+                }
+            }
+            return signals;
+        }
+        var ecgData = parseDICOMWaveformData(WaveformData, Channels12, NumberOfWaveformSamples, Sop.Image.SamplingFrequency)
+
+        // 實際開始畫波形資料
+        function drawWaveforms(ecgData) {
+            const sr = Sop.Image.SamplingFrequency;
+            for (var l = 0; l < layout.length; l++) {
+                var block = layout[l];
+                const signal = ecgData[block.name];
+                if (!signal) return;
+
+                // 計算繪圖區塊範圍
+                const startX = block.col * Col_width;
+                const startY = block.row * Row_height;
+                const width = block.isRhythm ? A4Width : Col_width;
+                const height = Row_height;
+                const baselineY = startY + (height / 2); // 0 mV 在區塊正中間
+
+                // 計算這個區塊要畫幾秒的資料(最後一個是畫全部，其他是2.5秒)
+                const durationSec = block.isRhythm ? totalSecnods : 2.5;
+                const numSamples = durationSec * sr;
+
+                // 短導程需要偏移起始點 (例如 aVR 是從 2.5秒 開始)
+                const sampleOffset = block.isRhythm ? 0 : (block.col * 2.5 * sr);
+                // 由於長導程不一定等於10秒，所以短導程和長導程的(1 mm 等於幾個 pixel)，並不相同
+                const Px_per_mm = block.isRhythm ? px_per_mm_Rhythm : px_per_mm;
+
+                ctx.save();
+                // 設定剪裁區域，避免畫到其他的格子
+                ctx.beginPath(); ctx.rect(startX, startY, width, height); ctx.clip();
+                // 繪製導程名稱
+                ctx.fillStyle = 'black'; ctx.font = 'bold 16px sans-serif'; ctx.fillText(block.name, startX + 10, startY + 25);
+
+                // 繪製波型
+                ctx.beginPath();
+                ctx.strokeStyle = 'black'; ctx.lineJoin = 'round'; ctx.lineWidth = 1.5;
+                for (let i = 0; i < numSamples; i++) {
+                    const index = sampleOffset + i;
+                    if (index >= signal.length) break;
+
+                    const x = (i / sr) * speed * Px_per_mm;
+                    const y = (signal[index] * voltage * Px_per_mm);
+                    if (i === 0) ctx.moveTo(startX + x, baselineY - y);
+                    else ctx.lineTo(startX + x, baselineY - y);
+                }
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+        drawWaveforms(ecgData);
+    } catch (ex) {
+        ErrorMessage.pushErrorMessage(512);
     }
-    drawWaveforms(ecgData);
 }
 
 function setECG(imageObj) {
-    if (!imageObj.data.elements[Tag.WaveformSequence]) throw "WaveformSequence not found";
-    var WaveformSequence = imageObj.data.elements[Tag.WaveformSequence];
-    imageObj.ecg = true;
-    for (var i = 0; i < WaveformSequence.items.length; i++) {
-        if (WaveformSequence.items[i].dataSet.string(Tag.WaveformOriginality) == 'ORIGINAL') {
-            //Samples
-            imageObj.NumberOfWaveformSamples = WaveformSequence.items[i].dataSet.int16(Tag.NumberOfWaveformSamples);
-            //12
-            imageObj.NumberOfWaveformChannels = WaveformSequence.items[i].dataSet.int16(Tag.NumberOfWaveformChannels);
-            //BitsAllocated
-            imageObj.WaveformBitsAllocated = WaveformSequence.items[i].dataSet.int16(Tag.WaveformBitsAllocated);
-            //SamplingFrequency
-            imageObj.SamplingFrequency = WaveformSequence.items[i].dataSet.intString(Tag.SamplingFrequency);
-            //WaveformData.length=Samples*12*(BitsAllocated/8)
-            var WaveformData = WaveformSequence.items[i].dataSet.elements[Tag.WaveformData];
+    try {
+        if (!imageObj.data.elements[Tag.WaveformSequence]) throw "WaveformSequence not found";
+        var WaveformSequence = imageObj.data.elements[Tag.WaveformSequence];
+        imageObj.ecg = true;
+        for (var i = 0; i < WaveformSequence.items.length; i++) {
+            if (WaveformSequence.items[i].dataSet.string(Tag.WaveformOriginality) == 'ORIGINAL') {
+                //Samples
+                imageObj.NumberOfWaveformSamples = WaveformSequence.items[i].dataSet.int16(Tag.NumberOfWaveformSamples);
+                //12
+                imageObj.NumberOfWaveformChannels = WaveformSequence.items[i].dataSet.int16(Tag.NumberOfWaveformChannels);
+                //BitsAllocated
+                imageObj.WaveformBitsAllocated = WaveformSequence.items[i].dataSet.int16(Tag.WaveformBitsAllocated);
+                //SamplingFrequency
+                imageObj.SamplingFrequency = WaveformSequence.items[i].dataSet.intString(Tag.SamplingFrequency);
+                //WaveformData.length=Samples*12*(BitsAllocated/8)
+                var WaveformData = WaveformSequence.items[i].dataSet.elements[Tag.WaveformData];
 
-            imageObj.FilterHighFrequency = WaveformSequence.items[i].dataSet.elements[Tag.ChannelDefinitionSequence].items[0].dataSet.intString(Tag.FilterHighFrequency);
-            imageObj.FilterLowFrequency = WaveformSequence.items[i].dataSet.elements[Tag.ChannelDefinitionSequence].items[0].dataSet.intString(Tag.FilterLowFrequency);
-            imageObj.ChannelSensitivity = WaveformSequence.items[i].dataSet.elements[Tag.ChannelDefinitionSequence].items[0].dataSet.intString(Tag.ChannelSensitivity);
-            //check
-            if (WaveformData.length != imageObj.NumberOfWaveformSamples * imageObj.NumberOfWaveformChannels * (imageObj.WaveformBitsAllocated / 8))
-                throw "WaveformData parsing failed";
+                imageObj.FilterHighFrequency = WaveformSequence.items[i].dataSet.elements[Tag.ChannelDefinitionSequence].items[0].dataSet.intString(Tag.FilterHighFrequency);
+                imageObj.FilterLowFrequency = WaveformSequence.items[i].dataSet.elements[Tag.ChannelDefinitionSequence].items[0].dataSet.intString(Tag.FilterLowFrequency);
+                imageObj.ChannelSensitivity = WaveformSequence.items[i].dataSet.elements[Tag.ChannelDefinitionSequence].items[0].dataSet.intString(Tag.ChannelSensitivity);
+                //check
+                if (WaveformData.length != imageObj.NumberOfWaveformSamples * imageObj.NumberOfWaveformChannels * (imageObj.WaveformBitsAllocated / 8))
+                    throw "WaveformData parsing failed";
 
-            var WaveformDataOffset = WaveformSequence.items[0].dataSet.elements[Tag.WaveformData].dataOffset;
-            var WaveformDataLength = WaveformSequence.items[0].dataSet.elements[Tag.WaveformData].length;
-            switch (imageObj.WaveformBitsAllocated) {
-                case 8: imageObj.WaveformData = new Int8Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); break;
-                case 16: imageObj.WaveformData = new Int16Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); break;
-                case 32: imageObj.WaveformData = new Int32Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); break;
-                default: throw "WaveformData parsing failed";
+                var WaveformDataOffset = WaveformSequence.items[0].dataSet.elements[Tag.WaveformData].dataOffset;
+                var WaveformDataLength = WaveformSequence.items[0].dataSet.elements[Tag.WaveformData].length;
+                switch (imageObj.WaveformBitsAllocated) {
+                    case 8: imageObj.WaveformData = new Int8Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); break;
+                    case 16: imageObj.WaveformData = new Int16Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); break;
+                    case 32: imageObj.WaveformData = new Int32Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); break;
+                    default: throw "WaveformData parsing failed";
+                }
+                imageObj.ReconstructionWaveformData = new Float32Array(imageObj.WaveformData.length);
+
+                for (var w = 0; w < imageObj.WaveformData.length; w++) {
+                    imageObj.ReconstructionWaveformData[w] = imageObj.WaveformData[w] / (imageObj.ChannelSensitivity ? imageObj.ChannelSensitivity : 1);
+                    if (!isNaN(imageObj.FilterHighFrequency) && !isNaN(imageObj.FilterLowFrequency))
+                        imageObj.ReconstructionWaveformData[w] = (imageObj.ReconstructionWaveformData[w] - imageObj.FilterLowFrequency) / (imageObj.FilterHighFrequency - imageObj.FilterLowFrequency);
+                }
+                return;
             }
-            imageObj.ReconstructionWaveformData = new Float32Array(imageObj.WaveformData.length);
+        }
+        if (WaveformSequence.items.length == 0) throw "WaveformOriginality not found";
+        throw "ORIGINAL WaveformOriginality not found";
+    } catch (ex) {
+        ErrorMessage.pushErrorMessage(513);
+    }
+}
 
-            for (var w = 0; w < imageObj.WaveformData.length; w++) {
-                imageObj.ReconstructionWaveformData[w] = imageObj.WaveformData[w] / (imageObj.ChannelSensitivity ? imageObj.ChannelSensitivity : 1);
-                if (!isNaN(imageObj.FilterHighFrequency) && !isNaN(imageObj.FilterLowFrequency))
-                    imageObj.ReconstructionWaveformData[w] = (imageObj.ReconstructionWaveformData[w] - imageObj.FilterLowFrequency) / (imageObj.FilterHighFrequency - imageObj.FilterLowFrequency);
-            }
-            return;
+class ErrorMessage {
+    static message = [];
+    static getErrorMessage() {
+        return ErrorMessage.message
+    }
+    static pushErrorMessage(ErrorCode = -1, sop = "unknown", series = "unknown", study = "unknown") {
+        const now = new Date(); const formatter = new Intl.DateTimeFormat('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+        ErrorMessage.message.push({
+            sop: sop, series: series, study: study,
+            ErrorCode: ErrorCode, time: formatter.format(now) //(2026/02/10 22:30:37)
+        })
+    }
+}
+
+function getEntropy() {
+    var canvas = GetViewport().canvas, ctx = canvas.getContext('2d');
+
+    var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    var blackPixelCount = 0;
+    for (let i = 0; i < imgData.length - 8; i += 8) {
+        if (Math.abs(imgData[i] - imgData[i + 4]) >= 80) blackPixelCount++;
+    }
+    var entropy = (blackPixelCount / (canvas.width * canvas.height)) * 100;
+    return { percent: entropy, error: entropy >= 3 };
+}
+
+function getBlackPercent() {
+    var canvas = GetViewport().canvas, ctx = canvas.getContext('2d');
+
+    var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    var blackPixelCount = 0;
+    for (let i = 0; i < imgData.length - 8; i += 8) {
+        if (Math.abs(imgData[i]) == 0) blackPixelCount++;
+    }
+    var blackPercent = (blackPixelCount / (canvas.width * canvas.height)) * 100;
+    return { percent: blackPercent, error: blackPercent >= 99 };
+}
+
+function getWhitePercent() {
+    var canvas = GetViewport().canvas, ctx = canvas.getContext('2d');
+
+    var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    var whitePixelCount = 0;
+    for (let i = 0; i < imgData.length - 8; i += 8) {
+        if (Math.abs(imgData[i]) == 255) whitePixelCount++;
+    }
+    var whitePercent = (whitePixelCount / (canvas.width * canvas.height)) * 100;
+    return { percent: whitePercent, error: whitePercent >= 25 };
+}
+
+function getWhitePercent() {
+    var canvas = GetViewport().canvas, ctx = canvas.getContext('2d');
+
+    var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    var clippingPixels = 0;
+    for (let i = 0; i < imgData.length - 8; i += 8) {
+        var r = imgData[i];
+        var g = imgData[i + 1];
+        var b = imgData[i + 2];
+        if ((r <= 20 || r >= 235) && (g <= 20 || g >= 235) && (b <= 20 || b >= 235)) {
+            if (r + g + b <= 60) { }
+            else if (r + g + b >= 700) { }
+            else clippingPixels++;
         }
     }
-    if (WaveformSequence.items.length == 0) throw "WaveformOriginality not found";
-    throw "ORIGINAL WaveformOriginality not found";
+    var clippingPercent = (clippingPixels / (canvas.width * canvas.height)) * 100;
+    return { percent: clippingPercent, error: clippingPercent >= 0.5 };
+}
+
+function detectPhotometricAnomaly() {
+    var image = GetViewport().content.image, dataSet = image.data;
+    var photometric = dataSet.string('x00280004');
+    if ((image.isYCbCr && photometric === 'RGB') || (image.AssumingRGB && photometric.includes("YBR")))
+        return { isYCbCr: image.isYCbCr, AssumingRGB: image.AssumingRGB, photometric: photometric, error: true };
+    return { isYCbCr: image.isYCbCr, AssumingRGB: image.AssumingRGB, photometric: photometric, error: false };
 }
 
 function loadDicomDataSet(fileData) {
@@ -833,6 +934,7 @@ function loadDicomDataSet(fileData) {
     } catch (ex) {
         if (ImageManager.NumOfPreLoadSops >= 1) ImageManager.NumOfPreLoadSops -= 1;
         console.log(ex);
+        ErrorMessage.pushErrorMessage(300);
         return;
     }
 

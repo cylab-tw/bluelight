@@ -364,6 +364,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
   if (!SeriesRequest || !SeriesRequest.response) {
     console.error("Error: Series request response is empty or invalid");
     showDicomStatus("Error: Invalid server response", true);
+    ErrorMessage.pushErrorMessage(121);
     return;
   }
 
@@ -373,6 +374,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
   if (!Array.isArray(SeriesResponse) || SeriesResponse.length === 0) {
     console.error("Error: Series response is not a valid array or is empty");
     showDicomStatus("Error: No series data available", true);
+    ErrorMessage.pushErrorMessage(122);
     return;
   }
 
@@ -399,11 +401,13 @@ function getJsonBySeriesRequest(SeriesRequest) {
         } else {
           console.error("Error: Missing required DICOM data in series response");
           showDicomStatus("Error: Missing DICOM data in response", true);
+          ErrorMessage.pushErrorMessage(125);
           return;
         }
       } catch (error) {
         console.error("Error building instance URL:", error);
         showDicomStatus("Error processing DICOM data: " + error.message, true);
+        ErrorMessage.pushErrorMessage(126);
         return;
       }
 
@@ -431,6 +435,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
       InstanceRequest.onerror = function () {
         console.error("Network error occurred while fetching instance data");
         showDicomStatus("Network error: Could not retrieve instance data", true);
+        ErrorMessage.pushErrorMessage(130);
       };
 
       // Handle timeouts
@@ -438,6 +443,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
       InstanceRequest.ontimeout = function () {
         console.error("Instance request timed out");
         showDicomStatus("Request timed out: Instance retrieval failed", true);
+        ErrorMessage.pushErrorMessage(130);
       };
 
       //發送以Instance為單位的請求
@@ -455,6 +461,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
         if (InstanceRequest.status !== 200) {
           console.error("HTTP error for instance request:", InstanceRequest.status);
           showDicomStatus("PACS error: Failed to retrieve instance (Status " + InstanceRequest.status + ")", true);
+          ErrorMessage.pushErrorMessage(130);
           return;
         }
 
@@ -463,6 +470,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
           if (!InstanceRequest.response) {
             console.error("Empty instance response");
             showDicomStatus("Error: Empty instance data received", true);
+            ErrorMessage.pushErrorMessage(140);
             return;
           }
 
@@ -477,6 +485,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
         } catch (error) {
           console.error("Error processing instance data:", error);
           showDicomStatus("Error processing instance data: " + error.message, true);
+          ErrorMessage.pushErrorMessage(150);
         }
       }
     }
@@ -486,6 +495,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
     } catch (error) {
       console.error("Error starting instance request:", error);
       showDicomStatus("Error loading DICOM data: " + error.message, true);
+      ErrorMessage.pushErrorMessage(151);
     }
   }
 }
@@ -507,6 +517,7 @@ function readJson(url) {
   SeriesRequest.onerror = function () {
     console.error("Network error occurred while fetching series data");
     showDicomStatus("PACS server error", true);
+    ErrorMessage.pushErrorMessage(110);
   };
 
   // Handle timeouts
@@ -514,6 +525,7 @@ function readJson(url) {
   SeriesRequest.ontimeout = function () {
     console.error("Request timed out");
     showDicomStatus("PACS server error", true);
+    ErrorMessage.pushErrorMessage(110);
   };
 
   //發送以Series為單位的請求
@@ -522,11 +534,13 @@ function readJson(url) {
     if (SeriesRequest.status !== 200) {
       console.error("HTTP error:", SeriesRequest.status);
       showDicomStatus("PACS server error");
+      ErrorMessage.pushErrorMessage(110);
       return;
     }
     try {
       getJsonBySeriesRequest(SeriesRequest);
     } catch (error) {
+      ErrorMessage.pushErrorMessage(120);
       console.error("Error processing series data:", error);
       showDicomStatus("Error processing series data: " + error.message, true);
     }
