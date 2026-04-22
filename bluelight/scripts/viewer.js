@@ -650,8 +650,8 @@ function EcgLoader(Sop) {
         const A4Width = 3508, A4Height = 2480;
         // 準備畫布
         var EcgCanvas = getByid("EcgCanvas"), ctx = EcgCanvas.getContext("2d");
-        EcgCanvas.width = A4Width, EcgCanvas.height = A4Height;
-        ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, A4Width, A4Height);
+        EcgCanvas.width = A4Width + 180, EcgCanvas.height = A4Height + 100;
+        ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, EcgCanvas.width, EcgCanvas.height);
 
         //////////////////////////////////////////////////
 
@@ -688,7 +688,8 @@ function EcgLoader(Sop) {
         ];
 
         //////////////////////////////////////////////////
-
+        //位移
+        ctx.translate(50, 50);
         // 畫底框框
         function creatEcgBackground() {
             const w = A4Width, h = A4Height;
@@ -709,7 +710,7 @@ function EcgLoader(Sop) {
             // 畫區分12格的最大網格 (粗線)
             ctx.beginPath();
             ctx.strokeStyle = 'rgba(255, 80, 80, 0.9)', ctx.lineWidth = 5;
-            for (let x = 0; x <= w; x += Col_width) { ctx.moveTo(x, 0); ctx.lineTo(x, h - Row_height); }
+            for (let x = 0; x <= w; x += Col_width) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
             for (let y = 0; y <= h; y += Row_height) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
             ctx.stroke();
         }
@@ -745,7 +746,7 @@ function EcgLoader(Sop) {
             }
             return signals;
         }
-        var ecgData = parseDICOMWaveformData(WaveformData, Channels12, NumberOfWaveformSamples, Sop.Image.SamplingFrequency)
+        var ecgData = parseDICOMWaveformData(WaveformData, Channels12, NumberOfWaveformSamples, Sop.Image.SamplingFrequency);
 
         // 實際開始畫波形資料
         function drawWaveforms(ecgData) {
@@ -769,7 +770,7 @@ function EcgLoader(Sop) {
                 // 短導程需要偏移起始點 (例如 aVR 是從 2.5秒 開始)
                 const sampleOffset = block.isRhythm ? 0 : (block.col * 2.5 * sr);
                 // 由於長導程不一定等於10秒，所以短導程和長導程的(1 mm 等於幾個 pixel)，並不相同
-                const Px_per_mm = block.isRhythm ? px_per_mm_Rhythm : px_per_mm;
+                const Px_per_mm = px_per_mm;
 
                 ctx.save();
                 // 設定剪裁區域，避免畫到其他的格子
@@ -791,6 +792,25 @@ function EcgLoader(Sop) {
                 }
                 ctx.stroke();
                 ctx.restore();
+
+                // 繪製校正方波
+                if (block.isRhythm) {
+                    ctx.save();
+                    ctx.translate(130, 0);
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'black'; ctx.lineJoin = 'round'; ctx.lineWidth = 1.5;
+                    for (let i = numSamples - ((speed * 8) | 0); i < numSamples; i++) {
+                        const index = sampleOffset + i;
+                        if (index >= signal.length) break;
+
+                        const x = (i / sr) * speed * px_per_mm_Rhythm;
+                        const y = (signal[index] * voltage * px_per_mm_Rhythm);
+                        if (i === 0) ctx.moveTo(startX + x, baselineY - y);
+                        else ctx.lineTo(startX + x, baselineY - y);
+                    }
+                    ctx.stroke();
+                    ctx.restore();
+                }
             }
         }
         drawWaveforms(ecgData);
