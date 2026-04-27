@@ -496,6 +496,17 @@ function PdfLoader(pdf, Sop) {
     }
 }
 
+// 載入
+function loadRestImageData() {
+    if (!ImageManager || !ImageManager.SopMap) return;
+    for (var i in ImageManager.SopMap) {
+        var sop = ImageManager.SopMap[i];
+        if (!sop || !sop.Image) continue;
+        if (!sop.Image.loadImageData) continue;
+        if (sop.Image.imageDataLoaded == false && sop.Image.loadImageData) sop.Image.loadImageData();
+    }
+}
+
 function DcmLoader(image, viewport) {
     try {
         if (Pages.type != "DicomPage") {
