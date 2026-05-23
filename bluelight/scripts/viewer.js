@@ -639,6 +639,115 @@ function EcgLoader(Sop) {
             EcgLabel.innerText = "This is a test version.";
             getByid("EcgPage").appendChild(EcgLabel);
         }
+
+        //////////////////////////////////////////////////
+
+        if (getByid("AnnotationECG")) getByid("ECGOptionsDIV").removeChild(getByid("AnnotationECG"));
+        getByid("ECGAnnotationImg").onclick = function () {
+            if (getByid("AnnotationECG")) {
+                getByid("ECGOptionsDIV").removeChild(getByid("AnnotationECG"));
+                return;
+            }
+
+            // 添加Annotation
+            var annotationDiv = createElem("div");
+            annotationDiv.style.width = "300px";
+            annotationDiv.style.zIndex = "10";
+            annotationDiv.style.color = "black";
+            //annotationDiv.style.height = "100%";
+            annotationDiv.style.backgroundColor = "white";
+            //annotationDiv.style.right = "0px";
+            annotationDiv.style.position = "absolute";
+            annotationDiv.id = "AnnotationECG"
+            getByid("ECGOptionsDIV").appendChild(annotationDiv);
+
+            function parseECGAnnotations(dataSet) {
+                const result = [];
+
+                // 取得 Waveform Annotation Sequence (0040,B020)
+                const annotationSeq = dataSet.elements['x0040b020'];
+
+                // 如果沒有標註，回傳空陣列
+                if (!annotationSeq || !annotationSeq.items) return result;
+
+                // 遍歷每一個標註 (Item)
+                annotationSeq.items.forEach((item, index) => {
+                    const itemData = item.dataSet;
+                    // Concept Name Code Sequence (0040,A043) - 這個標註是什麼類型的動作？
+                    const nameSeq = itemData.elements['x0040a043'];
+                    if (nameSeq && nameSeq.items && nameSeq.items.length > 0) {
+                        const nameMeaning = nameSeq.items[0].dataSet.string('x00080104');
+                        let tagValue = "";
+
+                        // 如果是測量數字 (例如心跳、PR Interval)
+                        if (itemData.elements['x0040a30a']) {
+                            // 讀取測量數值
+                            const numStr = itemData.string('x0040a30a');
+                            tagValue = numStr ? numStr.trim() : "";
+
+                            // 讀取單位 (例如 bpm, ms)
+                            const unitSeq = itemData.elements['x004008ea'];
+                            if (unitSeq && unitSeq.items && unitSeq.items.length > 0) {
+                                const unit = unitSeq.items[0].dataSet.string('x00080104'); // Code Meaning (單位名稱)
+                                if (unit) tagValue += ` ${unit}`;
+                            }
+                        }
+                        // 如果是波形座標點 (例如標示 R 波位置)
+                        else if (itemData.elements['x0040a132']) {
+                            const positions = [];
+                            const samplePosElement = itemData.elements['x0040a132'];
+                            const bytes = itemData.byteArray, offset = samplePosElement.dataOffset;
+
+                            // 轉換 4-byte Unsigned Long 二進位陣列
+                            for (let i = 0; i < samplePosElement.length; i += 4) {
+                                const val = bytes[offset + i] + (bytes[offset + i + 1] << 8) + (bytes[offset + i + 2] << 16) + (bytes[offset + i + 3] << 24);
+                                positions.push(val);
+                            }
+                            tagValue = positions.join(", "); // 把座標點用逗號組合起來
+                        }
+                        if (nameMeaning) result.push({ tag: nameMeaning, value: "" + tagValue });
+                    }
+                });
+
+                return result;
+            }
+
+            function createTable(data) {
+                const table = createElem('table');
+                table.style.width = "100%";
+                table.border = "1";
+
+                const thead = createElem('thead'), headerRow = createElem('tr');
+                const th_Tag = createElem('th'), th_Val = createElem('th');
+
+                th_Tag.textContent = 'Tag', th_Val.textContent = 'Value';
+
+                headerRow.appendChild(th_Tag);
+                headerRow.appendChild(th_Val);
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                const tbody = createElem('tbody');
+                for (var item of data) {
+                    const row = createElem('tr'), cell_Tag = createElem('td'), cell_Val = createElem('td');
+
+                    cell_Tag.textContent = item.tag;
+                    cell_Val.textContent = item.value;
+
+                    row.appendChild(cell_Tag);
+                    row.appendChild(cell_Val);
+                    tbody.appendChild(row);
+                }
+
+                table.appendChild(tbody);
+                annotationDiv.appendChild(table);
+            }
+
+            createTable(parseECGAnnotations(Sop.dataSet));
+        }
+        //////////////////////////////////////////////////
+
+
         if (!getByid("EcgCanvas")) {
             var EcgCanvas = document.createElement("CANVAS");
             EcgCanvas.id = "EcgCanvas";

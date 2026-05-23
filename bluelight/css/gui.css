@@ -440,6 +440,16 @@ button:hover {
   height: 25px;
 }
 
+#ECGAnnotationImg{
+  height: 13px;
+  width: 6px;
+  scale: 3;
+}
+
+#ECGAnnotationImg:hover {
+  filter: invert(80%);
+}
+
 #KoSelectDrawer {
   background-color: rgb(105, 105, 105);
   position: absolute;
