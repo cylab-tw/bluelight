@@ -639,6 +639,17 @@ function EcgLoader(Sop) {
             EcgLabel.innerText = "This is a test version.";
             getByid("EcgPage").appendChild(EcgLabel);
         }
+        //////////////////////////////////////////////////
+        getByid("EcgView").onmousedown = function (e) { this.MouseDownCheck = true; this.point = new Point2D(e.pageX, e.pageY); }
+        getByid("EcgView").onmouseup = function (e) { this.MouseDownCheck = false; this.point = null; }
+        getByid("EcgView").oncontextmenu = function (e) { e.preventDefault(); };
+        getByid("EcgView").onmousemove = function (e) {
+            if (!this.MouseDownCheck || !getByid("EcgCanvas")) return;
+            var zoom = parseFloat(getByid("EcgCanvas").style.zoom) ? parseFloat(getByid("EcgCanvas").style.zoom) : 1.0;
+            if (e.pageY - this.point.y < -5) getByid("EcgCanvas").style.zoom = zoom + 0.01 > 1.0 ? 1.0 : zoom + 0.01;
+            if (e.pageY - this.point.y > 5) getByid("EcgCanvas").style.zoom = zoom - 0.01 < 0.1 ? 0.1 : zoom - 0.01;
+            this.point = new Point2D(e.pageX, e.pageY);
+        }
 
         //////////////////////////////////////////////////
 
