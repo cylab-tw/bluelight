@@ -662,13 +662,15 @@ function EcgLoader(Sop) {
 
             // 添加Annotation
             var annotationDiv = createElem("div");
-            annotationDiv.style.width = "300px";
+            annotationDiv.style.width = "400px";
             annotationDiv.style.zIndex = "10";
             annotationDiv.style.color = "black";
             //annotationDiv.style.height = "100%";
             annotationDiv.style.backgroundColor = "white";
             //annotationDiv.style.right = "0px";
             annotationDiv.style.position = "absolute";
+            annotationDiv.style["max-height"] = `calc(100% - ${getByid("ECGOptionsDIV").getBoundingClientRect().y}px)`;
+            annotationDiv.style["overflow-y"] = "scroll";
             annotationDiv.id = "AnnotationECG"
             getByid("ECGOptionsDIV").appendChild(annotationDiv);
 
