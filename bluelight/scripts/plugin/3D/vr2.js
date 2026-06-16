@@ -949,6 +949,7 @@ class VRCube {
         var PreviewCheck = createElem("input", "VR2_PreviewCheck", "userInput_VR2");
         PreviewCheck.type = "checkbox";
         this.PreviewCheck = PreviewCheck;
+        PreviewCheck.setAttribute("checked", "checked");
         if (this.sopList.length >= 50) PreviewCheck.setAttribute("checked", "checked");
         function ChangePreview() {
             if (this.PreviewCheck.checked) this.cube.PreviewWhileRotating = true;
