@@ -351,10 +351,79 @@ class VRCube {
         this.filter = null;
         this.PreviewWhileRotating = false;
         if (this.sopList.length >= 50) this.reduceSlices = true;
-        if (this.sopList.length >= 50) this.PreviewWhileRotating = true;
+        if (this.sopList.length >= 35) this.PreviewWhileRotating = true;
         this.RotationMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]; // 初始旋轉矩陣
         VRCube.cube = this;
         getByid("saveVR2").onclick = saveVR2;
+        this.findRTSS();
+    }
+
+    findRTSS() {
+        this.maskMark = null;
+        this.rtssList = []
+        for (var mark of PatientMark) {
+            if (mark.type != "RTSS") continue;
+            for (var sop of this.sopList) {
+                if (sop.SOPInstanceUID == mark.sop) {
+                    this.rtssList.push(mark.showName)
+                }
+            }
+        }
+        if (this.rtssList.length == 0) return;
+
+        this.rtssList = Array.from(new Set(this.rtssList));
+        /////////////////////////////////////////////////////////////////
+
+        var VR2_DIV = getByid("VR2_DIV");
+        var VR2_rtssDIV = createElem("DIV", "VR2_rtssDIV");
+        VR2_rtssDIV.style.width = "150px";
+        VR2_rtssDIV.style.height = "100%";
+        VR2_rtssDIV.style.maxHeight = "calc( 100% - 25px )";
+        VR2_rtssDIV.style.maxWidth = "150px";
+        VR2_rtssDIV.style.backgroundColor = "#404048";
+        VR2_rtssDIV.style.color = "white";
+        VR2_rtssDIV.style.overflowY = "auto";
+        VR2_rtssDIV.style.zIndex = "500";
+        VR2_rtssDIV.style.position = "absolute";
+        VR2_rtssDIV.style.userSelect = "none";
+        ////////////////////
+        const cube = this;
+        var radio = createElem('input');
+        radio.type = "radio";
+        radio.name = "VR2_rtssRadio";
+        radio.cube = cube;
+        radio.checked = true;
+        radio.onchange = function () {
+            this.cube.maskMark = null;
+            this.cube.resetZXY();
+            this.cube.reflesh();
+        }
+        var label = createElem('label');
+        label.innerText = "None";
+        VR2_rtssDIV.appendChild(radio);
+        VR2_rtssDIV.appendChild(label);
+        VR2_rtssDIV.appendChild(createElem("HR"));
+        ////////////////////
+        for (const showName of this.rtssList) {
+            var radio = createElem('input');
+            radio.type = "radio";
+            radio.name = "VR2_rtssRadio";
+            radio.cube = cube;
+            radio.showName = showName;
+            radio.onchange = function () {
+                this.cube.maskMark = this.showName;
+                this.cube.resetZXY();
+                this.cube.reflesh();
+            }
+            //////////
+            var label = createElem('label');
+            label.innerText = showName;
+            VR2_rtssDIV.appendChild(radio);
+            VR2_rtssDIV.appendChild(label);
+            VR2_rtssDIV.appendChild(createElem("BR"));
+        }
+
+        VR2_DIV.appendChild(VR2_rtssDIV);
     }
 
     resetZ() {
@@ -949,8 +1018,7 @@ class VRCube {
         var PreviewCheck = createElem("input", "VR2_PreviewCheck", "userInput_VR2");
         PreviewCheck.type = "checkbox";
         this.PreviewCheck = PreviewCheck;
-        PreviewCheck.setAttribute("checked", "checked");
-        if (this.sopList.length >= 50) PreviewCheck.setAttribute("checked", "checked");
+        if (this.sopList.length >= 35) PreviewCheck.setAttribute("checked", "checked");
         function ChangePreview() {
             if (this.PreviewCheck.checked) this.cube.PreviewWhileRotating = true;
             else this.cube.PreviewWhileRotating = false;
@@ -1222,6 +1290,7 @@ class VRCube {
 
                 this.Render2Canvas(NewCanvas, SOP.Image.intercept, SOP.Image.slope, SOP.Image.color, step);
                 if (this.displayMark) drawMarkForVR2(NewCanvas);
+                if (this.maskMark) maskMarkForVR2(NewCanvas, this.maskMark);
 
                 NewCanvas.position = new Point3D(0, 0, 0);
                 NewCanvas.position.z = parseFloat(SOP.Image.data.string(Tag.ImagePositionPatient).split("\\")[2]) * (1 / (parseFloat(SOP.Image.rowPixelSpacing)));
@@ -1418,6 +1487,103 @@ class VRCube {
     }
 }
 
+function rasterizePolygon(width, height, polygon) {
+    // 建立連續記憶體的 TypedArray，預設全為 0
+    const mask = new Uint8Array(width * height);
+    const len = polygon.length;
+
+    // 找出多邊形的 Y 軸邊界，減少不必要的掃描
+    let minY = height, maxY = 0;
+    for (let i = 0; i < len; i++) {
+        const y = Math.round(polygon[i].y);
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+    }
+
+    // 確保邊界不超出影像範圍
+    minY = Math.max(0, minY);
+    maxY = Math.min(height - 1, maxY);
+
+    // 逐行掃描 (只掃描多邊形佔用的 Y 軸範圍)
+    for (let y = minY; y <= maxY; y++) {
+        const intersections = [];
+
+        // 找出這條水平掃描線 (y) 與多邊形所有邊的交點
+        for (let i = 0, j = len - 1; i < len; j = i++) {
+            const pyi = polygon[i].y, pxi = polygon[i].x;
+            const pyj = polygon[j].y, pxj = polygon[j].x;
+
+            // 判斷掃描線是否有穿過這條邊的 Y 區間
+            if ((pyi <= y && pyj > y) || (pyj <= y && pyi > y)) {
+                // 計算交點的 X 座標並記錄
+                const intersectX = pxi + (y - pyi) * (pxj - pxi) / (pyj - pyi);
+                intersections.push(intersectX);
+            }
+        }
+
+        // 將交點依 X 座標由左至右排序
+        // 排序後，交點必定成對出現：[入點, 出點, 入點, 出點...]
+        intersections.sort((a, b) => a - b);
+
+        // 填滿每一對交點之間的像素
+        for (let i = 0; i < intersections.length; i += 2) {
+            // 確保 X 在影像範圍內，並取整數
+            const startX = Math.max(0, Math.ceil(intersections[i]));
+            const endX = Math.min(width - 1, Math.floor(intersections[i + 1]));
+
+            // 將這些連續像素的陣列值設為 1 (內部)
+            // 計算一維陣列的起始索引: y * width + startX
+            const indexOffset = y * width;
+            for (let x = startX; x <= endX; x++)   mask[indexOffset + x] = 1;
+        }
+    }
+
+    return mask;
+}
+
+function maskMarkForVR2(canvas, markName) {
+    if (!canvas.SOPInstanceUID) return;
+
+    var marks = PatientMark.filter(M => M.sop == canvas.SOPInstanceUID);
+    var marks = marks.filter(M => M.showName == markName);
+
+    var ctx = canvas.getContext("2d");
+    if (marks.length == 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.display = "none";
+        return
+    }
+
+    var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+    const strides = canvas.width * 4
+
+    for (var mark of marks) {
+        if (mark.type != "RTSS") continue;
+        if (mark.showName != markName) continue;
+
+        var polygon = [];
+        const PixelSpacing = (1.0 / canvas.SOP.Image.rowPixelSpacing);
+        const imagePositionX = canvas.SOP.Image.imagePosition[0];
+        const imagePositionY = canvas.SOP.Image.imagePosition[1];
+        for (var o = 0; o < mark.pointArray.length; o++) {
+            const x = ((mark.pointArray[o].x - imagePositionX)) * PixelSpacing;
+            const y = ((mark.pointArray[o].y - imagePositionY)) * PixelSpacing;
+            polygon.push({ x: x, y: y })
+        }
+
+        var mask = rasterizePolygon(canvas.width, canvas.height, polygon);
+        var count = 0, count4 = 3;
+        for (var y = 0; y < canvas.height; y++) {
+            for (var x = 0, x4 = 0; x < canvas.width; x++, x4 += 4) {
+                if (mask[count] == 0) data[count4] = 0;
+                count++; count4 += 4;
+            }
+        }
+        delete mask;
+    }
+    ctx.putImageData(imgData, 0, 0);
+}
 
 function drawMarkForVR2(canvas) {
     if (!canvas.SOPInstanceUID) return;
