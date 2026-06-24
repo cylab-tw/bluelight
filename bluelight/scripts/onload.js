@@ -549,14 +549,14 @@ function readJson(url) {
 
 function AddAdvanceFunction() {
   var Elem = getByid("othereDIv");
-  Elem.innerHTML += `<span id="downloadImg_span">
+  Elem.insertAdjacentHTML('beforeend', `<span id="downloadImg_span">
             <img altzhtw="下載圖片" alt="download image" class="innerimg" loading="lazy" id="downloadImg"
               src="../image/icon/lite/download_img.png" width="50" height="50">
           </span> <br>
           <span id="downloadDcm_span">
             <img altzhtw="下載DICOM" alt="download DICOM" class="innerimg" loading="lazy" id="downloadDcm"
               src="../image/icon/lite/download_dcm.png" width="50" height="50">
-          </span>  <br>`;
+          </span>  <br>`);
 
   getByid("downloadDcm").onclick = function () {
     async function downloadFile(url, filename) {
