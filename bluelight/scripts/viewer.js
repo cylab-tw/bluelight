@@ -624,19 +624,9 @@ function EcgLoader(Sop) {
         img2darkByClass("ecg", false);
         leftLayout.setAccent(Sop.parent.SeriesInstanceUID);
         if (!getByid("EcgView")) {
-            var EcgView = document.createElement("div");
-            EcgView.id = "EcgView";
+            var EcgView = createElem("div", "EcgView");
             getByid("EcgPage").appendChild(EcgView);
-            var EcgLabel = document.createElement("label");
-            EcgLabel.style.position = "absolute";
-            EcgLabel.style.fontSize = "48px";
-            EcgLabel.style.zIndex = "10";
-            EcgLabel.style.right = "5px";
-            EcgLabel.style.bottom = "5px";
-            EcgLabel.style.marginTop = "6px";
-            EcgLabel.style.border = "2px solid black";
-            EcgLabel.style.backgroundColor = "white";
-            EcgLabel.innerText = "This is a test version.";
+            var EcgLabel = createElem("label", null, "EcgLabel", "This is a test version.");
             getByid("EcgPage").appendChild(EcgLabel);
         }
         //////////////////////////////////////////////////
@@ -661,17 +651,8 @@ function EcgLoader(Sop) {
             }
 
             // 添加Annotation
-            var annotationDiv = createElem("div");
-            annotationDiv.style.width = "400px";
-            annotationDiv.style.zIndex = "10";
-            annotationDiv.style.color = "black";
-            //annotationDiv.style.height = "100%";
-            annotationDiv.style.backgroundColor = "white";
-            //annotationDiv.style.right = "0px";
-            annotationDiv.style.position = "absolute";
+            var annotationDiv = createElem("div", "AnnotationECG", "ECGAnnotationDiv");
             annotationDiv.style["max-height"] = `calc(100% - ${getByid("ECGOptionsDIV").getBoundingClientRect().y}px)`;
-            annotationDiv.style["overflow-y"] = "scroll";
-            annotationDiv.id = "AnnotationECG"
             getByid("ECGOptionsDIV").appendChild(annotationDiv);
 
             function parseECGAnnotations(dataSet) {

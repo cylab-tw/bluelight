@@ -441,26 +441,13 @@ getByid("writeSEG").onclick = function () {
 
     this.src = '../image/icon/lite/seg_on.png'/*: '../image/icon/lite/seg_off.png'*/;
     this.style.display = "none";
-    getByid("exitSEG").style.display = "";
-    getByid("eraseSEG").style.display = "";
-    getByid("fillSEG").style.display = "";
-    getByid("UndoSEG").style.display = "";
-    getByid("RedoSEG").style.display = "";
-    getByid("saveSEG").style.display = "";
-    getByid("drawSEG").style.display = "";
+    ShowElemByID(["exitSEG", "eraseSEG", "fillSEG", "UndoSEG", "RedoSEG", "saveSEG", "drawSEG"]);
 
     getByid("exitSEG").onclick = function () {
         openLeftImgClick = true;
         img2darkByClass("SEG", true);
-        getByid('SegStyleDiv').style.display = 'none';
+        HideElemByID(["SegStyleDiv", "exitSEG", "eraseSEG", "fillSEG", "UndoSEG", "RedoSEG", "saveSEG", "drawSEG"]);
         getByid("writeSEG").style.display = "";
-        getByid("exitSEG").style.display = "none";
-        getByid("eraseSEG").style.display = "none";
-        getByid("fillSEG").style.display = "none";
-        getByid("UndoSEG").style.display = "none";
-        getByid("RedoSEG").style.display = "none";
-        getByid("saveSEG").style.display = "none";
-        getByid("drawSEG").style.display = "none";
         SetTable();
         displayMark();
         getByid('MouseOperation').click();

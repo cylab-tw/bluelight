@@ -102,10 +102,11 @@ function getClass(str) {
     return document.getElementsByClassName(str);
 }
 
-function createElem(tagName = 'div', Id = null, className = null) {
+function createElem(tagName = 'div', Id = null, className = null, innerText = null) {
     var elem = document.createElement(tagName);
     if (Id) elem.id = Id;
     if (className) elem.className = className;
+    if (innerText != null) elem.innerText = innerText;
     return elem;
 }
 

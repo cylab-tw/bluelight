@@ -207,20 +207,7 @@ function html_onload() {
   }
 
   getByid("clearviewportImg").onclick = function () {
-    var clearviewportWindow = document.createElement("DIV");
-    clearviewportWindow.style.width = "40vw";
-    clearviewportWindow.style.height = "40vh";
-    clearviewportWindow.style.position = "absolute";
-
-    clearviewportWindow.style.zIndex = "105";
-    clearviewportWindow.style.left = "0";
-    clearviewportWindow.style.right = "0";
-    clearviewportWindow.style.top = "0";
-    clearviewportWindow.style.bottom = "0";
-    clearviewportWindow.style.margin = "auto";
-    clearviewportWindow.style.backgroundColor = "rgba(30,60,90,0.8)";
-    clearviewportWindow.style["display"] = "flex";
-    clearviewportWindow.style["justify-content"] = "center";
+    var clearviewportWindow = createElem("DIV", "clearviewportWindow");
     var label = document.createElement("LABEL");
     label.innerText = "clear and reset all viewport?";
     label.style['color'] = "white";
@@ -267,7 +254,9 @@ function html_onload() {
       getByid("container").removeChild(this.window);
     }
   }
-
+  getByid("othereDIv").onclick = function () {
+    invertDisplayById("othereDIv");
+  }
   getByid("OtherImg").onclick = function () {
     if (this.enable == false) return;
     hideAllDrawer("othereDIv");

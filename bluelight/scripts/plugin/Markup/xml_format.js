@@ -65,10 +65,7 @@ getByid("writeXML").onclick = function () {
   }
 
   this.style.display = "none";
-  getByid("eraseXML").style.display = "";
-  getByid("exitXML").style.display = "";
-  getByid("saveXML").style.display = "";
-  getByid("drawXML").style.display = "";
+  ShowElemByID(["eraseXML", "exitXML", "saveXML", "drawXML"]);
 
   ShowElemByID("xmlMarkName");
   SetTable();
@@ -79,10 +76,7 @@ getByid("writeXML").onclick = function () {
     img2darkByClass("XML", true);
     HideElemByID("xmlMarkName");
     getByid("writeXML").style.display = "";
-    getByid("eraseXML").style.display = "none";
-    getByid("exitXML").style.display = "none";
-    getByid("saveXML").style.display = "none";
-    getByid("drawXML").style.display = "none";
+    HideElemByID(["eraseXML", "exitXML", "saveXML", "drawXML"]);
     SetTable();
     xml_now_choose = null;
     getByid('MouseOperation').click();
