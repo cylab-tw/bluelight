@@ -391,9 +391,9 @@ function SrLoader(Sop) {
         dumpContentSequence(ContentSequence, 0);
         function StringProcessing(str) {
             str = htmlEntities("" + str);
-            if (looksLikeMojibake(str) && Sop.dataSet.string('x00080005')) {
+            if (looksLikeMojibake(str) && Sop.dataSet.string(Tag.SpecificCharacterSet)) {
                 try {
-                    str = window['dicom-character-set'].convertBytes(Sop.dataSet.string('x00080005'), new Uint8Array(str.split('').map(ch => ch.charCodeAt(0))), { vr: 'LT' });
+                    str = window['dicom-character-set'].convertBytes(Sop.dataSet.string(Tag.SpecificCharacterSet), new Uint8Array(str.split('').map(ch => ch.charCodeAt(0))), { vr: 'LT' });
                 } catch (ex) { console.log(ex); }
             }
             return str;
@@ -659,7 +659,7 @@ function EcgLoader(Sop) {
                 const result = [];
 
                 // 取得 Waveform Annotation Sequence (0040,B020)
-                const annotationSeq = dataSet.elements['x0040b020'];
+                const annotationSeq = dataSet.elements[Tag.WaveformAnnotationSequence];
 
                 // 如果沒有標註，回傳空陣列
                 if (!annotationSeq || !annotationSeq.items) return result;
@@ -668,28 +668,28 @@ function EcgLoader(Sop) {
                 annotationSeq.items.forEach((item, index) => {
                     const itemData = item.dataSet;
                     // Concept Name Code Sequence (0040,A043) - 這個標註是什麼類型的動作？
-                    const nameSeq = itemData.elements['x0040a043'];
+                    const nameSeq = itemData.elements[Tag.ConceptNameCodeSequence];
                     if (nameSeq && nameSeq.items && nameSeq.items.length > 0) {
-                        const nameMeaning = nameSeq.items[0].dataSet.string('x00080104');
+                        const nameMeaning = nameSeq.items[0].dataSet.string(Tag.CodeMeaning);
                         let tagValue = "";
 
                         // 如果是測量數字 (例如心跳、PR Interval)
-                        if (itemData.elements['x0040a30a']) {
+                        if (itemData.elements[Tag.NumericValue]) {
                             // 讀取測量數值
-                            const numStr = itemData.string('x0040a30a');
+                            const numStr = itemData.string(Tag.NumericValue);
                             tagValue = numStr ? numStr.trim() : "";
 
                             // 讀取單位 (例如 bpm, ms)
-                            const unitSeq = itemData.elements['x004008ea'];
+                            const unitSeq = itemData.elements[Tag.MeasurementUnitsCodeSequence];
                             if (unitSeq && unitSeq.items && unitSeq.items.length > 0) {
-                                const unit = unitSeq.items[0].dataSet.string('x00080104'); // Code Meaning (單位名稱)
+                                const unit = unitSeq.items[0].dataSet.string(Tag.CodeMeaning); // Code Meaning (單位名稱)
                                 if (unit) tagValue += ` ${unit}`;
                             }
                         }
                         // 如果是波形座標點 (例如標示 R 波位置)
-                        else if (itemData.elements['x0040a132']) {
+                        else if (itemData.elements[Tag.ReferencedSamplePositions]) {
                             const positions = [];
-                            const samplePosElement = itemData.elements['x0040a132'];
+                            const samplePosElement = itemData.elements[Tag.ReferencedSamplePositions];
                             const bytes = itemData.byteArray, offset = samplePosElement.dataOffset;
 
                             // 轉換 4-byte Unsigned Long 二進位陣列
@@ -1054,7 +1054,7 @@ function getWhitePercent() {
 
 function detectPhotometricAnomaly() {
     var image = GetViewport().content.image, dataSet = image.data;
-    var photometric = dataSet.string('x00280004');
+    var photometric = dataSet.string(Tag.PhotometricInterpretation);
     if ((image.isYCbCr && photometric === 'RGB') || (image.AssumingRGB && photometric.includes("YBR")))
         return { isYCbCr: image.isYCbCr, AssumingRGB: image.AssumingRGB, photometric: photometric, error: true };
     return { isYCbCr: image.isYCbCr, AssumingRGB: image.AssumingRGB, photometric: photometric, error: false };

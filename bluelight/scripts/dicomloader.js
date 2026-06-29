@@ -38,37 +38,37 @@ function setPDF(imageObj) {
 
 function getDefaultImageObj(dataSet, type) {
     var imageObj = {};
-    imageObj.windowCenter = dataSet.intString('x00281050');
-    imageObj.windowWidth = dataSet.intString('x00281051');
-    imageObj.accessionNumber = dataSet.string('x00080050');
-    imageObj.acquisitionTime = dataSet.string('x00080032');
-    imageObj.bitsAllocation = dataSet.int16('x00280100');
-    imageObj.highBit = dataSet.int16('x00280102');
-    imageObj.InstanceNumber = dataSet.string('x00200013');
-    imageObj.institutionName = dataSet.string('x00080080');
-    imageObj.PatientAge = dataSet.string('x00101010');
-    imageObj.PatientID = dataSet.string('x00100020');
+    imageObj.windowCenter = dataSet.intString(Tag.WindowCenter);
+    imageObj.windowWidth = dataSet.intString(Tag.WindowWidth);
+    imageObj.accessionNumber = dataSet.string(Tag.AccessionNumber);
+    imageObj.acquisitionTime = dataSet.string(Tag.AcquisitionTime);
+    imageObj.bitsAllocation = dataSet.int16(Tag.BitsAllocated);
+    imageObj.highBit = dataSet.int16(Tag.HighBit);
+    imageObj.InstanceNumber = dataSet.string(Tag.InstanceNumber);
+    imageObj.institutionName = dataSet.string(Tag.InstitutionName);
+    imageObj.PatientAge = dataSet.string(Tag.PatientAge);
+    imageObj.PatientID = dataSet.string(Tag.PatientID);
 
 
-    imageObj.PatientName = dataSet.string('x00100010');
-    imageObj.SpecificCharacterSet = dataSet.string('x00080005');
+    imageObj.PatientName = dataSet.string(Tag.PatientName);
+    imageObj.SpecificCharacterSet = dataSet.string(Tag.SpecificCharacterSet);
     // 不再使用此方法處理亂碼問題，改在顯示時處理
     // if (dataSet.elements[Tag.PatientName]) imageObj.PatientName = (new TextDecoder('utf-8')).decode(new Uint8Array(dataSet.byteArray.buffer, dataSet.elements[Tag.PatientName].dataOffset, dataSet.elements[Tag.PatientName].length));
 
-    imageObj.patentSex = dataSet.string('x00100040');
-    imageObj.pixelRepresentation = dataSet.int16('x00280103');
-    imageObj.bitsStored = dataSet.int16('x00280101');
-    imageObj.seriesDescription = dataSet.string('x0008103e');
-    imageObj.seriesNumber = dataSet.string('x00200011');
-    imageObj.sliceLocation = dataSet.string('x00201041');
-    imageObj.sliceThickness = dataSet.string('x00180050');
-    imageObj.stationName = dataSet.string('x00081010');
-    imageObj.invert = dataSet.string('x00280004') == "MONOCHROME1" ? true : false;
+    imageObj.patientSex = dataSet.string(Tag.PatientSex);
+    imageObj.pixelRepresentation = dataSet.int16(Tag.PixelRepresentation);
+    imageObj.bitsStored = dataSet.int16(Tag.BitsStored);
+    imageObj.seriesDescription = dataSet.string(Tag.SeriesDescription);
+    imageObj.seriesNumber = dataSet.string(Tag.SeriesNumber);
+    imageObj.sliceLocation = dataSet.string(Tag.SliceLocation);
+    imageObj.sliceThickness = dataSet.string(Tag.SliceThickness);
+    imageObj.stationName = dataSet.string(Tag.StationName);
+    imageObj.invert = dataSet.string(Tag.PhotometricInterpretation) == "MONOCHROME1" ? true : false;
     imageObj.color = dataSet.int16(Tag.SamplesPerPixel) === 3;
     imageObj.NumberOfFrames = dataSet.intString(Tag.NumberOfFrames);
     imageObj.photometricInterpretation = dataSet.string(Tag.PhotometricInterpretation);
-    imageObj.width = imageObj.columns = dataSet.int16('x00280011');
-    imageObj.height = imageObj.rows = dataSet.int16('x00280010');
+    imageObj.width = imageObj.columns = dataSet.int16(Tag.Columns);
+    imageObj.height = imageObj.rows = dataSet.int16(Tag.Rows);
     imageObj.StudyInstanceUID = dataSet.string(Tag.StudyInstanceUID);
     imageObj.SeriesInstanceUID = dataSet.string(Tag.SeriesInstanceUID);
     imageObj.SOPInstanceUID = dataSet.string(Tag.SOPInstanceUID);
@@ -102,21 +102,21 @@ function getDefaultImageObj(dataSet, type) {
 
     ////////////////////////////
 
-    imageObj.intercept = dataSet.intString('x00281052');
-    imageObj.slope = dataSet.floatString('x00281053');
+    imageObj.intercept = dataSet.intString(Tag.RescaleIntercept);
+    imageObj.slope = dataSet.floatString(Tag.RescaleSlope);
     imageObj.bitsAllocated = dataSet.int16(Tag.BitsAllocated);
-    if (dataSet.string('x00280030')) {
-        imageObj.rowPixelSpacing = parseFloat(dataSet.string('x00280030').split("\\")[0]);
-        imageObj.columnPixelSpacing = parseFloat(dataSet.string('x00280030').split("\\")[1]);
+    if (dataSet.string(Tag.PixelSpacing)) {
+        imageObj.rowPixelSpacing = parseFloat(dataSet.string(Tag.PixelSpacing).split("\\")[0]);
+        imageObj.columnPixelSpacing = parseFloat(dataSet.string(Tag.PixelSpacing).split("\\")[1]);
         imageObj.PixelSpacing = [imageObj.rowPixelSpacing, imageObj.columnPixelSpacing];
     }
-    else if (dataSet.string('x00181164')) {
-        imageObj.rowPixelSpacing = parseFloat(dataSet.string('x00181164').split("\\")[0]);
-        imageObj.columnPixelSpacing = parseFloat(dataSet.string('x00181164').split("\\")[1]);
+    else if (dataSet.string(Tag.ImagerPixelSpacing)) {
+        imageObj.rowPixelSpacing = parseFloat(dataSet.string(Tag.ImagerPixelSpacing).split("\\")[0]);
+        imageObj.columnPixelSpacing = parseFloat(dataSet.string(Tag.ImagerPixelSpacing).split("\\")[1]);
         imageObj.PixelSpacing = [imageObj.rowPixelSpacing, imageObj.columnPixelSpacing];
     }
 
-    imageObj.samplesPerPixel = (dataSet.string('x00280004') === 'YBR_FULL_422' || dataSet.string('x00280004') === 'YBR_FULL') ? 2 : dataSet.uint16('x00280002');
+    imageObj.samplesPerPixel = (dataSet.string(Tag.PhotometricInterpretation) === 'YBR_FULL_422' || dataSet.string(Tag.PhotometricInterpretation) === 'YBR_FULL') ? 2 : dataSet.uint16(Tag.SamplesPerPixel);
     imageObj.data = dataSet;
 
     //////////
@@ -165,9 +165,9 @@ function setPixelDataToImageObj(Sop) {
 
 function getPixelDataFromColorLookupTable(imageObj, dataSet) {
     //RedPaletteColorLookupTableDescriptor
-    var numberOfEntries = dataSet.uint16('x00281101', 0) == 0 ? 65536 : dataSet.uint16('x00281101', 0); //LUT 有幾筆資料（通常是 256、1024 等）
-    var firstMappedIndex = dataSet.uint16('x00281101', 1); //對應的第一個索引值（常為 0）
-    var bitsPerEntry = dataSet.uint16('x00281101', 2); //每筆資料的 bit 數（通常是 8 或 16）
+    var numberOfEntries = dataSet.uint16(Tag.RedPaletteColorLookupTableDescriptor, 0) == 0 ? 65536 : dataSet.uint16(Tag.RedPaletteColorLookupTableDescriptor, 0); //LUT 有幾筆資料（通常是 256、1024 等）
+    var firstMappedIndex = dataSet.uint16(Tag.RedPaletteColorLookupTableDescriptor, 1); //對應的第一個索引值（常為 0）
+    var bitsPerEntry = dataSet.uint16(Tag.RedPaletteColorLookupTableDescriptor, 2); //每筆資料的 bit 數（通常是 8 或 16）
     if (bitsPerEntry <= 8) {
         imageObj.RedLutArray = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x00281201.dataOffset, numberOfEntries);
     } else {
@@ -176,9 +176,9 @@ function getPixelDataFromColorLookupTable(imageObj, dataSet) {
     }
 
     //GreenPaletteColorLookupTableDescriptor
-    var numberOfEntries = dataSet.uint16('x00281102', 0); //LUT 有幾筆資料（通常是 256、1024 等）
-    var firstMappedIndex = dataSet.uint16('x00281102', 1); //對應的第一個索引值（常為 0）
-    var bitsPerEntry = dataSet.uint16('x00281102', 2); //每筆資料的 bit 數（通常是 8 或 16）
+    var numberOfEntries = dataSet.uint16(Tag.GreenPaletteColorLookupTableDescriptor, 0); //LUT 有幾筆資料（通常是 256、1024 等）
+    var firstMappedIndex = dataSet.uint16(Tag.GreenPaletteColorLookupTableDescriptor, 1); //對應的第一個索引值（常為 0）
+    var bitsPerEntry = dataSet.uint16(Tag.GreenPaletteColorLookupTableDescriptor, 2); //每筆資料的 bit 數（通常是 8 或 16）
     if (bitsPerEntry <= 8) {
         imageObj.GreenLutArray = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x00281202.dataOffset, numberOfEntries);
     } else {
@@ -186,9 +186,9 @@ function getPixelDataFromColorLookupTable(imageObj, dataSet) {
         for (var i in imageObj.GreenLutArray) imageObj.GreenLutArray[i] = imageObj.GreenLutArray[i] / 256;
     }
     //BluePaletteColorLookupTableDescriptor
-    var numberOfEntries = dataSet.uint16('x00281103', 0); //LUT 有幾筆資料（通常是 256、1024 等）
-    var firstMappedIndex = dataSet.uint16('x00281103', 1); //對應的第一個索引值（常為 0）
-    var bitsPerEntry = dataSet.uint16('x00281103', 2); //每筆資料的 bit 數（通常是 8 或 16）
+    var numberOfEntries = dataSet.uint16(Tag.BluePaletteColorLookupTableDescriptor, 0); //LUT 有幾筆資料（通常是 256、1024 等）
+    var firstMappedIndex = dataSet.uint16(Tag.BluePaletteColorLookupTableDescriptor, 1); //對應的第一個索引值（常為 0）
+    var bitsPerEntry = dataSet.uint16(Tag.BluePaletteColorLookupTableDescriptor, 2); //每筆資料的 bit 數（通常是 8 或 16）
 
     if (bitsPerEntry <= 8) {
         imageObj.BlueLutArray = new Uint8Array(dataSet.byteArray.buffer, dataSet.elements.x00281203.dataOffset, numberOfEntries);
@@ -214,7 +214,7 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
         }
     }
     function YBR(imageObj, dataSet, pixelData) {
-        var photometric = dataSet.string('x00280004');
+        var photometric = dataSet.string(Tag.PhotometricInterpretation);
         // PhotometricInterpretation=RGB 時，即使 JPEG 解碼器標記了 isYCbCr，也不應再做轉換
         // 因為 JPEG codec 解碼時已將 YCbCr 轉回 RGB，isYCbCr 此時為誤判
         if ((imageObj.isYCbCr && photometric !== 'RGB') || photometric === 'YBR_FULL_422' || photometric === 'YBR_FULL') {
@@ -235,7 +235,7 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
         var width = imageObj.width, height = imageObj.height;
         function discardOddLines(pixelData, width, height) {
             const rowSize = width * 3;
-            const output = new Uint8ClampedArray((height / 2) * rowSize);
+            const output = new Uint8ClampedArray(Math.ceil(height / 2) * rowSize);
             for (let y = 0; y < height; y += 2) {
                 const srcIndex = y * rowSize;
                 const dstIndex = (y / 2) * rowSize;
@@ -317,7 +317,7 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
                 usePDFJS: false
             }).pixelData);
         //Empty basic offset table              && (!(dataSet.intString('x00280008') == undefined && PXL.fragments.length == 1))
-        if (dataSet.intString('x00280008') !== PXL.fragments.length) {
+        if (dataSet.intString(Tag.NumberOfFrames) !== PXL.fragments.length) {
             return PixelProcessing(imageObj, dataSet, decodeImage(imageObj, dataSet.string(Tag.TransferSyntaxUID),
                 dicomParser.readEncapsulatedImageFrame(dataSet, PXL, frameIndex, dicomParser.createJPEGBasicOffsetTable(dataSet, PXL)), {
                 usePDFJS: false
@@ -339,11 +339,11 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
             }
             return PixelProcessing(imageObj, dataSet, pixelData);
         }
-        const samplesPerPixel = (dataSet.string('x00280004') === 'YBR_FULL_422' || dataSet.string('x00280004') === 'YBR_FULL') ? 2 : dataSet.uint16('x00280002');
-        const pixelsPerFrame = dataSet.uint16('x00280010') * dataSet.uint16('x00280011') * samplesPerPixel;
+        const samplesPerPixel = (dataSet.string(Tag.PhotometricInterpretation) === 'YBR_FULL_422' || dataSet.string(Tag.PhotometricInterpretation) === 'YBR_FULL') ? 2 : dataSet.uint16(Tag.SamplesPerPixel);
+        const pixelsPerFrame = dataSet.uint16(Tag.Rows) * dataSet.uint16(Tag.Columns) * samplesPerPixel;
 
         let frameOffset = PXL_Elem.dataOffset;
-        switch (dataSet.uint16('x00280100')) {
+        switch (dataSet.uint16(Tag.BitsAllocated)) {
             case 8: frameOffset += frameIndex * pixelsPerFrame; break;
             case 16: frameOffset += frameIndex * pixelsPerFrame * 2; break;
             case 32: frameOffset += frameIndex * pixelsPerFrame * 4; break;
@@ -355,14 +355,14 @@ function getPixelDataFromDataSet(imageObj, dataSet, frameIndex = 0) {
         if (frameOffset >= dataSet.byteArray.length) throw new Error('frame exceeds size of pixelData');
 
         //PixelRepresentation = 0 -> unsigned, PixelRepresentation = 1 -> signed
-        if (dataSet.uint16('x00280100') == 8) return PixelProcessing(imageObj, dataSet, parsePixelData(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame), dataSet.uint16('x00280103'), imageObj.bitsStored, imageObj.bitsAllocated, imageObj.isBigEndian));
-        if (dataSet.uint16('x00280100') == 16) return PixelProcessing(imageObj, dataSet, parsePixelData(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 2), dataSet.uint16('x00280103'), imageObj.bitsStored, imageObj.bitsAllocated, imageObj.isBigEndian));
-        if (dataSet.uint16('x00280100') == 32) {
-            if (dataSet.uint16('x00280103') == 1) return PixelProcessing(imageObj, dataSet, new Int32Array(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 4)));
+        if (dataSet.uint16(Tag.BitsAllocated) == 8) return PixelProcessing(imageObj, dataSet, parsePixelData(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame), dataSet.uint16(Tag.PixelRepresentation), imageObj.bitsStored, imageObj.bitsAllocated, imageObj.isBigEndian));
+        if (dataSet.uint16(Tag.BitsAllocated) == 16) return PixelProcessing(imageObj, dataSet, parsePixelData(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 2), dataSet.uint16(Tag.PixelRepresentation), imageObj.bitsStored, imageObj.bitsAllocated, imageObj.isBigEndian));
+        if (dataSet.uint16(Tag.BitsAllocated) == 32) {
+            if (dataSet.uint16(Tag.PixelRepresentation) == 1) return PixelProcessing(imageObj, dataSet, new Int32Array(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 4)));
             else return PixelProcessing(imageObj, dataSet, new Uint32Array(dataSet.byteArray.buffer.slice(frameOffset, frameOffset + pixelsPerFrame * 4)));
         }
-        if (dataSet.uint16('x00280100') == 1) {
-            if (dataSet.uint16('x00280103') == 1) return PixelProcessing(imageObj, dataSet, unpackBinaryFrame(dataSet.byteArray, frameOffset * 0.125, new Int8Array(pixelsPerFrame)));
+        if (dataSet.uint16(Tag.BitsAllocated) == 1) {
+            if (dataSet.uint16(Tag.PixelRepresentation) == 1) return PixelProcessing(imageObj, dataSet, unpackBinaryFrame(dataSet.byteArray, frameOffset * 0.125, new Int8Array(pixelsPerFrame)));
             else return PixelProcessing(imageObj, dataSet, unpackBinaryFrame(dataSet.byteArray, frameOffset * 0.125, new Uint8Array(pixelsPerFrame)));
         }
         /*see 364*/
