@@ -25,31 +25,18 @@ function getColorFrom16(r, g, b, bit) {
         var hex = c.toString(16);
         return hex.length == 1 ? "0" + hex : hex;
     }
-
-    function rgbToHex(r, g, b) {
-        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-    }
-    return rgbToHex(r, g, b);
+    // rgbToHex
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
 function getRGBFrom0xFF(color, RGB, invert) {
     function hexToRgb(hex) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
+        return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
     }
 
-    var R = hexToRgb(color).r;
-    var G = hexToRgb(color).g;
-    var B = hexToRgb(color).b;
-    if (invert == true) {
-        R = 255 - R;
-        G = 255 - G;
-        B = 255 - B;
-    }
+    var [R, G, B] = [hexToRgb(color).r, hexToRgb(color).g, hexToRgb(color).b];
+    if (invert == true) R = 255 - R, G = 255 - G, B = 255 - B;
     if (RGB == true) return ([R, G, B]);
     else return (getColorFrom16(R, G, B, 8));
 }
@@ -74,35 +61,17 @@ function setMarkFlip(ctx, viewport) {
 
 function setMarkColor(ctx, color) {
     //BlueLight2(改成只將色彩選項套用在沒有預設顏色的情況)
-    if (color) {
-        ctx.strokeStyle = ctx.fillStyle = color;
-        return true;
-    }
-
-    if (getByid("WhiteSelect").selected) {
-        ctx.strokeStyle = ctx.fillStyle = "#FFFFFF";
-    } else if (getByid("BlueSelect").selected) {
-        ctx.strokeStyle = ctx.fillStyle = "#0000FF";
-    } else if (getByid("RedSelect").selected) {
-        ctx.strokeStyle = ctx.fillStyle = "#FF0000";
-    } else if (getByid("GreenSelect").selected) {
-        ctx.strokeStyle = ctx.fillStyle = "#00FF00";
-    } else if (getByid("YellowSelect").selected) {
-        ctx.strokeStyle = ctx.fillStyle = "#FFFF00";
-    } else if (getByid("BrownSelect").selected) {
-        ctx.strokeStyle = ctx.fillStyle = "#844200";
-    } else if (getByid("OrangeSelect").selected) {
-        ctx.strokeStyle = ctx.fillStyle = "#FFA500";
-    } else if (getByid("PurpleSelect").selected) {
-        ctx.strokeStyle = ctx.fillStyle = "#663399";
-    } else {
-        if (color) {
-            ctx.strokeStyle = ctx.fillStyle = color;
-            return true;
-        } else {
-            return false;
-        }
-    }
+    if (color);
+    else if (getByid("WhiteSelect").selected) color = "#FFFFFF";
+    else if (getByid("BlueSelect").selected) color = "#0000FF";
+    else if (getByid("RedSelect").selected) color = "#FF0000";
+    else if (getByid("GreenSelect").selected) color = "#00FF00";
+    else if (getByid("YellowSelect").selected) color = "#FFFF00";
+    else if (getByid("BrownSelect").selected) color = "#844200";
+    else if (getByid("OrangeSelect").selected) color = "#FFA500";
+    else if (getByid("PurpleSelect").selected) color = "#663399";
+    else return false;
+    ctx.strokeStyle = ctx.fillStyle = color;
     return true;
 }
 
@@ -300,7 +269,6 @@ function drawPOLYLINE(canvas, Mark, viewport) {
         if (Mark.GraphicFilled == 'Y') {
             ctx.fillStyle = "#FFFF88";
             ctx.fill();
-            console.log(x1, y1, x2, y2)
         };
         ctx.closePath();
     }
@@ -401,11 +369,11 @@ function drawTwoDimensionPolyline(canvas, mark, viewport) {
     setMarkColor(ctx, mark.parent.color);
     for (var o = 0; o < mark.markX.length; o++) {
         ctx.beginPath();
-        x1 = mark.markX[o];
-        y1 = mark.markY[o];
-        o2 = o == mark.markX.length - 1 ? 0 : o + 1;
-        x2 = mark.markX[o2];
-        y2 = mark.markY[o2];
+        var x1 = mark.markX[o];
+        var y1 = mark.markY[o];
+        var o2 = o == mark.markX.length - 1 ? 0 : o + 1;
+        var x2 = mark.markX[o2];
+        var y2 = mark.markY[o2];
 
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
@@ -439,29 +407,20 @@ function drawTwoDimensionMultiPoint(canvas, mark, viewport) {
 }
 
 function drawTwoDimensionEllipse(canvas, mark, viewport) {
+    if (!mark.markX.length || !mark.markY.length) return;
     var ctx = canvas.getContext("2d");
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
     setMarkColor(ctx, mark.parent.color);
-    for (var o = 0; o < mark.markX.length; o++) {
-        ctx.beginPath();
-        var X1 = mark.markX[o + 0];
-        var Y1 = mark.markY[o + 0];
-        var X2 = mark.markX[o + 2];
-        var Y2 = mark.markY[o + 2];
-        var X3 = mark.markX[o + 1];
-        var Y3 = mark.markY[o + 1];
-        var X4 = mark.markX[o + 3];
-        var Y4 = mark.markY[o + 3];
-
-        var heightHalf = getDistance(X1 - X3, Y1 - Y3) / 2;
-        var widthHalf = getDistance(X2 - X4, Y2 - Y4) / 2
-        ctx.ellipse(X3, Y3, heightHalf, widthHalf, 0 * Math.PI / 180, 0, 2 * Math.PI);
-        if (getByid("markFillCheck").checked) ctx.fill();
-        ctx.stroke();
-        ctx.closePath();
-        break;
-    }
+    ctx.beginPath();
+    var [X1, X3, X2, X4] = mark.markX;
+    var [Y1, Y3, Y2, Y4] = mark.markY;
+    var heightHalf = getDistance(X1 - X3, Y1 - Y3) / 2;
+    var widthHalf = getDistance(X2 - X4, Y2 - Y4) / 2
+    ctx.ellipse(X3, Y3, heightHalf, widthHalf, 0 * Math.PI / 180, 0, 2 * Math.PI);
+    if (getByid("markFillCheck").checked) ctx.fill();
+    ctx.stroke();
+    ctx.closePath();
 }
 
 function drawKO(canvas, Mark, viewport) {
@@ -478,45 +437,27 @@ function drawRTSS(canvas, Mark, viewport) {
         setImageOrientation2MarkCanvas(viewport, ctx);
 
         ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-        //ctx.setTransform(1, 0, 0, 1, 0, 0);
-        //ctx.scale(1, 1);
         if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
         setMarkColor(ctx, Mark.color);
+
+        ctx.beginPath();
         for (var o = 0; o < Mark.pointArray.length; o++) {
-            ctx.beginPath();
             var x1 = Math.ceil((Mark.pointArray[o].x - viewport.imagePosition[0]) * (1.0 / viewport.PixelSpacing[0]));
             var y1 = Math.ceil((Mark.pointArray[o].y - viewport.imagePosition[1]) * (1.0 / viewport.PixelSpacing[1]));
             var o2 = o == Mark.pointArray.length - 1 ? 0 : o + 1;
             var x2 = Math.ceil((Mark.pointArray[o2].x - viewport.imagePosition[0]) * (1.0 / viewport.PixelSpacing[0]));
             var y2 = Math.ceil((Mark.pointArray[o2].y - viewport.imagePosition[1]) * (1.0 / viewport.PixelSpacing[1]));
 
-            ctx.moveTo(x1, y1);
+            if (o == 0) ctx.moveTo(x1, y1);
+            else ctx.lineTo(x1, y1);
             ctx.lineTo(x2, y2);
-            ctx.globalAlpha = 1.0;
-            ctx.stroke();
-            ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
-            ctx.closePath();
         }
-        if (getByid("markFillCheck").checked) {
-            ctx.beginPath();
-            for (var o = 0; o < Mark.pointArray.length; o++) {
-                var x1 = Math.ceil((Mark.pointArray[o].x - viewport.imagePosition[0]) * (1.0 / viewport.PixelSpacing[0]));
-                var y1 = Math.ceil((Mark.pointArray[o].y - viewport.imagePosition[1]) * (1.0 / viewport.PixelSpacing[1]));
-                var o2 = o == Mark.pointArray.length - 1 ? 0 : o + 1;
-                var x2 = Math.ceil((Mark.pointArray[o2].x - viewport.imagePosition[0]) * (1.0 / viewport.PixelSpacing[0]));
-                var y2 = Math.ceil((Mark.pointArray[o2].y - viewport.imagePosition[1]) * (1.0 / viewport.PixelSpacing[1]));
+        ctx.closePath();
 
-                if (o == 0) {
-                    ctx.moveTo(x1, y1);
-                    ctx.lineTo(x2, y2);
-                } else {
-                    ctx.lineTo(x1, y1);
-                    ctx.lineTo(x2, y2);
-                }
-            }
-            ctx.fill();
-            ctx.closePath();
-        }
+        ctx.globalAlpha = 1.0;
+        ctx.stroke();
+        ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
+        ctx.fill();
 
         restoreImageOrientation2MarkCanvas(ctx);
     }
@@ -524,30 +465,28 @@ function drawRTSS(canvas, Mark, viewport) {
 }
 
 function drawTextAnnotationEntity(canvas, mark, viewport) {
+    if (!mark.markX.length || !mark.markY.length) return;
     var ctx = canvas.getContext("2d");
     setImageOrientation2MarkCanvas(viewport, ctx);
     ctx.globalAlpha = (parseFloat(getByid('markAlphaText').value) / 100);
     if (mark.parent.color) ctx.strokeStyle = ctx.fillStyle = "" + mark.parent.color;
     setMarkColor(ctx, mark.parent.color);
 
-    for (var o = 0; o < mark.markX.length; o++) {
-        var theta = 30;
-        ctx.moveTo(parseInt(mark.markX[o]), parseInt(mark.markY[o]));
-        ctx.lineTo(parseInt(mark.markX[o + 1]), parseInt(mark.markY[o + 1]));
-        ctx.stroke();
-        ctx.save();
+    var theta = 30;
+    ctx.moveTo(parseInt(mark.markX[0]), parseInt(mark.markY[0]));
+    ctx.lineTo(parseInt(mark.markX[1]), parseInt(mark.markY[1]));
+    ctx.stroke();
+    ctx.save();
 
-        ctx.translate(mark.markX[o], mark.markY[o]);
-        var ang = Math.atan2(mark.markY[o] - mark.markY[o + 1], mark.markX[o] - mark.markX[o + 1]) + Math.PI / 2;
-        ctx.rotate(ang);
-        ctx.moveTo(0, 0);
-        ctx.lineTo(0 - 3, 0 + 7);
-        ctx.lineTo(0 + 3, 0 + 7);
-        ctx.fill();
-        ctx.restore();
-        ctx.closePath();
-        break;
-    }
+    ctx.translate(mark.markX[0], mark.markY[0]);
+    var ang = Math.atan2(mark.markY[0] - mark.markY[1], mark.markX[0] - mark.markX[1]) + Math.PI / 2;
+    ctx.rotate(ang);
+    ctx.moveTo(0, 0);
+    ctx.lineTo(- 3, 7);
+    ctx.lineTo(3, 7);
+    ctx.fill();
+    ctx.restore();
+    ctx.closePath();
 
     restoreImageOrientation2MarkCanvas(ctx);
 }
