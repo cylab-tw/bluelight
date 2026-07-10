@@ -797,7 +797,7 @@ function EcgLoader(Sop) {
             //////////////////////////////////////////////////
             // 線條寬度
             var lineWidth = 1 / parseFloat(getByid("EcgCanvas").style.zoom);
-            lineWidth = lineWidth > 2 ? 2 : lineWidth < 0.5 ? 0.5 : lineWidth;
+            //lineWidth = lineWidth > 2 ? 2 : lineWidth < 0.5 ? 0.5 : lineWidth;
             //位移
             ctx.translate(50, 50);
             // 畫底框框
@@ -819,7 +819,7 @@ function EcgLoader(Sop) {
 
                 // 畫區分12格的最大網格 (粗線)
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255, 80, 80, 0.9)', ctx.lineWidth = 5 * lineWidth;
+                ctx.strokeStyle = 'rgba(255, 80, 80, 0.9)', ctx.lineWidth = 8 * lineWidth;
                 for (let x = 0; x <= w; x += Col_width) { ctx.moveTo(x, 0); ctx.lineTo(x, h - ((x == 0 || x >= w) ? 0 : Row_height)); }
                 for (let y = 0; y <= h; y += Row_height) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
                 ctx.stroke();
@@ -886,11 +886,12 @@ function EcgLoader(Sop) {
                     // 設定剪裁區域，避免畫到其他的格子
                     ctx.beginPath(); ctx.rect(startX, startY, width, height); ctx.clip();
                     // 繪製導程名稱
-                    ctx.fillStyle = 'black'; ctx.font = 'bold 16px sans-serif'; ctx.fillText(block.name, startX + 10, startY + 25);
+                    ctx.fillStyle = 'black'; ctx.font = `bold ${42 * lineWidth}px sans-serif`;
+                    ctx.fillText(block.name, startX + 10 * lineWidth, startY + 45 * lineWidth);
 
                     // 繪製波型
                     ctx.beginPath();
-                    ctx.strokeStyle = 'black'; ctx.lineJoin = 'round'; ctx.lineWidth = 3 * lineWidth;
+                    ctx.strokeStyle = 'black'; ctx.lineJoin = 'round'; ctx.lineWidth = 5 * lineWidth;
                     for (let i = 0; i < numSamples; i++) {
                         const index = sampleOffset + i;
                         if (index >= signal.length) break;
@@ -933,8 +934,8 @@ function EcgLoader(Sop) {
         getByid("EcgView").onmousemove = function (e) {
             if (!this.MouseDownCheck || !getByid("EcgCanvas")) return;
             var zoom = parseFloat(getByid("EcgCanvas").style.zoom) ? parseFloat(getByid("EcgCanvas").style.zoom) : 1.0;
-            if (e.pageY - this.point.y < -5) getByid("EcgCanvas").style.zoom = zoom + 0.05 > 5.0 ? 5.0 : zoom + 0.05;
-            if (e.pageY - this.point.y > 5) getByid("EcgCanvas").style.zoom = zoom - 0.05 < 0.2 ? 0.2 : zoom - 0.05;
+            if (e.pageY - this.point.y < -5) getByid("EcgCanvas").style.zoom = zoom + 0.05 >= 2.0 ? 2.0 : zoom + 0.05;
+            if (e.pageY - this.point.y > 5) getByid("EcgCanvas").style.zoom = zoom - 0.05 <= 0.5 ? 0.5 : zoom - 0.05;
             this.point = new Point2D(e.pageX, e.pageY);
         }
 
