@@ -479,7 +479,7 @@ button:hover {
 
 .EcgLabel{
   position :absolute;
-  font-size :48px;
+  font-size :36px;
   z-index :10;
   right :5px;
   bottom :5px;
@@ -498,3 +498,10 @@ button:hover {
   position:absolute;
   overflow-y:scroll;
 }
+
+#ECGZoomSlider{
+  padding: 0px;
+  border:none;
+}
+
+input[type='range']{ accent-color: gray; }

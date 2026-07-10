@@ -909,7 +909,7 @@ function EcgLoader(Sop) {
                         ctx.save();
                         ctx.translate(130, 0);
                         ctx.beginPath();
-                        ctx.strokeStyle = 'black'; ctx.lineJoin = 'round'; ctx.lineWidth = 1.5;
+                        ctx.strokeStyle = 'black'; ctx.lineJoin = 'round'; ctx.lineWidth = 5 * lineWidth;
                         for (let i = numSamples - ((speed * 8) | 0); i < numSamples; i++) {
                             const index = sampleOffset + i;
                             if (index >= signal.length) break;
@@ -937,8 +937,13 @@ function EcgLoader(Sop) {
             if (e.pageY - this.point.y < -5) getByid("EcgCanvas").style.zoom = zoom + 0.05 >= 2.0 ? 2.0 : zoom + 0.05;
             if (e.pageY - this.point.y > 5) getByid("EcgCanvas").style.zoom = zoom - 0.05 <= 0.5 ? 0.5 : zoom - 0.05;
             this.point = new Point2D(e.pageX, e.pageY);
+            getByid("ECGZoomSlider").value = (parseFloat(getByid("EcgCanvas").style.zoom) * 100) | 0;
         }
-
+        getByid("ECGZoomSlider").onchange = function () {
+            getByid("EcgCanvas").style.zoom = (parseFloat(this.value) / 100);
+            requestAnimationFrame(() => refleshWaveforms());
+        }
+        getByid("ECGZoomSlider").value = (parseFloat(getByid("EcgCanvas").style.zoom) * 100) | 0;
     } catch (ex) {
         ErrorMessage.pushErrorMessage(512);
     }

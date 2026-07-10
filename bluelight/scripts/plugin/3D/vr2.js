@@ -482,7 +482,7 @@ class VRCube {
                 this.container.style.transform = "";
                 this.container.style.transformStyle = "flat";
                 for (var obj of this.ElemZs) {
-                    if (this.PerspectiveCheck.checked) objstyle['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
+                    if (this.PerspectiveCheck.checked) obj.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
                     else obj.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
 
                     var Matrix = multiplyMatrices(getTranslateMatrix(0, 0, (obj.position.z / this.step)), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
@@ -495,7 +495,7 @@ class VRCube {
                     obj.style.mixBlendMode = this.filter;
                 }
                 for (var obj of this.ElemXs) {
-                    if (this.PerspectiveCheck.checked) objstyle['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
+                    if (this.PerspectiveCheck.checked) obj.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
                     else obj.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
 
                     var Matrix = multiplyMatrices(getRotationMatrix(0, Math.PI / 2), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
@@ -509,7 +509,7 @@ class VRCube {
                     obj.style.mixBlendMode = this.filter;
                 }
                 for (var obj of this.ElemYs) {
-                    if (this.PerspectiveCheck.checked) objstyle['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
+                    if (this.PerspectiveCheck.checked) obj.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px ${-this.perspective}`;
                     else obj.style['transform-origin'] = `center ${(this.height / 2 - offsety)}px`;
 
                     var Matrix = multiplyMatrices(getRotationMatrix(Math.PI / 2, 0), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
