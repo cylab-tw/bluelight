@@ -753,7 +753,9 @@ function EcgLoader(Sop) {
         // 準備畫布
         var EcgCanvas = getByid("EcgCanvas"), ctx = EcgCanvas.getContext("2d");
         EcgCanvas.width = A4Width + 180, EcgCanvas.height = A4Height + 100;
-        EcgCanvas.style.height = getByid("EcgView").clientHeight + "px";
+        // 縮放
+        var scale = getByid("ECGOptionsDIV").clientHeight / (window.devicePixelRatio || 1);
+        getByid("EcgCanvas").style.height = (getByid("EcgView").offsetHeight - scale) + "px"
         EcgCanvas.style.zoom = "1.0";
 
         //////////////////////////////////////////////////

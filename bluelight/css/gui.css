@@ -380,7 +380,7 @@ button:hover {
   left: 0px;
   position: absolute;
   border: var(--bordersize) #FFC3FF groove;
-  overflow: scroll;
+  overflow: auto;
 }
 
 #tooltiptext_img {
@@ -496,7 +496,7 @@ button:hover {
   background-color:white;
   /*right:0px:*/
   position:absolute;
-  overflow-y:scroll;
+  overflow-y:auto;
 }
 
 #ECGZoomSlider{
