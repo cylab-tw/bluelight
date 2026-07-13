@@ -11,7 +11,7 @@ function getQueryVariable(variable) {
 }
 
 function getParameterByName(name) {
-  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+  name = name.replace(/\[\[]/g, "\\[").replace(/\[\]]/g, "\\]");
   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
     results = regex.exec(LoacationSercher);
   if (results == null) {
@@ -28,7 +28,7 @@ function getParameterByName(name) {
 }
 
 function getParameterByName2(name, str) {
-  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+  name = name.replace(/\[\[]/g, "\\[").replace(/\[\]]/g, "\\]");
   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
     results = regex.exec("?" + str);
   if (results == null) {
