@@ -199,7 +199,7 @@ function drawTEXT(canvas, Mark, viewport) {
     setMarkColor(ctx, "#FFFF00");
     if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
     try {
-        for (var o = 0; o < Mark.pointArray.length; o += 1) {
+        for (var o = 0; o < Mark.pointArray.length - 1; o += 1) {
             ctx.beginPath();
 
             var x1 = Mark.pointArray[o].x * 1;
