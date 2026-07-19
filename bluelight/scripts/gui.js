@@ -284,7 +284,7 @@ class LeftLayout {
                 if (e.button == 2) jump2Mark(this.name);
             }
             checkbox.onchange = function () {
-                for (var i = 0; i < Viewport_Total; i++) displayMark(i)
+                for (var i = 0; i < Viewport_Total; i++) displayMark(i, this.name == "TRANSFORM" ? true : false);
             };
             label.appendChild(checkbox);
 

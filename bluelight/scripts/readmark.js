@@ -310,6 +310,28 @@ function readDicomMark(dataSet) {
               }
             }
             if (sop1) refreshMarkFromSop(sop1);
+
+            // Image Horizontal Flip -> Y, N
+            // Image Rotation -> 0, 90, 180, 270
+            // Presentation Pixel Magnification Ratio -> float
+            var PresentationPixelMagnificationRatio = dataSet.elements?.x0070005a?.items[0]?.dataSet?.float('x00700103');
+            if (dataSet.string("x00700041") == "Y" || dataSet.int16("x00700042") >= 90 || PresentationPixelMagnificationRatio) {
+              var x00081115DataSet = dataSet.elements.x00081115.items[ii2].dataSet.elements.x00081140.items;
+              for (var s = 0; s < x00081115DataSet.length; s++) {
+                sop1 = x00081115DataSet[s].dataSet.string(Tag.ReferencedSOPInstanceUID);
+                var GspsMark = new BlueLightMark();
+                GspsMark.sop = sop1;
+                GspsMark.pointArray = [];
+                GspsMark.showName = GspsMark.hideName = GspsMark.type = "TRANSFORM";
+                GspsMark.ImageHorizontalFlip = dataSet.string("x00700041") == "Y";
+                GspsMark.ImageRotation = dataSet.int16("x00700042");
+                GspsMark.PresentationPixelMagnificationRatio = PresentationPixelMagnificationRatio;
+                PatientMark.push(GspsMark);
+                refreshMark(GspsMark, false);
+                if (sop1) refreshMarkFromSop(sop1);
+                displayMark(GetViewport().index, firstLoad = true);
+              }
+            }
           } catch (ex) {
             for (var i in dataSet.elements.x00700001.items) {
               try {

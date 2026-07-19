@@ -562,7 +562,7 @@ function DcmLoader(image, viewport) {
         MarkCanvas.style.transform = MainCanvas.style.transform;
 
         //隱藏Table
-        displayMark(viewport.index);//BlueLight2//
+        displayMark(viewport.index, firstLoad = true);//BlueLight2//
         displayRuler(viewport.index);
 
         viewport.refleshScrollBar();
