@@ -500,7 +500,7 @@ function html_onload() {
   }*/
 
   getByid("removeAllRuler").onclick = function () {
-    var removeRulerWindow = createElement("DIV", null, "removeRulerWindow");
+    var removeRulerWindow = createElem("DIV", null, "removeRulerWindow");
 
     var label = document.createElement("LABEL");
     label.innerText = "Remove all measurements?";
