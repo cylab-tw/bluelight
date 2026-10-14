@@ -117,7 +117,11 @@ function wadorsLoader(url, onlyload) {
                 if (!(onlyload == true)) {
                     setImageObjToLeft(Sop);
                     resetViewport();
-                    GetViewport().loadImgBySop(Sop);
+                    // HangingProtocols
+                    var QRLevel = new QRLv(Sop?.Image?.data);
+                    var HangingProtocol = matchHangingProtocols(QRLevel);
+                    if (HangingProtocol) invokeHangingProtocols(QRLevel, HangingProtocol)
+                    else GetViewport().loadImgBySop(Sop);
                 }
                 else leftLayout.refreshNumberOfFramesOrSops(Sop.Image);
             }
@@ -1215,7 +1219,11 @@ function loadDICOMFromUrl(url, loadimage = true) {
             if (loadimage == true) {
                 setImageObjToLeft(Sop);
                 resetViewport();
-                GetViewport().loadImgBySop(Sop);
+                // HangingProtocols
+                var QRLevel = new QRLv(Sop?.Image?.data);
+                var HangingProtocol = matchHangingProtocols(QRLevel);
+                if (HangingProtocol) invokeHangingProtocols(QRLevel, HangingProtocol)
+                else GetViewport().loadImgBySop(Sop);
             }
             else leftLayout.refreshNumberOfFramesOrSops(Sop.Image);
             // Removed hideDicomStatus() call from here

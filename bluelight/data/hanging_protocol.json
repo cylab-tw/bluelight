@@ -1,0 +1,129 @@
+{
+  "HangingProtocolDefinition": {
+    "HangingProtocolDefinitionSequence": [
+      {
+        "MatchingRules": [
+          {
+            "attribute": "Modality",
+            "value": "CT",
+            "constraint": "EQUALS"
+          },
+          {
+            "attribute": "QueryRetrieveLevel",
+            "value": "SERIES",
+            "constraint": "EQUALS"
+          }
+        ],
+        "stages": [
+          {
+            "layout": {
+              "type": "grid",
+              "rows": 2,
+              "columns": 2
+            },
+            "viewports": [
+              {
+                "index": 0,
+                "seriesIndex": 0
+              },
+              {
+                "index": 1,
+                "seriesIndex": 1
+              },
+              {
+                "index": 2,
+                "seriesIndex": 2
+              },
+              {
+                "index": 3,
+                "seriesIndex": 3
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "MatchingRules": [
+          {
+            "attribute": "Modality",
+            "value": "MR",
+            "constraint": "EQUALS"
+          },
+          {
+            "attribute": "QueryRetrieveLevel",
+            "value": "SERIES",
+            "constraint": "EQUALS"
+          }
+        ],
+        "stages": [
+          {
+            "layout": {
+              "type": "grid",
+              "rows": 2,
+              "columns": 2
+            },
+            "viewports": [
+              {
+                "index": 0,
+                "seriesIndex": 0
+              },
+              {
+                "index": 1,
+                "seriesIndex": 1
+              },
+              {
+                "index": 2,
+                "seriesIndex": 2
+              },
+              {
+                "index": 3,
+                "seriesIndex": 3
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "MatchingRules": [
+          {
+            "attribute": "Modality",
+            "value": "US",
+            "constraint": "EQUALS"
+          },
+          {
+            "attribute": "QueryRetrieveLevel",
+            "value": "SERIES",
+            "constraint": "EQUALS"
+          }
+        ],
+        "stages": [
+          {
+            "layout": {
+              "type": "grid",
+              "rows": 2,
+              "columns": 2
+            },
+            "viewports": [
+              {
+                "index": 0,
+                "seriesIndex": 0
+              },
+              {
+                "index": 1,
+                "seriesIndex": 1
+              },
+              {
+                "index": 2,
+                "seriesIndex": 2
+              },
+              {
+                "index": 3,
+                "seriesIndex": 3
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

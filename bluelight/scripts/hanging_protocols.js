@@ -2,6 +2,75 @@
 //test version ! ! !
 //test version ! ! !
 
+HangingProtocolsSequence = []
+
+function loadHangingProtocols() {
+    var request = new XMLHttpRequest();
+    request.open('GET', "../data/hanging_protocol.json");
+    request.responseType = 'text';
+    request.send();
+    request.onload = function () {
+        if (request.readyState != 4) { return; }
+        var responseJson = JSON.parse(request.responseText);
+        var HPSequence = responseJson["HangingProtocolDefinition"]["HangingProtocolDefinitionSequence"];
+        for (var HP of HPSequence) {
+            HangingProtocolsSequence.push(HP);
+        }
+    }
+}
+
+loadHangingProtocols();
+
+function invokeHangingProtocols(QRLevel, HP) {
+    for (var stage of HP.stages) {
+        if (stage.layout) {
+            if (stage.layout.type == "grid") {
+                var rows = stage.layout.rows;
+                var columns = stage.layout.columns;
+                GridMode = "default";
+                hideAllDrawer();
+                Viewport_row = rows;
+                Viewport_col = columns;
+                if (viewportNumber >= Viewport_row * Viewport_col) viewportNumber = 0;
+                BlueLightViewPort.only1Viewport = -1;
+                SetTable();
+                window.onresize();
+            }
+        }
+        if (stage.viewports) {
+            for (var viewport of stage.viewports) {
+                var index = viewport.index;
+                var seriesIndex = viewport.seriesIndex;
+                if (!(isNaN(index || isNaN(seriesIndex)))) {
+                    if (QRLevel.series) GetViewport(index).loadImgBySop(ImageManager.findSeries(QRLevel.series).Sop[seriesIndex])
+                    else if (QRLevel.sop) GetViewport(index).loadImgBySop(ImageManager.findSop(QRLevel.sop).parent.Sop[seriesIndex]);
+                }
+            }
+            window.onresize();
+        }
+    }
+}
+
+function matchHangingProtocols(QRLevel) {
+    try {
+        for (var HP of HangingProtocolsSequence) {
+            let count = 0;
+            for (var rule of HP.MatchingRules) {
+                if (rule.attribute == "QueryRetrieveLevel" && rule.constraint == "EQUALS" && ((QRLevel.series && rule.value == "SERIES"))) count++
+                if (rule.attribute == "Modality" && rule.constraint == "EQUALS") {
+                    if (QRLevel.series) var dcm = ImageManager.findSeries(QRLevel.series).Sop[0];
+                    if (QRLevel.sop) var dcm = ImageManager.findSop(QRLevel.sop).parent.Sop[0];
+                    if (QRLevel.frames) ImageManager.findSop(QRLevel.sop);
+                    //////////
+                    if (rule.value == dcm.Image.Modality) count++;
+                }
+            }
+            if (count == HP.MatchingRules.length) return HP;
+        }
+    } catch (ex) { console.log(ex); }
+    return null;
+}
+/*
 function getQueryVariable_HaningProtocols(variable) {
     var query = location.search.substring(1);
     var vars = query.split("&");
@@ -135,4 +204,4 @@ function loadHaningProtocols() {
     createHaningProtocolsDIV();
 }
 
-loadHaningProtocols();
+loadHaningProtocols();*/

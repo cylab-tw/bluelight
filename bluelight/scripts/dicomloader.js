@@ -48,7 +48,7 @@ function getDefaultImageObj(dataSet, type) {
     imageObj.institutionName = dataSet.string(Tag.InstitutionName);
     imageObj.PatientAge = dataSet.string(Tag.PatientAge);
     imageObj.PatientID = dataSet.string(Tag.PatientID);
-
+    imageObj.Modality = dataSet.string(Tag.Modality);
 
     imageObj.PatientName = dataSet.string(Tag.PatientName);
     imageObj.SpecificCharacterSet = dataSet.string(Tag.SpecificCharacterSet);
