@@ -38,7 +38,7 @@
 ### Network support
 * Load local files
 * Integration with any DICOMWeb Image Archive, including Raccoon, Orthanc, and dcm4chee server
-  - Retrieve methods: WADO-URI (as default) and WADO-RS: specify one of them in config.json
+  - Retrieve methods: WADO-URI and WADO-RS (the shipped configuration uses WADO-RS): specify one of them in config.json
 * Integration with XNAT by plugin [xnat.js](/bluelight/scripts/plugin/xnat.js). BlueLight will query the XNAT's API to get the XML and retrieve the DICOM stored in experiments and its scans. Currently, we don't build it as an XNAT plugin. [issue: XNAT Connection](https://github.com/cylab-tw/bluelight/issues/11)
   - Step1: copy BlueLight to the XNAT deployment folder
   - Step2: type URL: https://{XNAT's hostname}/bluelight/search/html/start.html?experiments={XNAT expID}&scans={scanID}&format=json
@@ -75,24 +75,19 @@
 * Provide the function to convert the DICOM Overalys to a DICOM SEG object.
 
 ## Plugins
-* Some advanced features are separated from the native parts of Bluelight to facilitate better performance. All supported functions are placed in folder `/scripts/plugin`. Using the [config](/bluelight/data/plugin.json) enable the selected plugins. If disableCatch is set as false, the plugin is enabled.
+* Some advanced features are separated from the native parts of Bluelight to facilitate better performance. Plugins are placed in folder `/bluelight/scripts/plugin`. Add the selected plugins to the [config](/bluelight/data/plugin.json). Every listed plugin is loaded; remove its entry to disable it. `disableCatch` controls cache busting, not whether the plugin is enabled: the string `"true"` appends a random query parameter to the script URL, while `"false"` leaves the URL unchanged. Paths are relative to `/bluelight/html/start.html`.
 
 ```json
 {
     "plugin": [
-    /*  path: the location of the plugin
-     *  name: the name of the plugin
-     *  disableCatch: enable the plugin or not.
-     *  examples show as follows:        
-     * /
         {"path":"../scripts/plugin/oauth.js", "name": "oauth", "disableCatch": "true"},
-        {"path":"../scripts/plugin/mpr.js", "name": "MPR", "disableCatch": "true"},        
+        {"path":"../scripts/plugin/3D/mpr2.js", "name": "MPR", "disableCatch": "true"}
     ]
 }
 
 ```
 * We welcome any idea of adding new plugins from any third party, such as:
-  - Create the customized annotations encoded as an XML - see [xml_format.js](/bluelight/scripts/plugin/xml_format.js)
+  - Create the customized annotations encoded as an XML - see [xml_format.js](/bluelight/scripts/plugin/Markup/xml_format.js)
   
 ### Plugin: Authentication
 * OAuth2 - see [oauth.js](/bluelight/scripts/plugin/oauth.js). If OAuth2 is enabled, and then modify the [config](/bluelight/data/configOAuth.json). 
@@ -115,21 +110,20 @@
 }
 ```
 ### Plugin : 3D Post-Processing
-* MPR (Multiplanar Reconstruction) - see [mpr.js](/bluelight/scripts/plugin/mpr.js)
+* MPR (Multiplanar Reconstruction) - see [mpr2.js](/bluelight/scripts/plugin/3D/mpr2.js)
 * MIP (maximum intensity projection) - implemented in MPR 
-* 3D Volume Rendering - see [vr2.js](/bluelight/scripts/plugin/vr2.js)
+* 3D Volume Rendering - see [vr2.js](/bluelight/scripts/plugin/3D/vr2.js)
 
 ### Plugin: Labeling tool interfaces (on experiment state)
 * [LabelImg](https://github.com/tzutalin/labelImg)
-* GSPS: DICOM Graphic Annotation - see [graphic_annotation.js](/bluelight/scripts/plugin/graphic_annotation.js)
-* DICOM-RT structure set (RTSS) - see [rtss.js](/bluelight/scripts/plugin/rtss.js)
-* DICOM SEG (Segmentation) - see [seg.js](/bluelight/scripts/plugin/seg.js)
+* GSPS: DICOM Graphic Annotation - see [gsps.js](/bluelight/scripts/plugin/Markup/gsps.js)
+* DICOM-RT structure set (RTSS) - see [rtss.js](/bluelight/scripts/plugin/Markup/rtss.js)
+* DICOM SEG (Segmentation) - see [seg.js](/bluelight/scripts/plugin/Markup/seg.js)
   - **Download as DCMTK DICOM-XML**: only launch BlueLight
   - **Download as DIOCM SEG**: It is integrated with [Raccoon.net](https://github.com/cylab-tw/raccoon). Please put the BlightLight on Raccoon.
 
 ### Plugin: General
-* Display DICOM TAG - see [tag.js](/bluelight/scripts/plugin/tag.js)
-* Display LUT- see [table.js](/bluelight/scripts/plugin/table.js)
+* Display DICOM TAG - see [tag.js](/bluelight/scripts/plugin/Markup/tag.js)
 
 ## Supported library
 * BlueLight Viewer uses - <a href="https://github.com/cornerstonejs/dicomParser">dicomParser</a> for parsing DICOM tags.
