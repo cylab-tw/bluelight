@@ -1141,7 +1141,9 @@ function loadDicomDataSet(fileData) {
         loadDicomSeg(getDefaultImageObj(dataSet, 'seg'))
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.GrayscaleSoftcopyPresentationStateStorage)
         readDicomMark(dataSet)
-
+    else if (dataSet.string(Tag.MediaStorageSOPClassUID) == "1.2.840.10008.5.1.4.1.1.30")
+        readParametricMap(dataSet);
+    
     //ECG
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID._12_leadECGWaveformStorage)
         Sop = loadSopFromDataSet(dataSet, 'ecg');

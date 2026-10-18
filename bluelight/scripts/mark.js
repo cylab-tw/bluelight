@@ -146,6 +146,21 @@ function drawSEG(canvas, Mark, viewport) {
     ctx.restore();
 }
 
+function drawParametricMap(canvas, Mark, viewport) {
+    if (Mark.referencedFrameNumbers?.length && !Mark.referencedFrameNumbers.includes((viewport.framesNumber ?? 0) + 1)) return;
+    var ctx = canvas.getContext("2d");
+    ctx.save();
+    ctx.globalAlpha = parseFloat(getByid('markAlphaText').value) / 100;
+    ctx.setTransform(
+        viewport.HorizontalFlip ? -1 : 1, 0,
+        0, viewport.VerticalFlip ? -1 : 1,
+        viewport.HorizontalFlip ? Mark.canvas.width : 0,
+        viewport.VerticalFlip ? Mark.canvas.height : 0
+    );
+    ctx.drawImage(Mark.canvas, 0, 0);
+    ctx.restore();
+}
+
 function drawOverLay(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     function mirrorImage(ctx, image, x = 0, y = 0, horizontal = false, vertical = false) {
@@ -737,6 +752,7 @@ function displayMark(viewportNum = viewportNumber, firstLoad = false) {
     for (var Mark of patientMark_enable) {
         if (Mark.type == "SEG") drawSEG(MarkCanvas, Mark, viewport);
         else if (Mark.type == "Overlay") drawOverLay(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "ParametricMap") drawParametricMap(MarkCanvas, Mark, viewport);
     }
 
     for (var Mark of patientMark_enable) {
