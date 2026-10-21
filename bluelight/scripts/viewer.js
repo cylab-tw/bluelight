@@ -80,7 +80,7 @@ class LoadFileInBatches {
     }
 }
 
-function wadorsLoader(url, onlyload) {
+/*function wadorsLoader(url, onlyload) {
     // Show loading status
     showDicomStatus("Loading images...");
 
@@ -117,11 +117,7 @@ function wadorsLoader(url, onlyload) {
                 if (!(onlyload == true)) {
                     setImageObjToLeft(Sop);
                     resetViewport();
-                    // HangingProtocols
-                    var QRLevel = new QRLv(Sop?.Image?.data);
-                    var HangingProtocol = matchHangingProtocols(QRLevel);
-                    if (HangingProtocol) invokeHangingProtocols(QRLevel, HangingProtocol)
-                    else GetViewport().loadImgBySop(Sop);
+                    GetViewport().loadImgBySop(Sop);
                 }
                 else leftLayout.refreshNumberOfFramesOrSops(Sop.Image);
             }
@@ -134,6 +130,60 @@ function wadorsLoader(url, onlyload) {
         .finally(function () {
             LoadFileInBatches.finishOne();
         });
+}
+*/
+
+function wadorsLoader(url, onlyload) {
+  var headers = {
+    'Accept': 'multipart/related; type="application/dicom"'
+  }
+
+  var wadoToken = ConfigLog.WADO.token;
+  for (var to = 0; to < Object.keys(wadoToken).length; to++) {
+    if (wadoToken[Object.keys(wadoToken)[to]] != "")
+      headers[Object.keys(wadoToken)[to]] = wadoToken[Object.keys(wadoToken)[to]];
+  }
+
+  fetch(url, { headers })
+    .then(function (res) {
+      if (!res.ok) {
+        console.error("HTTP error:", res.status, res.statusText);
+        showDicomStatus("PACS error: " + res.status + " " + res.statusText, true);
+        throw new Error('HTTP error ' + res.status + ': ' + res.statusText);
+      }
+      return res.arrayBuffer();
+    })
+    .then(function (resBlob) {
+      let decodedBuffers;
+      try {
+        decodedBuffers = multipartDecode(resBlob);
+      } catch (e) {
+        console.warn("非 Multipart 格式，回傳內容預覽:", new TextDecoder().decode(resBlob.slice(0, 200)));
+        decodedBuffers = [resBlob];
+      }
+      for (let decodedBuf of decodedBuffers) {
+        var byteArray = new Uint8Array(decodedBuf);
+        var blob = new Blob([byteArray], { type: 'application/dicom' });
+        var dcm_url = URL.createObjectURL(blob);
+
+        var Sop = loadDicomDataSet(decodedBuf);
+        setPixelDataToImageObj(Sop);
+        Sop.Image.url = dcm_url;
+        if (!(onlyload == true)) {
+          setImageObjToLeft(Sop);
+          resetViewport();
+          GetViewport().loadImgBySop(Sop);
+        }
+        else leftLayout.refreshNumberOfFramesOrSops(Sop.Image);
+      }
+    })
+    .catch(function (error) {
+      console.error("Fetch error:", error);
+      showDicomStatus("PACS error: " + error.message, true);
+    })
+    .finally(function () {
+      LoadFileInBatches.finishOne();
+    });
 }
 
 /**
@@ -1141,9 +1191,7 @@ function loadDicomDataSet(fileData) {
         loadDicomSeg(getDefaultImageObj(dataSet, 'seg'))
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.GrayscaleSoftcopyPresentationStateStorage)
         readDicomMark(dataSet)
-    else if (dataSet.string(Tag.MediaStorageSOPClassUID) == "1.2.840.10008.5.1.4.1.1.30")
-        readParametricMap(dataSet);
-    
+
     //ECG
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID._12_leadECGWaveformStorage)
         Sop = loadSopFromDataSet(dataSet, 'ecg');
@@ -1221,11 +1269,7 @@ function loadDICOMFromUrl(url, loadimage = true) {
             if (loadimage == true) {
                 setImageObjToLeft(Sop);
                 resetViewport();
-                // HangingProtocols
-                var QRLevel = new QRLv(Sop?.Image?.data);
-                var HangingProtocol = matchHangingProtocols(QRLevel);
-                if (HangingProtocol) invokeHangingProtocols(QRLevel, HangingProtocol)
-                else GetViewport().loadImgBySop(Sop);
+                GetViewport().loadImgBySop(Sop);
             }
             else leftLayout.refreshNumberOfFramesOrSops(Sop.Image);
             // Removed hideDicomStatus() call from here

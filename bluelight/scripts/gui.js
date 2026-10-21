@@ -305,9 +305,6 @@ function PictureOnclick(QRLevel) {
     cancelTools();
     resetViewport();
 
-    var HangingProtocol = matchHangingProtocols(QRLevel);
-    if (HangingProtocol) return invokeHangingProtocols(QRLevel, HangingProtocol);
-
     if (QRLevel.frames) GetViewport().loadImgBySop(ImageManager.findSop(QRLevel.sop));
     else if (QRLevel.series) GetViewport().loadImgBySop(ImageManager.findSeries(QRLevel.series).Sop[0])
     else if (QRLevel.sop) GetViewport().loadImgBySop(ImageManager.findSop(QRLevel.sop).parent.Sop[0]);
