@@ -8801,6 +8801,8 @@
 	      });
 	      return unnaturalDataset;
 	    }
+	  // 改用CreateUid()或固定UIDd()，避免有不安全亂數的疑慮
+	  /*
 	  }, {
 	    key: "uid",
 	    value: function uid() {
@@ -8810,6 +8812,7 @@
 	      }
 	      return uid;
 	    }
+	  */
 
 	    // date and time in UTC
 	  }, {

@@ -219,8 +219,8 @@ loadKeyObjecyPlugin();
 
 function generateKOS(studyInfo, referencedImages, description) {
 
-    const kosInstanceUid = dcmjs_for_ko.data.DicomMetaDictionary.uid();
-    const seriesInstanceUid = dcmjs_for_ko.data.DicomMetaDictionary.uid();
+    const kosInstanceUid = CreateUid("sop");
+    const seriesInstanceUid = CreateUid("series");
     const now = new Date();
     const dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
     const timeStr = String(now.getHours()).padStart(2, '0') + String(now.getMinutes()).padStart(2, '0') + String(now.getSeconds()).padStart(2, '0');
@@ -298,7 +298,7 @@ function generateKOS(studyInfo, referencedImages, description) {
         MediaStorageSOPClassUID: dataset.SOPClassUID,
         MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
         TransferSyntaxUID: '1.2.840.10008.1.2.1', // Explicit VR Little Endian
-        ImplementationClassUID: dcmjs_for_ko.data.DicomMetaDictionary.uid(),
+        ImplementationClassUID: "2.16.886.119.102568.9",
         ImplementationVersionName: 'DCMJS_BROWSER'
     };
 
