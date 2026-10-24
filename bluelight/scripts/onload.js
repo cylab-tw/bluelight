@@ -193,13 +193,19 @@ function readAllJson(readJson) {
   var queryString = ("" + location.search).replace("?", "");
   queryString = operateQueryString(queryString);
   if (queryString.length > 0) {
-    var url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/series" + "?" + queryString + "";
+    var params = new URLSearchParams(queryString);
+    var studyUID = params.get("StudyInstanceUID");
+    var url = "";
+    if (studyUID) {
+      url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/studies/" + studyUID + "/series?includefield=all";
+    } else {
+      url = ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service + "/series" + "?" + queryString + "";
+    }
     url = fitUrl(url);
     readJson(url);
   }
   load_WebImg();
 }
-
 function fitUrl(url) {
   url = url.replace('?&', '?');
   url = url.replace("http://http://", "http://");
@@ -384,6 +390,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
       let InstanceUrl = "";
 
       try {
+        
         if (ConfigLog.QIDO.enableRetrieveURI === true &&
           SeriesResponse[instance] &&
           SeriesResponse[instance]["00081190"] &&
@@ -391,12 +398,12 @@ function getJsonBySeriesRequest(SeriesRequest) {
           SeriesResponse[instance]["00081190"].Value[0]) {
           InstanceUrl = SeriesResponse[instance]["00081190"].Value[0] + "/instances";
         } else if (SeriesResponse[instance] &&
-          SeriesResponse[instance]["0020000D"] &&
-          SeriesResponse[instance]["0020000D"].Value &&
+          // SeriesResponse[instance]["0020000D"] &&
+          // SeriesResponse[instance]["0020000D"].Value &&
           SeriesResponse[instance]["0020000E"] &&
           SeriesResponse[instance]["0020000E"].Value) {
           InstanceUrl = fitUrl(ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service) +
-            "/studies/" + SeriesResponse[instance]["0020000D"].Value[0] +
+            "/studies/" + /*SeriesResponse[instance]["0020000D"].Value[0]*/ new URLSearchParams(location.search).get("StudyInstanceUID") +
             "/series/" + SeriesResponse[instance]["0020000E"].Value[0] + "/instances";
         } else {
           console.error("Error: Missing required DICOM data in series response");

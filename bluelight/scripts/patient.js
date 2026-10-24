@@ -165,32 +165,31 @@ class BlueLightImageManager {
             var preLoadSops = preLoadSeries[series];
             var preLoadSops = SortArrayByElem(preLoadSops, "Index");
 
-            var LoadImgSop = null, HangingProtocol = null;
+            var LoadImgSop = null;
             for (var sop of preLoadSops) {
                 var QRLevel = new QRLv(sop.dataSet);
 
-                if (sop.dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EncapsulatedPDFStorage)
+                if (sop.dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID.EncapsulatedPDFStorage) 
                     QRLevel.frames = 1;
 
                 if (!QRLevel.frames && !leftLayout.findSeries(sop.dataSet.string(Tag.SeriesInstanceUID))) {
                     leftLayout.setImg2Left(QRLevel, sop.dataSet.string(Tag.PatientID));
                     if (sop.image.imageDataLoaded == false && sop.image.loadImageData) sop.image.loadImageData();
                     leftLayout.appendCanvasBySeries(sop.dataSet.string(Tag.SeriesInstanceUID), sop.image, sop.image.getPixelData());
-                    LoadImgSop = sop.Sop, HangingProtocol = matchHangingProtocols(QRLevel);
+                    LoadImgSop = sop.Sop;
                 }
                 else if (QRLevel.frames && !leftLayout.findSop(sop.dataSet.string(Tag.SOPInstanceUID))) {
                     leftLayout.setImg2Left(QRLevel, sop.dataSet.string(Tag.PatientID));
                     if (sop.image.imageDataLoaded == false && sop.image.loadImageData) sop.image.loadImageData();
                     leftLayout.appendCanvasBySop(sop.dataSet.string(Tag.SOPInstanceUID), sop.image, sop.image.getPixelData());
-                    LoadImgSop = sop.Sop, HangingProtocol = matchHangingProtocols(QRLevel);
+                    LoadImgSop = sop.Sop;
                 }
                 leftLayout.refleshMarkWithSeries(sop.dataSet.string(Tag.SeriesInstanceUID));
             }
             if (LoadImgSop) {
                 //requestAnimationFrame(() => {
                 resetViewport();
-                if (HangingProtocol) invokeHangingProtocols(QRLevel, HangingProtocol);
-                else GetViewport().loadImgBySop(LoadImgSop);
+                GetViewport().loadImgBySop(LoadImgSop);
                 //});
             }
         }

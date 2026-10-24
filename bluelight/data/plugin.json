@@ -10,6 +10,7 @@
         {"path":"../scripts/plugin/Markup/tag.js", "name": "tag", "disableCatch": "true"},
         {"path":"../scripts/plugin/Markup/tag_RENAL.js", "name": "tag_RENAL", "disableCatch": "true"},
         {"path":"../scripts/plugin/xnat.js", "name": "xnat", "disableCatch": "true"},
+        {"path":"../scripts/plugin/hanging_protocols.js", "name": "hanging_protocols", "disableCatch": "true"},
         {"path":"../scripts/plugin/mtss.js", "name": "mtss", "disableCatch": "true"}, 
         {"path":"../scripts/plugin/anatomical_plane.js", "name": "anatomical_plane", "disableCatch": "true"},
         {"path": "../scripts/plugin/AutoOperation.js", "name": "AutoOperation", "disableCatch": "true"},

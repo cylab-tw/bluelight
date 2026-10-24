@@ -2,9 +2,9 @@
 function scale_size(e, currX, currY) {
     var viewport = GetViewport();
 
-    if (windowMouseDiffY < 0 && viewport.scale < 10 && (Math.abs(windowMouseDiffX) < Math.abs((windowMouseDiffY))))
+    if (windowMouseDiffY < 0 && viewport.scale < 10)
         viewport.scale += viewport.scale * 0.05;
-    else if (windowMouseDiffY > 0 && viewport.scale > 0.1 && (Math.abs(windowMouseDiffX) < Math.abs((windowMouseDiffY))))
+    else if (windowMouseDiffY > 0 && viewport.scale > 0.1)
         viewport.scale -= viewport.scale * 0.05;
 
     if (openLink == true) {
