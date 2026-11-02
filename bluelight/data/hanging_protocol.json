@@ -21,6 +21,20 @@
               "rows": 2,
               "columns": 2
             },
+            "clear_viewports":[
+              {
+                "index": 0
+              },
+              {
+                "index": 1
+              },
+              {
+                "index": 2
+              },
+              {
+                "index": 3
+              }
+            ],
             "viewports": [
               {
                 "index": 0,

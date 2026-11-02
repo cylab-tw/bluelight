@@ -37,6 +37,17 @@ function invokeHangingProtocols(QRLevel, HP) {
                 window.onresize();
             }
         }
+        if (stage.clear_viewports) {
+            for (var viewport of stage.clear_viewports) {
+                var index = viewport.index;
+                var targetViewport = GetViewport(index);
+                targetViewport.clear();
+                for (var label of ['labelLT', 'labelRT', 'labelLB', 'labelRB', 'labelMT', 'labelMB', 'labelLM', 'labelRM']) 
+                    targetViewport[label].innerHTML = "";
+                displayRuler(index);
+            }
+            window.onresize();
+        }
         if (stage.viewports) {
             for (var viewport of stage.viewports) {
                 var index = viewport.index;
@@ -47,7 +58,7 @@ function invokeHangingProtocols(QRLevel, HP) {
                 }
             }
             window.onresize();
-        }
+        } 
     }
 }
 
