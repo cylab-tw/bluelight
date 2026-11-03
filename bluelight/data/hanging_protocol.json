@@ -21,6 +21,7 @@
               "rows": 2,
               "columns": 2
             },
+            "openLink": true,
             "clear_viewports":[
               {
                 "index": 0
@@ -76,6 +77,21 @@
               "rows": 2,
               "columns": 2
             },
+            "openLink": true,
+            "clear_viewports":[
+              {
+                "index": 0
+              },
+              {
+                "index": 1
+              },
+              {
+                "index": 2
+              },
+              {
+                "index": 3
+              }
+            ],
             "viewports": [
               {
                 "index": 0,
@@ -117,6 +133,21 @@
               "rows": 2,
               "columns": 2
             },
+            "openLink": true,
+            "clear_viewports":[
+              {
+                "index": 0
+              },
+              {
+                "index": 1
+              },
+              {
+                "index": 2
+              },
+              {
+                "index": 3
+              }
+            ],
             "viewports": [
               {
                 "index": 0,

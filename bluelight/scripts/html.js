@@ -5,7 +5,7 @@ function html_onload() {
 
   getByid("openFile").onclick = function () {
     if (this.enable == false) return;
-    var fileElem = document.createElement("input");
+    var fileElem = createElem("input");
     fileElem.setAttribute("type", "file");
     fileElem.setAttribute("multiple", "multiple");
     fileElem.onchange = function () {

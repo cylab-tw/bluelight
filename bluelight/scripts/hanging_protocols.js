@@ -37,6 +37,10 @@ function invokeHangingProtocols(QRLevel, HP) {
                 window.onresize();
             }
         }
+        if (stage.openLink !== undefined && typeof stage.openLink === "boolean") {
+            openLink = stage.openLink;
+            changeLinkImg();
+        }
         if (stage.clear_viewports) {
             for (var viewport of stage.clear_viewports) {
                 var index = viewport.index;
