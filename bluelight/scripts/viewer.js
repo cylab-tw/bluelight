@@ -21,11 +21,11 @@ class LoadFileInBatches {
     static queue = [];
     static lock = false;
     static NumOfFetchs = 0;
-    static limit = 0;
+    static limit = 4;
     static timer = null;
 
     static wadoPreLoad(url, onlyload) {
-        if (LoadFileInBatches.limit == 0) LoadFileInBatches.limit = ConfigLog.QIDO.limit ? ConfigLog.QIDO.limit : 100;
+        // if (LoadFileInBatches.limit == 0) LoadFileInBatches.limit = ConfigLog.QIDO.limit ? ConfigLog.QIDO.limit : 100;
 
         if (LoadFileInBatches.NumOfFetchs >= LoadFileInBatches.limit) {
             LoadFileInBatches.lock = true;
@@ -112,6 +112,7 @@ function wadorsLoader(url, onlyload) {
                 var dcm_url = URL.createObjectURL(blob)
 
                 var Sop = loadDicomDataSet(decodedBuf);
+                if (!Sop || !Sop.Image) continue;
                 setPixelDataToImageObj(Sop);
                 Sop.Image.url = dcm_url;
                 if (!(onlyload == true)) {
@@ -1143,7 +1144,7 @@ function loadDicomDataSet(fileData) {
         readDicomMark(dataSet)
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == "1.2.840.10008.5.1.4.1.1.30")
         readParametricMap(dataSet);
-    
+
     //ECG
     else if (dataSet.string(Tag.MediaStorageSOPClassUID) == SOPClassUID._12_leadECGWaveformStorage)
         Sop = loadSopFromDataSet(dataSet, 'ecg');
@@ -1216,6 +1217,7 @@ function loadDICOMFromUrl(url, loadimage = true) {
         })
         .then(function (oReq) {
             var Sop = loadDicomDataSet(oReq);
+            if (!Sop || !Sop.Image) return;
             setPixelDataToImageObj(Sop);
             Sop.Image.url = url;
             if (loadimage == true) {
