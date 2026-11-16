@@ -77,30 +77,30 @@ class BlueLightViewPort {
     }
 
     initViewportOption(div, index) {
-        this.invert = false;
+        this.invert         = false;
         this.HorizontalFlip = false;
-        this.VerticalFlip = false;
-        this.rotate = 0;
-        this.translate = new Point2D(0, 0);
-        this.scale = null;
+        this.VerticalFlip   = false;
+        this.rotate         = 0;
+        this.scale          = null;
+        this.translate      = new Point2D(0, 0);
 
         this.windowCenter = null;
-        this.windowWidth = null;
+        this.windowWidth  = null;
 
         this.transform = {};
-        this.drawMark = true;
-        this.play = false;
-        this.KO = false;
+        this.drawMark  = true;
+        this.play      = false;
+        this.KO        = false;
         this.KO_SeriesDescription = null;
 
         this.enable = true;
-        this.cine = false;
+        this.cine   = false;
 
         this.content.framesNumber = 0;
 
-        div.enable = true;
+        div.enable         = true;
         this.DicomTagsList = [];
-        this.labelDict = {};
+        this.labelDict     = {};
         this.initViewportCanvas(div, index);
     }
     get enable() { return this.div.enable };
@@ -315,7 +315,7 @@ class BlueLightViewPort {
             DcmLoader(Sop.Image, this);
         }
         else if (Sop.type == 'pdf') PdfLoader(Sop.pdf, Sop);
-        else if (Sop.type == 'sr') SrLoader(Sop);
+        else if (Sop.type == 'sr')  SrLoader (Sop);
         else if (Sop.type == 'ecg') EcgLoader(Sop);
         else if (Sop.type == 'img') DcmLoader(Sop.Image, this);
         //});
@@ -399,7 +399,7 @@ class BlueLightViewPort {
         setMarkSetting(ctx, viewport);
         if (alpha != null) ctx.globalAlpha = alpha;
         if (color) ctx.strokeStyle = ctx.fillStyle = color;
-        if (dash) ctx.setLineDash(dash);
+        if (dash)  ctx.setLineDash(dash);
         ctx.beginPath();
         ctx.moveTo(point1.x, point1.y); ctx.lineTo(point2.x, point2.y);
         ctx.stroke();
@@ -440,7 +440,7 @@ class BlueLightViewPort {
         ctx.save();
         setMarkSetting(ctx, viewport);
         if (alpha != null) ctx.globalAlpha = alpha;
-        if (color) ctx.strokeStyle = ctx.fillStyle = color;
+        if (color)  ctx.strokeStyle = ctx.fillStyle = color;
         if (otherSettingsGroup && otherSettingsGroup.length) {
             for (var setting of otherSettingsGroup)
                 ctx["" + Object.keys(setting)[0]] = "" + Object.values(setting)[0]
@@ -482,13 +482,13 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     let Uint32Data = new Uint32Array(imgData.data.buffer).fill(0xFF000000);
 
     var windowCenter = info.windowCenter ? info.windowCenter : image.windowCenter;
-    var windowWidth = info.windowWidth ? info.windowWidth : image.windowWidth;
+    var windowWidth  = info.windowWidth  ? info.windowWidth  : image.windowWidth;
     var high = windowCenter + (windowWidth / 2);
-    var low = windowCenter - (windowWidth / 2);
+    var low  = windowCenter - (windowWidth / 2);
     var intercept = image.intercept;
+    var slope     = image.slope;
     if (CheckNull(intercept)) intercept = 0;
-    var slope = image.slope;
-    if (CheckNull(slope)) slope = 1;
+    if (CheckNull(slope))     slope     = 1;
 
     //未最佳化之版本
     /*if (image.color == true) {
@@ -505,10 +505,10 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
         }
     }*/
     const multiplication = 255 / ((high - low)) * slope;
-    const addition = (- low + intercept) / (high - low) * 255;
-    const data = imgData.data;
-    const dataLength = data.length;
-    const data32Length = Uint32Data.length;
+    const addition       = (- low + intercept) / (high - low) * 255;
+    const data           = imgData.data;
+    const dataLength     = data.length;
+    const data32Length   = Uint32Data.length;
     /*if (image.LUTData && image.LUTData.length == 256) {
         var pixelData2 = new Array(pixelData.length);
         for (var i = 0; i < pixelData.length; i++)pixelData2[i] = isNaN(image.LUTData[pixelData[i]]) ? pixelData[i] : image.LUTData[pixelData[i]];
@@ -517,22 +517,22 @@ function renderPixelData2Cnavas(image, pixelData, canvas, info = {}) {
     if (image.RedLutArray && image.GreenLutArray && image.BlueLutArray &&
         image.RedLutArray.length == 256 && image.GreenLutArray.length == 256 && image.BlueLutArray.length == 256) {
         for (var i = 0, j = 0; i < dataLength; i += 4, j += 1) {
-            data[i + 0] = image.RedLutArray[pixelData[j + 0]];
+            data[i + 0] = image.RedLutArray  [pixelData[j + 0]];
             data[i + 1] = image.GreenLutArray[pixelData[j + 1]];
-            data[i + 2] = image.BlueLutArray[pixelData[j + 2]];
+            data[i + 2] = image.BlueLutArray [pixelData[j + 2]];
         }
     }
     else {
         if (image.color == true) {
             if (("" + image.PhotometricInterpretation).includes("YBR") || ("" + image.PhotometricInterpretation).includes("RGB")) {
                 for (var i = 0, j = 0; i < dataLength; i += 4, j += 3) {
-                    data[i + 0] = pixelData[j] * multiplication + addition;
+                    data[i + 0] = pixelData[j]     * multiplication + addition;
                     data[i + 1] = pixelData[j + 1] * multiplication + addition;
                     data[i + 2] = pixelData[j + 2] * multiplication + addition;
                 }
             } else {
                 for (var i = 0; i < dataLength; i += 4) {
-                    data[i + 0] = pixelData[i] * multiplication + addition;
+                    data[i + 0] = pixelData[i]     * multiplication + addition;
                     data[i + 1] = pixelData[i + 1] * multiplication + addition;
                     data[i + 2] = pixelData[i + 2] * multiplication + addition;
                 }
@@ -591,11 +591,11 @@ function refleshCanvas(viewport) {
     var canvas = viewport.canvas;
     var image = viewport.content.image, pixelData;
     if (!viewport.Sop) return;
-    if (viewport.Sop.type == 'frame') pixelData = viewport.content.image.getPixelData(viewport.framesNumber);
+    if (viewport.Sop.type == 'frame')    pixelData = viewport.content.image.getPixelData(viewport.framesNumber);
     else if (viewport.Sop.type == 'sop') pixelData = viewport.content.image.getPixelData();
     else if (viewport.Sop.type == 'img') pixelData = viewport.content.image.getPixelData();
     if (!image) return;
-    if (canvas.width != image.width) canvas.width = image.width;
+    if (canvas.width  != image.width)  canvas.width  = image.width;
     if (canvas.height != image.height) canvas.height = image.height
     renderPixelData2Cnavas(image, pixelData, canvas, viewport);
     refleshGUI();

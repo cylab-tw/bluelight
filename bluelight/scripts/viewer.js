@@ -18,11 +18,11 @@ VIEWPORT.loadViewport = function (viewport, image, viewportNum) {
 VIEWPORT.loadViewportList = ['putLabel2Element'];
 
 class LoadFileInBatches {
-    static queue = [];
-    static lock = false;
+    static queue       = [];
+    static lock        = false;
     static NumOfFetchs = 0;
-    static limit = 4;
-    static timer = null;
+    static limit       = 4;
+    static timer       = null;
 
     static wadoPreLoad(url, onlyload) {
         // if (LoadFileInBatches.limit == 0) LoadFileInBatches.limit = ConfigLog.QIDO.limit ? ConfigLog.QIDO.limit : 100;
@@ -51,16 +51,16 @@ class LoadFileInBatches {
                         var list = LoadFileInBatches.queue.splice(0, LoadFileInBatches.limit);
                         LoadFileInBatches.NumOfFetchs += list.length;
                         for (var i = 0; i < list.length; i++) {
-                            if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(list[i].url, list[i].onlyload);
-                            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(list[i].url, list[i].onlyload);
+                            if (ConfigLog.WADO.WADOType      == "URI") loadDICOMFromUrl(list[i].url, list[i].onlyload);
+                            else if (ConfigLog.WADO.WADOType == "RS")  wadorsLoader(list[i].url, list[i].onlyload);
                         }
                     } else {
                         LoadFileInBatches.lock = false;
                         var list = LoadFileInBatches.queue.splice(0, LoadFileInBatches.queue.length);
                         LoadFileInBatches.NumOfFetchs += list.length;
                         for (var i = 0; i < list.length; i++) {
-                            if (ConfigLog.WADO.WADOType == "URI") loadDICOMFromUrl(list[i].url, list[i].onlyload);
-                            else if (ConfigLog.WADO.WADOType == "RS") wadorsLoader(list[i].url, list[i].onlyload);
+                            if (ConfigLog.WADO.WADOType      == "URI") loadDICOMFromUrl(list[i].url, list[i].onlyload);
+                            else if (ConfigLog.WADO.WADOType == "RS")  wadorsLoader(list[i].url, list[i].onlyload);
                         }
                         clearInterval(LoadFileInBatches.timer);
                         LoadFileInBatches.timer = null;
@@ -85,7 +85,7 @@ function wadorsLoader(url, onlyload) {
     showDicomStatus("Loading images...");
 
     var headers = {
-        'user-agent': 'Mozilla/4.0 MDN Example',
+        'user-agent'  : 'Mozilla/4.0 MDN Example',
         'content-type': 'multipart/related; type=application/dicom;'
     }
 
@@ -108,8 +108,8 @@ function wadorsLoader(url, onlyload) {
             let decodedBuffers = multipartDecode(resBlob);
             for (let decodedBuf of decodedBuffers) {
                 var byteArray = new Uint8Array(decodedBuf);
-                var blob = new Blob([byteArray], { type: 'application/dicom' });
-                var dcm_url = URL.createObjectURL(blob)
+                var blob      = new Blob([byteArray], { type: 'application/dicom' });
+                var dcm_url   = URL.createObjectURL(blob)
 
                 var Sop = loadDicomDataSet(decodedBuf);
                 if (!Sop || !Sop.Image) continue;
@@ -119,7 +119,7 @@ function wadorsLoader(url, onlyload) {
                     setImageObjToLeft(Sop);
                     resetViewport();
                     // HangingProtocols
-                    var QRLevel = new QRLv(Sop?.Image?.data);
+                    var QRLevel         = new QRLv(Sop?.Image?.data);
                     var HangingProtocol = matchHangingProtocols(QRLevel);
                     if (HangingProtocol) invokeHangingProtocols(QRLevel, HangingProtocol)
                     else GetViewport().loadImgBySop(Sop);
@@ -525,7 +525,7 @@ function DcmLoader(image, viewport) {
 
         if (viewport.content.image) {
             if (viewport.content.image.windowCenter != image.windowCenter) viewport.windowCenter = null;
-            if (viewport.content.image.windowWidth != image.windowWidth) viewport.windowWidth = null;
+            if (viewport.content.image.windowWidth  != image.windowWidth)  viewport.windowWidth  = null;
         }
 
         viewport.content.image = image;
@@ -580,24 +580,24 @@ function loadPicture(url) {
         var img = new Image();
         img.onload = function () {
             var imageObj = {};
-            imageObj.StudyInstanceUID = CreateUid("study");
+            imageObj.StudyInstanceUID  = CreateUid("study");
             imageObj.SeriesInstanceUID = CreateUid("series");
-            imageObj.SOPInstanceUID = CreateUid("sop");
-            imageObj.DicomTagsList
+            imageObj.SOPInstanceUID    = CreateUid("sop");
+            imageObj.DicomTagsList;
             imageObj.data = {};
             imageObj.data.string = function () { return ""; };
-            imageObj.color = true;
-            imageObj.windowCenter = 127.5;
-            imageObj.windowWidth = 255;
+            imageObj.color         = true;
+            imageObj.windowCenter  = 127.5;
+            imageObj.windowWidth   = 255;
             imageObj.data.elements = [];
 
-            imageObj.width = img.width;
-            imageObj.height = img.height;
-            imageObj.instance = 0;
+            imageObj.width     = img.width;
+            imageObj.height    = img.height;
+            imageObj.instance  = 0;
             imageObj.patientId = "patientID:" + securePassword(0, 99999, 1);
-            imageObj.url = img.src;
+            imageObj.url       = img.src;
 
-            var Sop = ImageManager.pushStudy(imageObj);
+            var Sop  = ImageManager.pushStudy(imageObj);
             Sop.type = 'img';
 
             var canvas = createCanvas(img.width, img.height);
@@ -754,12 +754,12 @@ function EcgLoader(Sop) {
         ECGVoltageSelect.onchange = function () { EcgLoader(GetViewport().Sop); }
 
         // 滿版視窗的縮放大小
-        const dpr = window.devicePixelRatio || 1;
-        var scale = getByid("ECGOptionsDIV").clientHeight / dpr;
+        const dpr        = window.devicePixelRatio || 1;
+        var scale        = getByid("ECGOptionsDIV").clientHeight / dpr;
         var originHeight = ((getByid("EcgView").offsetHeight - scale) | 0) - 20;
-        const A4_originHeight = originHeight * dpr; //originHeight / 2480;
-        const originZoom = (originHeight / 2480);
-        const A4_originWidth = 3508 * originZoom * dpr | 0;
+        const A4_originHeight = originHeight * dpr;           //originHeight / 2480;
+        const originZoom      = (originHeight / 2480);
+        const A4_originWidth  = 3508 * originZoom * dpr | 0;
 
         //////////////////////////////////////////////////
         function refleshWaveforms() {
@@ -772,10 +772,10 @@ function EcgLoader(Sop) {
             var EcgCanvas = getByid("EcgCanvas"), ctx = EcgCanvas.getContext("2d");
             EcgCanvas.width = A4Width + 180 * originZoom * zoom * dpr | 0, EcgCanvas.height = A4Height + 100 * originZoom * zoom * dpr | 0;
             // 縮放
-            EcgCanvas.style.zoom = "";
+            EcgCanvas.style.zoom            = "";
             EcgCanvas.style.transformOrigin = '0 0';
-            EcgCanvas.style.transform = `scale(${1 / dpr})`;
-            getByid("EcgCanvasWrapper").style.width = EcgCanvas.width / dpr + "px";
+            EcgCanvas.style.transform       = `scale(${1 / dpr})`;
+            getByid("EcgCanvasWrapper").style.width  = EcgCanvas.width  / dpr + "px";
             getByid("EcgCanvasWrapper").style.height = EcgCanvas.height / dpr + "px";
 
             // 背景白色
@@ -820,10 +820,10 @@ function EcgLoader(Sop) {
             //lineWidth = lineWidth > 2 ? 2 : lineWidth < 0.5 ? 0.5 : lineWidth;
             //位移
             ctx.translate((50 * originZoom * zoom | 0) + 0.5, (50 * originZoom * zoom | 0) + 0.5);
-            ctx.lineCap = 'round';
+            ctx.lineCap  = 'round';
             ctx.lineJoin = 'round';
-            ctx.imageSmoothingEnabled = false;
-            ctx.msImageSmoothingEnabled = false;
+            ctx.imageSmoothingEnabled       = false;
+            ctx.msImageSmoothingEnabled     = false;
             ctx.webkitImageSmoothingEnabled = false;
             ctx.textRendering = 'geometricPrecision';
             // 畫底框框
@@ -846,7 +846,7 @@ function EcgLoader(Sop) {
                 // 畫區分12格的最大網格 (粗線)
                 ctx.beginPath();
                 ctx.strokeStyle = 'rgb(255, 80, 80)', ctx.lineWidth = 2 * lineWidth;
-                for (let x = 0; x <= w; x += Col_width) { ctx.moveTo(x | 0, 0); ctx.lineTo(x | 0, h - ((x == 0 || x >= w) ? 0 : Row_height)); }
+                for (let x = 0; x <= w; x += Col_width)  { ctx.moveTo(x | 0, 0); ctx.lineTo(x | 0, h - ((x == 0 || x >= w) ? 0 : Row_height)); }
                 for (let y = 0; y <= h; y += Row_height) { ctx.moveTo(0, y | 0); ctx.lineTo(w, y | 0); }
                 ctx.stroke();
             }
@@ -875,7 +875,7 @@ function EcgLoader(Sop) {
                     if (originalIndex >= numSamples) break;
                     // 對應到指定的點
                     for (let ch = 0; ch < numChannels; ch++) {
-                        const index = (originalIndex * numChannels) + ch;
+                        const index    = (originalIndex * numChannels) + ch;
                         const leadName = leadNames[ch] || `CH${ch + 1}`;
                         signals[leadName][i] = waveData[index];
                     }
@@ -893,20 +893,20 @@ function EcgLoader(Sop) {
                     if (!signal) return;
 
                     // 計算繪圖區塊範圍
-                    const startX = block.col * Col_width;
-                    const startY = block.row * Row_height;
-                    const width = block.isRhythm ? A4Width : Col_width;
-                    const height = Row_height;
+                    const startX    = block.col * Col_width;
+                    const startY    = block.row * Row_height;
+                    const width     = block.isRhythm ? A4Width : Col_width;
+                    const height    = Row_height;
                     const baselineY = startY + (height / 2); // 0 mV 在區塊正中間
 
                     // 計算這個區塊要畫幾秒的資料(最後一個是畫全部，其他是2.5秒)
                     const durationSec = block.isRhythm ? totalSecnods : 2.5;
-                    const numSamples = durationSec * sr;
+                    const numSamples  = durationSec * sr;
 
                     // 短導程需要偏移起始點 (例如 aVR 是從 2.5秒 開始)
                     const sampleOffset = block.isRhythm ? 0 : (block.col * 2.5 * sr);
                     // 由於長導程不一定等於10秒，所以短導程和長導程的(1 mm 等於幾個 pixel)，並不相同
-                    const Px_per_mm = px_per_mm;
+                    const Px_per_mm    = px_per_mm;
 
                     ctx.save();
                     // 設定剪裁區域，避免畫到其他的格子
@@ -954,14 +954,14 @@ function EcgLoader(Sop) {
         }
         refleshWaveforms();
         //////////////////////////////////////////////////
-        getByid("EcgView").onmousedown = function (e) { this.MouseDownCheck = true; this.point = new Point2D(e.pageX, e.pageY); }
-        getByid("EcgView").onmouseup = function (e) { this.MouseDownCheck = false; this.point = null; refleshWaveforms(); }
+        getByid("EcgView").onmousedown   = function (e) { this.MouseDownCheck = true; this.point = new Point2D(e.pageX, e.pageY); }
+        getByid("EcgView").onmouseup     = function (e) { this.MouseDownCheck = false; this.point = null; refleshWaveforms(); }
         getByid("EcgView").oncontextmenu = function (e) { e.preventDefault(); };
-        getByid("EcgView").onmousemove = function (e) {
+        getByid("EcgView").onmousemove   = function (e) {
             if (!this.MouseDownCheck || !getByid("EcgCanvas")) return;
             var zoom = getByid("ECGZoomSlider").value ? getByid("ECGZoomSlider").value / 100.0 : 1.0;
             if (e.pageY - this.point.y < -5) zoom = zoom + 0.05 >= 2.0 ? 2.0 : zoom + 0.05;
-            if (e.pageY - this.point.y > 5) zoom = zoom - 0.05 <= 0.5 ? 0.5 : zoom - 0.05;
+            if (e.pageY - this.point.y > 5)  zoom = zoom - 0.05 <= 0.5 ? 0.5 : zoom - 0.05;
             this.point = new Point2D(e.pageX, e.pageY);
             getByid("ECGZoomSlider").value = zoom * 100 | 0; //(parseFloat(getByid("EcgCanvas").style.zoom) * 100) | 0;
             requestAnimationFrame(() => refleshWaveforms());
@@ -985,19 +985,19 @@ function setECG(imageObj) {
         for (var i = 0; i < WaveformSequence.items.length; i++) {
             if (WaveformSequence.items[i].dataSet.string(Tag.WaveformOriginality) == 'ORIGINAL') {
                 //Samples
-                imageObj.NumberOfWaveformSamples = WaveformSequence.items[i].dataSet.int16(Tag.NumberOfWaveformSamples);
+                imageObj.NumberOfWaveformSamples  = WaveformSequence.items[i].dataSet.int16(Tag.NumberOfWaveformSamples);
                 //12
                 imageObj.NumberOfWaveformChannels = WaveformSequence.items[i].dataSet.int16(Tag.NumberOfWaveformChannels);
                 //BitsAllocated
-                imageObj.WaveformBitsAllocated = WaveformSequence.items[i].dataSet.int16(Tag.WaveformBitsAllocated);
+                imageObj.WaveformBitsAllocated    = WaveformSequence.items[i].dataSet.int16(Tag.WaveformBitsAllocated);
                 //SamplingFrequency
-                imageObj.SamplingFrequency = WaveformSequence.items[i].dataSet.intString(Tag.SamplingFrequency);
+                imageObj.SamplingFrequency        = WaveformSequence.items[i].dataSet.intString(Tag.SamplingFrequency);
                 //WaveformData.length=Samples*12*(BitsAllocated/8)
                 var WaveformData = WaveformSequence.items[i].dataSet.elements[Tag.WaveformData];
 
                 imageObj.FilterHighFrequency = WaveformSequence.items[i].dataSet.elements[Tag.ChannelDefinitionSequence].items[0].dataSet.intString(Tag.FilterHighFrequency);
-                imageObj.FilterLowFrequency = WaveformSequence.items[i].dataSet.elements[Tag.ChannelDefinitionSequence].items[0].dataSet.intString(Tag.FilterLowFrequency);
-                imageObj.ChannelSensitivity = WaveformSequence.items[i].dataSet.elements[Tag.ChannelDefinitionSequence].items[0].dataSet.intString(Tag.ChannelSensitivity);
+                imageObj.FilterLowFrequency  = WaveformSequence.items[i].dataSet.elements[Tag.ChannelDefinitionSequence].items[0].dataSet.intString(Tag.FilterLowFrequency);
+                imageObj.ChannelSensitivity  = WaveformSequence.items[i].dataSet.elements[Tag.ChannelDefinitionSequence].items[0].dataSet.intString(Tag.ChannelSensitivity);
                 //check
                 if (WaveformData.length != imageObj.NumberOfWaveformSamples * imageObj.NumberOfWaveformChannels * (imageObj.WaveformBitsAllocated / 8))
                     throw "WaveformData parsing failed";
@@ -1005,7 +1005,7 @@ function setECG(imageObj) {
                 var WaveformDataOffset = WaveformSequence.items[0].dataSet.elements[Tag.WaveformData].dataOffset;
                 var WaveformDataLength = WaveformSequence.items[0].dataSet.elements[Tag.WaveformData].length;
                 switch (imageObj.WaveformBitsAllocated) {
-                    case 8: imageObj.WaveformData = new Int8Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); break;
+                    case 8: imageObj.WaveformData  = new Int8Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); break;
                     case 16: imageObj.WaveformData = new Int16Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); break;
                     case 32: imageObj.WaveformData = new Int32Array(imageObj.data.byteArray.buffer.slice(WaveformDataOffset, WaveformDataOffset + WaveformDataLength * 1)); break;
                     default: throw "WaveformData parsing failed";
@@ -1273,10 +1273,10 @@ function hideDicomStatus() {
 
 function createDicomTagsList2Viewport(viewport) {
     function getTag(tag) {
-        var group = tag.substring(1, 5);
-        var element = tag.substring(5, 9);
+        var group    = tag.substring(1, 5);
+        var element  = tag.substring(5, 9);
         var tagIndex = (`(${group},${element})`).toUpperCase();
-        var attr = TAG_DICT[tagIndex];
+        var attr     = TAG_DICT[tagIndex];
         return attr;
     }
 

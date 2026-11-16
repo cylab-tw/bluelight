@@ -22,8 +22,8 @@ window.onload = function () {
 class OnloadFunction {
   constructor() {
     this.FisrtList = [];
-    this.LastList = [];
-    this.onloaded = false;
+    this.LastList  = [];
+    this.onloaded  = false;
   }
   push(fun) {
     if (fun.constructor.name == 'Function') this.LastList.push(fun);
@@ -61,8 +61,8 @@ function loadLdcmview() {
   initNewCanvas2();
 
   //載入config檔的設定
-  readDicomTags("../data/dicomTags.json", setLabelPadding);
-  readConfigJson("../data/config.json", readAllJson, readJson);
+  readDicomTags ("../data/dicomTags.json", setLabelPadding);
+  readConfigJson("../data/config.json"   , readAllJson    , readJson);
 
   //設定icon邊框
   drawBorder(getByid("MouseOperation"));
@@ -72,20 +72,18 @@ function loadLdcmview() {
 
 function getParameterByName(name) {
   name = name.replace(/\[\[]/g, "\\[").replace(/\[\]]/g, "\\]");
-  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-    results = regex.exec(location.search);
+  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"), results = regex.exec(location.search);
   if (results == null) results = "";
   else results = decodeURIComponent(results[1].replace(/\+/g, " "));
-
   var pair1 = ("" + results).split(",");
   return pair1.slice();
 }
 
 function setLabelPadding() {
-  labelPadding = isNaN(parseInt(DicomTags.labelPadding)) ? 5 : parseInt(DicomTags.labelPadding);
-  leftLabelPadding = isNaN(parseInt(DicomTags.leftLabelPadding)) ? labelPadding : parseInt(DicomTags.leftLabelPadding);
-  rightLabelPadding = isNaN(parseInt(DicomTags.rightLabelPadding)) ? labelPadding : parseInt(DicomTags.rightLabelPadding);
-  topLabelPadding = isNaN(parseInt(DicomTags.topLabelPadding)) ? labelPadding : parseInt(DicomTags.topLabelPadding);
+  labelPadding       = isNaN(parseInt(DicomTags.labelPadding)) ? 5 : parseInt(DicomTags.labelPadding);
+  leftLabelPadding   = isNaN(parseInt(DicomTags.leftLabelPadding)) ? labelPadding : parseInt(DicomTags.leftLabelPadding);
+  rightLabelPadding  = isNaN(parseInt(DicomTags.rightLabelPadding)) ? labelPadding : parseInt(DicomTags.rightLabelPadding);
+  topLabelPadding    = isNaN(parseInt(DicomTags.topLabelPadding)) ? labelPadding : parseInt(DicomTags.topLabelPadding);
   bottomLabelPadding = isNaN(parseInt(DicomTags.bottomLabelPadding)) ? labelPadding : parseInt(DicomTags.bottomLabelPadding);
   document.documentElement.style.setProperty('--labelPadding', `${labelPadding}px`);
   document.documentElement.style.setProperty('--leftLabelPadding', `${leftLabelPadding}px`);
@@ -106,12 +104,12 @@ function readDicomTags(url, setLabelPadding) {
   //RB代表right bottom
   request.onload = function () {
     if (request.readyState != 4) { return; }
-    var responseJson = JSON.parse(request.responseText);
+    var responseJson  = JSON.parse(request.responseText);
     var DicomResponse = responseJson["default"];
-    dicomtags.labelPadding = parseInt(DicomResponse["labelPadding"]) ? parseInt(DicomResponse["labelPadding"]) : 5;
-    dicomtags.leftLabelPadding = parseInt(DicomResponse["leftLabelPadding"]) ? parseInt(DicomResponse["leftLabelPadding"]) : dicomtags.labelPadding;
-    dicomtags.rightLabelPadding = parseInt(DicomResponse["rightLabelPadding"]) ? parseInt(DicomResponse["rightLabelPadding"]) : dicomtags.labelPadding;
-    dicomtags.topLabelPadding = parseInt(DicomResponse["topLabelPadding"]) ? parseInt(DicomResponse["topLabelPadding"]) : dicomtags.labelPadding;
+    dicomtags.labelPadding       = parseInt(DicomResponse["labelPadding"]) ? parseInt(DicomResponse["labelPadding"]) : 5;
+    dicomtags.leftLabelPadding   = parseInt(DicomResponse["leftLabelPadding"]) ? parseInt(DicomResponse["leftLabelPadding"]) : dicomtags.labelPadding;
+    dicomtags.rightLabelPadding  = parseInt(DicomResponse["rightLabelPadding"]) ? parseInt(DicomResponse["rightLabelPadding"]) : dicomtags.labelPadding;
+    dicomtags.topLabelPadding    = parseInt(DicomResponse["topLabelPadding"]) ? parseInt(DicomResponse["topLabelPadding"]) : dicomtags.labelPadding;
     dicomtags.bottomLabelPadding = parseInt(DicomResponse["bottomLabelPadding"]) ? parseInt(DicomResponse["bottomLabelPadding"]) : dicomtags.labelPadding;
 
     dicomtags.LT = {};
@@ -202,9 +200,9 @@ function readAllJson(readJson) {
 
 function fitUrl(url) {
   url = url.replace('?&', '?');
-  url = url.replace("http://http://", "http://");
-  url = url.replace("https://http://", "https://");
-  url = url.replace("http://https://", "http://");
+  url = url.replace("http://http://"  , "http://");
+  url = url.replace("https://http://" , "https://");
+  url = url.replace("http://https://" , "http://");
   url = url.replace("https://https://", "https://");
   return url;
 }
@@ -250,56 +248,53 @@ function readConfigJson(url, readAllJson, readJson) {
       }
     }
 
-    config.QIDO = {};
-    config.WADO = {};
-    config.STOW = {};
-    config.Xml2Dcm = {};
+    config.QIDO = {}, config.WADO = {}, config.STOW = {}, config.Xml2Dcm = {};
 
-    config.QIDO.hostname = QIDOResponse["QIDO-hostname"];
-    config.QIDO.https = QIDOResponse["QIDO-enableHTTPS"] == true ? "https" : "http";
-    config.QIDO.PORT = QIDOResponse["QIDO-PORT"];
-    config.QIDO.service = QIDOResponse["QIDO"];
-    config.QIDO.limit = QIDOResponse["limit"] ? QIDOResponse["limit"] : null;
-    config.QIDO.contentType = QIDOResponse["contentType"];
-    config.QIDO.timeout = QIDOResponse["timeout"];
-    config.QIDO.charset = QIDOResponse["charset"];
-    config.QIDO.includefield = QIDOResponse["includefield"];
-    config.QIDO.token = QIDOResponse["token"];
+    config.QIDO.hostname          = QIDOResponse["QIDO-hostname"];
+    config.QIDO.https             = QIDOResponse["QIDO-enableHTTPS"] == true ? "https" : "http";
+    config.QIDO.PORT              = QIDOResponse["QIDO-PORT"];
+    config.QIDO.service           = QIDOResponse["QIDO"];
+    config.QIDO.limit             = QIDOResponse["limit"] ? QIDOResponse["limit"] : null;
+    config.QIDO.contentType       = QIDOResponse["contentType"];
+    config.QIDO.timeout           = QIDOResponse["timeout"];
+    config.QIDO.charset           = QIDOResponse["charset"];
+    config.QIDO.includefield      = QIDOResponse["includefield"];
+    config.QIDO.token             = QIDOResponse["token"];
     config.QIDO.enableRetrieveURI = QIDOResponse["enableRetrieveURI"];
     //config.QIDO .enableXml2Dcm=QIDOResponse["enableXml2Dcm"];
     //config.QIDO .Xml2DcmUrl=QIDOResponse["Xml2DcmUrl"];
 
     config.WADO.hostname = WADOResponse["WADO-hostname"];
-    config.WADO.https = WADOResponse["WADO-enableHTTPS"] == true ? "https" : "http";
-    config.WADO.PORT = WADOResponse["WADO-PORT"];
+    config.WADO.https    = WADOResponse["WADO-enableHTTPS"] == true ? "https" : "http";
+    config.WADO.PORT     = WADOResponse["WADO-PORT"];
     config.WADO.WADOType = WADOResponse["WADO-RS/URI"];
-    if (config.WADO.WADOType == "URI") config.WADO.service = WADOResponse["WADO-URI"];
+    if (config.WADO.WADOType == "URI")     config.WADO.service = WADOResponse["WADO-URI"];
     else if (config.WADO.WADOType == "RS") config.WADO.service = WADOResponse["WADO-RS"];
-    else config.WADO.service = WADOResponse["WADO-URI"];
-    config.WADO.contentType = WADOResponse["contentType"];
-    config.WADO.timeout = WADOResponse["timeout"];
-    config.WADO.includefield = WADOResponse["includefield"];
-    config.WADO.token = WADOResponse["token"];
+    else config.WADO.service                                   = WADOResponse["WADO-URI"];
+    config.WADO.contentType       = WADOResponse["contentType"];
+    config.WADO.timeout           = WADOResponse["timeout"];
+    config.WADO.includefield      = WADOResponse["includefield"];
+    config.WADO.token             = WADOResponse["token"];
     config.WADO.enableRetrieveURI = WADOResponse["enableRetrieveURI"];
 
     //config.WADO.enableXml2Dcm=WADOResponse["enableXml2Dcm"];
     //config.WADO.Xml2DcmUrl=WADOResponse["Xml2DcmUrl"];
 
-    config.STOW.hostname = tempResponse["STOW-hostname"];
-    config.STOW.https = tempResponse["enableHTTPS"] == true ? "https" : "http";
-    config.STOW.PORT = tempResponse["PORT"];
-    config.STOW.service = tempResponse["STOW"];
-    config.STOW.contentType = tempResponse["contentType"];
-    config.STOW.timeout = tempResponse["timeout"];
-    config.STOW.includefield = tempResponse["includefield"];
-    config.STOW.token = tempResponse["token"];
+    config.STOW.hostname          = tempResponse["STOW-hostname"];
+    config.STOW.https             = tempResponse["enableHTTPS"] == true ? "https" : "http";
+    config.STOW.PORT              = tempResponse["PORT"];
+    config.STOW.service           = tempResponse["STOW"];
+    config.STOW.contentType       = tempResponse["contentType"];
+    config.STOW.timeout           = tempResponse["timeout"];
+    config.STOW.includefield      = tempResponse["includefield"];
+    config.STOW.token             = tempResponse["token"];
     config.STOW.enableRetrieveURI = tempResponse["enableRetrieveURI"];
     //config.STOW.enableXml2Dcm=tempResponse["enableXml2Dcm"];
     //config.STOW.Xml2DcmUrl=tempResponse["Xml2DcmUrl"];
 
     config.Xml2Dcm.enableXml2Dcm = tempResponse["enableXml2Dcm"];
-    config.Xml2Dcm.Xml2DcmUrl = tempResponse["Xml2DcmUrl"];
-    config.Xml2Dcm.token = tempResponse["token"];
+    config.Xml2Dcm.Xml2DcmUrl    = tempResponse["Xml2DcmUrl"];
+    config.Xml2Dcm.token         = tempResponse["token"];
 
     Object.assign(ConfigLog, config);
     configOnload = true;
@@ -338,7 +333,7 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
   if (ConfigLog.WADO.WADOType == "URI")
     var url = getWadoUriURL(firestImage["0020000D"].Value[0], firestImage["0020000E"].Value[0], firestImage["00080018"].Value[0]);
   else if (ConfigLog.WADO.WADOType == "RS")
-    var url = getWadoUriRS(firestImage["0020000D"].Value[0], firestImage["0020000E"].Value[0], firestImage["00080018"].Value[0]);
+    var url = getWadoUriRS(firestImage["0020000D"].Value[0] , firestImage["0020000E"].Value[0], firestImage["00080018"].Value[0]);
 
   url = fitUrl(url);
   LoadFileInBatches.wadoPreLoad(url);
@@ -348,7 +343,7 @@ function getJsonByInstanceRequest(SeriesResponse, InstanceRequest, instance) {
     if (ConfigLog.WADO.WADOType == "URI")
       var url = getWadoUriURL(dicomImg["0020000D"].Value[0], dicomImg["0020000E"].Value[0], dicomImg["00080018"].Value[0]);
     else if (ConfigLog.WADO.WADOType == "RS")
-      var url = getWadoUriRS(dicomImg["0020000D"].Value[0], dicomImg["0020000E"].Value[0], dicomImg["00080018"].Value[0]);
+      var url = getWadoUriRS(dicomImg["0020000D"].Value[0] , dicomImg["0020000E"].Value[0], dicomImg["00080018"].Value[0]);
     url = fitUrl(url);
     LoadFileInBatches.wadoPreLoad(url, true);
   }
@@ -397,7 +392,7 @@ function getJsonBySeriesRequest(SeriesRequest) {
           SeriesResponse[instance]["0020000E"].Value) {
           InstanceUrl = fitUrl(ConfigLog.QIDO.https + "://" + ConfigLog.QIDO.hostname + ":" + ConfigLog.QIDO.PORT + "/" + ConfigLog.QIDO.service) +
             "/studies/" + SeriesResponse[instance]["0020000D"].Value[0] +
-            "/series/" + SeriesResponse[instance]["0020000E"].Value[0] + "/instances";
+            "/series/"  + SeriesResponse[instance]["0020000E"].Value[0] + "/instances";
         } else {
           console.error("Error: Missing required DICOM data in series response");
           showDicomStatus("Error: Missing DICOM data in response", true);
@@ -577,7 +572,7 @@ function AddAdvanceFunction() {
     }
     Export2dcm();
   }
-  getByid("downloadDcm").onmouseover = onElementOver;
+  getByid("downloadDcm").onmouseover  = onElementOver;
   getByid("downloadDcm").onmouseleave = onElementLeave;
 
   getByid("downloadImg").onclick = function () {
@@ -586,7 +581,7 @@ function AddAdvanceFunction() {
       link.download = 'dicom.png';
 
       var newCanvas = createCanvas(GetViewport().canvas.width, GetViewport().canvas.height);
-      var context = newCanvas.getContext('2d');
+      var context   = newCanvas.getContext('2d');
       context.translate(newCanvas.width / 2, newCanvas.height / 2);
       context.rotate((GetViewport().rotate * Math.PI) / 180);
       context.drawImage(GetViewport().canvas, -newCanvas.width / 2, -newCanvas.height / 2);
@@ -596,6 +591,6 @@ function AddAdvanceFunction() {
     }
     Export2png();
   }
-  getByid("downloadImg").onmouseover = onElementOver;
+  getByid("downloadImg").onmouseover  = onElementOver;
   getByid("downloadImg").onmouseleave = onElementLeave;
 }

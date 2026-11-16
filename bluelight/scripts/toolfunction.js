@@ -1,15 +1,14 @@
 function CreateUid(UidClass) {
     var Uid = "2.16.886.119.102568.9.";
     var date = new Date();
-    Uid += date.getFullYear() + "." + (date.getMonth() + 1) + "." + (date.getDate()) + ".";
-    Uid += (date.getHours() + 1) + "." + (date.getMinutes()) + "." +
-        (date.getSeconds()) + "." + (date.getMilliseconds()) + ".";
+    Uid += date.getFullYear() + "." + (date.getMonth() + 1)  + "." + (date.getDate()) + ".";
+    Uid += (date.getHours() + 1) + "." + (date.getMinutes()) + "." + (date.getSeconds()) + "." + (date.getMilliseconds()) + ".";
     Uid += securePassword(1, 99999, 1) + ".";
-    Uid += securePassword(1, 99, 1) + ".";
-    Uid += securePassword(1, 9999, 1) + ".";
-    if (UidClass == 0 || UidClass == 'study') Uid += securePassword(1, 2, 1);
+    Uid += securePassword(1, 99, 1)    + ".";
+    Uid += securePassword(1, 9999, 1)  + ".";
+    if (UidClass == 0      || UidClass == 'study')  Uid += securePassword(1, 2, 1);
     else if (UidClass == 1 || UidClass == 'series') Uid += securePassword(3, 4, 1);
-    else if (UidClass == 2 || UidClass == 'sop') Uid += securePassword(5, 6, 1);
+    else if (UidClass == 2 || UidClass == 'sop')    Uid += securePassword(5, 6, 1);
     else Uid += securePassword(7, 8, 1);
     if (Uid.length % 2 != 0) Uid += 0;
     return Uid;
@@ -18,9 +17,9 @@ function CreateUid(UidClass) {
 function CreateSecurePassword() {
     var Uid = "xml_";
     var date = new Date();
-    Uid += date.getFullYear() + "y" + (date.getMonth() + 1) + "m" + (date.getDate()) + "d";
-    Uid += (date.getHours() + 1) + "h" + (date.getMinutes()) + "mm" +
-        (date.getSeconds()) + "ss" + (date.getMilliseconds()) + "mmm";
+    Uid += date.getFullYear()    + "y"  + (date.getMonth() + 1)    + "m"  + (date.getDate()) + "d";
+    Uid += (date.getHours() + 1) + "h"  + (date.getMinutes())      + "mm" +
+           (date.getSeconds())   + "ss" + (date.getMilliseconds()) + "mmm";
 
     Uid += securePassword(1, 999, 1) + "b";
     Uid += securePassword(1, 999, 1) + "l";
@@ -138,6 +137,10 @@ function log(value) {
     console.log(value);
 }
 
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
+
 function appendChilds(parent, chinds) {
     for (var child of chinds) parent.appendChild(child);
 }
@@ -153,7 +156,7 @@ function hasScroll(element) {
 }
 
 function getViewprtStretchSize(width, height, element) {
-    var wi = (parseFloat(element.clientWidth)) / parseFloat(width);
+    var wi = (parseFloat(element.clientWidth))  / parseFloat(width);
     var he = (parseFloat(element.clientHeight)) / parseFloat(height);
     var small = he < wi ? he : wi;
     return [width * small, height * small];
@@ -229,8 +232,8 @@ function sortInstance(sop) {
             for (var n = 0; n < list.length; n++) {
                 if (parseInt(list[m].Image.InstanceNumber) < parseInt(list[n].Image.InstanceNumber)) {
                     var tempUID = list[m];
-                    list[m] = list[n];
-                    list[n] = tempUID;
+                    list[m]     = list[n];
+                    list[n]     = tempUID;
                 }
 
             }
@@ -242,7 +245,7 @@ function sortInstance(sop) {
 function rotateCalculation(e, flip = false) {
     var canvas = GetViewport().canvas;
     if (!canvas) return [0, 0];
-    let cx = (GetViewport().width / 2);
+    let cx = (GetViewport().width  / 2);
     let cy = (GetViewport().height / 2);
     var element = GetViewport();
     canvas.style.transform = "translate(" + "calc(-50% + " + parseFloat(element.translate.x) + "px)" + "," + "calc(-50% + " + parseFloat(element.translate.y) + "px)" + ")scale(" + element.scale + ")";
@@ -264,7 +267,7 @@ function rotateCalculation(e, flip = false) {
     currX11 = nx;
     currY11 = ny;
     if (flip == true) {
-        if (GetViewport().VerticalFlip == true) currY11 = GetViewport().height - currY11;
+        if (GetViewport().VerticalFlip   == true) currY11 = GetViewport().height - currY11;
         if (GetViewport().HorizontalFlip == true) currX11 = GetViewport().width - currX11;
     }
     return [currX11, currY11];
@@ -273,13 +276,13 @@ function rotateCalculation(e, flip = false) {
 function rotatePoint(point, RotationAngle, RotationPoint) {
     let cx = RotationPoint[0];
     let cy = RotationPoint[1];
-    currX = point[0];
-    currY = point[1];
+    currX  = point[0];
+    currY  = point[1];
     let radians = RotationAngle * (Math.PI / 180),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
-        nx = (cos * (currX - cx)) + (sin * (currY - cy)) + cx,
-        ny = (cos * (currY - cy)) - (sin * (currX - cx)) + cy;
+        nx  = (cos * (currX - cx)) + (sin * (currY - cy)) + cx,
+        ny  = (cos * (currY - cy)) - (sin * (currX - cx)) + cy;
     currX = nx;
     currY = ny;
     return [currX, currY];
@@ -295,7 +298,7 @@ function jump2UpOrEnd(number, choose) {
         else if (instance > max) max = instance;
     }
 
-    if (choose == 'up') number = min;
+    if (choose == 'up')       number = min;
     else if (choose == 'end') number = max;
     else {
         if (number > max) number = max;
@@ -370,7 +373,7 @@ function getRotationPoint(Mark, middle) {
 }
 
 function SetGraphicColor(str) {
-    if (str == "#000000") return "0\\32896\\32896";
+    if (str == "#000000")      return "0\\32896\\32896";
     else if (str == "#0000FF") return "0\\32896\\33153";
     else if (str == "#844200") return "393\\32998\\32947";
     else if (str == "#00FFFF") return "0\\33153\\33153";
@@ -411,7 +414,7 @@ function GetPixel(angle2point) {
     if (!GetViewport() || !GetViewport().content || !GetViewport().content.pixelData) return "";
     var x = parseInt(angle2point[0]);
     var y = parseInt(angle2point[1]);
-    var width = GetViewport().width;
+    var width  = GetViewport().width;
     var height = GetViewport().height;
     if (GetViewport().PixelSpacing) {
         var pixel = GetViewport().content.pixelData[y * width + x];

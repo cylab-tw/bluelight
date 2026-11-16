@@ -2,9 +2,9 @@
 var Mark_previous_choose = null;
 
 //裝標記的物件
-var PatientMark = [];
-let MARKER = {};
-MARKER.drawMarkList = [];
+var PatientMark         = [];
+let MARKER              = {};
+MARKER.drawMarkList     = [];
 
 MARKER.drawMark = function (obj) {
     for (var i = 0; i < MARKER.drawMarkList.length; i++) {
@@ -37,7 +37,7 @@ function getRGBFrom0xFF(color, RGB, invert) {
 
     var [R, G, B] = [hexToRgb(color).r, hexToRgb(color).g, hexToRgb(color).b];
     if (invert == true) R = 255 - R, G = 255 - G, B = 255 - B;
-    if (RGB == true) return ([R, G, B]);
+    if (RGB == true)    return ([R, G, B]);
     else return (getColorFrom16(R, G, B, 8));
 }
 
@@ -62,12 +62,12 @@ function setMarkFlip(ctx, viewport) {
 function setMarkColor(ctx, color) {
     //BlueLight2(改成只將色彩選項套用在沒有預設顏色的情況)
     if (color);
-    else if (getByid("WhiteSelect").selected) color = "#FFFFFF";
-    else if (getByid("BlueSelect").selected) color = "#0000FF";
-    else if (getByid("RedSelect").selected) color = "#FF0000";
-    else if (getByid("GreenSelect").selected) color = "#00FF00";
+    else if (getByid("WhiteSelect").selected)  color = "#FFFFFF";
+    else if (getByid("BlueSelect").selected)   color = "#0000FF";
+    else if (getByid("RedSelect").selected)    color = "#FF0000";
+    else if (getByid("GreenSelect").selected)  color = "#00FF00";
     else if (getByid("YellowSelect").selected) color = "#FFFF00";
-    else if (getByid("BrownSelect").selected) color = "#844200";
+    else if (getByid("BrownSelect").selected)  color = "#844200";
     else if (getByid("OrangeSelect").selected) color = "#FFA500";
     else if (getByid("PurpleSelect").selected) color = "#663399";
     else return false;
@@ -152,10 +152,10 @@ function drawParametricMap(canvas, Mark, viewport) {
     ctx.save();
     ctx.globalAlpha = parseFloat(getByid('markAlphaText').value) / 100;
     ctx.setTransform(
-        viewport.HorizontalFlip ? -1 : 1, 0,
+        viewport.HorizontalFlip  ? -1 : 1, 0,
         0, viewport.VerticalFlip ? -1 : 1,
-        viewport.HorizontalFlip ? Mark.canvas.width : 0,
-        viewport.VerticalFlip ? Mark.canvas.height : 0
+        viewport.HorizontalFlip  ? Mark.canvas.width  : 0,
+        viewport.VerticalFlip    ? Mark.canvas.height : 0
     );
     ctx.drawImage(Mark.canvas, 0, 0);
     ctx.restore();
@@ -166,10 +166,10 @@ function drawOverLay(canvas, Mark, viewport) {
     function mirrorImage(ctx, image, x = 0, y = 0, horizontal = false, vertical = false) {
         ctx.save();  // save the current canvas state
         ctx.setTransform(
-            horizontal ? -1 : 1, 0, // set the direction of x axis
+            horizontal  ? -1 : 1, 0, // set the direction of x axis
             0, vertical ? -1 : 1,   // set the direction of y axis
-            x + (horizontal ? image.width : 0), // set the x origin
-            y + (vertical ? image.height : 0)   // set the y origin
+            x + (horizontal ? image.width  : 0), // set the x origin
+            y + (vertical   ? image.height : 0)   // set the y origin
         );
         ctx.drawImage(image, 0, 0);
         ctx.restore(); // restore the state as it was when this function was called
@@ -195,8 +195,8 @@ function drawXML_mark(canvas, Mark, showName) {
     for (var o = 0; o < Mark.pointArray.length; o += 2) {
         ctx.strokeStyle = "" + Mark.color;
         ctx.beginPath();
-        var x1 = Mark.pointArray[o].x * 1;
-        var y1 = Mark.pointArray[o].y * 1;
+        var x1 = Mark.pointArray[o + 0].x * 1;
+        var y1 = Mark.pointArray[o + 0].y * 1;
         var x2 = Mark.pointArray[o + 1].x * 1;
         var y2 = Mark.pointArray[o + 1].y * 1;
         ctx.fillText("" + showName, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 5 : y2 - 5);
@@ -217,13 +217,13 @@ function drawTEXT(canvas, Mark, viewport) {
         for (var o = 0; o < Mark.pointArray.length - 1; o += 1) {
             ctx.beginPath();
 
-            var x1 = Mark.pointArray[o].x * 1;
+            var x1 = Mark.pointArray[o + 0].x * 1;
             var y1 = Mark.pointArray[o + 1].y * 1;
             var offsetX_Text = 0;
             var offsetY_Text = 0;
             var lines = Mark.GSPS_Text.split('\n');
             for (var i2 = 0; i2 < lines.length; i2++) {
-                var offsetX_temp = x1 + (3 * 4 * lines[i2].length) > canvas.width ? (x1 + (3 * 4 * lines[i2].length)) - canvas.width : 0;
+                var offsetX_temp = x1 + (3 * 4 * lines[i2].length) > canvas.width  ? (x1 + (3 * 4 * lines[i2].length)) - canvas.width  : 0;
                 var offsetY_temp = y1 + (3 * 4 * lines[i2].length) > canvas.height ? (y1 + (3 * 4 * lines[i2].length)) - canvas.height : 0;
                 if (offsetX_temp > offsetX_Text) offsetX_Text = offsetX_temp;
                 if (offsetY_temp > offsetY_Text) offsetY_Text = offsetY_temp;
@@ -232,11 +232,11 @@ function drawTEXT(canvas, Mark, viewport) {
             x1 -= offsetX_Text;
             y1 -= offsetY_Text;
             if (Mark.GSPS_Text && o == 0) {
-                ctx.font = "" + (3 * 4) + "px Arial";
-                ctx.fillStyle = "red";
-                var tempAlpha = ctx.globalAlpha;
+                ctx.font        = `12px Arial`;
+                ctx.fillStyle   = "red";
+                var tempAlpha   = ctx.globalAlpha;
                 ctx.globalAlpha = 1.0;
-                var lines = Mark.GSPS_Text.split('\n');
+                var lines       =  Mark.GSPS_Text.split('\n');
                 for (var i2 = 0; i2 < lines.length; i2++) {
                     ctx.fillText(lines[i2], x1, y1 - 7 - ((lines.length - 1) * 3 * 4) + (i2 * 3 * 4));
                 }
@@ -257,8 +257,8 @@ function drawPOLYLINE(canvas, Mark, viewport) {
     for (var o = 0; o < Mark.pointArray.length - 1; o += 1) {
         ctx.beginPath();
 
-        var x1 = Mark.pointArray[o].x * 1;
-        var y1 = Mark.pointArray[o].y * 1;
+        var x1 = Mark.pointArray[o + 0].x * 1;
+        var y1 = Mark.pointArray[o + 0].y * 1;
         var x2 = Mark.pointArray[o + 1].x * 1;
         var y2 = Mark.pointArray[o + 1].y * 1;
 
@@ -275,7 +275,7 @@ function drawPOLYLINE(canvas, Mark, viewport) {
             ctx.fillText("" + Mark.GSPS_Text, x1 < x2 ? x1 : x2, y1 < y2 ? y1 - 7 : y2 - 7);
             ctx.globalAlpha = tempAlpha;
         }
-        var tempAlpha2 = ctx.globalAlpha;
+        var tempAlpha2  = ctx.globalAlpha;
         ctx.globalAlpha = 1.0;
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
@@ -300,8 +300,8 @@ function drawINTERPOLATED(canvas, Mark, viewport) {
 
     for (var o = 0; o < Mark.pointArray.length - 1; o += 1) {
         ctx.beginPath();
-        var x1 = Mark.pointArray[o].x * 1;
-        var y1 = Mark.pointArray[o].y * 1;
+        var x1 = Mark.pointArray[o + 0].x * 1;
+        var y1 = Mark.pointArray[o + 0].y * 1;
         var x2 = Mark.pointArray[o + 1].x * 1;
         var y2 = Mark.pointArray[o + 1].y * 1;
 
@@ -337,14 +337,14 @@ function drawELLIPSE(canvas, Mark, viewport) {
 
     var [majorP1, majorP2, minorP1, minorP2] = Mark.pointArray;
 
-    var centerX = (majorP1.x + majorP2.x) / 2, centerY = (majorP1.y + majorP2.y) / 2;
+    var centerX     = (majorP1.x + majorP2.x) / 2, centerY = (majorP1.y + majorP2.y) / 2;
 
-    var dxMajor = majorP2.x - majorP1.x, dyMajor = majorP2.y - majorP1.y;
+    var dxMajor     = majorP2.x - majorP1.x,       dyMajor = majorP2.y - majorP1.y;
     var radiusMajor = Math.sqrt(dxMajor * dxMajor + dyMajor * dyMajor) / 2;
 
-    var dxMinor = minorP2.x - minorP1.x, dyMinor = minorP2.y - minorP1.y;
+    var dxMinor     = minorP2.x - minorP1.x, dyMinor = minorP2.y - minorP1.y;
     var radiusMinor = Math.sqrt(dxMinor * dxMinor + dyMinor * dyMinor) / 2;
-    var rotation = Math.atan2(dyMajor, dxMajor);
+    var rotation    = Math.atan2(dyMajor, dxMajor);
 
     ctx.beginPath();
     ctx.ellipse(centerX, centerY, radiusMajor, radiusMinor, rotation, 0, 2 * Math.PI);
@@ -359,8 +359,8 @@ function drawCIRCLE(canvas, Mark, viewport) {
     setMarkColor(ctx, Mark.color);
     if (Mark.color) ctx.strokeStyle = ctx.fillStyle = "" + Mark.color;
     for (var o = 0; o < Mark.pointArray.length; o += 2) {
-        var x1 = Mark.pointArray[o].x * 1;
-        var y1 = Mark.pointArray[o].y * 1;
+        var x1 = Mark.pointArray[o + 0].x * 1;
+        var y1 = Mark.pointArray[o + 0].y * 1;
         var x2 = Mark.pointArray[o + 1].x * 1;
         var y2 = Mark.pointArray[o + 1].y * 1;
 
@@ -380,9 +380,9 @@ function drawShutter(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
 
     if (Mark.hideName == "RECTANGULAR") {
-        var x = Math.min(Mark.ShutterLeftVerticalEdge, Mark.ShutterRightVerticalEdge);
+        var x = Math.min(Mark.ShutterLeftVerticalEdge   , Mark.ShutterRightVerticalEdge);
         var y = Math.min(Mark.ShutterUpperHorizontalEdge, Mark.ShutterLowerHorizontalEdge);
-        var r = Math.max(Mark.ShutterLeftVerticalEdge, Mark.ShutterRightVerticalEdge);
+        var r = Math.max(Mark.ShutterLeftVerticalEdge   , Mark.ShutterRightVerticalEdge);
         var b = Math.max(Mark.ShutterUpperHorizontalEdge, Mark.ShutterLowerHorizontalEdge);
         var tempAlpha = ctx.globalAlpha;
         ctx.globalAlpha = 1.0;
@@ -499,8 +499,8 @@ function drawTwoDimensionEllipse(canvas, mark, viewport) {
     ctx.beginPath();
     var [X1, X3, X2, X4] = mark.markX;
     var [Y1, Y3, Y2, Y4] = mark.markY;
-    var heightHalf = getDistance(X1 - X3, Y1 - Y3) / 2;
-    var widthHalf = getDistance(X2 - X4, Y2 - Y4) / 2
+    var heightHalf       = getDistance(X1 - X3, Y1 - Y3) / 2;
+    var widthHalf        = getDistance(X2 - X4, Y2 - Y4) / 2
     ctx.ellipse(X3, Y3, heightHalf, widthHalf, 0 * Math.PI / 180, 0, 2 * Math.PI);
     if (getByid("markFillCheck").checked) ctx.fill();
     ctx.stroke();
@@ -510,7 +510,7 @@ function drawTwoDimensionEllipse(canvas, mark, viewport) {
 function drawKO(canvas, Mark, viewport) {
     var ctx = canvas.getContext("2d");
     ctx.strokeStyle = ctx.fillStyle = "rgba(255, 191, 0, 1)";
-    ctx.font = "" + (32) + "px Arial";
+    ctx.font = "32px Arial";
     ctx.globalAlpha = 1.0;
     ctx.fillText("★KO", 5, 32);
 }
@@ -579,16 +579,16 @@ function generateCrossLine(imageA, imageB) {
     // 1. 向量運算
     const vec3 = {
         subtract: (v1, v2) => ({ x: v1.x - v2.x, y: v1.y - v2.y, z: v1.z - v2.z }),
-        cross: (v1, v2) => ({ x: v1.y * v2.z - v1.z * v2.y, y: v1.z * v2.x - v1.x * v2.z, z: v1.x * v2.y - v1.y * v2.x, }),
-        dot: (v1, v2) => v1.x * v2.x + v1.y * v2.y + v1.z * v2.z,
-        add: (v1, v2) => ({ x: v1.x + v2.x, y: v1.y + v2.y, z: v1.z + v2.z }),
-        scale: (v, s) => ({ x: v.x * s, y: v.y * s, z: v.z * s }),
-        lengthSq: (v) => v.x * v.x + v.y * v.y + v.z * v.z,
+        cross   : (v1, v2) => ({ x: v1.y * v2.z - v1.z * v2.y, y: v1.z * v2.x - v1.x * v2.z, z: v1.x * v2.y - v1.y * v2.x, }),
+        dot     : (v1, v2) => v1.x * v2.x + v1.y * v2.y + v1.z * v2.z,
+        add     : (v1, v2) => ({ x: v1.x + v2.x, y: v1.y + v2.y, z: v1.z + v2.z }),
+        scale   : (v, s)   => ({ x: v.x * s, y: v.y * s, z: v.z * s }),
+        lengthSq: (v)      => v.x * v.x + v.y * v.y + v.z * v.z,
     };
 
     // 2. 根據 DICOM 標籤計算 3D 座標的函數
     const calculate3DPosition = (col, row, info) => {
-        const [Sx, Sy, Sz] = info.imagePosition;
+        const [Sx, Sy, Sz]             = info.imagePosition;
         const [Xx, Xy, Xz, Yx, Yy, Yz] = info.Orientation;
         const [rowSpacing, colSpacing] = info.PixelSpacing;
 
@@ -639,7 +639,7 @@ function generateCrossLine(imageA, imageB) {
     const intersectionPoints3D = [];
     for (const edge of edgesA) {
         // 內部函數：線段與平面相交測試
-        const lineDir = vec3.subtract(edge.end, edge.start);
+        const lineDir     = vec3.subtract(edge.end, edge.start);
         const denominator = vec3.dot(planeB.normal, lineDir);
 
         if (Math.abs(denominator) > 1e-6) {
@@ -660,10 +660,10 @@ function generateCrossLine(imageA, imageB) {
 
     // 步驟 5: 將兩個 3D 交點投影回影像 A 的 2D 像素座標
     const project3DPointTo2D = (point3D) => {
-        const [p00, p10, p01] = cornersA; // 左上, 右上, 左下
-        const vecRow = vec3.subtract(p10, p00);
-        const vecCol = vec3.subtract(p01, p00);
-        const vecToPoint = vec3.subtract(point3D, p00);
+        const [p00, p10, p01] = cornersA;                     // 左上, 右上, 左下
+        const vecRow          = vec3.subtract(p10, p00);
+        const vecCol          = vec3.subtract(p01, p00);
+        const vecToPoint      = vec3.subtract(point3D, p00);
 
         const lenSqRow = vec3.lengthSq(vecRow);
         const lenSqCol = vec3.lengthSq(vecCol);
@@ -696,8 +696,8 @@ function drawCrossReferenceLines() {
     for (var z = 0; z < Viewport_Total; z++) {
         if (z == viewport.index) continue;
         var viewportB = GetViewport(z);
-        if (viewportB.study != viewport.study) continue;
-        if (!viewportB.content.image) continue;
+        if (viewportB.study != viewport.study)    continue;
+        if (!viewportB.content.image)             continue;
         if (!viewportB.content.image.Orientation) continue;
         if (avgDiff(viewportB.content.image.Orientation, viewport.content.image.Orientation) < 0.1) continue;
 
@@ -726,7 +726,7 @@ function getMarkSize(MarkCanvas, sizeCheck, viewport) {
 }
 
 function displayAllMark() {
-    for (var i = 0; i < Viewport_Total; i++)displayMark(i);
+    for (var i = 0; i < Viewport_Total; i++) displayMark(i);
 }
 
 function displayMark(viewportNum = viewportNumber, firstLoad = false) {
@@ -741,38 +741,38 @@ function displayMark(viewportNum = viewportNumber, firstLoad = false) {
 
     //注意：標記顏色選擇紅色跟自動都會先初始化為紅色
     ctx.strokeStyle = ctx.fillStyle = "#FF0000";
-    ctx.lineJoin = ctx.lineCap = 'round';
-    ctx.lineWidth = "" + getMarkSize(MarkCanvas, false, viewport);
+    ctx.lineJoin    = ctx.lineCap   = 'round';
+    ctx.lineWidth   = "" + getMarkSize(MarkCanvas, false, viewport);
     setMarkColor(ctx);
     //try { var [i, j, k] = SearchUid2Index(viewport.sop) } catch (ex) { return; }
     if (!viewport.tags) return;
-    var patientMark_all = PatientMark.filter(M => M.sop == viewport.sop);
+    var patientMark_all    = PatientMark.filter    (M => M.sop == viewport.sop);
     var patientMark_enable = patientMark_all.filter(M => checkMarkEnabled(viewport.series, M));
 
     for (var Mark of patientMark_enable) {
-        if (Mark.type == "SEG") drawSEG(MarkCanvas, Mark, viewport);
-        else if (Mark.type == "Overlay") drawOverLay(MarkCanvas, Mark, viewport);
+        if (Mark.type      == "SEG")           drawSEG(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "Overlay")       drawOverLay(MarkCanvas, Mark, viewport);
         else if (Mark.type == "ParametricMap") drawParametricMap(MarkCanvas, Mark, viewport);
     }
 
     for (var Mark of patientMark_enable) {
-        if (Mark.type == "XML_mark") drawXML_mark(MarkCanvas, Mark, Mark.showName);
-        else if (Mark.type == "TEXT") drawTEXT(MarkCanvas, Mark, viewport);
-        else if (Mark.type == "POLYLINE") drawPOLYLINE(MarkCanvas, Mark, viewport);
-        else if (Mark.type == "INTERPOLATED") drawINTERPOLATED(MarkCanvas, Mark, viewport);
-        else if (Mark.type == "ELLIPSE") drawELLIPSE(MarkCanvas, Mark, viewport);
-        else if (Mark.type == "CIRCLE") drawCIRCLE(MarkCanvas, Mark, viewport);
+        if (Mark.type == "XML_mark")             drawXML_mark(MarkCanvas, Mark, Mark.showName);
+        else if (Mark.type == "TEXT")            drawTEXT(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "POLYLINE")        drawPOLYLINE(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "INTERPOLATED")    drawINTERPOLATED(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "ELLIPSE")         drawELLIPSE(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "CIRCLE")          drawCIRCLE(MarkCanvas, Mark, viewport);
         else if (Mark.type == "PS" && firstLoad) drawPS(MarkCanvas, Mark, viewport);
-        else if (Mark.type == "Shutter") drawShutter(MarkCanvas, Mark, viewport);
+        else if (Mark.type == "Shutter")         drawShutter(MarkCanvas, Mark, viewport);
     }
 
     for (var Mark of patientMark_enable) {
         for (var mark of Mark.mark) {
             mark.parent = Mark;
-            if (mark.type == "TwoDimensionPolyline") drawTwoDimensionPolyline(MarkCanvas, mark, viewport);
+            if (mark.type == "TwoDimensionPolyline")        drawTwoDimensionPolyline(MarkCanvas, mark, viewport);
             else if (mark.type == "TwoDimensionMultiPoint") drawTwoDimensionMultiPoint(MarkCanvas, mark, viewport);
-            else if (mark.type == "TwoDimensionEllipse") drawTwoDimensionEllipse(MarkCanvas, mark, viewport);
-            else if (mark.type == "TextAnnotationEntity") drawTextAnnotationEntity(MarkCanvas, mark, viewport);
+            else if (mark.type == "TwoDimensionEllipse")    drawTwoDimensionEllipse(MarkCanvas, mark, viewport);
+            else if (mark.type == "TextAnnotationEntity")   drawTextAnnotationEntity(MarkCanvas, mark, viewport);
         }
     }
 
@@ -800,32 +800,32 @@ function displayMark(viewportNum = viewportNumber, firstLoad = false) {
 
 class BlueLightMark {
     constructor() {
-        this.mark = [];
-        this.pointArray = [];
-        this.study = null;
-        this.series = null;
-        this.sop = null;
-        this.color = null;
-        this.imagePositionZ = null;
+        this.mark                 = [];
+        this.pointArray           = [];
+        this.study                = null;
+        this.series               = null;
+        this.sop                  = null;
+        this.color                = null;
+        this.imagePositionZ       = null;
         this.ImagePositionPatient = null;
-        this.width = null;
-        this.height = null;
-        this.showName = "";
-        this.hideName = "";
-        this.type = "";
-        this.Text = "";
+        this.width                = null;
+        this.height               = null;
+        this.showName             = "";
+        this.hideName             = "";
+        this.type                 = "";
+        this.Text                 = "";
         //Point3D
     }
 
     setQR(study, series, sop) {
-        this.study = study;
+        this.study  = study;
         this.series = series;
-        this.sop = sop;
+        this.sop    = sop;
     }
     setQRLevels(QRLevels) {
-        this.study = QRLevels.study;
+        this.study  = QRLevels.study;
         this.series = QRLevels.series;
-        this.sop = QRLevels.sop;
+        this.sop    = QRLevels.sop;
     }
     setPoint2D(x, y) {
         this.pointArray.push(new Point2D(x, y));
@@ -839,10 +839,10 @@ class BlueLightMark {
 class MarkCollider {
     static selected = null;
     constructor(targetMark, currX, currY, parm) {
-        this.x = parseInt(currX);
-        this.y = parseInt(currY);
+        this.x          = parseInt(currX);
+        this.y          = parseInt(currY);
         this.targetMark = targetMark;
-        this.parm = parm;
+        this.parm       = parm;
     }
     static detect(currX, currY, targetType = null) {
         MarkCollider.selected = null;
