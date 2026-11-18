@@ -46,7 +46,7 @@ function invokeHangingProtocols(QRLevel, HP) {
                 var index = viewport.index;
                 var targetViewport = GetViewport(index);
                 targetViewport.clear();
-                for (var label of ['labelLT', 'labelRT', 'labelLB', 'labelRB', 'labelMT', 'labelMB', 'labelLM', 'labelRM']) 
+                for (var label of ['labelLT', 'labelRT', 'labelLB', 'labelRB', 'labelMT', 'labelMB', 'labelLM', 'labelRM'])
                     targetViewport[label].innerHTML = "";
                 displayRuler(index);
             }
@@ -62,8 +62,9 @@ function invokeHangingProtocols(QRLevel, HP) {
                 }
             }
             window.onresize();
-        } 
+        }
     }
+    invokeHangingProtocols.started = true;
 }
 
 function matchHangingProtocols(QRLevel) {
@@ -79,6 +80,7 @@ function matchHangingProtocols(QRLevel) {
                     //////////
                     if (rule.value == dcm.Image.Modality) count++;
                 }
+                if (rule.onlystart == "true" && !invokeHangingProtocols.started) count++;
             }
             if (count == HP.MatchingRules.length) return HP;
         }

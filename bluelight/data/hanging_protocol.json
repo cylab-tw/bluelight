@@ -12,6 +12,9 @@
             "attribute": "QueryRetrieveLevel",
             "value": "SERIES",
             "constraint": "EQUALS"
+          },
+          {
+            "onlystart": "true"
           }
         ],
         "stages": [
@@ -68,6 +71,9 @@
             "attribute": "QueryRetrieveLevel",
             "value": "SERIES",
             "constraint": "EQUALS"
+          },
+          {
+            "onlystart": "true"
           }
         ],
         "stages": [
@@ -124,6 +130,9 @@
             "attribute": "QueryRetrieveLevel",
             "value": "SERIES",
             "constraint": "EQUALS"
+          },
+          {
+            "onlystart": "true"
           }
         ],
         "stages": [
