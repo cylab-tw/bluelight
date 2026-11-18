@@ -257,8 +257,10 @@ function BlueLightWheel(e) {
     }
     else {
         for (var z = 0; z < Viewport_Total; z++) {
-            if (e.deltaY < 0) GetViewport(z).nextFrame(true);
-            else GetViewport(z).nextFrame(false);
+            if (GetViewport(z).series == GetViewport().series){
+                if (e.deltaY < 0) GetViewport(z).nextFrame(true);
+                else GetViewport(z).nextFrame(false);
+            }
         }
     }
 
