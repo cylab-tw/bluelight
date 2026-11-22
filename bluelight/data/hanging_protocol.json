@@ -64,6 +64,166 @@
         "MatchingRules": [
           {
             "attribute": "Modality",
+            "value": "CR",
+            "constraint": "EQUALS"
+          },
+          {
+            "attribute": "QueryRetrieveLevel",
+            "value": "SERIES",
+            "constraint": "EQUALS"
+          },
+          {
+            "onlystart": "true"
+          }
+        ], 
+        "stages": [
+          {
+            "layout": {
+              "type": "grid",
+              "rows": 1,
+              "columns": 1
+            }
+            ,"viewports": [
+              {
+                "index": 0,
+                "seriesIndex": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "MatchingRules": [
+          {
+            "attribute": "Modality",
+            "value": "DR",
+            "constraint": "EQUALS"
+          },
+          {
+            "attribute": "QueryRetrieveLevel",
+            "value": "SERIES",
+            "constraint": "EQUALS"
+          },
+          {
+            "onlystart": "true"
+          }
+        ], 
+        "stages": [
+          {
+            "layout": {
+              "type": "grid",
+              "rows": 1,
+              "columns": 1
+            }
+            ,"viewports": [
+              {
+                "index": 0,
+                "seriesIndex": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "MatchingRules": [
+          {
+            "attribute": "Modality",
+            "value": "CS",
+            "constraint": "EQUALS"
+          },
+          {
+            "attribute": "QueryRetrieveLevel",
+            "value": "SERIES",
+            "constraint": "EQUALS"
+          },
+          {
+            "onlystart": "true"
+          }
+        ], 
+        "stages": [
+          {
+            "layout": {
+              "type": "grid",
+              "rows": 1,
+              "columns": 1
+            }
+            ,"viewports": [
+              {
+                "index": 0,
+                "seriesIndex": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "MatchingRules": [
+          {
+            "attribute": "Modality",
+            "value": "OT",
+            "constraint": "EQUALS"
+          },
+          {
+            "attribute": "QueryRetrieveLevel",
+            "value": "SERIES",
+            "constraint": "EQUALS"
+          },
+          {
+            "onlystart": "true"
+          }
+        ], 
+        "stages": [
+          {
+            "layout": {
+              "type": "grid",
+              "rows": 1,
+              "columns": 1
+            }
+            ,"viewports": [
+              {
+                "index": 0,
+                "seriesIndex": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "MatchingRules": [
+          {
+            "attribute": "Modality",
+            "value": "US",
+            "constraint": "EQUALS"
+          },
+          {
+            "attribute": "QueryRetrieveLevel",
+            "value": "SERIES",
+            "constraint": "EQUALS"
+          },
+          {
+            "onlystart": "true"
+          }
+        ], 
+        "stages": [
+          {
+            "layout": {
+              "type": "grid",
+              "rows": 1,
+              "columns": 1
+            }
+            ,"viewports": [
+              {
+                "index": 0,
+                "seriesIndex": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "MatchingRules": [
+          {
+            "attribute": "Modality",
             "value": "MR",
             "constraint": "EQUALS"
           },
