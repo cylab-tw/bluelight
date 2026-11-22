@@ -159,6 +159,7 @@ class BlueLightImageManager {
     loadPreLoadSops() {
         var preLoadSeries = splitArrayByElem(this.preLoadSops, "SeriesInstanceUID");
         this.preLoadSops = [];
+        var pendingHangingProtocol = null;
 
         for (var series in preLoadSeries) {
             var preLoadSops = preLoadSeries[series];
@@ -188,11 +189,13 @@ class BlueLightImageManager {
             if (LoadImgSop) {
                 //requestAnimationFrame(() => {
                 resetViewport();
-                if (HangingProtocol) invokeHangingProtocols(QRLevel, HangingProtocol);
+                if (HangingProtocol && !pendingHangingProtocol) pendingHangingProtocol = { QRLevel, HangingProtocol };
                 else GetViewport().loadImgBySop(LoadImgSop);
                 //});
             }
         }
+        // 所有Series載入完成才會invokeHangingProtocol，避免被後面的載入覆蓋掉。
+        if (pendingHangingProtocol) invokeHangingProtocols(pendingHangingProtocol.QRLevel, pendingHangingProtocol.HangingProtocol);
     }
 
     find(objs, uid) {

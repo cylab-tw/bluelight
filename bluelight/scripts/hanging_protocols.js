@@ -53,13 +53,15 @@ function invokeHangingProtocols(QRLevel, HP) {
             window.onresize();
         }
         if (stage.viewports) {
+            if (QRLevel.series) var currentSeries = ImageManager.findSeries(QRLevel.series);
+            if (QRLevel.sop)    var currentSop    = ImageManager.findSop(QRLevel.sop), currentSeries = currentSop && currentSop.parent;
+            var seriesList = currentSeries ? currentSeries.parent.Series : [];
             for (var viewport of stage.viewports) {
-                var index = viewport.index;
-                var seriesIndex = viewport.seriesIndex;
-                if (!(isNaN(index || isNaN(seriesIndex)))) {
-                    if (QRLevel.series) GetViewport(index).loadImgBySop(ImageManager.findSeries(QRLevel.series).Sop[seriesIndex])
-                    else if (QRLevel.sop) GetViewport(index).loadImgBySop(ImageManager.findSop(QRLevel.sop).parent.Sop[seriesIndex]);
-                }
+                var index = viewport.index, seriesIndex = viewport.seriesIndex;
+                if (isNaN(index) || index < 0 || index >= Viewport_row * Viewport_col) continue;
+                if (isNaN(seriesIndex) || seriesIndex < 0) continue;
+                var series = seriesList[seriesIndex];
+                if (series && series.Sop.length > 0) GetViewport(index).loadImgBySop(series.Sop[0]);
             }
             window.onresize();
         }

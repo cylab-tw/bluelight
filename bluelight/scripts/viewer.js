@@ -23,6 +23,8 @@ class LoadFileInBatches {
     static NumOfFetchs = 0;
     static limit       = 4;
     static timer       = null;
+    static pendingQueries = 0;
+    static pendingHangingProtocol = null;
 
     static wadoPreLoad(url, onlyload) {
         // if (LoadFileInBatches.limit == 0) LoadFileInBatches.limit = ConfigLog.QIDO.limit ? ConfigLog.QIDO.limit : 100;
@@ -72,10 +74,16 @@ class LoadFileInBatches {
 
     static finishOne() {
         if (LoadFileInBatches.NumOfFetchs > 0) LoadFileInBatches.NumOfFetchs--;
+        LoadFileInBatches.finishBatch();
+    }
 
-        // Only hide the status indicator when all fetches are complete and queue is empty
-        if (LoadFileInBatches.NumOfFetchs === 0 && LoadFileInBatches.queue.length === 0) {
+    static finishBatch() {
+        // QIDO、影像下載及等待的影像都完成，才會載入。
+        if (LoadFileInBatches.pendingQueries === 0 && LoadFileInBatches.NumOfFetchs === 0 && LoadFileInBatches.queue.length === 0) {
             hideDicomStatus();
+            var pending = LoadFileInBatches.pendingHangingProtocol;
+            LoadFileInBatches.pendingHangingProtocol = null;
+            if (pending) invokeHangingProtocols(pending.QRLevel, pending.HangingProtocol);
         }
     }
 }
@@ -121,7 +129,8 @@ function wadorsLoader(url, onlyload) {
                     // HangingProtocols
                     var QRLevel         = new QRLv(Sop?.Image?.data);
                     var HangingProtocol = matchHangingProtocols(QRLevel);
-                    if (HangingProtocol) invokeHangingProtocols(QRLevel, HangingProtocol)
+                    // 只記錄第一個符合的HangingProtocol，等待整批都載入完成再執行。
+                    if (HangingProtocol && !LoadFileInBatches.pendingHangingProtocol) LoadFileInBatches.pendingHangingProtocol = { QRLevel, HangingProtocol };
                     else GetViewport().loadImgBySop(Sop);
                 }
                 else leftLayout.refreshNumberOfFramesOrSops(Sop.Image);
@@ -1226,7 +1235,9 @@ function loadDICOMFromUrl(url, loadimage = true) {
                 // HangingProtocols
                 var QRLevel = new QRLv(Sop?.Image?.data);
                 var HangingProtocol = matchHangingProtocols(QRLevel);
-                if (HangingProtocol) invokeHangingProtocols(QRLevel, HangingProtocol)
+                // 只記錄第一個符合的HangingProtocol，等待整批都載入完成再執行。
+                if (HangingProtocol && !LoadFileInBatches.pendingHangingProtocol) 
+                    LoadFileInBatches.pendingHangingProtocol = { QRLevel, HangingProtocol };
                 else GetViewport().loadImgBySop(Sop);
             }
             else leftLayout.refreshNumberOfFramesOrSops(Sop.Image);

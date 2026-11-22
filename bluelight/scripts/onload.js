@@ -450,6 +450,12 @@ function getJsonBySeriesRequest(SeriesRequest) {
       }
 
       const instance_ = instance;
+      // loadend在成功、失敗、逾時都會執行
+      LoadFileInBatches.pendingQueries++;
+      InstanceRequest.onloadend = function () {
+        LoadFileInBatches.pendingQueries--;
+        LoadFileInBatches.finishBatch();
+      };
       InstanceRequest.send();
 
       InstanceRequest.onload = function () {
@@ -523,6 +529,12 @@ function readJson(url) {
     ErrorMessage.pushErrorMessage(110);
   };
 
+  // loadend在成功、失敗、逾時都會執行
+  LoadFileInBatches.pendingQueries++;
+  SeriesRequest.onloadend = function () {
+    LoadFileInBatches.pendingQueries--;
+    LoadFileInBatches.finishBatch();
+  };
   //發送以Series為單位的請求
   SeriesRequest.send();
   SeriesRequest.onload = function () {
