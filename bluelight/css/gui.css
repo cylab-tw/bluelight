@@ -221,7 +221,7 @@ button:hover {
   align-content: center;
   flex-wrap: wrap;
   color: white;
-  width: 150px;
+  /*width: 150px;*/
   height: 30px;
 
   border-color: rgb(55, 55, 55);

@@ -354,7 +354,13 @@ function html_onload() {
     invertDisplayById('annotationDiv');
     getByid("annotationOption_span").style.position = "";
   }
-
+  getByid("ShowCrossReferenceLines").onclick = function () {
+    openCrossReferenceLines = !openCrossReferenceLines;
+    displayAllMark();
+    hideAllDrawer("annotationDiv");
+    invertDisplayById('annotationDiv');
+    getByid("annotationOption_span").style.position = "";
+  }
   getByid("WindowRevisionOption").onclick = function () {
     if (this.enable == false) return;
     hideAllDrawer("openWindowRevisionDiv");
@@ -500,6 +506,7 @@ function html_onload() {
   }*/
 
   getByid("removeAllRuler").onclick = function () {
+    if(getClass("removeRulerWindow").length) return;
     var removeRulerWindow = createElem("DIV", null, "removeRulerWindow");
 
     var label = document.createElement("LABEL");

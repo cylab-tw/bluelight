@@ -1,14 +1,20 @@
 
 function scale_size(e, currX, currY) {
     var viewport = GetViewport();
+    var previousScale = viewport.scale;
 
     if (windowMouseDiffY < 0 && viewport.scale < 10 && (Math.abs(windowMouseDiffX) < Math.abs((windowMouseDiffY))))
         viewport.scale += viewport.scale * 0.05;
     else if (windowMouseDiffY > 0 && viewport.scale > 0.1 && (Math.abs(windowMouseDiffX) < Math.abs((windowMouseDiffY))))
         viewport.scale -= viewport.scale * 0.05;
 
-    if (openLink == true) {
-        SetAllViewport("scale", GetViewport().scale);
+    if (openLink == true && viewport.scale != previousScale) {
+        // 只套用縮放比例。
+        var scaleRatio = viewport.scale / previousScale;
+        for (var i = 0; i < Viewport_Total; i++) {
+            if (i != viewport.index && GetViewport(i).scale > 0)
+                GetViewport(i).scale *= scaleRatio;
+        }
         setTransformAll();
     }
     else setTransform();
@@ -33,7 +39,6 @@ class MoveTool extends ToolEvt {
             if (openLink == true) {
                 for (var i = 0; i < Viewport_Total; i++) {
                     try {
-                        GetViewport(i).scale = viewport.scale;
                         GetViewport(i).translate.x = viewport.translate.x;
                         GetViewport(i).translate.y = viewport.translate.y;
                         setTransform(i);
@@ -51,13 +56,19 @@ class MoveTool extends ToolEvt {
         var viewport = GetViewport(), canvas = GetViewport().canvas;
 
         if (rightTouchDown == true && e2) {
+            var previousScale = viewport.scale;
             if (windowMouseDiffY < 0 && viewport.scale < 10)
                 viewport.scale += viewport.scale * 0.05;
             else if (windowMouseDiffY > 0 && viewport.scale > 0.1)
                 viewport.scale -= viewport.scale * 0.05;
 
-            if (openLink == true) {
-                SetAllViewport("scale", GetViewport().scale);
+            if (openLink == true && viewport.scale != previousScale) {
+                // 只套用縮放比例。
+                var scaleRatio = viewport.scale / previousScale;
+                for (var i = 0; i < Viewport_Total; i++) {
+                    if (i != viewport.index && GetViewport(i).scale > 0)
+                        GetViewport(i).scale *= scaleRatio;
+                }
                 setTransformAll();
             }
             else setTransform();
@@ -71,7 +82,6 @@ class MoveTool extends ToolEvt {
 
             if (openLink == true) {
                 for (var i = 0; i < Viewport_Total; i++) {
-                    GetViewport(i).scale = viewport.scale;
                     GetViewport(i).translate.x = viewport.translate.x;
                     GetViewport(i).translate.y = viewport.translate.y;
                     setTransform(i);

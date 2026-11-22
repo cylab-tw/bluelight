@@ -1,7 +1,9 @@
-//上一個選擇的標記
+// 上一個選擇的標記
 var Mark_previous_choose = null;
+// 代表顯示cut line為開啟的狀態
+var openCrossReferenceLines = true;
 
-//裝標記的物件
+// 裝標記的物件
 var PatientMark         = [];
 let MARKER              = {};
 MARKER.drawMarkList     = [];
@@ -795,7 +797,7 @@ function displayMark(viewportNum = viewportNumber, firstLoad = false) {
             }
         }
     }
-    drawCrossReferenceLines();
+    if (openCrossReferenceLines) drawCrossReferenceLines();
 }
 
 class BlueLightMark {
