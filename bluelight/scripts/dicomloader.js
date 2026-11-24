@@ -38,8 +38,8 @@ function setPDF(imageObj) {
 
 function getDefaultImageObj(dataSet, type) {
     var imageObj = {};
-    imageObj.windowCenter = dataSet.intString(Tag.WindowCenter);
-    imageObj.windowWidth = dataSet.intString(Tag.WindowWidth);
+    imageObj.windowCenter = dataSet.floatString(Tag.WindowCenter);
+    imageObj.windowWidth = dataSet.floatString(Tag.WindowWidth);
     imageObj.accessionNumber = dataSet.string(Tag.AccessionNumber);
     imageObj.acquisitionTime = dataSet.string(Tag.AcquisitionTime);
     imageObj.bitsAllocation = dataSet.int16(Tag.BitsAllocated);
@@ -102,7 +102,7 @@ function getDefaultImageObj(dataSet, type) {
 
     ////////////////////////////
 
-    imageObj.intercept = dataSet.intString(Tag.RescaleIntercept);
+    imageObj.intercept = dataSet.floatString(Tag.RescaleIntercept);
     imageObj.slope = dataSet.floatString(Tag.RescaleSlope);
     imageObj.bitsAllocated = dataSet.int16(Tag.BitsAllocated);
     if (dataSet.string(Tag.PixelSpacing)) {
